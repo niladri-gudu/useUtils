@@ -1,0 +1,340 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { JwtDecoder } from '../../components/JwtDecoder';
+---
+
+<Layout 
+  title="JWT Decoder Online: Inspect & Debug JSON Web Tokens Safely" 
+  description="Decode, parse, and verify JSON Web Tokens (JWT) in real-time. Inspect the header, payload, and signature locally with full JSON syntax highlighting. 100% secure."
+  keywords="JWT Decoder, jwt decoder, jwt decoder online, online jwt decoder, decode jwt, jwt debugger, inspect jwt, verify jwt, json web token decoder"
+>
+  <!-- Main Navigation Header -->
+  <header class="w-full bg-canvas border-b border-border-hairline h-14 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto h-full px-4 flex items-center justify-between">
+      <!-- Left side: Brand -->
+      <a href="/" class="flex items-center gap-2 group">
+        <div class="w-6 h-6 rounded bg-accent-emerald flex items-center justify-center font-mono font-black text-black text-sm select-none">
+          u
+        </div>
+        <span class="font-sans font-semibold text-zinc-50 tracking-tight group-hover:text-accent-emerald transition-colors">
+          useUtils
+        </span>
+      </a>
+
+      <!-- Right side: Version -->
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          class="theme-toggle-btn p-2 rounded-lg bg-zinc-900 border border-border-hairline text-zinc-400 hover:text-zinc-50 hover:bg-zinc-850 transition-all cursor-pointer flex items-center justify-center"
+          aria-label="Toggle dark/light theme"
+        >
+          <!-- Sun Icon (visible in dark mode) -->
+          <svg class="theme-sun-icon w-4.5 h-4.5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+          </svg>
+          <!-- Moon Icon (visible in light mode) -->
+          <svg class="theme-moon-icon w-4.5 h-4.5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        </button>
+        <span class="text-[10px] md:text-xs text-zinc-400 font-mono bg-zinc-900 border border-border-hairline rounded px-2.5 py-1">
+          v1.0.0
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Body Content -->
+  <main class="flex-grow w-full max-w-7xl mx-auto px-4 py-8 flex flex-col gap-6">
+    <!-- Hero / Title Header Section -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pt-2 pb-6 border-b border-border-hairline/60">
+      <div class="flex flex-col gap-2">
+        <h1 class="text-2xl md:text-3xl font-semibold tracking-tight text-zinc-50">
+          JWT Decoder
+        </h1>
+        <p class="text-zinc-400 text-sm max-w-2xl leading-relaxed font-sans">
+          Decode, inspect, and debug JWT payloads in real-time. Designed with a premium desktop-class dark aesthetic, offering live claims counting, countdowns, and inline date parsing.
+        </p>
+      </div>
+
+      <!-- Pill Tab Switcher -->
+      <div class="bg-panel border border-border-hairline rounded-full p-1 inline-flex items-center gap-1 self-start md:self-end">
+        <a 
+          href="/tools/jwt-decoder" 
+          class="px-4 py-1.5 text-xs font-semibold rounded-full bg-zinc-800 text-zinc-50 transition-all"
+        >
+          Decoder
+        </a>
+        <a 
+          href="/tools/jwt-encoder" 
+          class="px-4 py-1.5 text-xs font-medium rounded-full text-zinc-400 hover:text-zinc-50 transition-all"
+        >
+          Encoder
+        </a>
+      </div>
+    </div>
+
+    <!-- Mount React JWT Decoder Component -->
+    <div class="py-2">
+      <JwtDecoder client:load />
+    </div>
+
+    <!-- Rich On-Page SEO Landing Page Content -->
+    <section class="mt-12 border-t border-border-hairline/60 pt-12 max-w-4xl mx-auto w-full">
+      <div class="bg-panel border border-border-hairline rounded-xl p-6 md:p-10 shadow-sm flex flex-col gap-8">
+        
+        <!-- Section: Intro -->
+        <div>
+          <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+            <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+            What Does it Mean to Inspect or Decode a JSON Web Token (JWT)?
+          </h2>
+          <p class="text-zinc-400 text-sm leading-relaxed font-sans mb-4">
+            To inspect or <strong class="text-zinc-200">decode jwt</strong> tokens is to parse their Base64Url-encoded representation into a human-readable JSON format. A standard JSON Web Token consists of three distinct parts separated by dots (<code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">.</code>). Although a JWT looks like an encrypted, randomized string of characters, it is actually just an encoded string.
+          </p>
+          <p class="text-zinc-400 text-sm leading-relaxed font-sans">
+            Unless a token is explicitly encrypted (known as a JWE or JSON Web Encryption), it can be read by anyone who intercepts it. Therefore, decoding a token does not require a secret key or password. Programmers utilize a <strong class="text-zinc-200">jwt decoder online</strong> to peek inside the token structure during development, allowing them to verify that user IDs are correct, expiration dates are configured properly, roles are assigned, and the token is signed with the expected cryptographic algorithm. Using a <strong class="text-zinc-200">jwt debugger</strong> is an essential part of troubleshooting modern token-based authorization protocols.
+          </p>
+        </div>
+
+        <!-- Section: How to Use -->
+        <div>
+          <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+            <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+            How to Decode a JWT Instantly
+          </h2>
+          <p class="text-zinc-400 text-sm leading-relaxed font-sans mb-4">
+            Using our <strong class="text-zinc-200">online jwt decoder</strong> is designed to be frictionless and instantaneous:
+          </p>
+          <ol class="list-decimal list-inside text-zinc-400 text-sm space-y-3 pl-2">
+            <li>
+              <strong class="text-zinc-200">Paste Your Token</strong>: Copy your encoded JWT token string (usually starting with <code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">eyJhbGci...</code>) and paste it into the raw token input box.
+            </li>
+            <li>
+              <strong class="text-zinc-200">Instant Decoded Output</strong>: The tool parses the token in real-time as you input it. You will see the decoded parts laid out side-by-side or stacked, with clean syntax highlighting and color coding.
+            </li>
+            <li>
+              <strong class="text-zinc-200">Audit the Claims</strong>: Verify critical properties, such as the <code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">exp</code> (expiration) timestamp (which our tool converts into a readable, real-time localized date and time) and custom scopes.
+            </li>
+            <li>
+              <strong class="text-zinc-200">Verify the Signature (Optional)</strong>: If you want to check if the token signature is valid, enter your secret key (or public key) in the signature verification panel. The verification is computed client-side.
+            </li>
+          </ol>
+        </div>
+
+        <!-- Section: Structure -->
+        <div>
+          <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+            <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+            Understanding the Structure of a JSON Web Token
+          </h2>
+          <p class="text-zinc-400 text-sm leading-relaxed font-sans mb-4">
+            When a token is parsed by our <strong class="text-zinc-200">jwt decoder</strong>, it is split into three main components:
+          </p>
+          <div class="space-y-4">
+            <div class="p-4 bg-zinc-900/40 border-l-4 border-red-500 bg-zinc-900 border border-border-hairline rounded-r-lg">
+              <h3 class="font-mono text-xs font-semibold text-red-400 uppercase tracking-wider mb-1">Header (Red/Orange)</h3>
+              <p class="text-zinc-400 text-xs leading-relaxed">
+                The header typically consists of two parts: the type of the token, which is JWT, and the signing algorithm being used, such as HS256, RS256, or ES256. This tells the validating application how to verify the signature.
+              </p>
+            </div>
+            <div class="p-4 bg-zinc-900/40 border-l-4 border-blue-500 bg-zinc-900 border border-border-hairline rounded-r-lg">
+              <h3 class="font-mono text-xs font-semibold text-blue-400 uppercase tracking-wider mb-1">Payload (Blue/Purple)</h3>
+              <p class="text-zinc-400 text-xs leading-relaxed">
+                The payload contains the claims. Claims are statements about an entity (typically, the user) and additional metadata. There are three types of claims: registered, public, and private claims. Registered claims include <code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1">iss</code> (issuer), <code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1">exp</code> (expiration time), <code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1">sub</code> (subject), and <code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1">aud</code> (audience).
+              </p>
+            </div>
+            <div class="p-4 bg-zinc-900/40 border-l-4 border-emerald-500 bg-zinc-900 border border-border-hairline rounded-r-lg">
+              <h3 class="font-mono text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-1">Signature (Green)</h3>
+              <p class="text-zinc-400 text-xs leading-relaxed">
+                The signature is used to verify that the sender of the JWT is who it says it is and to ensure that the message wasn't changed along the way. It is created by taking the encoded header, the encoded payload, the secret key, and signing them using the algorithm specified in the header.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Features -->
+        <div>
+          <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+            <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+            Core Features of Our JWT Decoder Tool
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+              <h3 class="font-mono text-xs font-semibold text-accent-emerald uppercase tracking-wider mb-2">Real-Time Live Parsing</h3>
+              <p class="text-zinc-400 text-xs leading-relaxed">
+                Our interactive <strong class="text-zinc-300">online jwt decoder</strong> evaluates your input instantly. There are no buttons to click; as soon as a valid character stream is detected, the parsed components are updated.
+              </p>
+            </div>
+            <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+              <h3 class="font-mono text-xs font-semibold text-accent-emerald uppercase tracking-wider mb-2">Syntax Highlighting</h3>
+              <p class="text-zinc-400 text-xs leading-relaxed">
+                Clean colorization of JSON keys, strings, numbers, and booleans makes inspecting deep or complex claims payloads easy on the eyes.
+              </p>
+            </div>
+            <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+              <h3 class="font-mono text-xs font-semibold text-accent-emerald uppercase tracking-wider mb-2">Local Security Guarantee</h3>
+              <p class="text-zinc-400 text-xs leading-relaxed">
+                We understand that tokens can contain sensitive user IDs, emails, or system permissions. Our tool decodes tokens entirely in your browser using local client-side JavaScript. Absolutely zero data is transmitted over the network.
+              </p>
+            </div>
+            <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+              <h3 class="font-mono text-xs font-semibold text-accent-emerald uppercase tracking-wider mb-2">Signature Verification</h3>
+              <p class="text-zinc-400 text-xs leading-relaxed">
+                Validate token signatures client-side by inputting the shared secret or public key without sending sensitive verification parameters to any remote servers.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: FAQs -->
+        <div>
+          <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-6 flex items-center gap-2">
+            <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+            Frequently Asked Questions (FAQ)
+          </h2>
+          <div class="space-y-4">
+            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
+              <h4 class="font-medium text-zinc-100 text-sm">Can I decode a JWT without a secret key?</h4>
+              <p class="text-zinc-400 text-xs mt-2 leading-relaxed">
+                Yes. Since standard JSON Web Tokens are only Base64Url-encoded and not encrypted, you can decode the Header and Payload to read their contents without needing a secret key or public key. However, you cannot verify the authenticity of the token or its signature without the key.
+              </p>
+            </div>
+            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
+              <h4 class="font-medium text-zinc-100 text-sm">Does decoding a token verify its signature?</h4>
+              <p class="text-zinc-400 text-xs mt-2 leading-relaxed">
+                No. Decoding simply translates the token from a Base64Url representation back into plaintext JSON. To verify the signature, you must supply the original secret key (for symmetric encryption like HS256) or the public key (for asymmetric encryption like RS256) to confirm the token has not been tampered with.
+              </p>
+            </div>
+            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
+              <h4 class="font-medium text-zinc-100 text-sm">What is a JWT debugger used for?</h4>
+              <p class="text-zinc-400 text-xs mt-2 leading-relaxed">
+                A <strong class="text-zinc-300">jwt debugger</strong> is used by software developers to inspect JWT claims, verify signature logic, debug token structure during development, and audit authentication workflows. It helps ensure that session tokens, OAuth scopes, and expiration windows are properly configured and securely signed.
+              </p>
+            </div>
+            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
+              <h4 class="font-medium text-zinc-100 text-sm">What is the difference between JWT, JWS, and JWE?</h4>
+              <p class="text-zinc-400 text-xs mt-2 leading-relaxed">
+                A JWT (JSON Web Token) is the general standard representing claims. JWS (JSON Web Signature) represents a cryptographically signed token (which is the classic three-part token separated by dots that developers usually interact with). JWE (JSON Web Encryption) represents an encrypted token (which consists of five dot-separated parts) where the payload is hidden from third parties entirely.
+              </p>
+            </div>
+            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
+              <h4 class="font-medium text-zinc-100 text-sm">How do I decode a JWT payload dynamically in client-side JavaScript?</h4>
+              <p class="text-zinc-400 text-xs mt-2 leading-relaxed font-sans">
+                You can easily decode a token manually in JavaScript without third-party dependencies by splitting the token string at the dot (<code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1">.</code>) characters and decoding the second segment (the payload) from Base64Url using the browser's native <code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1">atob</code> function:
+                <br />
+                <code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto whitespace-pre">const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));</code>
+              </p>
+            </div>
+            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
+              <h4 class="font-medium text-zinc-100 text-sm">Why is the expiration date in my decoded JWT showing the year 1970?</h4>
+              <p class="text-zinc-400 text-xs mt-2 leading-relaxed">
+                This occurs due to a mismatch between seconds and milliseconds. In the JWT specification, timestamps like <code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1">exp</code>, <code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1">iat</code>, and <code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1">nbf</code> must be represented in Unix time as **seconds**. If your backend generated the token using millisecond timestamps (e.g. directly passing JavaScript's <code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1">Date.now()</code>), verification libraries and decoders will divide it incorrectly, showing a date very close to the Unix epoch in 1970.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Site Links -->
+        <div class="border-t border-border-hairline/40 pt-6 mt-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
+          <p class="text-zinc-400">
+            Need more information about our local-only execution and terms?
+          </p>
+          <div class="flex items-center gap-3">
+            <a href="/about" class="text-accent-emerald hover:underline font-mono">About Us</a>
+            <span class="text-zinc-800">•</span>
+            <a href="/privacy" class="text-accent-emerald hover:underline font-mono">Privacy Policy</a>
+            <span class="text-zinc-800">•</span>
+            <a href="/terms" class="text-accent-emerald hover:underline font-mono">Terms & Conditions</a>
+            <span class="text-zinc-800">•</span>
+            <a href="/contact" class="text-accent-emerald hover:underline font-mono">Contact Us</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Schema-Ready JSON-LD for FAQ Page -->
+    <script type="application/ld+json" is:inline>
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Can I decode a JWT without a secret key?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Since standard JSON Web Tokens are only Base64Url-encoded and not encrypted, you can decode the Header and Payload to read their contents without needing a secret key or public key. However, you cannot verify the authenticity of the token or its signature without the key."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does decoding a token verify its signature?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Decoding simply translates the token from a Base64Url representation back into plaintext JSON. To verify the signature, you must supply the original secret key (for symmetric encryption like HS256) or the public key (for asymmetric encryption like RS256) to confirm the token has not been tampered with."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is a JWT debugger used for?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "A jwt debugger is used by software developers to inspect JWT claims, verify signature logic, debug token structure during development, and audit authentication workflows. It helps ensure that session tokens, OAuth scopes, and expiration windows are properly configured and securely signed."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is the difference between JWT, JWS, and JWE?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "A JWT (JSON Web Token) is the general standard representing claims. JWS (JSON Web Signature) represents a cryptographically signed token (which is the classic three-part token separated by dots that developers usually interact with). JWE (JSON Web Encryption) represents an encrypted token (which consists of five dot-separated parts) where the payload is hidden from third parties entirely."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I decode a JWT payload dynamically in client-side JavaScript?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "You can easily decode a token manually in JavaScript without third-party dependencies by splitting the token string at the dot (.) characters and decoding the second segment (the payload) from Base64Url using the browser's native atob function: const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Why is the expiration date in my decoded JWT showing the year 1970?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "This occurs due to a mismatch between seconds and milliseconds. In the JWT specification, timestamps like exp, iat, and nbf must be represented in Unix time as seconds. If your backend generated the token using millisecond timestamps (e.g. directly passing JavaScript's Date.now()), verification libraries and decoders will divide it incorrectly, showing a date very close to the Unix epoch in 1970."
+            }
+          }
+        ]
+      }
+    </script>
+  </main>
+
+  <!-- Footer Section -->
+  <footer class="w-full bg-canvas border-t border-border-hairline mt-auto">
+    <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
+      <div class="flex flex-col md:flex-row items-center gap-2 md:gap-4">
+        <span>© 2026 useUtils.com</span>
+        <span class="hidden md:inline text-zinc-800">•</span>
+        <div class="flex items-center gap-3">
+          <a href="/about" class="hover:text-zinc-350 transition-colors">About Us</a>
+          <span class="text-zinc-800">•</span>
+          <a href="/privacy" class="hover:text-zinc-350 transition-colors">Privacy Policy</a>
+          <span class="text-zinc-800">•</span>
+          <a href="/terms" class="hover:text-zinc-350 transition-colors">Terms & Conditions</a>
+          <span class="text-zinc-800">•</span>
+          <a href="/contact" class="hover:text-zinc-350 transition-colors">Contact Us</a>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="flex items-center gap-1.5 text-accent-emerald">
+          <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
+          Secure Client Sandbox
+        </span>
+      </div>
+    </div>
+  </footer>
+</Layout>

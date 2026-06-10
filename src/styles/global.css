@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-canvas: var(--canvas);
+  --color-panel: var(--panel);
+  --color-border-hairline: var(--border-hairline);
+  --color-accent-emerald: var(--accent-emerald);
+  
+  --color-zinc-50: var(--zinc-50);
+  --color-zinc-100: var(--zinc-100);
+  --color-zinc-200: var(--zinc-200);
+  --color-zinc-300: var(--zinc-300);
+  --color-zinc-400: var(--zinc-400);
+  --color-zinc-500: var(--zinc-500);
+  --color-zinc-650: var(--zinc-650);
+  --color-zinc-750: var(--zinc-750);
+  --color-zinc-800: var(--zinc-800);
+  --color-zinc-850: var(--zinc-850);
+  --color-zinc-900: var(--zinc-900);
+  --color-zinc-950: var(--zinc-950);
+  
+  --color-red-400: var(--red-400);
+  --color-indigo-400: var(--indigo-400);
+  --color-amber-400: var(--amber-400);
+  
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+:root {
+  --canvas: #f4f4f5;
+  --panel: #ffffff;
+  --border-hairline: #e4e4e7;
+  --accent-emerald: #059669;
+
+  --zinc-50: #18181b;
+  --zinc-100: #27272a;
+  --zinc-200: #3f3f46;
+  --zinc-300: #52525b;
+  --zinc-400: #71717a;
+  --zinc-500: #a1a1aa;
+  --zinc-650: #d4d4d8;
+  --zinc-750: #e4e4e7;
+  --zinc-800: #f4f4f5;
+  --zinc-850: #ececef;
+  --zinc-900: #f4f4f5;
+  --zinc-950: #ffffff;
+
+  --red-400: #dc2626;
+  --indigo-400: #4f46e5;
+  --amber-400: #d97706;
+}
+
+.dark {
+  --canvas: #151515;
+  --panel: #1c1c1e;
+  --border-hairline: #2c2c2e;
+  --accent-emerald: #34d399;
+
+  --zinc-50: #fafafa;
+  --zinc-100: #f4f4f5;
+  --zinc-200: #e4e4e7;
+  --zinc-300: #d4d4d8;
+  --zinc-400: #a1a1aa;
+  --zinc-500: #71717a;
+  --zinc-650: #52525b;
+  --zinc-750: #3f3f46;
+  --zinc-800: #27272a;
+  --zinc-850: #202023;
+  --zinc-900: #18181b;
+  --zinc-950: #09090b;
+
+  --red-400: #f87171;
+  --indigo-400: #818cf8;
+  --amber-400: #fbbf24;
+}
+
+/* Base style resets and overrides */
+html {
+  font-size: 17px;
+}
+
+html,
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-zinc-100);
+  font-family: var(--font-sans);
+  font-feature-settings: "calt", "kern", "liga", "ss03";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Custom scrollbar to match theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-canvas);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-zinc-750);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-zinc-650);
+}
+
+/* Hide scrollbar utility for custom editor sync */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

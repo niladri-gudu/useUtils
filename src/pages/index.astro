@@ -1,17 +1,140 @@
 ---
-
+import Layout from '../layouts/Layout.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout 
+  title="useUtils - Premium Local-First Developer Utilities" 
+  description="A suite of local-first developer utilities processed entirely in your browser. Secure, fast, and gorgeous."
+>
+  <!-- Main Navigation Header -->
+  <header class="w-full bg-canvas border-b border-border-hairline h-14 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto h-full px-4 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2 group">
+        <div class="w-6 h-6 rounded bg-accent-emerald flex items-center justify-center font-mono font-black text-black text-sm select-none">
+          u
+        </div>
+        <span class="font-sans font-semibold text-zinc-50 tracking-tight group-hover:text-accent-emerald transition-colors">
+          useUtils
+        </span>
+      </a>
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          class="theme-toggle-btn p-2 rounded-lg bg-zinc-900 border border-border-hairline text-zinc-400 hover:text-zinc-50 hover:bg-zinc-850 transition-all cursor-pointer flex items-center justify-center"
+          aria-label="Toggle dark/light theme"
+        >
+          <!-- Sun Icon (visible in dark mode) -->
+          <svg class="theme-sun-icon w-4 h-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+          </svg>
+          <!-- Moon Icon (visible in light mode) -->
+          <svg class="theme-moon-icon w-4 h-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        </button>
+        <span class="text-[10px] md:text-xs text-zinc-400 font-mono bg-zinc-900 border border-border-hairline rounded px-2.5 py-1">
+          v1.0.0
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Landing Section -->
+  <main class="flex-grow w-full max-w-7xl mx-auto px-4 py-16 flex flex-col items-center justify-center text-center gap-8">
+    <div class="flex flex-col gap-4 max-w-2xl">
+      <div class="mx-auto w-12 h-12 rounded-lg bg-accent-emerald/10 border border-accent-emerald/20 flex items-center justify-center text-accent-emerald">
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+        </svg>
+      </div>
+      <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-zinc-50 font-sans">
+        Local-First Developer Utilities
+      </h1>
+      <p class="text-zinc-400 text-sm md:text-base leading-relaxed">
+        Professional-grade, local-first tools for engineers. Every conversion, decoding, and parsing occurs 100% in your browser sandbox. Your secure keys and tokens never leave your machine.
+      </p>
+    </div>
+
+    <!-- Grid of Tools -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl mt-4">
+      <!-- JWT Decoder Card -->
+      <a href="/tools/jwt-decoder" class="flex flex-col text-left bg-panel border border-border-hairline hover:border-accent-emerald/40 hover:bg-zinc-900/40 rounded-xl p-6 gap-3 transition-all group">
+        <div class="flex items-center justify-between">
+          <div class="text-xs font-mono font-semibold text-accent-emerald uppercase tracking-wider">
+            Utility #01
+          </div>
+          <span class="text-xs text-zinc-500 font-mono group-hover:text-accent-emerald transition-colors">
+            Launch →
+          </span>
+        </div>
+        <h2 class="text-lg font-semibold text-zinc-50 group-hover:text-accent-emerald transition-colors">
+          JWT Decoder
+        </h2>
+        <p class="text-xs text-zinc-400 leading-relaxed font-sans">
+          Decode JSON Web Tokens instantly. Displays live expiration countdown clocks, parses timestamps inline as comments, and highlights Header, Payload, and Signature blocks.
+        </p>
+      </a>
+
+      <!-- JWT Encoder Card -->
+      <a href="/tools/jwt-encoder" class="flex flex-col text-left bg-panel border border-border-hairline hover:border-accent-emerald/40 hover:bg-zinc-900/40 rounded-xl p-6 gap-3 transition-all group">
+        <div class="flex items-center justify-between">
+          <div class="text-xs font-mono font-semibold text-accent-emerald uppercase tracking-wider">
+            Utility #02
+          </div>
+          <span class="text-xs text-zinc-500 font-mono group-hover:text-accent-emerald transition-colors">
+            Launch →
+          </span>
+        </div>
+        <h2 class="text-lg font-semibold text-zinc-50 group-hover:text-accent-emerald transition-colors">
+          JWT Encoder
+        </h2>
+        <p class="text-xs text-zinc-400 leading-relaxed font-sans">
+          Construct and sign JSON Web Tokens locally. Customize the algorithm header, insert custom payload properties, set token expiration timers, and preview output streams.
+        </p>
+      </a>
+
+      <!-- Coming Soon Card -->
+      <div class="flex flex-col text-left bg-panel/30 border border-border-hairline border-dashed rounded-xl p-6 gap-3 select-none">
+        <div class="flex items-center justify-between">
+          <div class="text-xs font-mono font-semibold text-zinc-600 uppercase tracking-wider">
+            Utility #03
+          </div>
+          <span class="text-xs text-zinc-600 font-mono">
+            Pipeline
+          </span>
+        </div>
+        <h2 class="text-lg font-semibold text-zinc-650">
+          Base64 & URL Encoder
+        </h2>
+        <p class="text-xs text-zinc-500 leading-relaxed font-sans">
+          More micro-utilities, formatters, and secure encoders are being developed. Check back soon.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full bg-canvas border-t border-border-hairline mt-auto">
+    <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
+      <div class="flex flex-col md:flex-row items-center gap-2 md:gap-4">
+        <span>© 2026 useUtils.com</span>
+        <span class="hidden md:inline text-zinc-800">•</span>
+        <div class="flex items-center gap-3">
+          <a href="/about" class="hover:text-zinc-350 transition-colors">About Us</a>
+          <span class="text-zinc-800">•</span>
+          <a href="/privacy" class="hover:text-zinc-350 transition-colors">Privacy Policy</a>
+          <span class="text-zinc-800">•</span>
+          <a href="/terms" class="hover:text-zinc-350 transition-colors">Terms & Conditions</a>
+          <span class="text-zinc-800">•</span>
+          <a href="/contact" class="hover:text-zinc-350 transition-colors">Contact Us</a>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="flex items-center gap-1.5 text-accent-emerald">
+          <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
+          Secure Client Sandbox
+        </span>
+      </div>
+    </div>
+  </footer>
+</Layout>

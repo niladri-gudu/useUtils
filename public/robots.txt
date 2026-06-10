@@ -1,0 +1,13 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Disallow indexing of error status pages
+Disallow: /400
+Disallow: /401
+Disallow: /403
+Disallow: /404
+Disallow: /500
+Disallow: /503
+
+Sitemap: https://useutils.com/sitemap.xml

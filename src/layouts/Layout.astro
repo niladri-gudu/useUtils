@@ -1,0 +1,112 @@
+---
+import '../styles/global.css';
+
+interface Props {
+	title: string;
+	description?: string;
+	keywords?: string;
+}
+
+const { 
+	title, 
+	description = "Professional-grade, local-first developer utility tools designed with speed and 100% privacy in mind.",
+	keywords
+} = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://useutils.com');
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content={description} />
+		{keywords && <meta name="keywords" content={keywords} />}
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="shortcut icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+		<meta name="apple-mobile-web-app-title" content="useUtils" />
+		<link rel="manifest" href="/site.webmanifest" />
+		<meta name="generator" content={Astro.generator} />
+		<link rel="canonical" href={canonicalURL} />
+		<title>{title}</title>
+
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-MXFK593BCD" is:inline></script>
+		<script is:inline>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+
+			gtag('config', 'G-MXFK593BCD');
+		</script>
+
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={canonicalURL} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+
+		<!-- Twitter -->
+		<meta property="twitter:card" content="summary_large_image" />
+		<meta property="twitter:url" content={canonicalURL} />
+		<meta property="twitter:title" content={title} />
+		<meta property="twitter:description" content={description} />
+
+		<script is:inline>
+			const getTheme = () => {
+				if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+					return localStorage.getItem('theme');
+				}
+				return 'dark';
+			};
+
+			const setTheme = (theme) => {
+				if (theme === 'light') {
+					document.documentElement.classList.remove('dark');
+				} else {
+					document.documentElement.classList.add('dark');
+				}
+				localStorage.setItem('theme', theme);
+			};
+
+			// Run immediately to prevent FOUC
+			setTheme(getTheme());
+
+			// Bind buttons on mount
+			window.addEventListener('DOMContentLoaded', () => {
+				const updateToggleIcons = () => {
+					const isDark = document.documentElement.classList.contains('dark');
+					const toggleBtns = document.querySelectorAll('.theme-toggle-btn');
+					toggleBtns.forEach(btn => {
+						const sun = btn.querySelector('.theme-sun-icon');
+						const moon = btn.querySelector('.theme-moon-icon');
+						if (isDark) {
+							sun?.classList.remove('hidden');
+							moon?.classList.add('hidden');
+						} else {
+							sun?.classList.add('hidden');
+							moon?.classList.remove('hidden');
+						}
+					});
+				};
+
+				const toggleBtns = document.querySelectorAll('.theme-toggle-btn');
+				toggleBtns.forEach(btn => {
+					btn.addEventListener('click', () => {
+						const current = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+						const next = current === 'dark' ? 'light' : 'dark';
+						setTheme(next);
+						updateToggleIcons();
+					});
+				});
+
+				updateToggleIcons();
+			});
+		</script>
+	</head>
+	<body class="bg-canvas text-zinc-100 min-h-screen flex flex-col selection:bg-emerald-400/20 selection:text-accent-emerald">
+		<slot />
+	</body>
+</html>

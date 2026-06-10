@@ -1,0 +1,12 @@
+{
+  "name": "signaling-server",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev --config wrangler.json",
+    "deploy": "wrangler deploy --config wrangler.json"
+  },
+  "devDependencies": {
+    "wrangler": "^4.99.0"
+  }
+}

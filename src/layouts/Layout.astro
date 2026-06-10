@@ -5,12 +5,14 @@ interface Props {
 	title: string;
 	description?: string;
 	keywords?: string;
+	noindex?: boolean;
 }
 
 const { 
 	title, 
 	description = "Professional-grade, local-first developer utility tools designed with speed and 100% privacy in mind.",
-	keywords
+	keywords,
+	noindex = false
 } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://useutils.com');
 ---
@@ -21,6 +23,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://useutils
 		<meta charset="UTF-8" />
 		<meta name="description" content={description} />
 		{keywords && <meta name="keywords" content={keywords} />}
+		{noindex && <meta name="robots" content="noindex, nofollow" />}
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />

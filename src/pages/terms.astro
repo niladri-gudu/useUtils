@@ -1,5 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 ---
 
 <Layout 
@@ -7,42 +9,12 @@ import Layout from '../layouts/Layout.astro';
   description="Read our terms of service. useUtils is provided as-is, executing completely inside your browser sandbox for maximum privacy."
   keywords="terms of service, useutils terms, developer tools licensing"
 >
-  <!-- Main Navigation Header -->
-  <header class="w-full bg-canvas border-b border-border-hairline h-14 sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto h-full px-4 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-2 group">
-        <div class="w-6 h-6 rounded bg-accent-emerald flex items-center justify-center font-mono font-black text-black text-sm select-none">
-          u
-        </div>
-        <span class="font-sans font-semibold text-zinc-50 tracking-tight group-hover:text-accent-emerald transition-colors">
-          useUtils
-        </span>
-      </a>
-
-      <div class="flex items-center gap-3">
-        <button
-          type="button"
-          class="theme-toggle-btn p-2 rounded-lg bg-zinc-900 border border-border-hairline text-zinc-400 hover:text-zinc-50 hover:bg-zinc-850 transition-all cursor-pointer flex items-center justify-center"
-          aria-label="Toggle dark/light theme"
-        >
-          <svg class="theme-sun-icon w-4.5 h-4.5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
-          </svg>
-          <svg class="theme-moon-icon w-4.5 h-4.5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-          </svg>
-        </button>
-        <span class="text-[10px] md:text-xs text-zinc-400 font-mono bg-zinc-900 border border-border-hairline rounded px-2.5 py-1">
-          v1.0.0
-        </span>
-      </div>
-    </div>
-  </header>
+  <Header />
 
   <!-- Main Body Content -->
-  <main class="flex-grow w-full max-w-4xl mx-auto px-4 py-12 flex flex-col gap-8">
+  <main class="flex-grow w-full max-w-4xl mx-auto px-4 py-12 flex flex-col gap-10">
     <div class="flex flex-col gap-2 pt-2 pb-6 border-b border-border-hairline/60">
-      <h1 class="text-2xl md:text-3xl font-semibold tracking-tight text-zinc-50 font-sans">
+      <h1 class="text-3xl font-semibold tracking-tight text-zinc-50 font-sans">
         Terms & Conditions
       </h1>
       <p class="text-zinc-400 text-sm leading-relaxed font-sans">
@@ -53,74 +25,51 @@ import Layout from '../layouts/Layout.astro';
     <div class="bg-panel border border-border-hairline rounded-xl p-6 md:p-10 shadow-sm flex flex-col gap-8">
       
       <!-- Section 1 -->
-      <div>
-        <h2 class="text-lg font-semibold text-zinc-50 tracking-tight mb-3 flex items-center gap-2">
-          <span class="w-1 h-5 bg-accent-emerald rounded-full"></span>
+      <div class="flex flex-col gap-2">
+        <h2 class="text-base font-semibold text-zinc-50 tracking-tight flex items-center gap-2.5">
+          <span class="w-1.5 h-4 bg-accent-emerald rounded-full"></span>
           1. Terms of Use
         </h2>
-        <p class="text-zinc-400 text-sm leading-relaxed font-sans">
+        <p class="text-zinc-400 text-xs md:text-sm leading-relaxed font-sans pl-4">
           By accessing and using <strong class="text-zinc-200">useUtils</strong>, you agree to comply with and be bound by these terms. This site is provided for educational and utility purposes to assist software developers in encoding, decoding, formatting, and analyzing structural payloads.
         </p>
       </div>
 
       <!-- Section 2 -->
-      <div>
-        <h2 class="text-lg font-semibold text-zinc-50 tracking-tight mb-3 flex items-center gap-2">
-          <span class="w-1 h-5 bg-accent-emerald rounded-full"></span>
+      <div class="flex flex-col gap-2">
+        <h2 class="text-base font-semibold text-zinc-50 tracking-tight flex items-center gap-2.5">
+          <span class="w-1.5 h-4 bg-accent-emerald rounded-full"></span>
           2. Client-Side Execution & Security
         </h2>
-        <p class="text-zinc-400 text-sm leading-relaxed font-sans">
+        <p class="text-zinc-400 text-xs md:text-sm leading-relaxed font-sans pl-4">
           All utilities on this site run fully inside the client's browser sandbox using local JavaScript. You acknowledge that you are responsible for maintaining the security of your own local computer, operating system, and browser cache when processing sensitive keys, secrets, or certificates.
         </p>
       </div>
 
       <!-- Section 3 -->
-      <div>
-        <h2 class="text-lg font-semibold text-zinc-50 tracking-tight mb-3 flex items-center gap-2">
-          <span class="w-1 h-5 bg-accent-emerald rounded-full"></span>
+      <div class="flex flex-col gap-2">
+        <h2 class="text-base font-semibold text-zinc-50 tracking-tight flex items-center gap-2.5">
+          <span class="w-1.5 h-4 bg-accent-emerald rounded-full"></span>
           3. Disclaimer of Warranty
         </h2>
-        <p class="text-zinc-400 text-sm leading-relaxed font-sans">
+        <p class="text-zinc-400 text-xs md:text-sm leading-relaxed font-sans pl-4 font-mono text-[11px] md:text-xs bg-zinc-900/40 p-4 border border-border-hairline rounded-lg uppercase">
           THE UTILITIES AND CONTENT ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE UTILITIES OR THE USE OR OTHER DEALINGS IN THE UTILITIES.
         </p>
       </div>
 
       <!-- Section 4 -->
-      <div>
-        <h2 class="text-lg font-semibold text-zinc-50 tracking-tight mb-3 flex items-center gap-2">
-          <span class="w-1 h-5 bg-accent-emerald rounded-full"></span>
+      <div class="flex flex-col gap-2">
+        <h2 class="text-base font-semibold text-zinc-50 tracking-tight flex items-center gap-2.5">
+          <span class="w-1.5 h-4 bg-accent-emerald rounded-full"></span>
           4. Open Source & Contributions
         </h2>
-        <p class="text-zinc-400 text-sm leading-relaxed font-sans">
-          This project is built using modern web standards. We encourage checking the source files to verify execution transparency and audit the local-first execution.
+        <p class="text-zinc-400 text-xs md:text-sm leading-relaxed font-sans pl-4">
+          This project is built using modern web standards. We encourage checking the source files in our repository to verify execution transparency and audit the local-first execution.
         </p>
       </div>
 
     </div>
   </main>
 
-  <!-- Footer Section -->
-  <footer class="w-full bg-canvas border-t border-border-hairline mt-auto">
-    <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
-      <div class="flex flex-col md:flex-row items-center gap-2 md:gap-4">
-        <span>© 2026 useUtils.com</span>
-        <span class="hidden md:inline text-zinc-800">•</span>
-        <div class="flex items-center gap-3">
-          <a href="/about" class="hover:text-zinc-350 transition-colors">About Us</a>
-          <span class="text-zinc-800">•</span>
-          <a href="/privacy" class="hover:text-zinc-350 transition-colors">Privacy Policy</a>
-          <span class="text-zinc-800">•</span>
-          <a href="/terms" class="hover:text-zinc-350 text-accent-emerald transition-colors">Terms & Conditions</a>
-          <span class="text-zinc-800">•</span>
-          <a href="/contact" class="hover:text-zinc-350 transition-colors">Contact Us</a>
-        </div>
-      </div>
-      <div class="flex items-center gap-4 font-mono text-[10px]">
-        <span class="flex items-center gap-1.5 text-accent-emerald">
-          <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
-          Processed locally in browser. Zero server transmission.
-        </span>
-      </div>
-    </div>
-  </footer>
+  <Footer />
 </Layout>

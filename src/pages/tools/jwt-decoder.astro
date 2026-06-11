@@ -9,28 +9,44 @@ const tabs = [
 
 const faqs = [
   {
-    question: "Can I decode a JWT without a secret key?",
-    answer: "Yes. Since standard JSON Web Tokens are only Base64Url-encoded and not encrypted, you can decode the Header and Payload to read their contents without needing a secret key or public key. However, you cannot verify the authenticity of the token or its signature without the key."
+    question: "How do I decode a JWT token?",
+    answer: "Because JSON Web Tokens are Base64Url-encoded rather than encrypted, you can decode the Header and Payload to read their contents using a standard Base64 decoder. Simply split the token string at the dot (<code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">.</code>) characters and decode the second segment (the payload) from Base64Url using the browser's native <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">atob</code> API."
   },
   {
-    question: "Does decoding a token verify its signature?",
-    answer: "No. Decoding simply translates the token from a Base64Url representation back into plaintext JSON. To verify the signature, you must supply the original secret key (for symmetric encryption like HS256) or the public key (for asymmetric encryption like RS256) to confirm the token has not been tampered with."
+    question: "Can I decode a JWT without a secret key?",
+    answer: "Yes. Since standard JSON Web Tokens are only Base64Url-encoded and not encrypted, you can decode the Header and Payload to read their contents without needing a secret key or public key. However, you cannot verify the authenticity of the token or its signature without the correct key."
+  },
+  {
+    question: "What is the difference between decoding and verifying a JWT?",
+    answer: "Decoding simply translates the token from a Base64Url representation back into plaintext JSON. Verifying checks the signature using the original secret key (or public key) to confirm the token has not been tampered with, and validates registered claims like the expiration time (<code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">exp</code>)."
+  },
+  {
+    question: "Can I trust a decoded JWT?",
+    answer: "No. You should never trust the claims in a JWT until you have successfully verified its signature. Without verification, a user or intermediary could easily modify claims (such as user roles or expiration times) and re-encode the token."
+  },
+  {
+    question: "Why is my decoded JWT showing the year 1970 for expiration?",
+    answer: "This occurs due to a mismatch between seconds and milliseconds. In the JWT specification, timestamps like <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">exp</code>, <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">iat</code>, and <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">nbf</code> must be represented in Unix time as **seconds**. If your backend generated the token using millisecond timestamps (e.g., JavaScript's <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">Date.now()</code>), verification libraries will divide it incorrectly, showing a date close to the Unix epoch in 1970."
+  },
+  {
+    question: "What are the three parts of a JWT?",
+    answer: "A standard JWT consists of three parts separated by dots (<code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">.</code>): a <strong>Header</strong> (specifying the signing algorithm and token type), a <strong>Payload</strong> (containing the claims or data), and a <strong>Signature</strong> (used to verify that the sender is who they say they are and that the token was not modified)."
+  },
+  {
+    question: "Is a JWT payload encrypted?",
+    answer: "No, a standard JWT payload is encoded, not encrypted. It is simple Base64Url encoding, which is easily readable by anyone. Do not store sensitive information like passwords, PINs, or private API keys in the payload unless you encrypt the token using the JWE (JSON Web Encryption) standard."
+  },
+  {
+    question: "What is a 'Claim' in a JWT?",
+    answer: "Claims are pieces of information asserted about a subject (usually the user) represented as key-value pairs in the payload. They are divided into <strong>registered claims</strong> (predefined metadata like <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">sub</code>, <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">iss</code>, <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">exp</code>), <strong>public claims</strong>, and <strong>private claims</strong> (custom application-specific properties like user roles)."
+  },
+  {
+    question: "How do I read a JWT payload in JavaScript?",
+    answer: "You can read a JWT payload without external libraries by splitting the token string at the dot, replacing URL-safe base64 characters, and parsing using the browser's native Base64 decoding:<br /><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto whitespace-pre\">const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));</code>"
   },
   {
     question: "What is a JWT debugger used for?",
-    answer: "A <strong class=\"text-zinc-300\">jwt debugger</strong> is used by software developers to inspect JWT claims, verify signature logic, debug token structure during development, and audit authentication workflows. It helps ensure that session tokens, OAuth scopes, and expiration windows are properly configured and securely signed."
-  },
-  {
-    question: "What is the difference between JWT, JWS, and JWE?",
-    answer: "A JWT (JSON Web Token) is the general standard representing claims. JWS (JSON Web Signature) represents a cryptographically signed token (which is the classic three-part token separated by dots that developers usually interact with). JWE (JSON Web Encryption) represents an encrypted token (which consists of five dot-separated parts) where the payload is hidden from third parties entirely."
-  },
-  {
-    question: "How do I decode a JWT payload dynamically in client-side JavaScript?",
-    answer: "You can easily decode a token manually in JavaScript without third-party dependencies by splitting the token string at the dot (<code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">.</code>) characters and decoding the second segment (the payload) from Base64Url using the browser's native <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">atob</code> function:<br /><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto whitespace-pre\">const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));</code>"
-  },
-  {
-    question: "Why is the expiration date in my decoded JWT showing the year 1970?",
-    answer: "This occurs due to a mismatch between seconds and milliseconds. In the JWT specification, timestamps like <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">exp</code>, <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">iat</code>, and <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">nbf</code> must be represented in Unix time as **seconds**. If your backend generated the token using millisecond timestamps (e.g. directly passing JavaScript's <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">Date.now()</code>), verification libraries and decoders will divide it incorrectly, showing a date very close to the Unix epoch in 1970."
+    answer: "A <strong>JWT debugger</strong> (or inspector) is used by developers to inspect the contents of JSON Web Tokens during development. It allows you to verify that expiration times are set correctly, custom scopes and roles are present, and signature verification logic operates as expected without writing temporary testing code."
   }
 ];
 ---

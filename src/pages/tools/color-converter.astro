@@ -1,0 +1,126 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { ColorConverter } from '../../components/ColorConverter';
+
+const faqs = [
+  {
+    question: "How do I convert HEX to RGB?",
+    answer: "To convert a HEX color code to RGB, separate the six-digit hex string into three pairs (e.g., #FF0000 becomes FF, 00, 00) representing Red, Green, and Blue channels. Then, convert each base-16 pair into a base-10 decimal number between 0 and 255. For example, FF in base-10 is 255."
+  },
+  {
+    question: "How do I convert RGB to HEX?",
+    answer: "To convert RGB to HEX, take each decimal value of Red, Green, and Blue (from 0 to 255) and convert it into a two-digit hexadecimal representation. Then, concatenate the three two-digit hex values in order (R, G, B) to form a 6-character HEX code (e.g., RGB 255, 0, 0 becomes #FF0000)."
+  },
+  {
+    question: "What is the difference between HEX and RGB?",
+    answer: "Both HEX and RGB represent colors using the additive Red, Green, and Blue color model. The main difference is the format: RGB uses decimal values from 0 to 255 (e.g., rgb(52, 211, 153)), whereas HEX uses base-16 hexadecimal notation (e.g., #34d399). HEX is widely preferred in CSS for its compactness."
+  },
+  {
+    question: "How do I convert RGB to HSL?",
+    answer: "First, divide the RGB values by 255 to normalize them to a 0–1 range. Find the maximum (max) and minimum (min) values of these channels. Lightness (L) is calculated as <code>(max + min) / 2</code>. Saturation (S) and Hue (H) are then calculated using relative formulas based on the difference (chroma) between the max and min channels."
+  },
+  {
+    question: "How do I convert HSL to RGB?",
+    answer: "Convert Hue, Saturation, and Lightness back to Red, Green, and Blue by first calculating temporary values to determine the chroma (color intensity) and matching value. Use the Hue angle to project the values onto one of six sectors of the color circle to retrieve the fractional RGB values, then multiply them by 255 to get standard 0–255 values."
+  },
+  {
+    question: "What does HSL stand for in color?",
+    answer: "HSL stands for <strong>Hue, Saturation, and Lightness</strong>. It is a cylindrical-coordinate representation of colors that describes them in a way that is much closer to how the human eye perceives color properties compared to standard RGB."
+  },
+  {
+    question: "Is HSL better than RGB for web design?",
+    answer: "Yes, HSL is highly preferred by developers and designers because it is intuitive. Changing the saturation or lightness of a color (e.g., for creating hover states or button borders) requires adjusting only one number in HSL (the S or L value), whereas in RGB or HEX, you would have to mathematically recalculate all three color values."
+  },
+  {
+    question: "What does HEX stand for in colors?",
+    answer: "HEX stands for <strong>hexadecimal</strong>, which is a base-16 numerical system. In web development, HEX color codes are used to represent colors using a combination of numbers (0–9) and letters (A–F) for Red, Green, and Blue values."
+  },
+  {
+    question: "How do I convert RGBA to HSLA?",
+    answer: "Convert RGBA (Red, Green, Blue, Alpha) to HSLA (Hue, Saturation, Lightness, Alpha) by applying the standard RGB-to-HSL conversion formula to the color channels, while keeping the Alpha (opacity) value, which ranges from 0.0 (fully transparent) to 1.0 (fully opaque), unchanged."
+  },
+  {
+    question: "Can you convert HEX to HSL directly?",
+    answer: "Yes, though the direct conversion requires first converting the HEX code characters into their decimal Red, Green, and Blue (RGB) equivalents, and then applying the standard RGB-to-HSL formulas to compute the Hue, Saturation, and Lightness values."
+  }
+];
+---
+
+<ToolPageLayout
+  title="RGB ↔ HEX ↔ HSL Converter: Instant Color Code Conversion"
+  description="Convert colors between HEX, HEXA, RGB, RGBA, HSL, and HSLA formats instantly. Features a live color preview square, native color picker, WCAG contrast analyzer, and harmonious palette generator."
+  keywords="color converter, rgb to hex, hex to rgb, hex to hsl, rgb to hsl, hsl to rgb, hsl to hex, color code converter, wcag contrast checker, color palette generator"
+  toolTitle="Color Converter"
+  toolDescription="Convert and fine-tune color codes in real-time. Features interactive RGB and HSL gradient sliders, real-time smart syntax detection, accessibility contrast check, and color harmony palettes."
+  faqs={faqs}
+>
+  <ColorConverter client:load />
+
+  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the Color Code Converter
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our color code converter simplifies color transformation by detecting color strings automatically. You can paste or type color codes in the <strong class="text-zinc-200">smart search input box</strong>, click the native color picker to sample a color, or drag the sliders manually.
+      </p>
+      <p class="leading-relaxed">
+        As soon as a valid color matches, the coordinates are synced instantly across all input formats. Click the copy buttons or use standard developer keyboard shortcuts (<kbd class="font-mono bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">⌘ C</kbd>) to grab any output format.
+      </p>
+    </div>
+
+    <!-- Section: Accessibility -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Ensuring WCAG Color Contrast Compliance
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Web accessibility requires that text remains readable against its background. The integrated <strong class="text-zinc-200">WCAG Contrast Checker</strong> computes the relative luminance of your chosen color in real-time.
+      </p>
+      <p class="leading-relaxed">
+        It automatically tests the color against pure white and pure black text, showing exact contrast ratios and indicating whether they pass Level AA (minimum contrast of 4.5:1) or Level AAA (enhanced contrast of 7:1) guidelines. This is indispensable for selecting readable button states, body text, or navigation links.
+      </p>
+    </div>
+
+    <!-- Section: Color Harmonies -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Exploring Harmonious Color Palettes
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Finding matching colors is easier with our automatic palette generator. The tool calculates four classic color harmonies based on your current coordinates:
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Complementary</strong>
+          <p class="text-xs leading-relaxed">
+            The color directly opposite on the HSL color wheel (shifted 180°). Creates maximum contrast and high-impact visual interest.
+          </p>
+        </div>
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Analogous</strong>
+          <p class="text-xs leading-relaxed">
+            Colors sitting next to each other on the color wheel (shifted +/- 30°). Creates peaceful, comfortable, and unified designs.
+          </p>
+        </div>
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Triadic</strong>
+          <p class="text-xs leading-relaxed">
+            Three colors evenly spaced around the wheel (shifted 120° and 240°). Offers vibrant, balanced visual contrast.
+          </p>
+        </div>
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Monochromatic</strong>
+          <p class="text-xs leading-relaxed">
+            Shades and tints of the same hue, adjusted by lightness. Ideal for constructing clean, minimalist UI interfaces or gradients.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ToolPageLayout>

@@ -8,44 +8,44 @@ const { roomId } = Astro.params;
 
 const faqs = [
   {
-    question: "Where are my files stored during transfer?",
-    answer: "Nowhere but your own devices. The files are not uploaded to any server. They are read into the sender's browser memory as chunks, sent over a direct encrypted WebRTC link, and compiled into memory by the receiver's browser."
+    question: "What is P2P file sharing and how does it work?",
+    answer: "Peer-to-Peer (P2P) file sharing is a decentralized networking technology that allows devices to share digital files directly with each other without uploading them to a central cloud server. In a WebRTC-based P2P connection, the sender's browser reads the file and streams it in binary chunks directly to the receiver's browser, bypassing intermediate storage entirely."
   },
   {
-    question: "Can I close the sender browser tab?",
-    answer: "No. Because the file transfer is active peer-to-peer, closing either the sender or receiver tab will terminate the connection immediately. Both browsers must remain active and open until the transaction reaches 100% completion."
+    question: "What is WebRTC file transfer?",
+    answer: "WebRTC (Web Real-Time Communication) is an open-source standard that enables real-time peer-to-peer data channels between browsers. In file sharing, WebRTC uses the <code>RTCDataChannel</code> API to establish a direct, bidirectional binary data tunnel, allowing files to be sent directly from one device to another without installing any external software or browser plugins."
   },
   {
-    question: "Why is the connection failing or stuck at \"Connecting\"?",
-    answer: "WebRTC requires establishing a direct IP-to-IP path. If both devices are behind symmetric NAT routers (very common in corporate networks or guest Wi-Fi networks), they cannot discover a direct route without a TURN relay. If this happens, try switching both devices to the same local network, or use a cellular hotspot to bypass strict firewall configurations."
-  },
-  {
-    question: "Can I transfer multiple files at once?",
-    answer: "Currently, our P2P sharing utility supports transferring one file at a time per room connection. If you need to share multiple files, we recommend compiling them into a single archive format (like `.zip`, `.tar.gz`, or `.rar`) on your machine before dropping it into the workspace."
+    question: "Is WebRTC file transfer secure?",
+    answer: "Yes, WebRTC is highly secure. It mandates end-to-end encryption for all media and data channels using Datagram Transport Layer Security (DTLS) and Secure Real-time Transport Protocol (SRTP). Because the file data is streamed directly between your devices and never stored on intermediate servers, it remains completely protected from third-party interception."
   },
   {
     question: "What is the maximum file size limit for WebRTC transfers?",
-    answer: "Technically, there is no hard file size limit since the data is streamed as continuous binary chunks. However, because modern browsers store the incoming chunks in the browser's temporary memory (RAM) buffer, transfers are limited by the receiver's available system memory. For a smooth experience, we recommend files up to 1GB."
+    answer: "Technically, WebRTC has no hard file size limits because data is sent as a continuous stream of binary packets. However, because browsers compile the incoming packets in the receiver's temporary system memory (RAM) buffer before saving, transfers are limited by the receiver's available RAM. For the best experience, we recommend files up to 1GB."
   },
   {
-    question: "Is 1-to-many P2P file sharing supported?",
-    answer: "Yes! Our tool fully supports 1-to-many sharing. A single sender can generate a room and share the link with multiple receivers. The sender's browser will open independent WebRTC peer connections with each receiver, streaming the file to them simultaneously. Each receiver's transfer runs at its own optimal speed based on their network capability."
+    question: "Where are my files stored during a P2P transfer?",
+    answer: "Files are not stored anywhere on the internet. They reside only on the sender's and receiver's local devices. During transfer, the file is read into the sender browser's memory sandbox, transmitted directly over the encrypted WebRTC connection, and written directly into the receiver's browser memory before being downloaded to their local storage."
   },
   {
-    question: "How is the file transfer speed determined in WebRTC?",
-    answer: "Transfer speed depends entirely on the network bandwidth of both the sender and the receiver. Because WebRTC establishes a direct path, if both devices are on the same local network (LAN) or Wi-Fi, the speeds can reach the maximum rate of your local hardware (often 100 Mbps to 1 Gbps+), completely bypassing external internet speeds. If transferring over the internet (WAN), the speed is capped by the sender's upload bandwidth and the receiver's download bandwidth."
+    question: "Can I close the browser tab during a P2P transfer?",
+    answer: "No. Since the file transfer is active peer-to-peer and streams directly between the two browser sandboxes, closing either the sender or receiver tab will terminate the connection immediately. Both browsers must remain open and active until the transfer reaches 100% completion."
   },
   {
-    question: "Does this tool require active internet connection once the transfer starts?",
-    answer: "Yes and no. The initial handshake (exchanging SDP profiles and ICE candidate routes) requires connection to our signaling server, which runs on the internet. Once the browsers establish the direct peer-to-peer WebRTC connection, all file data flows directly between them. If both devices are in the same local network, you could theoretically unplug the external internet connection, and the local P2P transfer will continue uninterrupted."
+    question: "Why is my WebRTC connection failing or stuck at 'Connecting'?",
+    answer: "This is usually caused by firewalls or strict symmetric NAT configurations (common on guest Wi-Fi networks or corporate office networks) blocking direct IP routing. When this happens, browsers cannot establish a direct WebRTC connection. Switching both devices to a standard cellular hotspot or the same local Wi-Fi network will usually resolve this."
   },
   {
-    question: "Is my data safe from network eavesdroppers or ISPs?",
-    answer: "Absolutely. WebRTC uses mandatory DTLS (Datagram Transport Layer Security) and SRTP (Secure Real-time Transport Protocol) encryption for all data channels. This means the file streams are encrypted end-to-end with keys generated dynamically during the initial handshake. Not even our signaling server, your network administrator, or your ISP can inspect, read, or tamper with the payloads in transit."
+    question: "Can I resume a paused or interrupted WebRTC file transfer?",
+    answer: "No. Because our P2P file share tool works entirely in-memory in the browser for maximum privacy and does not write temporary files to a server, we do not support transfer resumption. If the connection drops, both parties must re-establish the connection and restart the transfer from the beginning."
   },
   {
-    question: "Can I resume a paused or interrupted transfer?",
-    answer: "Since our P2P share tool operates entirely in the browser memory without any server storage, it does not support connection resumption or checkpointing. If the connection drops or a browser tab is accidentally closed, the transfer state is cleared from the browser's temporary memory. You will need to re-open the room link and restart the file transfer from the beginning."
+    question: "Is WebRTC file transfer faster than cloud uploads?",
+    answer: "Yes. Traditional cloud storage requires you to upload the file to a server at your upload speed, and then the recipient downloads it at their download speed, doubling the time. WebRTC starts transferring immediately, and if both devices are on the same local Wi-Fi or LAN, speeds can reach the maximum limits of your local hardware, bypassing internet upload caps."
+  },
+  {
+    question: "Does WebRTC file sharing work without an internet connection?",
+    answer: "WebRTC requires an active internet connection initially to communicate with a temporary signaling server to coordinates the initial handshake (exchanging SDP connection offers and ICE network candidates). Once the direct peer-to-peer connection is established, the transfer runs locally, meaning it will continue even if external internet access is lost, provided the devices remain on the same local network."
   }
 ];
 ---

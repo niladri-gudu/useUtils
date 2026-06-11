@@ -1,43 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 ---
 
 <Layout 
   title="useUtils - Premium Local-First Developer Utilities" 
   description="A suite of local-first developer utilities processed entirely in your browser. Secure, fast, and gorgeous."
 >
-  <!-- Main Navigation Header -->
-  <header class="w-full bg-canvas border-b border-border-hairline h-14 sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto h-full px-4 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-2 group">
-        <div class="w-6 h-6 rounded bg-accent-emerald flex items-center justify-center font-mono font-black text-black text-sm select-none">
-          u
-        </div>
-        <span class="font-sans font-semibold text-zinc-50 tracking-tight group-hover:text-accent-emerald transition-colors">
-          useUtils
-        </span>
-      </a>
-      <div class="flex items-center gap-3">
-        <button
-          type="button"
-          class="theme-toggle-btn p-2 rounded-lg bg-zinc-900 border border-border-hairline text-zinc-400 hover:text-zinc-50 hover:bg-zinc-850 transition-all cursor-pointer flex items-center justify-center"
-          aria-label="Toggle dark/light theme"
-        >
-          <!-- Sun Icon (visible in dark mode) -->
-          <svg class="theme-sun-icon w-4 h-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
-          </svg>
-          <!-- Moon Icon (visible in light mode) -->
-          <svg class="theme-moon-icon w-4 h-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-          </svg>
-        </button>
-        <span class="text-[10px] md:text-xs text-zinc-400 font-mono bg-zinc-900 border border-border-hairline rounded px-2.5 py-1">
-          v1.0.0
-        </span>
-      </div>
-    </div>
-  </header>
+  <Header />
 
   <!-- Hero Landing Section -->
   <main class="flex-grow w-full max-w-7xl mx-auto px-4 py-16 flex flex-col items-center justify-center text-center gap-8">
@@ -93,8 +64,8 @@ import Layout from '../layouts/Layout.astro';
         </p>
       </a>
 
-      <!-- P2P File Share Card (Hidden until signaling server is deployed)
-      <a href="/tools/p2p-share" class="flex flex-col text-left bg-panel border border-border-hairline hover:border-accent-emerald/40 hover:bg-zinc-900/40 rounded-xl p-6 gap-3 transition-all group">
+      <!-- Color Converter Card -->
+      <a href="/tools/color-converter" class="flex flex-col text-left bg-panel border border-border-hairline hover:border-accent-emerald/40 hover:bg-zinc-900/40 rounded-xl p-6 gap-3 transition-all group">
         <div class="flex items-center justify-between">
           <div class="text-xs font-mono font-semibold text-accent-emerald uppercase tracking-wider">
             Utility #03
@@ -104,19 +75,18 @@ import Layout from '../layouts/Layout.astro';
           </span>
         </div>
         <h2 class="text-lg font-semibold text-zinc-50 group-hover:text-accent-emerald transition-colors">
-          P2P File Share
+          Color Converter
         </h2>
         <p class="text-xs text-zinc-400 leading-relaxed font-sans">
-          Share files directly and securely using WebRTC. Streams data browser-to-browser with 100% privacy, multi-peer tracking, transfer ETAs, and zero server storage.
+          Convert colors between HEX, RGB, and HSL formats instantly. Includes interactive gradient sliders, accessibility WCAG contrast tests, and custom palette generation.
         </p>
       </a>
-      -->
 
       <!-- Coming Soon Card -->
       <div class="flex flex-col text-left bg-panel/30 border border-border-hairline border-dashed rounded-xl p-6 gap-3 select-none">
         <div class="flex items-center justify-between">
           <div class="text-xs font-mono font-semibold text-zinc-600 uppercase tracking-wider">
-            Utility #03
+            Utility #04
           </div>
           <span class="text-xs text-zinc-600 font-mono">
             Pipeline
@@ -132,28 +102,5 @@ import Layout from '../layouts/Layout.astro';
     </div>
   </main>
 
-  <!-- Footer -->
-  <footer class="w-full bg-canvas border-t border-border-hairline mt-auto">
-    <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
-      <div class="flex flex-col md:flex-row items-center gap-2 md:gap-4">
-        <span>© 2026 useUtils.com</span>
-        <span class="hidden md:inline text-zinc-800">•</span>
-        <div class="flex items-center gap-3">
-          <a href="/about" class="hover:text-zinc-350 transition-colors">About Us</a>
-          <span class="text-zinc-800">•</span>
-          <a href="/privacy" class="hover:text-zinc-350 transition-colors">Privacy Policy</a>
-          <span class="text-zinc-800">•</span>
-          <a href="/terms" class="hover:text-zinc-350 transition-colors">Terms & Conditions</a>
-          <span class="text-zinc-800">•</span>
-          <a href="/contact" class="hover:text-zinc-350 transition-colors">Contact Us</a>
-        </div>
-      </div>
-      <div class="flex items-center gap-4">
-        <span class="flex items-center gap-1.5 text-accent-emerald">
-          <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
-          Secure Client Sandbox
-        </span>
-      </div>
-    </div>
-  </footer>
+  <Footer />
 </Layout>

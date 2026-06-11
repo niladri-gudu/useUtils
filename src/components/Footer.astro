@@ -1,0 +1,58 @@
+---
+const pathname = Astro.url.pathname;
+
+const isLinkActive = (path: string) => {
+  if (path === '/') return pathname === '/';
+  return pathname === path || pathname.startsWith(path + '/');
+};
+---
+
+<footer class="w-full bg-canvas border-t border-border-hairline mt-auto">
+  <div class="max-w-7xl mx-auto px-4 py-8 flex flex-col md:flex-row items-center justify-between gap-6 text-xs">
+    <!-- Copyright & Main Navigation Links -->
+    <div class="flex flex-col md:flex-row items-center gap-3 md:gap-6 text-zinc-500">
+      <span>© 2026 useUtils.com</span>
+      <span class="hidden md:inline text-zinc-800">•</span>
+      <nav class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 md:gap-5" aria-label="Footer Navigation">
+        <a 
+          href="/about" 
+          class={`transition-colors duration-150 hover:text-accent-emerald ${isLinkActive('/about') ? 'text-accent-emerald font-semibold' : 'text-zinc-400'}`}
+        >
+          About Us
+        </a>
+        <span class="hidden sm:inline text-zinc-850 select-none">•</span>
+        <a 
+          href="/privacy" 
+          class={`transition-colors duration-150 hover:text-accent-emerald ${isLinkActive('/privacy') ? 'text-accent-emerald font-semibold' : 'text-zinc-400'}`}
+        >
+          Privacy Policy
+        </a>
+        <span class="hidden sm:inline text-zinc-850 select-none">•</span>
+        <a 
+          href="/terms" 
+          class={`transition-colors duration-150 hover:text-accent-emerald ${isLinkActive('/terms') ? 'text-accent-emerald font-semibold' : 'text-zinc-400'}`}
+        >
+          Terms & Conditions
+        </a>
+        <span class="hidden sm:inline text-zinc-850 select-none">•</span>
+        <a 
+          href="/contact" 
+          class={`transition-colors duration-150 hover:text-accent-emerald ${isLinkActive('/contact') ? 'text-accent-emerald font-semibold' : 'text-zinc-400'}`}
+        >
+          Contact Us
+        </a>
+      </nav>
+    </div>
+
+    <!-- Security Pill -->
+    <div class="flex items-center gap-4">
+      <span class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900 border border-border-hairline font-mono text-[10px] text-zinc-400">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
+        </span>
+        Secure Client Sandbox
+      </span>
+    </div>
+  </div>
+</footer>

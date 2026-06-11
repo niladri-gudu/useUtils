@@ -9,28 +9,44 @@ const tabs = [
 
 const faqs = [
   {
-    question: "Is it safe to encode JWTs online?",
-    answer: "Yes, it is completely safe when using our <strong class=\"text-zinc-350\">online jwt encoder</strong>. Unlike other web utilities that transmit your inputs to a remote server, our tool processes all operations locally in your browser. Your secret keys and private payloads never leave your machine."
+    question: "How do I generate a JWT token?",
+    answer: "To generate a JWT, format your Header and Payload as JSON objects, encode each separately in Base64Url format, and join them with a dot (<code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">header.payload</code>). Then, sign this combined string using a cryptographic algorithm (e.g., HS256) and a secret or private key, Base64Url-encode the resulting signature, and append it with a dot (<code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">header.payload.signature</code>)."
   },
   {
-    question: "What is a JWT secret key?",
-    answer: "A JWT secret key is a secret string used by symmetric signing algorithms (like HS256) to sign and verify JSON Web Tokens. The security of the token depends entirely on keeping this key secret. If an attacker gains access to the secret key, they can forge valid tokens and bypass authentication checks."
+    question: "What is a JWT secret key and how do I create it?",
+    answer: "A JWT secret key is a private string used in symmetric signing algorithms (like HS256) to sign and verify JSON Web Tokens. It should be a cryptographically secure, high-entropy random string to prevent brute-force attacks. You can generate a strong key using the terminal command: <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">openssl rand -base64 32</code>."
   },
   {
-    question: "What is the difference between HS256 and RS256 encoding?",
-    answer: "HS256 (HMAC with SHA-256) is a symmetric algorithm, meaning a single shared secret key is used to both sign and verify the token. RS256 (RSA Signature with SHA-256) is an asymmetric algorithm, which utilizes a private key to sign the token and a corresponding public key to verify it. RS256 is highly recommended for multi-service environments where verification keys are distributed publicly."
+    question: "Is it safe to encode a JWT online?",
+    answer: "Yes, it is completely safe when using our online JWT encoder. Unlike other tools that transmit payloads and keys to remote servers, our encoder runs entirely inside your browser sandbox using client-side JavaScript. Your secret keys and private claims never leave your device."
   },
   {
-    question: "How do I encode a JWT with an expiration time (exp claim)?",
-    answer: "In a JSON Web Token, the expiration time is specified by the <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">exp</code> claim in the payload. It must be formatted as a Unix timestamp (in seconds, not milliseconds). For example, to set the token to expire 1 hour from now, you calculate: <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">Math.floor(Date.now() / 1000) + 3600</code>."
+    question: "Should I use HMAC (HS256) or RSA (RS256) for signing JWTs?",
+    answer: "HS256 is a symmetric algorithm using a shared secret key, meaning both the service generating the token and the service verifying it must share the exact same secret. RS256 is asymmetric, using a private key to sign the token and a public key to verify it. RS256 is preferred for API gateways and distributed microservices because verification systems do not need access to the private signing key."
   },
   {
-    question: "What cryptographic algorithms are supported by the online JWT encoder?",
-    answer: "Our tool supports a wide array of signing algorithms. This includes HMAC symmetric algorithms (<code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">HS256</code>, <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">HS384</code>, <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">HS512</code>) which use a shared secret key, and RSA/ECDSA asymmetric algorithms (<code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">RS256</code>, <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">RS384</code>, <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">RS512</code>, <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">ES256</code>, <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">ES384</code>, <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">ES512</code>) which require a private signing key."
+    question: "How do I set an expiration time when generating a JWT?",
+    answer: "To set an expiration time, include the <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">exp</code> (expiration) claim in the Payload JSON. The value must be formatted as a Unix timestamp in **seconds** (not milliseconds). For example, to expire a token in 1 hour, set the value to: <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">Math.floor(Date.now() / 1000) + 3600</code>."
   },
   {
-    question: "Can a JWT be edited after it has been encoded and signed?",
-    answer: "No. Once a JWT is signed and encoded, any modification to the header or payload will invalidate the signature. Because the signature is calculated based on the encoded header and payload, changing even a single character in the claims will result in signature verification failures at your API gateway or backend server. To make edits, you must update the JSON and generate a new token."
+    question: "What happens if I change the payload of an encoded JWT?",
+    answer: "If you modify any character in the Header or Payload of an encoded JWT, the cryptographic signature will immediately become invalid. Security libraries and API gateways verifying the token will reject it as tampered. To make changes, you must edit the JSON payload and generate a new token with a new signature."
+  },
+  {
+    question: "What is the difference between HS256, HS384, and HS512?",
+    answer: "These are symmetric signing algorithms using Hash-based Message Authentication Codes (HMAC) combined with SHA-2 hashing functions. The difference lies in the hashing bit strength: HS256 uses SHA-256, HS384 uses SHA-384, and HS512 uses SHA-512. Higher strengths provide larger keys and greater cryptographic security."
+  },
+  {
+    question: "Can I use a public/private key pair to sign a JWT?",
+    answer: "Yes, by using asymmetric algorithms like RS256, RS512, or ES256. The token issuer signs the token using a secret private key, while client applications or other microservices verify the signature using the matching public key."
+  },
+  {
+    question: "Is a JWT signature secure?",
+    answer: "Yes. The signature guarantees the integrity of the token data. As long as your signing key remains secure and you use a secure algorithm (avoiding the algorithm value <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">\"none\"</code>), the signature prevents unauthorized modifications to the token content."
+  },
+  {
+    question: "How do I generate a JWT in Node.js?",
+    answer: "In Node.js, you can generate a token using the popular <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">jsonwebtoken</code> library. Import it and call the sign method with a payload, key, and options:<br /><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto whitespace-pre\">const token = jwt.sign({ userId: 123 }, 'secret-key', { expiresIn: '1h' });</code>"
   }
 ];
 ---

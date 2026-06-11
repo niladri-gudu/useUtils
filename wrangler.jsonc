@@ -1,6 +1,7 @@
 {
 	"name": "useutils",
 	"preview_urls": false,
+	"workers_dev": false,
 	"main": "@astrojs/cloudflare/entrypoints/server",
 	"compatibility_date": "2026-06-10",
 	"compatibility_flags": [

@@ -9,10 +9,23 @@ const { version = "v1.0.0" } = Astro.props;
 <header class="w-full bg-canvas border-b border-border-hairline h-14 sticky top-0 z-50">
   <div class="max-w-7xl mx-auto h-full px-4 flex items-center justify-between">
     <!-- Brand Logo -->
-    <a href="/" class="flex items-center gap-2.5 group">
-      <div class="w-6 h-6 rounded bg-accent-emerald flex items-center justify-center font-mono font-black text-black text-sm select-none shadow-sm transition-transform group-hover:scale-105">
-        u
-      </div>
+    <a href="/" class="flex items-center gap-1 group">
+      <svg 
+        class="w-8 h-8 text-accent-emerald group-hover:text-emerald-300 transition-all duration-200 select-none shadow-sm group-hover:scale-105" 
+        viewBox="120 120 840 840" 
+        fill="none" 
+        stroke="currentColor" 
+        aria-hidden="true"
+      >
+        <g transform="matrix(26.6643 0 0 26.6643 560.0172 550.9568)">
+          <path 
+            style="stroke: currentColor; stroke-width: 2.2; stroke-dasharray: none; stroke-linecap: round; stroke-dashoffset: 0; stroke-linejoin: round; stroke-miterlimit: 4; fill: none; opacity: 1;" 
+            transform=" translate(-12.5012, -11.4988)" 
+            d="M 14.7 6.3 C 14.3189 6.6888 14.3189 7.3112 14.7 7.7 L 16.3 9.3 C 16.6888 9.6811 17.3112 9.6811 17.7 9.3 L 21.47 5.53 C 22.4996 7.8053 22.0122 10.4804 20.2463 12.2463 C 18.4804 14.0122 15.8053 14.4996 13.53 13.47 L 6.62 20.38 C 5.7916 21.2084 4.4484 21.2084 3.62 20.38 C 2.7916 19.5516 2.7916 18.2084 3.62 17.38 L 10.53 10.47 C 9.5004 8.1947 9.9878 5.5196 11.7537 3.7537 C 13.5196 1.9878 16.1947 1.5004 18.47 2.53 L 14.71 6.29 Z" 
+            stroke-linecap="round"
+          />
+        </g>
+      </svg>
       <span class="font-sans font-semibold text-zinc-50 tracking-tight group-hover:text-accent-emerald transition-colors">
         useUtils
       </span>
@@ -35,11 +48,6 @@ const { version = "v1.0.0" } = Astro.props;
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
         </svg>
       </button>
-
-      <!-- Version Indicator -->
-      <span class="text-[10px] md:text-xs text-zinc-400 font-mono bg-zinc-900 border border-border-hairline rounded px-2.5 py-1">
-        {version}
-      </span>
     </div>
   </div>
 </header>

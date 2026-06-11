@@ -1,0 +1,197 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { TailwindPicker } from '../../components/TailwindPicker';
+
+const faqs = [
+  {
+    question: "How do I apply opacity to Tailwind colors?",
+    answer: "You can apply opacity to Tailwind color utilities (backgrounds, texts, borders, etc.) using the slash notation. For example, <code>bg-slate-500/20</code> applies the <code>bg-slate-500</code> color at 20% opacity. This syntax was introduced in Tailwind CSS v3 and replaces the older, separate opacity classes."
+  },
+  {
+    question: "What are the standard Tailwind CSS color families?",
+    answer: "Tailwind CSS includes 22 default color families: slate, gray, zinc, neutral, stone, red, orange, amber, yellow, lime, green, emerald, teal, cyan, sky, blue, indigo, violet, purple, fuchsia, pink, and rose. Each family consists of 11 shades ranging from 50 (lightest) to 950 (darkest)."
+  },
+  {
+    question: "How does Tailwind CSS v4 define colors?",
+    answer: "Tailwind CSS v4 defines its default color system using CSS Custom Properties (variables) in the <strong>OKLCH</strong> color space (e.g., <code>--color-slate-500: oklch(0.551 0.027 264.385)</code>). OKLCH provides perceptually uniform brightness and access to modern wide-gamut monitors, though classic hex mappings remain highly accurate fallback references."
+  },
+  {
+    question: "How does the reverse color matcher work?",
+    answer: "The reverse color matcher takes any parsed HEX, RGB, or HSL color input and computes the Euclidean distance between that color's RGB coordinates and the coordinates of all standard Tailwind shades. The shade with the smallest distance is identified as the closest match."
+  },
+  {
+    question: "Does Tailwind CSS support arbitrary opacity values?",
+    answer: "Yes, you can use arbitrary opacity values by placing the value inside square brackets, such as <code>bg-red-500/[0.17]</code> (for 17% opacity) or <code>text-blue-600/[82%]</code> (for 82% opacity)."
+  },
+  {
+    question: "What is the difference between Slate, Gray, Zinc, Neutral, and Stone?",
+    answer: "These represent Tailwind's neutral color scales. <strong>Slate</strong> is a cool gray with blue tones; <strong>Gray</strong> is a neutral gray with subtle cool tones; <strong>Zinc</strong> is a clean, modern gray; <strong>Neutral</strong> is a pure, balanced gray; and <strong>Stone</strong> is a warm gray with earthy/brown undertones."
+  },
+  {
+    question: "Does background opacity affect text inside the container?",
+    answer: "No. The slash notation (e.g., <code>bg-emerald-500/40</code>) generates an RGBA background color with an alpha channel. Unlike applying the CSS <code>opacity</code> property to a container, which makes the entire container and all its children transparent, Tailwind's alpha modifier only targets the background color itself, leaving child text fully opaque."
+  },
+  {
+    question: "What prefixes are supported by standard Tailwind colors?",
+    answer: "Tailwind CSS supports color classes for several utilities: <code>bg-</code> (background), <code>text-</code> (text color), <code>border-</code> (border color), <code>decoration-</code> (text decoration color), <code>ring-</code> (focus ring color), <code>outline-</code> (outline color), and gradient anchors like <code>from-</code>, <code>via-</code>, and <code>to-</code>."
+  },
+  {
+    question: "How can I copy color codes and classes quickly?",
+    answer: "Our picker offers quick-copy buttons for every shade. You can also use keyboard shortcuts: select a shade in the list using the Up/Down arrow keys, then press <kbd>C</kbd> to copy the Tailwind class, <kbd>X</kbd> to copy the HEX code, or <kbd>R</kbd> to copy the RGBA value."
+  },
+  {
+    question: "Is my color input processed securely?",
+    answer: "Yes. Like all utilities on useUtils, the Tailwind Opacity/Color Picker runs 100% on the client side in your web browser. No color codes, image samples, or inputs are transmitted to our servers."
+  }
+];
+---
+
+<ToolPageLayout
+  title="Tailwind CSS Opacity / Color Picker: Quick Reference & Reverse Matcher"
+  description="Select Tailwind CSS colors and apply opacity modifiers in real-time. Convert HEX/RGB to closest Tailwind utility class, check WCAG accessibility contrast ratios, and copy styles instantly."
+  keywords="tailwind color picker, tailwind opacity picker, tailwind css colors, hex to tailwind, rgb to tailwind, tailwind palette reference, tailwind color matcher, wcag contrast checker"
+  toolTitle="Tailwind Opacity/Color Picker"
+  toolDescription="Quickly reference Tailwind CSS color families and opacity scales. Copy utility classes, HEX/RGBA codes, find closest matches for custom colors, and analyze contrast in real-time."
+  faqs={faqs}
+>
+  <TailwindPicker client:load />
+
+  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the Tailwind Opacity & Color Picker
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our Tailwind Opacity/Color Picker serves as a real-time cheat sheet and designer tool for developers working with Tailwind CSS. You can select color families from our curated grids, choose active prefixes (such as <code>bg-</code>, <code>text-</code>, or <code>border-</code>), and drag the opacity slider to output precise class configurations.
+      </p>
+      <p class="leading-relaxed">
+        For each color shade (50 to 950), the tool renders the final class name (like <code>bg-slate-500/35</code>), shows a live visual swatch, displays the computed HEX/RGBA codes containing the opacity, and computes WCAG contrast ratios to verify readability.
+      </p>
+    </div>
+
+    <!-- Section: Scales & Shades -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Understanding Tailwind CSS Color Scales & Shades
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Tailwind's color system maps shade indexes from <code>50</code> (extremely light tints, perfect for cards and background panels) to <code>900</code> and <code>950</code> (extremely dark tones, optimized for typography, borders, and dark mode screens). 
+      </p>
+      <p class="leading-relaxed mb-4">
+        The default color spectrum is organized into logical groups that help developers maintain consistent branding:
+      </p>
+      <ul class="list-disc pl-5 space-y-2 mb-4 text-zinc-350">
+        <li><strong>Neutral Grays:</strong> Slate (cool/blue undertones), Gray (cool gray), Zinc (neutral modern), Neutral (pure gray), and Stone (warm/earthy undertone).</li>
+        <li><strong>Warm Accents:</strong> Red, Orange, Amber, and Yellow.</li>
+        <li><strong>Fresh Greens:</strong> Lime, Green, and Emerald.</li>
+        <li><strong>Cool Cyans & Blues:</strong> Teal, Cyan, Sky, and Blue.</li>
+        <li><strong>Deep Purples & Violets:</strong> Indigo, Violet, and Purple.</li>
+        <li><strong>Vibrant Pinks & Roses:</strong> Fuchsia, Pink, and Rose.</li>
+      </ul>
+      <p class="leading-relaxed">
+        Selecting the correct neutral undertone (e.g. Slate vs Stone) makes a massive difference in whether a dark mode UI feels sleek and high-tech or soft and organic.
+      </p>
+    </div>
+
+    <!-- Section: OKLCH in v4 -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Tailwind CSS v4 and the OKLCH Color Space Transition
+      </h2>
+      <p class="leading-relaxed mb-4">
+        With the release of Tailwind CSS v4, the framework transitioned to utilizing <strong>OKLCH</strong> color space representation for its core colors rather than classic RGB or Hex definitions. OKLCH represents color coordinates in terms of Lightness (L), Chroma (C), and Hue (H).
+      </p>
+      <p class="leading-relaxed mb-4">
+        This mathematical transition yields two massive benefits:
+      </p>
+      <ul class="list-disc pl-5 space-y-2 mb-4 text-zinc-350">
+        <li><strong>Uniform Perceived Brightness:</strong> In older RGB/Hex systems, colors of identical math coordinates (e.g., pure yellow vs pure blue) look vastly different in brightness to the human eye. OKLCH corrects this, ensuring that different color hues at the same lightness level (like <code>emerald-500</code> vs <code>indigo-500</code>) maintain a uniform perceived brightness.</li>
+        <li><strong>Wide Gamut Access:</strong> Modern displays support P3 color gamuts which show 25% more colors than standard sRGB. OKLCH allows Tailwind to tap into these ultra-vibrant colors natively on devices that support them.</li>
+      </ul>
+      <p class="leading-relaxed">
+        Our picker calculates both the fallback Hex and RGBA color outputs, ensuring compatibility with all codebases while remaining fully compatible with Tailwind v4 standard variables.
+      </p>
+    </div>
+
+    <!-- Section: Opacity slash syntax -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Mastering Color Opacity via Tailwind Slash Syntax
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Prior to Tailwind v3, applying transparency to a background or text color required using multiple separate classes like <code>bg-blue-500 bg-opacity-25</code>. Today, Tailwind uses the modern slash syntax: <code>bg-blue-500/25</code>.
+      </p>
+      <p class="leading-relaxed">
+        This compiles down to a single CSS property utilizing standard CSS variables that injects the alpha transparency directly into the color coordinates. Crucially, modifying background opacity this way does not alter the opacity of child elements (unlike the CSS <code>opacity</code> property which fades everything inside a container).
+      </p>
+    </div>
+
+    <!-- Section: Reverse Color Matcher -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        The Math Behind Custom Color Matching
+      </h2>
+      <p class="leading-relaxed mb-4">
+        When converting Figma designs to code, designers often provide arbitrary Hex codes that don't match standard Tailwind palettes. Our <strong>Tailwind Reverse Color Matcher</strong> bridges this gap.
+      </p>
+      <p class="leading-relaxed mb-4">
+        The matcher parses any HSL, RGB, or HEX code input and runs a nearest-neighbor mapping algorithm:
+      </p>
+      <ol class="list-decimal pl-5 space-y-2 mb-4 text-zinc-350">
+        <li>It converts the user's custom color and all 242 Tailwind system color coordinates to standard Red, Green, and Blue decimal values.</li>
+        <li>It computes the Euclidean distance: <code>d = √((R₁-R₂)² + (G₁-G₂)² + (B₁-B₂)²)</code>.</li>
+        <li>The shade yielding the minimum distance is highlighted as the closest match, showing a percentage similarity value.</li>
+      </ol>
+      <p class="leading-relaxed">
+        This is incredibly valuable for refactoring legacy CSS codebases into clean Tailwind utilities without losing the original visual theme.
+      </p>
+    </div>
+
+    <!-- Section: Accessibility -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Evaluating WCAG 2.1 Accessibility & Color Contrast
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Designing readable interfaces is legally and ethically required. The Web Content Accessibility Guidelines (WCAG) 2.1 define standards for text readability:
+      </p>
+      <ul class="list-disc pl-5 space-y-2 mb-4 text-zinc-350">
+        <li><strong>Level AA Compliance:</strong> Requires a contrast ratio of at least 4.5:1 for normal text (under 18pt or 14pt bold) and 3:1 for large text.</li>
+        <li><strong>Level AAA Compliance:</strong> Requires a contrast ratio of at least 7:1 for normal text and 4.5:1 for large text.</li>
+      </ul>
+      <p class="leading-relaxed">
+        Our color picker automatically analyzes relative luminance values to output real-time contrast indicators against pure White text and pure Black text. This lets developers immediately identify which color shades are safe for call-to-action buttons, card headings, or menu links.
+      </p>
+    </div>
+
+    <!-- Section: Sandbox and Shortcuts -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Interactive UI Sandbox and Hotkeys
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Test color schemes inside our live <strong class="text-zinc-200">Interactive UI Preview</strong> sandbox. Clicking the builder buttons applies your currently selected Tailwind shade and opacity to card backgrounds, text content, borders, and buttons.
+      </p>
+      <p class="leading-relaxed">
+        To streamline your design workflow, we have built-in desktop hotkeys. When browsing without an active input focused, use:
+      </p>
+      <ul class="list-disc pl-5 space-y-1 mt-2 text-zinc-350">
+        <li><kbd class="font-mono bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">Arrow Up / Down</kbd> or <kbd class="font-mono bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">J / K</kbd> to step through shades.</li>
+        <li><kbd class="font-mono bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">Arrow Left / Right</kbd> or <kbd class="font-mono bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">H / L</kbd> to toggle color families.</li>
+        <li><kbd class="font-mono bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">C</kbd> to copy the Tailwind class.</li>
+        <li><kbd class="font-mono bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">X</kbd> to copy the HEX code.</li>
+        <li><kbd class="font-mono bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">R</kbd> to copy the RGBA code.</li>
+        <li><kbd class="font-mono bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">/</kbd> or <kbd class="font-mono bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">O</kbd> to focus the reverse matcher.</li>
+      </ul>
+    </div>
+  </div>
+</ToolPageLayout>

@@ -1,0 +1,179 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { CaseConverter } from '../../components/CaseConverter';
+
+const faqs = [
+  {
+    question: "What cases does the Case Converter support?",
+    answer: "The Case Converter supports 13 different casing conventions. These include programming-oriented cases such as <code>camelCase</code>, <code>PascalCase</code>, <code>snake_case</code>, <code>kebab-case</code>, <code>CONSTANT_CASE</code>, <code>dot.case</code>, and <code>path/case</code>, as well as natural language cases like <code>UPPERCASE</code>, <code>lowercase</code>, <code>Title Case</code>, <code>Sentence case</code>, <code>Alternating Case</code>, and <code>Inverse Case</code>."
+  },
+  {
+    question: "How does the 'Treat each line independently' setting work?",
+    answer: "When enabled, the converter splits the input text by newlines and applies the selected casing transformation to each line independently. This is extremely useful for processing lists of database columns, variable names, or environment parameters. If disabled, the entire text block is treated as a single body of text."
+  },
+  {
+    question: "Is my text data safe?",
+    answer: "Yes, 100%. Like all tools on useUtils, the Case Converter runs entirely on the client side in your web browser. No text is ever uploaded, transmitted, or stored on a server. Your data remains fully secure and private."
+  },
+  {
+    question: "What is the difference between programming and natural language cases?",
+    answer: "Programming cases (like camelCase or snake_case) strip out all non-alphanumeric punctuation and join words using specific separators. Natural language cases (like Sentence case or Title Case) preserve spaces, paragraphs, and punctuation, only altering the capitalization of individual characters or words."
+  },
+  {
+    question: "What is camelCase and when should I use it?",
+    answer: "In <code>camelCase</code>, the first word is in lowercase and each subsequent word starts with an uppercase letter, without spaces or punctuation (e.g., <code>myVarName</code>). It is the standard naming convention for variables, functions, and object keys in JavaScript, TypeScript, Java, and C++."
+  },
+  {
+    question: "What is snake_case and where is it commonly used?",
+    answer: "In <code>snake_case</code>, all letters are lowercase and words are separated by underscores (e.g., <code>my_variable_name</code>). It is widely used in Python (for variables and functions), Rust, Ruby, PHP, SQL database column names, and JSON keys in some APIs."
+  },
+  {
+    question: "What is PascalCase (UpperCamelCase) and what are its use cases?",
+    answer: "In <code>PascalCase</code>, every word starts with an uppercase letter, without spaces or punctuation (e.g., <code>MyClassName</code>). It is the primary naming convention for classes in JavaScript/TypeScript, TypeScript interfaces, React components, and namespaces/classes in C# and Java."
+  },
+  {
+    question: "What is kebab-case and when is it valid?",
+    answer: "In <code>kebab-case</code> (also called Lisp-case), words are lowercase and separated by hyphens (e.g., <code>my-style-class</code>). It is the standard for CSS class names, HTML attributes, URL slugs, and configuration files like YAML or JSON, but it is invalid for variable names in most programming languages because the hyphen is parsed as a subtraction operator."
+  },
+  {
+    question: "When is CONSTANT_CASE (screaming_snake_case) used?",
+    answer: "In <code>CONSTANT_CASE</code>, all letters are uppercase and words are separated by underscores (e.g., <code>MAX_BUFFER_SIZE</code>). It is universally used in languages like JavaScript, Java, C++, Python, and C# to denote global constants, environment variables, or immutable settings."
+  },
+  {
+    question: "How does Title Case differ from Sentence Case?",
+    answer: "<code>Title Case</code> capitalizes the first letter of every word except for minor words (conjunctions, prepositions, articles like 'and', 'the', 'of', 'in'). <code>Sentence case</code> only capitalizes the first letter of the first word in a sentence, along with proper nouns and standalone 'I'. Title Case is used for headings and titles, while Sentence Case is used for paragraphs and UI copy."
+  },
+  {
+    question: "What are dot.case and path/case conventions?",
+    answer: "<code>dot.case</code> uses dots as separators (e.g., <code>config.db.port</code>) and is common in properties files, configuration paths, and event names. <code>path/case</code> uses slashes (e.g., <code>api/v1/users</code>) and is standard in REST API endpoints and filesystem directories."
+  },
+  {
+    question: "How do you convert camelCase to snake_case programmatically in JavaScript?",
+    answer: "You can convert camelCase to snake_case using a regular expression: <code>const toSnake = str => str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);</code>. This inserts an underscore before each uppercase letter and converts it to lowercase."
+  }
+];
+---
+
+<ToolPageLayout
+  title="Case Converter: Instant Text and Variable Case Conversion"
+  description="Convert text or variable names between camelCase, PascalCase, snake_case, kebab-case, UPPERCASE, lowercase, and more. Featuring line-by-line conversion, character diffing, and auto-case detection."
+  keywords="case converter, camelcase, snake_case, kebab-case, pascalcase, title case, uppercase, lowercase, text converter, screaming snake case, sentence case"
+  toolTitle="Case Converter"
+  toolDescription="Convert text and code variables between various casing formats in real-time. Features smart auto-case detection, line-by-line batch mode, character diffing, and an 'all-cases' overview pane."
+  faqs={faqs}
+>
+  <CaseConverter client:load />
+
+  <!-- Explanatory content slots for layout standard conformity -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the Case Converter
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our case converter parses strings instantly in your browser to adapt them to different programming and formatting conventions. You can paste or type text in the <strong class="text-zinc-200">raw input pane</strong>, toggle configurations like line-by-line mode, and click any target case to view the converted output.
+      </p>
+      <p class="leading-relaxed">
+        Click the copy buttons or use developer keyboard shortcuts (<kbd class="font-mono bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">⌘ C</kbd>) to copy the converted text to your clipboard.
+      </p>
+    </div>
+
+    <!-- Section: Case Style Reference -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Programming Language Casing Conventions Cheat Sheet
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Selecting the correct casing style is essential for writing clean, readable, and idiomatic code. Different ecosystems enforce distinct naming conventions for variables, files, and classes:
+      </p>
+      
+      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
+              <th class="p-3">Language / Tech</th>
+              <th class="p-3">Variables & Functions</th>
+              <th class="p-3">Classes & Components</th>
+              <th class="p-3">Constants</th>
+              <th class="p-3">Files / Assets</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
+            <tr>
+              <td class="p-3 text-zinc-200">JavaScript / TypeScript</td>
+              <td class="p-3">camelCase</td>
+              <td class="p-3">PascalCase</td>
+              <td class="p-3">CONSTANT_CASE</td>
+              <td class="p-3">kebab-case / camelCase</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">Python</td>
+              <td class="p-3">snake_case</td>
+              <td class="p-3">PascalCase</td>
+              <td class="p-3">CONSTANT_CASE</td>
+              <td class="p-3">snake_case</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">Rust</td>
+              <td class="p-3">snake_case</td>
+              <td class="p-3">PascalCase</td>
+              <td class="p-3">CONSTANT_CASE</td>
+              <td class="p-3">snake_case</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">C# (.NET)</td>
+              <td class="p-3">camelCase / PascalCase</td>
+              <td class="p-3">PascalCase</td>
+              <td class="p-3">PascalCase</td>
+              <td class="p-3">PascalCase</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">HTML & CSS</td>
+              <td class="p-3">kebab-case (Class names)</td>
+              <td class="p-3">-</td>
+              <td class="p-3">-</td>
+              <td class="p-3">kebab-case</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section: Features -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Advanced Case Converter Features for Developers
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Line-by-Line Batch Mode</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Convert lists of properties, database columns, or variables independently. Perfect for refactoring large files or mapping database records to API payloads.
+          </p>
+        </div>
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Interactive Diffing Engine</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Toggle 'Show Diff' to view exact character modifications. Deleted elements are flagged in red (with strikethroughs) and insertions in emerald green, allowing easy validation of spacing and character deletions.
+          </p>
+        </div>
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">All Cases at a Glance</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            For short entries, the tool shows a dynamic grid containing all 13 case variations side-by-side. Copy any casing instantly without changing your main active settings.
+          </p>
+        </div>
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Local Sandboxed Processing</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            No data is transmitted outside your browser. Text processing uses native client APIs to guarantee complete security for proprietary code, config keys, and sensitive logs.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ToolPageLayout>

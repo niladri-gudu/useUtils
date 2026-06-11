@@ -1,0 +1,177 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { UrlEncoder } from '../../components/UrlEncoder';
+
+const tabs = [
+  { label: 'Decoder', href: '/tools/url-decoder' },
+  { label: 'Encoder', href: '/tools/url-encoder', active: true }
+];
+
+const faqs = [
+  {
+    question: "What is URL encoding (percent-encoding)?",
+    answer: "URL encoding (also known as percent-encoding) is a mechanism for encoding information in a Uniform Resource Identifier (URI) under RFC 3986. It replaces unsafe or non-ASCII characters with a percent sign (<code>%</code>) followed by two hexadecimal digits representing the character's ASCII code."
+  },
+  {
+    question: "Why do URLs need to be encoded?",
+    answer: "URLs can only be transmitted over the Internet using the US-ASCII character set. Since URLs often contain characters outside this set (like spaces, emojis, or non-Latin alphabets) or reserved characters (like <code>?</code>, <code>&</code>, <code>=</code>, and <code>#</code>) used as delimiters, they must be safely escaped to prevent browsers and web servers from misinterpreting them."
+  },
+  {
+    question: "What is the difference between encodeURI and encodeURIComponent?",
+    answer: "<code>encodeURI</code> is designed to encode a full, complete URL. It preserves protocol delimiters (e.g. <code>://</code>) and query delimiters (e.g. <code>?</code>, <code>&</code>, <code>=</code>). In contrast, <code>encodeURIComponent</code> encodes all special characters, making it suitable for encoding single query parameter values or paths so they don't break URL structures."
+  },
+  {
+    question: "What is the difference between standard and form encoding (x-www-form-urlencoded)?",
+    answer: "In standard URL encoding (under RFC 3986 rules), spaces are encoded as <code>%20</code>. In form encoding (used for HTML form submissions with the <code>application/x-www-form-urlencoded</code> media type), spaces are encoded as plus signs (<code>+</code>) instead. This tool lets you switch between these modes instantly."
+  },
+  {
+    question: "What characters are never encoded in standard URL encoding?",
+    answer: "According to the RFC 3986 specification, the unreserved characters that are never percent-encoded are alphanumeric characters (<code>A-Z</code>, <code>a-z</code>, <code>0-9</code>) along with the hyphen (<code>-</code>), underscore (<code>_</code>), dot (<code>.</code>), and tilde (<code>~</code>)."
+  },
+  {
+    question: "What is strict RFC 3986 encoding?",
+    answer: "Standard JavaScript <code>encodeURIComponent</code> does not encode characters like <code>!</code>, <code>'</code>, <code>(</code>, <code>)</code>, and <code>*</code>. Strict RFC 3986 mode forces these characters to be fully percent-encoded (e.g., <code>!</code> becomes <code>%21</code>) to ensure maximum compatibility with strict backend systems."
+  },
+  {
+    question: "What is Strict Hex Obfuscation mode and when is it useful?",
+    answer: "Strict Hex Obfuscation encodes <em>literally every single character</em> in the input string into its corresponding <code>%XX</code> hex code. For example, <code>hello</code> becomes <code>%68%65%6C%6C%6F</code>. This is widely used by security engineers for WAF (Web Application Firewall) bypass testing, SQL injection evasion analysis, and testing input validation routines."
+  },
+  {
+    question: "Is my input data safe and secure on this page?",
+    answer: "Yes, 100%. Like all tools on useUtils, the URL Encoder operates completely client-side in your web browser. No data, text strings, or passwords you input are ever uploaded or transmitted to a server. All conversions are processed locally."
+  },
+  {
+    question: "How does the line-by-line batch mode work?",
+    answer: "When 'Treat each line independently' is enabled, the tool splits your input text at each newline and runs the selected encoding scheme on each line separately. This is ideal for processing bulk lists of database fields, files, or environment parameters."
+  },
+  {
+    question: "How do I encode a query string manually in JavaScript?",
+    answer: "In JavaScript, you should encode each query parameter key and value separately using <code>encodeURIComponent(val)</code> and join them with <code>=</code> and <code>&</code>. For example: <code>const url = 'https://example.com/?q=' + encodeURIComponent('hello world');</code>"
+  }
+];
+---
+
+<ToolPageLayout
+  title="URL Encoder Online: Safely Escape URI Parameters"
+  description="Encode strings for URL parameters with multiple specifications. Supports Standard, Full URI, Strict RFC 3986, Form, and Strict Hex Obfuscation."
+  keywords="url encoder, percent encoding, uri escape, encodeuri, encodeuricomponent, url obfuscator, url encode online, web parameter encoder"
+  toolTitle="URL Encoder"
+  toolDescription="Safely encode strings for URL parameters in real-time. Features standard, full URI, strict RFC 3986, form-urlencoded, and strict hex obfuscation modes."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <UrlEncoder client:load />
+
+  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the URL Encoder
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our URL Encoder parses strings instantly in your browser to adapt them to different web standards and transmission protocols. You can paste your text in the <strong class="text-zinc-200">raw input pane</strong>, select the target encoding standard (such as RFC 3986 or Form-urlencoded), and view the encoded output in real-time.
+      </p>
+      <p class="leading-relaxed">
+        Click the copy buttons or use developer keyboard shortcuts (<kbd class="font-mono bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">⌘ C</kbd>) to copy the converted text to your clipboard. You can also toggle the <strong class="text-zinc-200">Show Diff</strong> view to see exactly which characters were converted.
+      </p>
+    </div>
+
+    <!-- Section: Specifications Reference -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Comparison of URL Encoding Standards
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Selecting the correct encoding scheme is essential for writing robust API integrations and handling web queries. Different specifications treat characters differently:
+      </p>
+      
+      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
+              <th class="p-3">Encoding Mode</th>
+              <th class="p-3">Spaces</th>
+              <th class="p-3">Reserved Chars (e.g. <code>/ : ? =</code>)</th>
+              <th class="p-3">Unreserved Chars (e.g. <code>! * ' ( )</code>)</th>
+              <th class="p-3">Typical Use Case</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
+            <tr>
+              <td class="p-3 text-zinc-200">Standard (encodeURIComponent)</td>
+              <td class="p-3"><code>%20</code></td>
+              <td class="p-3">Encoded</td>
+              <td class="p-3">Preserved</td>
+              <td class="p-3">Single query parameters</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">Full URL (encodeURI)</td>
+              <td class="p-3"><code>%20</code></td>
+              <td class="p-3">Preserved</td>
+              <td class="p-3">Preserved</td>
+              <td class="p-3">Entire URL strings</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">Strict RFC 3986</td>
+              <td class="p-3"><code>%20</code></td>
+              <td class="p-3">Encoded</td>
+              <td class="p-3">Encoded</td>
+              <td class="p-3">Strict OAuth / REST APIs</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">Form (x-www-form-urlencoded)</td>
+              <td class="p-3"><code>+</code></td>
+              <td class="p-3">Encoded</td>
+              <td class="p-3">Preserved</td>
+              <td class="p-3">HTML Form payloads</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">Strict Hex (Obfuscate)</td>
+              <td class="p-3"><code>%20</code></td>
+              <td class="p-3">Encoded (All)</td>
+              <td class="p-3">Encoded (All)</td>
+              <td class="p-3">WAF & SQLi Security tests</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section: Features -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Advanced URL Encoding Features
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Character-Level Diffing</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Compare your original input directly with the encoded output. The inline diff flags modified sequences in emerald green, allowing easy visual validation of converted components.
+          </p>
+        </div>
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Local Sandboxed Processing</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            None of your inputs are sent to a server. Processing uses native client APIs to guarantee complete security for tokens, keys, and confidential configuration parameters.
+          </p>
+        </div>
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">State Sync Switching</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Raw inputs are automatically cached to allow switching seamlessly to the URL Decoder tab without needing to re-copy or paste your workspace data.
+          </p>
+        </div>
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Strict Hex Obfuscation</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Convert standard alphanumeric values into percent-encoded ASCII bytes to bypass strict input filters or inspect how systems parse raw escaping configurations.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ToolPageLayout>

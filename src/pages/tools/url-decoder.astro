@@ -1,0 +1,131 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { UrlDecoder } from '../../components/UrlDecoder';
+
+const tabs = [
+  { label: 'Decoder', href: '/tools/url-decoder', active: true },
+  { label: 'Encoder', href: '/tools/url-encoder' }
+];
+
+const faqs = [
+  {
+    question: "What is URL decoding?",
+    answer: "URL decoding (also known as percent-decoding) is the inverse operation of URL encoding. It searches a string for percent-encoded sequences (a percent sign followed by two hexadecimal digits, like <code>%20</code>) and translates them back into their original character equivalents (like a space)."
+  },
+  {
+    question: "Why does my decoded URL show a 'URI malformed' error?",
+    answer: "A 'URI malformed' error occurs when the input contains an invalid percent-encoded sequence. Common causes include isolated percent signs (<code>%</code>) that are not followed by two valid hexadecimal digits, incomplete codes at the end of the text, or illegal UTF-8 byte sequences (e.g. <code>%g1</code>)."
+  },
+  {
+    question: "How does x-www-form-urlencoded decoding handle the plus (+) sign?",
+    answer: "In form submissions (application/x-www-form-urlencoded), spaces are encoded as plus signs (<code>+</code>) instead of <code>%20</code>. When 'Form (x-www-form-urlencoded)' is selected, the decoder converts all <code>+</code> signs to spaces before applying standard decoding. Standard decoding treats plus signs literally."
+  },
+  {
+    question: "What is the interactive URL Parameter Manager?",
+    answer: "The URL Parameter Manager is a powerful utility on our URL Decoder page. When you input a valid URL or path containing query parameters, it automatically parses them into an interactive key-value table. You can edit keys, edit values, delete parameters, or toggle them on and off to instantly rebuild the decoded URL."
+  },
+  {
+    question: "Can I decode relative URLs or raw query strings?",
+    answer: "Yes. The URL Decoder handles absolute URLs (starting with <code>http://</code> or <code>https://</code>), relative paths (e.g., <code>/search?q=query</code>), and standalone query strings (e.g., <code>?id=123&amp;user=admin</code>) by parsing them relative to a dummy virtual base."
+  },
+  {
+    question: "How does the character diff feature work?",
+    answer: "When 'Show Diff' is enabled, the tool compares the encoded input with the decoded output. The diff engine displays character-level differences, highlighting percent-encoded characters that were decoded in emerald green and showing deleted codes with a red strikethrough."
+  },
+  {
+    question: "Is my decoded URL data private?",
+    answer: "Yes, absolutely. Like all tools on useUtils, the URL Decoder executes entirely inside your browser's local sandbox using client-side JavaScript. None of your URL components, API keys, tokens, or query payloads are ever uploaded or transmitted to a server."
+  },
+  {
+    question: "What is the difference between decodeURI and decodeURIComponent?",
+    answer: "<code>decodeURI</code> is intended to decode full URLs and will not decode URL delimiters like <code>%2F</code> (<code>/</code>), <code>%3F</code> (<code>?</code>), <code>%26</code> (<code>&amp;</code>), and <code>%3D</code> (<code>=</code>). <code>decodeURIComponent</code> decodes all valid percent-encoded sequences, restoring every character to its original text form."
+  },
+  {
+    question: "How do I decode multiple lines in bulk?",
+    answer: "Toggle 'Treat each line independently'. The URL Decoder will process each line independently and output the decoded strings line-by-line. This is useful for parsing database log files or list dumps."
+  },
+  {
+    question: "Does the Parameter Manager support duplicate keys?",
+    answer: "Yes. URL specifications allow duplicate keys (e.g., <code>?filter=a&amp;filter=b</code>). The Parameter Manager parses each instance independently, displaying them as separate rows in the table so you can edit, enable/disable, or delete them separately."
+  }
+];
+---
+
+<ToolPageLayout
+  title="URL Decoder Online: Parse & Unescape URI Parameters"
+  description="Decode percent-encoded strings or URLs. Features standard, full URL, and form-urlencoded decoding alongside an interactive query parameters manager table."
+  keywords="url decoder, percent decoding, unescape uri, decodeuri, decodeuricomponent, query string parser, url dissection, online url decoder"
+  toolTitle="URL Decoder"
+  toolDescription="Parse and decode percent-encoded URLs or form data in real-time. Features an interactive query parameters manager that parses parameters into a list where you can edit, add, or toggle elements."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <UrlDecoder client:load />
+
+  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the URL Decoder
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our URL Decoder parses and unescapes percent-encoded strings instantly in your browser. You can paste your encoded parameters or full website URLs in the <strong class="text-zinc-200">encoded input pane</strong>, select the appropriate decoding mode (Standard, Full URI, or Form-urlencoded), and view the decoded result instantly.
+      </p>
+      <p class="leading-relaxed">
+        Click the copy buttons or use developer keyboard shortcuts (<kbd class="font-mono bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">⌘ C</kbd>) to copy the converted text to your clipboard.
+      </p>
+    </div>
+
+    <!-- Section: Parameter Dissection -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Understanding URL Dissection & Query String Parsing
+      </h2>
+      <p class="leading-relaxed mb-4">
+        URLs are complex structures containing distinct components. When a URL is pasted into the decoder, our system dissects it into the following parts:
+      </p>
+      <ul class="list-disc list-inside space-y-2 mb-6 pl-2 leading-relaxed">
+        <li><strong class="text-zinc-200">Scheme/Protocol</strong>: Specifies the transfer protocol, such as <code>http:</code> or <code>https:</code>.</li>
+        <li><strong class="text-zinc-200">Host/Domain</strong>: The server address or hostname, e.g. <code>api.useutils.com</code>.</li>
+        <li><strong class="text-zinc-200">Port</strong>: Explicit port offsets (such as <code>:443</code> or <code>:8080</code>) if present.</li>
+        <li><strong class="text-zinc-200">Pathname</strong>: The specific folder path or endpoint routing inside the server.</li>
+        <li><strong class="text-zinc-200">Query Parameters</strong>: Key-value parameters separating search tokens, parsed into our interactive editor table.</li>
+        <li><strong class="text-zinc-200">Hash/Anchor</strong>: The target section index on the page (preceded by <code>#</code>).</li>
+      </ul>
+    </div>
+
+    <!-- Section: Handling Malformed Sequences -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Handling Decoding Errors & Malformed Input
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Decoding can sometimes fail if an input string does not comply with URI standards. If you encounter a <strong class="text-red-400">Decoding Error</strong>:
+      </p>
+      <p class="leading-relaxed mb-4">
+        1. Check if the string contains standalone percent signs (<code>%</code>) that are part of the raw data rather than an encoding. In standard URLs, literal percents must be encoded as <code>%25</code>.
+      </p>
+      <p class="leading-relaxed">
+        2. Ensure the percent sign is followed by exactly two hexadecimal characters (<code>0-9</code> and <code>A-F</code>). Lowercase characters (<code>a-f</code>) are also fully supported, but non-hex characters like <code>G</code> or <code>Z</code> will cause errors.
+      </p>
+    </div>
+
+    <!-- Section: Security -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Local Browser-Only Security Sandbox
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Because URLs often contain sensitive parameters like <strong class="text-zinc-200">access tokens</strong>, <strong class="text-zinc-200">session cookies</strong>, <strong class="text-zinc-200">private emails</strong>, or database IDs, using online decoding tools can be a security risk.
+      </p>
+      <p class="leading-relaxed">
+        useUtils solves this by executing the entire decoding process locally on your device. Absolutely zero data is sent across the network to external servers. Your secure credentials, credentials keys, and payloads are never exposed.
+      </p>
+    </div>
+  </div>
+</ToolPageLayout>

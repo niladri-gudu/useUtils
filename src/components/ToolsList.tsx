@@ -70,7 +70,8 @@ const ALL_TOOLS: Tool[] = [
 
   // Encoding
   { id: 'base64-encoder', name: 'Base64 Encoder', description: 'Encode/decode Base64', category: 'encoding', isPopular: true, icon: '🔐' },
-  { id: 'url-encoder', name: 'URL Encoder', description: 'Encode/decode URLs', category: 'encoding', icon: '🔗' },
+  { id: 'url-encoder', name: 'URL Encoder', description: 'Encode strings for URL parameters with multiple specifications (Standard, Full URI, Strict RFC 3986, Form-encoded, Strict Hex).', category: 'encoding', isPopular: true, isActive: true, href: '/tools/url-encoder', icon: '🔗' },
+  { id: 'url-decoder', name: 'URL Decoder', description: 'Decode percent-encoded URL parameters or clean form-encoded data. Features an interactive query parameter builder and structural URL dissection.', category: 'encoding', isPopular: true, isActive: true, href: '/tools/url-decoder', icon: '🔗' },
   { id: 'html-encoder', name: 'HTML Encoder', description: 'Encode/decode HTML entities', category: 'encoding', icon: '🏷️' },
   { id: 'jwt-decoder', name: 'JWT Decoder', description: 'Decode JSON Web Tokens instantly with live expiration countdown clocks and payload highlighting.', category: 'encoding', isPopular: true, isActive: true, href: '/tools/jwt-decoder', icon: '🎫' },
   { id: 'jwt-encoder', name: 'JWT Encoder', description: 'Construct and sign JSON Web Tokens locally. Customize headers, payloads, and signatures.', category: 'encoding', isActive: true, href: '/tools/jwt-encoder', icon: '🎫' },

@@ -48,3 +48,6 @@ Do NOT mimic competitive anti-patterns (no crowded grids, standard modern web la
 - All Tailwind utility classes must rigorously comply with v4 specification standards parsed from your local Tailwind documentation skills.
 
 if creating a new page, add it to the sitemap.xml file
+
+dont dfeploy after make every changes
+i will say when to deploy and all that

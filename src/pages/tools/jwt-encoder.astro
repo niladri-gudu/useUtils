@@ -1,307 +1,124 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { JwtEncoder } from '../../components/JwtEncoder';
+
+const tabs = [
+  { label: 'Decoder', href: '/tools/jwt-decoder' },
+  { label: 'Encoder', href: '/tools/jwt-encoder', active: true }
+];
+
+const faqs = [
+  {
+    question: "Is it safe to encode JWTs online?",
+    answer: "Yes, it is completely safe when using our <strong class=\"text-zinc-350\">online jwt encoder</strong>. Unlike other web utilities that transmit your inputs to a remote server, our tool processes all operations locally in your browser. Your secret keys and private payloads never leave your machine."
+  },
+  {
+    question: "What is a JWT secret key?",
+    answer: "A JWT secret key is a secret string used by symmetric signing algorithms (like HS256) to sign and verify JSON Web Tokens. The security of the token depends entirely on keeping this key secret. If an attacker gains access to the secret key, they can forge valid tokens and bypass authentication checks."
+  },
+  {
+    question: "What is the difference between HS256 and RS256 encoding?",
+    answer: "HS256 (HMAC with SHA-256) is a symmetric algorithm, meaning a single shared secret key is used to both sign and verify the token. RS256 (RSA Signature with SHA-256) is an asymmetric algorithm, which utilizes a private key to sign the token and a corresponding public key to verify it. RS256 is highly recommended for multi-service environments where verification keys are distributed publicly."
+  },
+  {
+    question: "How do I encode a JWT with an expiration time (exp claim)?",
+    answer: "In a JSON Web Token, the expiration time is specified by the <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">exp</code> claim in the payload. It must be formatted as a Unix timestamp (in seconds, not milliseconds). For example, to set the token to expire 1 hour from now, you calculate: <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">Math.floor(Date.now() / 1000) + 3600</code>."
+  },
+  {
+    question: "What cryptographic algorithms are supported by the online JWT encoder?",
+    answer: "Our tool supports a wide array of signing algorithms. This includes HMAC symmetric algorithms (<code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">HS256</code>, <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">HS384</code>, <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">HS512</code>) which use a shared secret key, and RSA/ECDSA asymmetric algorithms (<code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">RS256</code>, <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">RS384</code>, <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">RS512</code>, <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">ES256</code>, <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">ES384</code>, <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">ES512</code>) which require a private signing key."
+  },
+  {
+    question: "Can a JWT be edited after it has been encoded and signed?",
+    answer: "No. Once a JWT is signed and encoded, any modification to the header or payload will invalidate the signature. Because the signature is calculated based on the encoded header and payload, changing even a single character in the claims will result in signature verification failures at your API gateway or backend server. To make edits, you must update the JSON and generate a new token."
+  }
+];
 ---
 
-<Layout 
-  title="JWT Encoder Online: Generate Secure JSON Web Tokens Instantly" 
+<ToolPageLayout
+  title="JWT Encoder Online: Generate Secure JSON Web Tokens Instantly"
   description="Encode and sign JSON Web Tokens (JWT) safely in your browser. Generate secure JWTs with HS256, RS256, and custom claims. 100% local, client-side only."
   keywords="JWT Encoder, jwt encoder, jwt encoder online, online jwt encoder, encode jwt, jwt generator online, json web token generator, hs256 encoder, rs256 encoder"
+  toolTitle="JWT Encoder"
+  toolDescription="Construct and sign JSON Web Tokens locally. Customize the algorithm header, insert custom payload properties, set token expiration timers, and preview output streams."
+  tabs={tabs}
+  faqs={faqs}
 >
-  <!-- Main Navigation Header -->
-  <header class="w-full bg-canvas border-b border-border-hairline h-14 sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto h-full px-4 flex items-center justify-between">
-      <!-- Left side: Brand -->
-      <a href="/" class="flex items-center gap-2 group">
-        <div class="w-6 h-6 rounded bg-accent-emerald flex items-center justify-center font-mono font-black text-black text-sm select-none">
-          u
-        </div>
-        <span class="font-sans font-semibold text-zinc-50 tracking-tight group-hover:text-accent-emerald transition-colors">
-          useUtils
-        </span>
-      </a>
+  <JwtEncoder client:load />
 
-      <!-- Right side: Version -->
-      <div class="flex items-center gap-3">
-        <button
-          type="button"
-          class="theme-toggle-btn p-2 rounded-lg bg-zinc-900 border border-border-hairline text-zinc-400 hover:text-zinc-50 hover:bg-zinc-850 transition-all cursor-pointer flex items-center justify-center"
-          aria-label="Toggle dark/light theme"
-        >
-          <!-- Sun Icon (visible in dark mode) -->
-          <svg class="theme-sun-icon w-4.5 h-4.5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
-          </svg>
-          <!-- Moon Icon (visible in light mode) -->
-          <svg class="theme-moon-icon w-4.5 h-4.5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-          </svg>
-        </button>
-        <span class="text-[10px] md:text-xs text-zinc-400 font-mono bg-zinc-900 border border-border-hairline rounded px-2.5 py-1">
-          v1.0.0
-        </span>
-      </div>
-    </div>
-  </header>
-
-  <!-- Main Body Content -->
-  <main class="flex-grow w-full max-w-7xl mx-auto px-4 py-8 flex flex-col gap-6">
-    <!-- Hero / Title Header Section -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pt-2 pb-6 border-b border-border-hairline/60">
-      <div class="flex flex-col gap-2">
-        <h1 class="text-2xl md:text-3xl font-semibold tracking-tight text-zinc-50">
-          JWT Encoder
-        </h1>
-        <p class="text-zinc-400 text-sm max-w-2xl leading-relaxed font-sans">
-          Construct and sign JSON Web Tokens locally. Customize the algorithm header, insert custom payload properties, set token expiration timers, and preview output streams.
-        </p>
-      </div>
-
-      <!-- Pill Tab Switcher -->
-      <div class="bg-panel border border-border-hairline rounded-full p-1 inline-flex items-center gap-1 self-start md:self-end">
-        <a 
-          href="/tools/jwt-decoder" 
-          class="px-4 py-1.5 text-xs font-medium rounded-full text-zinc-400 hover:text-zinc-50 transition-all"
-        >
-          Decoder
-        </a>
-        <a 
-          href="/tools/jwt-encoder" 
-          class="px-4 py-1.5 text-xs font-semibold rounded-full bg-zinc-800 text-zinc-50 transition-all"
-        >
-          Encoder
-        </a>
-      </div>
+  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
+  <div slot="seo-content" class="flex flex-col gap-8">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        What is a JSON Web Token (JWT) and Why Do Developers Encode Them?
+      </h2>
+      <p class="text-zinc-400 text-sm leading-relaxed font-sans mb-4">
+        A <strong class="text-zinc-200">JSON Web Token (JWT)</strong> is an open standard (<a href="https://tools.ietf.org/html/rfc7519" target="_blank" rel="noopener noreferrer" class="text-accent-emerald hover:underline">RFC 7519</a>) that defines a compact and self-contained way for securely transmitting information between parties as a JSON object. This information can be verified and trusted because it is digitally signed. JWTs can be signed using a secret (with the HMAC algorithm) or a public/private key pair using RSA or ECDSA.
+      </p>
+      <p class="text-zinc-400 text-sm leading-relaxed font-sans">
+        Developers frequently need to <strong class="text-zinc-200">encode jwt</strong> tokens during the development, testing, and debugging phases of web applications. When building APIs, microservices, or decentralized authorization systems (like OAuth 2.0 or OpenID Connect), authentication tokens must be generated to simulate user log-ins, test edge cases (such as token expiration), and verify that API gateways correctly validate claims. Using a reliable <strong class="text-zinc-200">jwt generator online</strong> allows developers to quickly craft custom payloads, apply cryptographic signatures, and produce valid token strings without writing temporary code in their application.
+      </p>
     </div>
 
-    <!-- Mount React JWT Encoder Component -->
-    <div class="py-2">
-      <JwtEncoder client:load />
+    <!-- Section: How to Use -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the Online JWT Encoder
+      </h2>
+      <p class="text-zinc-400 text-sm leading-relaxed font-sans mb-4">
+        Generating a token with our <strong class="text-zinc-200">online jwt encoder</strong> is straightforward and takes only a few seconds:
+      </p>
+      <ol class="list-decimal list-inside text-zinc-400 text-sm space-y-3 pl-2">
+        <li>
+          <strong class="text-zinc-200">Configure the Header</strong>: Define the token metadata in the Header JSON editor. This includes specifying the token type (<code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">"typ": "JWT"</code>) and the signing algorithm (<code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">"alg"</code>), such as HS256 or RS256.
+        </li>
+        <li>
+          <strong class="text-zinc-200">Define the Payload Claims</strong>: Edit the Payload JSON block to insert your target claims. You can use standard registered claims like <code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">sub</code> (subject), <code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">iss</code> (issuer), <code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">aud</code> (audience), and <code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">exp</code> (expiration time), or inject custom authorization roles and claims.
+        </li>
+        <li>
+          <strong class="text-zinc-200">Select Your Signing Algorithm & Key</strong>: Choose your cryptographic algorithm from the dropdown. For symmetric algorithms (HS256, HS384, HS512), input your secret key. For asymmetric algorithms (RS256, ES256), paste your private key.
+        </li>
+        <li>
+          <strong class="text-zinc-200">Generate & Copy</strong>: The token is encoded dynamically in real-time. Copy the final token string with a single click and use it in your Authorization headers (<code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">Bearer &lt;token&gt;</code>).
+        </li>
+      </ol>
     </div>
 
-    <!-- Rich On-Page SEO Landing Page Content -->
-    <section class="mt-12 border-t border-border-hairline/60 pt-12 max-w-4xl mx-auto w-full">
-      <div class="bg-panel border border-border-hairline rounded-xl p-6 md:p-10 shadow-sm flex flex-col gap-8">
-        
-        <!-- Section: Intro -->
-        <div>
-          <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-            <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-            What is a JSON Web Token (JWT) and Why Do Developers Encode Them?
-          </h2>
-          <p class="text-zinc-400 text-sm leading-relaxed font-sans mb-4">
-            A <strong class="text-zinc-200">JSON Web Token (JWT)</strong> is an open standard (<a href="https://tools.ietf.org/html/rfc7519" target="_blank" rel="noopener noreferrer" class="text-accent-emerald hover:underline">RFC 7519</a>) that defines a compact and self-contained way for securely transmitting information between parties as a JSON object. This information can be verified and trusted because it is digitally signed. JWTs can be signed using a secret (with the HMAC algorithm) or a public/private key pair using RSA or ECDSA.
-          </p>
-          <p class="text-zinc-400 text-sm leading-relaxed font-sans">
-            Developers frequently need to <strong class="text-zinc-200">encode jwt</strong> tokens during the development, testing, and debugging phases of web applications. When building APIs, microservices, or decentralized authorization systems (like OAuth 2.0 or OpenID Connect), authentication tokens must be generated to simulate user log-ins, test edge cases (such as token expiration), and verify that API gateways correctly validate claims. Using a reliable <strong class="text-zinc-200">jwt generator online</strong> allows developers to quickly craft custom payloads, apply cryptographic signatures, and produce valid token strings without writing temporary code in their application.
+    <!-- Section: Features -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Core Features of Our JWT Encoder
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <h3 class="font-mono text-xs font-semibold text-accent-emerald uppercase tracking-wider mb-2">Instant Local Generation</h3>
+          <p class="text-zinc-400 text-xs leading-relaxed">
+            Our tool acts as a high-performance <strong class="text-zinc-300">jwt encoder online</strong> that compiles your JSON structures and signs them in real-time as you type, providing an instant output stream.
           </p>
         </div>
-
-        <!-- Section: How to Use -->
-        <div>
-          <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-            <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-            How to Use the Online JWT Encoder
-          </h2>
-          <p class="text-zinc-400 text-sm leading-relaxed font-sans mb-4">
-            Generating a token with our <strong class="text-zinc-200">online jwt encoder</strong> is straightforward and takes only a few seconds:
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <h3 class="font-mono text-xs font-semibold text-accent-emerald uppercase tracking-wider mb-2">100% Client-Side Security</h3>
+          <p class="text-zinc-400 text-xs leading-relaxed">
+            Privacy is our highest priority. All cryptographic operations, signing, and JSON formatting are executed completely inside your browser via local JavaScript. No secret keys, payloads, or credentials are ever sent to a server.
           </p>
-          <ol class="list-decimal list-inside text-zinc-400 text-sm space-y-3 pl-2">
-            <li>
-              <strong class="text-zinc-200">Configure the Header</strong>: Define the token metadata in the Header JSON editor. This includes specifying the token type (<code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">"typ": "JWT"</code>) and the signing algorithm (<code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">"alg"</code>), such as HS256 or RS256.
-            </li>
-            <li>
-              <strong class="text-zinc-200">Define the Payload Claims</strong>: Edit the Payload JSON block to insert your target claims. You can use standard registered claims like <code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">sub</code> (subject), <code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">iss</code> (issuer), <code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">aud</code> (audience), and <code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">exp</code> (expiration time), or inject custom authorization roles and claims.
-            </li>
-            <li>
-              <strong class="text-zinc-200">Select Your Signing Algorithm & Key</strong>: Choose your cryptographic algorithm from the dropdown. For symmetric algorithms (HS256, HS384, HS512), input your secret key. For asymmetric algorithms (RS256, ES256), paste your private key.
-            </li>
-            <li>
-              <strong class="text-zinc-200">Generate & Copy</strong>: The token is encoded dynamically in real-time. Copy the final token string with a single click and use it in your Authorization headers (<code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">Bearer &lt;token&gt;</code>).
-            </li>
-          </ol>
         </div>
-
-        <!-- Section: Features -->
-        <div>
-          <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-            <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-            Core Features of Our JWT Encoder
-          </h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-              <h3 class="font-mono text-xs font-semibold text-accent-emerald uppercase tracking-wider mb-2">Instant Local Generation</h3>
-              <p class="text-zinc-400 text-xs leading-relaxed">
-                Our tool acts as a high-performance <strong class="text-zinc-300">jwt encoder online</strong> that compiles your JSON structures and signs them in real-time as you type, providing an instant output stream.
-              </p>
-            </div>
-            <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-              <h3 class="font-mono text-xs font-semibold text-accent-emerald uppercase tracking-wider mb-2">100% Client-Side Security</h3>
-              <p class="text-zinc-400 text-xs leading-relaxed">
-                Privacy is our highest priority. All cryptographic operations, signing, and JSON formatting are executed completely inside your browser via local JavaScript. No secret keys, payloads, or credentials are ever sent to a server.
-              </p>
-            </div>
-            <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-              <h3 class="font-mono text-xs font-semibold text-accent-emerald uppercase tracking-wider mb-2">Algorithmic Support</h3>
-              <p class="text-zinc-400 text-xs leading-relaxed">
-                Easily generate tokens using symmetric signature schemes (HMAC SHA-256, SHA-384, SHA-512) or asymmetric key pairs (RSA, ECDSA) to match your backend configurations.
-              </p>
-            </div>
-            <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-              <h3 class="font-mono text-xs font-semibold text-accent-emerald uppercase tracking-wider mb-2">Interactive JSON Checks</h3>
-              <p class="text-zinc-400 text-xs leading-relaxed">
-                Avoid formatting issues with built-in, real-time validation that highlights malformed JSON objects before encoding.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Section: FAQs -->
-        <div>
-          <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-6 flex items-center gap-2">
-            <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-            Frequently Asked Questions (FAQ)
-          </h2>
-          <div class="space-y-4">
-            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
-              <h4 class="font-medium text-zinc-100 text-sm">Is it safe to encode JWTs online?</h4>
-              <p class="text-zinc-400 text-xs mt-2 leading-relaxed">
-                Yes, it is completely safe when using our <strong class="text-zinc-300">online jwt encoder</strong>. Unlike other web utilities that transmit your inputs to a remote server, our tool processes all operations locally in your browser. Your secret keys and private payloads never leave your machine.
-              </p>
-            </div>
-            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
-              <h4 class="font-medium text-zinc-100 text-sm">What is a JWT secret key?</h4>
-              <p class="text-zinc-400 text-xs mt-2 leading-relaxed">
-                A JWT secret key is a secret string used by symmetric signing algorithms (like HS256) to sign and verify JSON Web Tokens. The security of the token depends entirely on keeping this key secret. If an attacker gains access to the secret key, they can forge valid tokens and bypass authentication checks.
-              </p>
-            </div>
-            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
-              <h4 class="font-medium text-zinc-100 text-sm">What is the difference between HS256 and RS256 encoding?</h4>
-              <p class="text-zinc-400 text-xs mt-2 leading-relaxed">
-                HS256 (HMAC with SHA-256) is a symmetric algorithm, meaning a single shared secret key is used to both sign and verify the token. RS256 (RSA Signature with SHA-256) is an asymmetric algorithm, which utilizes a private key to sign the token and a corresponding public key to verify it. RS256 is highly recommended for multi-service environments where verification keys are distributed publicly.
-              </p>
-            </div>
-            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
-              <h4 class="font-medium text-zinc-100 text-sm">How do I encode a JWT with an expiration time (exp claim)?</h4>
-              <p class="text-zinc-400 text-xs mt-2 leading-relaxed">
-                In a JSON Web Token, the expiration time is specified by the <code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1">exp</code> claim in the payload. It must be formatted as a Unix timestamp (in seconds, not milliseconds). For example, to set the token to expire 1 hour from now, you calculate: <code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1">Math.floor(Date.now() / 1000) + 3600</code>.
-              </p>
-            </div>
-            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
-              <h4 class="font-medium text-zinc-100 text-sm">What cryptographic algorithms are supported by the online JWT encoder?</h4>
-              <p class="text-zinc-400 text-xs mt-2 leading-relaxed">
-                Our tool supports a wide array of signing algorithms. This includes HMAC symmetric algorithms (<code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1">HS256</code>, <code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1">HS384</code>, <code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1">HS512</code>) which use a shared secret key, and RSA/ECDSA asymmetric algorithms (<code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1">RS256</code>, <code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1">RS384</code>, <code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1">RS512</code>, <code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1">ES256</code>, <code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1">ES384</code>, <code class="font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1">ES512</code>) which require a private signing key.
-              </p>
-            </div>
-            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
-              <h4 class="font-medium text-zinc-100 text-sm">Can a JWT be edited after it has been encoded and signed?</h4>
-              <p class="text-zinc-400 text-xs mt-2 leading-relaxed">
-                No. Once a JWT is signed and encoded, any modification to the header or payload will invalidate the signature. Because the signature is calculated based on the encoded header and payload, changing even a single character in the claims will result in signature verification failures at your API gateway or backend server. To make edits, you must update the JSON and generate a new token.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Section: Site Links -->
-        <div class="border-t border-border-hairline/40 pt-6 mt-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
-          <p class="text-zinc-400">
-            Need more information about our local-only execution and terms?
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <h3 class="font-mono text-xs font-semibold text-accent-emerald uppercase tracking-wider mb-2">Algorithmic Support</h3>
+          <p class="text-zinc-400 text-xs leading-relaxed">
+            Easily generate tokens using symmetric signature schemes (HMAC SHA-256, SHA-384, SHA-512) or asymmetric key pairs (RSA, ECDSA) to match your backend configurations.
           </p>
-          <div class="flex items-center gap-3">
-            <a href="/about" class="text-accent-emerald hover:underline font-mono">About Us</a>
-            <span class="text-zinc-800">•</span>
-            <a href="/privacy" class="text-accent-emerald hover:underline font-mono">Privacy Policy</a>
-            <span class="text-zinc-800">•</span>
-            <a href="/terms" class="text-accent-emerald hover:underline font-mono">Terms & Conditions</a>
-            <span class="text-zinc-800">•</span>
-            <a href="/contact" class="text-accent-emerald hover:underline font-mono">Contact Us</a>
-          </div>
         </div>
-
-      </div>
-    </section>
-
-    <!-- Schema-Ready JSON-LD for FAQ Page -->
-    <script type="application/ld+json" is:inline>
-      {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "Is it safe to encode JWTs online?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes, it is completely safe when using our online jwt encoder. Unlike other web utilities that transmit your inputs to a remote server, our tool processes all operations locally in your browser. Your secret keys and private payloads never leave your machine."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "What is a JWT secret key?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "A JWT secret key is a secret string used by symmetric signing algorithms (like HS256) to sign and verify JSON Web Tokens. The security of the token depends entirely on keeping this key secret. If an attacker gains access to the secret key, they can forge valid tokens and bypass authentication checks."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "What is the difference between HS256 and RS256 encoding?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "HS256 (HMAC with SHA-256) is a symmetric algorithm, meaning a single shared secret key is used to both sign and verify the token. RS256 (RSA Signature with SHA-256) is an asymmetric algorithm, which utilizes a private key to sign the token and a corresponding public key to verify it. RS256 is highly recommended for multi-service environments where verification keys are distributed publicly."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How do I encode a JWT with an expiration time (exp claim)?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "In a JSON Web Token, the expiration time is specified by the exp claim in the payload. It must be formatted as a Unix timestamp (in seconds, not milliseconds). For example, to set the token to expire 1 hour from now, you calculate: Math.floor(Date.now() / 1000) + 3600."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "What cryptographic algorithms are supported by the online JWT encoder?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Our tool supports a wide array of signing algorithms. This includes HMAC symmetric algorithms (HS256, HS384, HS512) which use a shared secret key, and RSA/ECDSA asymmetric algorithms (RS256, RS384, RS512, ES256, ES384, ES512) which require a private signing key."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Can a JWT be edited after it has been encoded and signed?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "No. Once a JWT is signed and encoded, any modification to the header or payload will invalidate the signature. Because the signature is calculated based on the encoded header and payload, changing even a single character in the claims will result in signature verification failures at your API gateway or backend server. To make edits, you must update the JSON and generate a new token."
-            }
-          }
-        ]
-      }
-    </script>
-  </main>
-
-  <!-- Footer Section -->
-  <footer class="w-full bg-canvas border-t border-border-hairline mt-auto">
-    <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
-      <div class="flex flex-col md:flex-row items-center gap-2 md:gap-4">
-        <span>© 2026 useUtils.com</span>
-        <span class="hidden md:inline text-zinc-800">•</span>
-        <div class="flex items-center gap-3">
-          <a href="/about" class="hover:text-zinc-350 transition-colors">About Us</a>
-          <span class="text-zinc-800">•</span>
-          <a href="/privacy" class="hover:text-zinc-350 transition-colors">Privacy Policy</a>
-          <span class="text-zinc-800">•</span>
-          <a href="/terms" class="hover:text-zinc-350 transition-colors">Terms & Conditions</a>
-          <span class="text-zinc-800">•</span>
-          <a href="/contact" class="hover:text-zinc-350 transition-colors">Contact Us</a>
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <h3 class="font-mono text-xs font-semibold text-accent-emerald uppercase tracking-wider mb-2">Interactive JSON Checks</h3>
+          <p class="text-zinc-400 text-xs leading-relaxed">
+            Avoid formatting issues with built-in, real-time validation that highlights malformed JSON objects before encoding.
+          </p>
         </div>
-      </div>
-      <div class="flex items-center gap-4">
-        <span class="flex items-center gap-1.5 text-accent-emerald">
-          <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
-          Secure Client Sandbox
-        </span>
       </div>
     </div>
-  </footer>
-</Layout>
+  </div>
+</ToolPageLayout>

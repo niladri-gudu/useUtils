@@ -852,13 +852,13 @@ export const P2PShare: React.FC<P2PShareProps> = ({ roomId: initialRoomId }) => 
   const activePeersList = Object.values(receiverPeers);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full max-w-7xl mx-auto">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full max-w-7xl mx-auto items-stretch">
       
       {/* Left Pane: Ingestion & Control Panel */}
       <div className="flex flex-col gap-6">
         
         {/* Dropzone or Active File Info */}
-        <div className="bg-panel border border-border-hairline rounded-xl p-6 flex flex-col gap-4 shadow-sm">
+        <div className="bg-panel border border-border-hairline rounded-xl p-6 flex flex-col gap-4 shadow-sm flex-grow">
           <div className="flex items-center justify-between pb-2 border-b border-border-hairline/60">
             <h3 className="text-sm font-semibold text-zinc-50 flex items-center gap-2">
               <span className={`w-1.5 h-1.5 rounded-full ${role === 'sender' ? 'bg-accent-emerald' : 'bg-indigo-400'}`}></span>
@@ -873,7 +873,7 @@ export const P2PShare: React.FC<P2PShareProps> = ({ roomId: initialRoomId }) => 
             <div
               onDragOver={handleDragOver}
               onDrop={handleDrop}
-              className="border-2 border-dashed border-zinc-800 hover:border-accent-emerald/40 hover:bg-zinc-900/10 rounded-lg p-10 flex flex-col items-center justify-center gap-3 text-center cursor-pointer transition-all group"
+              className="border-2 border-dashed border-zinc-800 hover:border-accent-emerald/40 hover:bg-zinc-900/10 rounded-lg p-10 flex flex-col items-center justify-center gap-3 text-center cursor-pointer transition-all group flex-grow"
               onClick={() => document.getElementById('file-picker')?.click()}
             >
               <input
@@ -971,22 +971,6 @@ export const P2PShare: React.FC<P2PShareProps> = ({ roomId: initialRoomId }) => 
               </button>
             </div>
           )}
-        </div>
-
-        {/* Local Sandboxed Status Pill */}
-        <div className="bg-panel border border-border-hairline rounded-xl p-4 flex items-center justify-between shadow-sm">
-          <div className="flex items-center gap-3">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
-            </span>
-            <span className="text-[11px] font-mono text-zinc-300">
-              Processed locally in browser. Zero server transmission.
-            </span>
-          </div>
-          <span className="text-[9px] text-zinc-400 font-mono bg-zinc-900 border border-border-hairline px-2 py-0.5 rounded">
-            100% PRIVATE
-          </span>
         </div>
 
       </div>

@@ -855,22 +855,6 @@ export const JwtDecoder: React.FC = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto flex flex-col gap-6">
-      {/* Privacy Guarantee Banner */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-panel border border-border-hairline rounded-lg px-4 py-3">
-        <div className="flex items-center gap-2.5">
-          <span className="flex h-2.5 w-2.5 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent-emerald"></span>
-          </span>
-          <span className="text-xs md:text-sm text-zinc-300 font-medium font-sans">
-            Processed locally in browser. Zero server transmission.
-          </span>
-        </div>
-        <div className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">
-          100% Privacy Assurance
-        </div>
-      </div>
-
       {/* Two-Column Editor Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
         {/* Left Side: Input Pane */}

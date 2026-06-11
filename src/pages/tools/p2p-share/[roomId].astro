@@ -1,293 +1,80 @@
 ---
 export const prerender = false;
 
-import Layout from '../../../layouts/Layout.astro';
+import ToolPageLayout from '../../../layouts/ToolPageLayout.astro';
 import { P2PShare } from '../../../components/P2PShare';
 
 const { roomId } = Astro.params;
+
+const faqs = [
+  {
+    question: "Where are my files stored during transfer?",
+    answer: "Nowhere but your own devices. The files are not uploaded to any server. They are read into the sender's browser memory as chunks, sent over a direct encrypted WebRTC link, and compiled into memory by the receiver's browser."
+  },
+  {
+    question: "Can I close the sender browser tab?",
+    answer: "No. Because the file transfer is active peer-to-peer, closing either the sender or receiver tab will terminate the connection immediately. Both browsers must remain active and open until the transaction reaches 100% completion."
+  },
+  {
+    question: "Why is the connection failing or stuck at \"Connecting\"?",
+    answer: "WebRTC requires establishing a direct IP-to-IP path. If both devices are behind symmetric NAT routers (very common in corporate networks or guest Wi-Fi networks), they cannot discover a direct route without a TURN relay. If this happens, try switching both devices to the same local network, or use a cellular hotspot to bypass strict firewall configurations."
+  },
+  {
+    question: "Can I transfer multiple files at once?",
+    answer: "Currently, our P2P sharing utility supports transferring one file at a time per room connection. If you need to share multiple files, we recommend compiling them into a single archive format (like `.zip`, `.tar.gz`, or `.rar`) on your machine before dropping it into the workspace."
+  },
+  {
+    question: "What is the maximum file size limit for WebRTC transfers?",
+    answer: "Technically, there is no hard file size limit since the data is streamed as continuous binary chunks. However, because modern browsers store the incoming chunks in the browser's temporary memory (RAM) buffer, transfers are limited by the receiver's available system memory. For a smooth experience, we recommend files up to 1GB."
+  },
+  {
+    question: "Is 1-to-many P2P file sharing supported?",
+    answer: "Yes! Our tool fully supports 1-to-many sharing. A single sender can generate a room and share the link with multiple receivers. The sender's browser will open independent WebRTC peer connections with each receiver, streaming the file to them simultaneously. Each receiver's transfer runs at its own optimal speed based on their network capability."
+  },
+  {
+    question: "How is the file transfer speed determined in WebRTC?",
+    answer: "Transfer speed depends entirely on the network bandwidth of both the sender and the receiver. Because WebRTC establishes a direct path, if both devices are on the same local network (LAN) or Wi-Fi, the speeds can reach the maximum rate of your local hardware (often 100 Mbps to 1 Gbps+), completely bypassing external internet speeds. If transferring over the internet (WAN), the speed is capped by the sender's upload bandwidth and the receiver's download bandwidth."
+  },
+  {
+    question: "Does this tool require active internet connection once the transfer starts?",
+    answer: "Yes and no. The initial handshake (exchanging SDP profiles and ICE candidate routes) requires connection to our signaling server, which runs on the internet. Once the browsers establish the direct peer-to-peer WebRTC connection, all file data flows directly between them. If both devices are in the same local network, you could theoretically unplug the external internet connection, and the local P2P transfer will continue uninterrupted."
+  },
+  {
+    question: "Is my data safe from network eavesdroppers or ISPs?",
+    answer: "Absolutely. WebRTC uses mandatory DTLS (Datagram Transport Layer Security) and SRTP (Secure Real-time Transport Protocol) encryption for all data channels. This means the file streams are encrypted end-to-end with keys generated dynamically during the initial handshake. Not even our signaling server, your network administrator, or your ISP can inspect, read, or tamper with the payloads in transit."
+  },
+  {
+    question: "Can I resume a paused or interrupted transfer?",
+    answer: "Since our P2P share tool operates entirely in the browser memory without any server storage, it does not support connection resumption or checkpointing. If the connection drops or a browser tab is accidentally closed, the transfer state is cleared from the browser's temporary memory. You will need to re-open the room link and restart the file transfer from the beginning."
+  }
+];
 ---
 
-<Layout 
-  title="Receive File Privately: Secure P2P WebRTC Transfer" 
+<ToolPageLayout
+  title="Receive File Privately: Secure P2P WebRTC Transfer"
   description="Receive files directly inside your browser over an encrypted, peer-to-peer WebRTC data channel with zero server retention or transit logs."
   keywords="p2p file sharing, receive files directly, secure file transfer, private file sharing online, webrtc receiver"
   noindex={true}
+  toolTitle="P2P File Share"
+  toolDescription="Secure, client-side peer-to-peer file sharing. Your files are encrypted in transit and streamed directly between browsers using WebRTC with zero server storage."
+  faqs={faqs}
 >
-  <!-- Main Navigation Header -->
-  <header class="w-full bg-canvas border-b border-border-hairline h-14 sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto h-full px-4 flex items-center justify-between">
-      <!-- Left side: Brand -->
-      <a href="/" class="flex items-center gap-2 group">
-        <div class="w-6 h-6 rounded bg-accent-emerald flex items-center justify-center font-mono font-black text-black text-sm select-none">
-          u
-        </div>
-        <span class="font-sans font-semibold text-zinc-50 tracking-tight group-hover:text-accent-emerald transition-colors">
-          useUtils
-        </span>
-      </a>
+  <P2PShare client:only="react" roomId={roomId} />
 
-      <!-- Right side: Version -->
-      <div class="flex items-center gap-3">
-        <button
-          type="button"
-          class="theme-toggle-btn p-2 rounded-lg bg-zinc-900 border border-border-hairline text-zinc-400 hover:text-zinc-50 hover:bg-zinc-850 transition-all cursor-pointer flex items-center justify-center"
-          aria-label="Toggle dark/light theme"
-        >
-          <!-- Sun Icon (visible in dark mode) -->
-          <svg class="theme-sun-icon w-4.5 h-4.5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
-          </svg>
-          <!-- Moon Icon (visible in light mode) -->
-          <svg class="theme-moon-icon w-4.5 h-4.5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-          </svg>
-        </button>
-        <span class="text-[10px] md:text-xs text-zinc-400 font-mono bg-zinc-900 border border-border-hairline rounded px-2.5 py-1">
-          v1.0.0
-        </span>
-      </div>
+  <!-- Detailed SEO articles about receiving P2P WebRTC file transfers -->
+  <div slot="seo-content" class="flex flex-col gap-8">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Receiving Files Safely Point-to-Point
+      </h2>
+      <p class="text-zinc-400 text-sm leading-relaxed font-sans mb-4">
+        You have accessed a secure, direct file transfer room. When you load this page, your browser automatically connects to a temporary signaling server to coordinates a WebRTC handshake with the sender.
+      </p>
+      <p class="text-zinc-400 text-sm leading-relaxed font-sans">
+        Once the connection is established, the sender will read the file and stream it directly into your browser using standard, secure datagram tunnels. Absolutely zero data goes to a server, and the file is compiled dynamically inside your local browser memory sandbox.
+      </p>
     </div>
-  </header>
-
-  <!-- Main Body Content -->
-  <main class="flex-grow w-full max-w-7xl mx-auto px-4 py-8 flex flex-col gap-6">
-    <!-- Hero / Title Header Section -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pt-2 pb-6 border-b border-border-hairline/60">
-      <div class="flex flex-col gap-2">
-        <h1 class="text-2xl md:text-3xl font-semibold tracking-tight text-zinc-50">
-          P2P File Share
-        </h1>
-        <p class="text-zinc-400 text-sm max-w-2xl leading-relaxed font-sans">
-          Secure, client-side peer-to-peer file sharing. Your files are encrypted in transit and streamed directly between browsers using WebRTC with zero server storage.
-        </p>
-      </div>
-    </div>
-
-    <!-- Mount React P2P Share Component (Receiver Mode) -->
-    <div class="py-2">
-      <P2PShare client:only="react" roomId={roomId} />
-    </div>
-
-    <!-- Rich On-Page SEO Landing Page Content -->
-    <section class="mt-12 border-t border-border-hairline/60 pt-12 max-w-4xl mx-auto w-full">
-      <div class="bg-panel border border-border-hairline rounded-xl p-6 md:p-10 shadow-sm flex flex-col gap-8">
-        
-        <!-- Section: Intro -->
-        <div>
-          <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-            <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-            Receiving Files Safely Point-to-Point
-          </h2>
-          <p class="text-zinc-400 text-sm leading-relaxed font-sans mb-4">
-            You have accessed a secure, direct file transfer room. When you load this page, your browser automatically connects to a temporary signaling server to coordinates a WebRTC handshake with the sender.
-          </p>
-          <p class="text-zinc-400 text-sm leading-relaxed font-sans">
-            Once the connection is established, the sender will read the file and stream it directly into your browser using standard, secure datagram tunnels. Absolutely zero data goes to a server, and the file is compiled dynamically inside your local browser memory sandbox.
-          </p>
-        </div>
-
-        <!-- Section: FAQs -->
-        <div>
-          <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-6 flex items-center gap-2">
-            <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-            Frequently Asked Questions (FAQ)
-          </h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
-              <h4 class="font-medium text-zinc-100 text-sm">Where are my files stored during transfer?</h4>
-              <p class="text-zinc-400 text-xs mt-2 leading-relaxed font-sans">
-                Nowhere but your own devices. The files are not uploaded to any server. They are read into the sender's browser memory as chunks, sent over a direct encrypted WebRTC link, and compiled into memory by the receiver's browser.
-              </p>
-            </div>
-            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
-              <h4 class="font-medium text-zinc-100 text-sm">Can I close the sender browser tab?</h4>
-              <p class="text-zinc-400 text-xs mt-2 leading-relaxed font-sans">
-                No. Because the file transfer is active peer-to-peer, closing either the sender or receiver tab will terminate the connection immediately. Both browsers must remain active and open until the transaction reaches 100% completion.
-              </p>
-            </div>
-            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
-              <h4 class="font-medium text-zinc-100 text-sm">Why is the connection failing or stuck at "Connecting"?</h4>
-              <p class="text-zinc-400 text-xs mt-2 leading-relaxed font-sans">
-                WebRTC requires establishing a direct IP-to-IP path. If both devices are behind symmetric NAT routers (very common in corporate networks or guest Wi-Fi networks), they cannot discover a direct route without a TURN relay. If this happens, try switching both devices to the same local network, or use a cellular hotspot to bypass strict firewall configurations.
-              </p>
-            </div>
-            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
-              <h4 class="font-medium text-zinc-100 text-sm">Can I transfer multiple files at once?</h4>
-              <p class="text-zinc-400 text-xs mt-2 leading-relaxed font-sans">
-                Currently, our P2P sharing utility supports transferring one file at a time per room connection. If you need to share multiple files, we recommend compiling them into a single archive format (like `.zip`, `.tar.gz`, or `.rar`) on your machine before dropping it into the workspace.
-              </p>
-            </div>
-            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
-              <h4 class="font-medium text-zinc-100 text-sm">What is the maximum file size limit for WebRTC transfers?</h4>
-              <p class="text-zinc-400 text-xs mt-2 leading-relaxed font-sans">
-                Technically, there is no hard file size limit since the data is streamed as continuous binary chunks. However, because modern browsers store the incoming chunks in the browser's temporary memory (RAM) buffer, transfers are limited by the receiver's available system memory. For a smooth experience, we recommend files up to 1GB.
-              </p>
-            </div>
-            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
-              <h4 class="font-medium text-zinc-100 text-sm">Is 1-to-many P2P file sharing supported?</h4>
-              <p class="text-zinc-400 text-xs mt-2 leading-relaxed font-sans">
-                Yes! Our tool fully supports 1-to-many sharing. A single sender can generate a room and share the link with multiple receivers. The sender's browser will open independent WebRTC peer connections with each receiver, streaming the file to them simultaneously. Each receiver's transfer runs at its own optimal speed based on their network capability.
-              </p>
-            </div>
-            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
-              <h4 class="font-medium text-zinc-100 text-sm">How is the file transfer speed determined in WebRTC?</h4>
-              <p class="text-zinc-400 text-xs mt-2 leading-relaxed font-sans">
-                Transfer speed depends entirely on the network bandwidth of both the sender and the receiver. Because WebRTC establishes a direct path, if both devices are on the same local network (LAN) or Wi-Fi, the speeds can reach the maximum rate of your local hardware (often 100 Mbps to 1 Gbps+), completely bypassing external internet speeds. If transferring over the internet (WAN), the speed is capped by the sender's upload bandwidth and the receiver's download bandwidth.
-              </p>
-            </div>
-            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
-              <h4 class="font-medium text-zinc-100 text-sm">Does this tool require active internet connection once the transfer starts?</h4>
-              <p class="text-zinc-400 text-xs mt-2 leading-relaxed font-sans">
-                Yes and no. The initial handshake (exchanging SDP profiles and ICE candidate routes) requires connection to our signaling server, which runs on the internet. Once the browsers establish the direct peer-to-peer WebRTC connection, all file data flows directly between them. If both devices are in the same local network, you could theoretically unplug the external internet connection, and the local P2P transfer will continue uninterrupted.
-              </p>
-            </div>
-            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
-              <h4 class="font-medium text-zinc-100 text-sm">Is my data safe from network eavesdroppers or ISPs?</h4>
-              <p class="text-zinc-400 text-xs mt-2 leading-relaxed font-sans">
-                Absolutely. WebRTC uses mandatory DTLS (Datagram Transport Layer Security) and SRTP (Secure Real-time Transport Protocol) encryption for all data channels. This means the file streams are encrypted end-to-end with keys generated dynamically during the initial handshake. Not even our signaling server, your network administrator, or your ISP can inspect, read, or tamper with the payloads in transit.
-              </p>
-            </div>
-            <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
-              <h4 class="font-medium text-zinc-100 text-sm">Can I resume a paused or interrupted transfer?</h4>
-              <p class="text-zinc-400 text-xs mt-2 leading-relaxed font-sans">
-                Since our P2P share tool operates entirely in the browser memory without any server storage, it does not support connection resumption or checkpointing. If the connection drops or a browser tab is accidentally closed, the transfer state is cleared from the browser's temporary memory. You will need to re-open the room link and restart the file transfer from the beginning.
-              </p>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- Schema-Ready JSON-LD for FAQ Page & SoftwareApplication -->
-    <script type="application/ld+json" is:inline>
-      {
-        "@context": "https://schema.org",
-        "@graph": [
-          {
-            "@type": "SoftwareApplication",
-            "name": "P2P File Share",
-            "operatingSystem": "All",
-            "applicationCategory": "DeveloperApplication",
-            "offers": {
-              "@type": "Offer",
-              "price": "0",
-              "priceCurrency": "USD"
-            },
-            "description": "Secure, privacy-first peer-to-peer file sharing utility using WebRTC for serverless browser-to-browser streaming."
-          },
-          {
-            "@type": "FAQPage",
-            "mainEntity": [
-              {
-                "@type": "Question",
-                "name": "Where are my files stored during transfer?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Nowhere but your own devices. The files are not uploaded to any server. They are read into the sender's browser memory as chunks, sent over a direct encrypted WebRTC link, and compiled into memory by the receiver's browser."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "Can I close the sender browser tab?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "No. Because the file transfer is active peer-to-peer, closing either the sender or receiver tab will terminate the connection immediately. Both browsers must remain active and open until the transaction reaches 100% completion."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "Why is the connection failing or stuck at 'Connecting'?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "WebRTC requires establishing a direct IP-to-IP path. If both devices are behind symmetric NAT routers, they cannot discover a direct route. Try switching both devices to the same local network, or use a cellular hotspot to bypass strict firewall configurations."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "Can I transfer multiple files at once?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Currently, our P2P sharing utility supports transferring one file at a time per room connection. If you need to share multiple files, we recommend compiling them into a single archive format (like .zip, .tar.gz, or .rar) on your machine before dropping it into the workspace."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "What is the maximum file size limit for WebRTC transfers?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Technically, there is no hard file size limit since the data is streamed as continuous binary chunks. However, because modern browsers store the incoming chunks in the browser's temporary memory (RAM) buffer, transfers are limited by the receiver's available system memory. For a smooth experience, we recommend files up to 1GB."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "Is 1-to-many P2P file sharing supported?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Yes! Our tool fully supports 1-to-many sharing. A single sender can generate a room and share the link with multiple receivers. The sender's browser will open independent WebRTC peer connections with each receiver, streaming the file to them simultaneously."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "How is the file transfer speed determined in WebRTC?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Transfer speed depends entirely on the network bandwidth of both the sender and the receiver. Because WebRTC establishes a direct path, if both devices are on the same local network (LAN) or Wi-Fi, the speeds can reach the maximum rate of your local hardware (often 100 Mbps to 1 Gbps+), completely bypassing external internet speeds. If transferring over the internet (WAN), the speed is capped by the sender's upload bandwidth and the receiver's download bandwidth."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "Does this tool require active internet connection once the transfer starts?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Yes and no. The initial handshake requires connection to our signaling server to exchange connection profiles (SDP and ICE candidates). Once the browsers establish the direct peer-to-peer WebRTC connection, all file data flows directly between them, bypassing the internet signaling server."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "Is my data safe from network eavesdroppers or ISPs?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Absolutely. WebRTC uses mandatory DTLS (Datagram Transport Layer Security) and SRTP (Secure Real-time Transport Protocol) encryption for all data channels. This means the file streams are encrypted end-to-end with keys generated dynamically during the initial handshake. Not even our signaling server, network administrators, or your ISP can inspect, read, or tamper with the payloads in transit."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "Can I resume a paused or interrupted transfer?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Since our P2P share tool operates entirely in the browser memory without any server storage, it does not support connection resumption or checkpointing. If the connection drops or a browser tab is accidentally closed, the transfer state is cleared from the browser's temporary memory. You will need to re-open the room link and restart the file transfer from the beginning."
-                }
-              }
-            ]
-          }
-        ]
-      }
-    </script>
-  </main>
-
-  <!-- Footer Section -->
-  <footer class="w-full bg-canvas border-t border-border-hairline mt-auto">
-    <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
-      <div class="flex flex-col md:flex-row items-center gap-2 md:gap-4">
-        <span>© 2026 useUtils.com</span>
-        <span class="hidden md:inline text-zinc-800">•</span>
-        <div class="flex items-center gap-3">
-          <a href="/about" class="hover:text-zinc-350 transition-colors">About Us</a>
-          <span class="text-zinc-800">•</span>
-          <a href="/privacy" class="hover:text-zinc-350 transition-colors">Privacy Policy</a>
-          <span class="text-zinc-800">•</span>
-          <a href="/terms" class="hover:text-zinc-350 transition-colors">Terms & Conditions</a>
-          <span class="text-zinc-800">•</span>
-          <a href="/contact" class="hover:text-zinc-350 transition-colors">Contact Us</a>
-        </div>
-      </div>
-      <div class="flex items-center gap-4">
-        <span class="flex items-center gap-1.5 text-accent-emerald">
-          <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
-          Secure Client Sandbox
-        </span>
-      </div>
-    </div>
-  </footer>
-</Layout>
+  </div>
+</ToolPageLayout>

@@ -504,6 +504,47 @@ export const ColorConverter: React.FC = () => {
     }
   };
 
+  // Handle palette color selection
+  const handleSelectColor = (hex: string) => {
+    const parsed = parseColorString(hex);
+    if (parsed) {
+      updateFromRgb(parsed.r, parsed.g, parsed.b, parsed.a);
+    }
+  };
+
+  // Render a color block with copy overlay in harmonious palettes
+  const renderPaletteBlock = (colorHex: string, label: string) => {
+    const isCopied = copiedFormat === colorHex;
+    return (
+      <div 
+        className="relative flex-1 group cursor-pointer transition-transform hover:scale-105" 
+        style={{ backgroundColor: colorHex }}
+        onClick={() => handleSelectColor(colorHex)}
+        title={`${label}: ${colorHex}`}
+      >
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            triggerCopy(colorHex, colorHex);
+          }}
+          className="absolute top-1 right-1 p-0.5 rounded bg-zinc-950/85 hover:bg-zinc-950 border border-zinc-850 shadow-sm cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+          title={`Copy: ${colorHex}`}
+        >
+          {isCopied ? (
+            <svg className="w-3 h-3 text-accent-emerald" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          ) : (
+            <svg className="w-3 h-3 text-zinc-400 hover:text-zinc-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+            </svg>
+          )}
+        </button>
+      </div>
+    );
+  };
+
   // Computed Values
   const activeColorHex = rgbToHex(r, g, b, a);
   const activeColorRgb = a < 1 ? `rgba(${r}, ${g}, ${b}, ${a})` : `rgb(${r}, ${g}, ${b})`;
@@ -597,9 +638,14 @@ export const ColorConverter: React.FC = () => {
                   title="Generate Random Color"
                   className="p-1 hover:bg-zinc-800 rounded text-zinc-400 hover:text-zinc-50 cursor-pointer transition-colors"
                 >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.5" />
-                  </svg>
+<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  <path 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    strokeWidth={2} 
+    d="M12 3a9 9 0 000 18h1a3 3 0 003-3v-1a2 2 0 012-2h1a3 3 0 003-3V9a6 6 0 00-6-6h-4zM7.5 10.5a1 1 0 110-2 1 1 0 010 2zm4-2.5a1 1 0 110-2 1 1 0 010 2zm5 3.5a1 1 0 110-2 1 1 0 010 2z" 
+  />
+</svg>
                 </button>
                 {/* Native Picker Trigger */}
                 <div className="relative w-6 h-6 rounded border border-zinc-700 overflow-hidden cursor-pointer bg-zinc-850">
@@ -1057,7 +1103,7 @@ export const ColorConverter: React.FC = () => {
             Harmonious Color Palettes
           </h2>
           <p className="text-[11px] text-zinc-500 font-sans mt-1">
-            Generated color harmonies based on the currently active color coordinates. Click any color block to copy its HEX value.
+            Generated color harmonies based on the currently active color coordinates. Click a block to select it, or hover to copy its HEX value.
           </p>
         </div>
 
@@ -1067,18 +1113,8 @@ export const ColorConverter: React.FC = () => {
           <div className="flex flex-col gap-2 bg-zinc-900/40 border border-zinc-850 p-3.5 rounded-lg">
             <h3 className="text-xs font-mono font-bold text-zinc-300 uppercase tracking-wide">Complementary</h3>
             <div className="flex items-stretch rounded overflow-hidden h-14 border border-zinc-950 bg-zinc-950">
-              <div 
-                className="flex-1 cursor-pointer transition-transform hover:scale-105" 
-                style={{ backgroundColor: activeColorHex }}
-                onClick={() => triggerCopy(activeColorHex, 'palette')}
-                title={`Active: ${activeColorHex}`}
-              />
-              <div 
-                className="flex-1 cursor-pointer transition-transform hover:scale-105" 
-                style={{ backgroundColor: complementaryHex }}
-                onClick={() => triggerCopy(complementaryHex, 'palette')}
-                title={`Complementary: ${complementaryHex}`}
-              />
+              {renderPaletteBlock(activeColorHex, 'Active')}
+              {renderPaletteBlock(complementaryHex, 'Complementary')}
             </div>
             <div className="flex justify-between text-[9px] font-mono text-zinc-500">
               <span>{activeColorHex}</span>
@@ -1090,24 +1126,9 @@ export const ColorConverter: React.FC = () => {
           <div className="flex flex-col gap-2 bg-zinc-900/40 border border-zinc-850 p-3.5 rounded-lg">
             <h3 className="text-xs font-mono font-bold text-zinc-300 uppercase tracking-wide">Analogous</h3>
             <div className="flex items-stretch rounded overflow-hidden h-14 border border-zinc-950 bg-zinc-950">
-              <div 
-                className="flex-1 cursor-pointer transition-transform hover:scale-105" 
-                style={{ backgroundColor: analogous1Hex }}
-                onClick={() => triggerCopy(analogous1Hex, 'palette')}
-                title={`Analogous 1: ${analogous1Hex}`}
-              />
-              <div 
-                className="flex-1 cursor-pointer transition-transform hover:scale-105" 
-                style={{ backgroundColor: activeColorHex }}
-                onClick={() => triggerCopy(activeColorHex, 'palette')}
-                title={`Active: ${activeColorHex}`}
-              />
-              <div 
-                className="flex-1 cursor-pointer transition-transform hover:scale-105" 
-                style={{ backgroundColor: analogous2Hex }}
-                onClick={() => triggerCopy(analogous2Hex, 'palette')}
-                title={`Analogous 2: ${analogous2Hex}`}
-              />
+              {renderPaletteBlock(analogous1Hex, 'Analogous 1')}
+              {renderPaletteBlock(activeColorHex, 'Active')}
+              {renderPaletteBlock(analogous2Hex, 'Analogous 2')}
             </div>
             <div className="flex justify-between text-[9px] font-mono text-zinc-500">
               <span>{analogous1Hex}</span>
@@ -1119,24 +1140,9 @@ export const ColorConverter: React.FC = () => {
           <div className="flex flex-col gap-2 bg-zinc-900/40 border border-zinc-850 p-3.5 rounded-lg">
             <h3 className="text-xs font-mono font-bold text-zinc-300 uppercase tracking-wide">Triadic</h3>
             <div className="flex items-stretch rounded overflow-hidden h-14 border border-zinc-950 bg-zinc-950">
-              <div 
-                className="flex-1 cursor-pointer transition-transform hover:scale-105" 
-                style={{ backgroundColor: activeColorHex }}
-                onClick={() => triggerCopy(activeColorHex, 'palette')}
-                title={`Active: ${activeColorHex}`}
-              />
-              <div 
-                className="flex-1 cursor-pointer transition-transform hover:scale-105" 
-                style={{ backgroundColor: triadic1Hex }}
-                onClick={() => triggerCopy(triadic1Hex, 'palette')}
-                title={`Triadic 1: ${triadic1Hex}`}
-              />
-              <div 
-                className="flex-1 cursor-pointer transition-transform hover:scale-105" 
-                style={{ backgroundColor: triadic2Hex }}
-                onClick={() => triggerCopy(triadic2Hex, 'palette')}
-                title={`Triadic 2: ${triadic2Hex}`}
-              />
+              {renderPaletteBlock(activeColorHex, 'Active')}
+              {renderPaletteBlock(triadic1Hex, 'Triadic 1')}
+              {renderPaletteBlock(triadic2Hex, 'Triadic 2')}
             </div>
             <div className="flex justify-between text-[9px] font-mono text-zinc-500">
               <span>{activeColorHex}</span>
@@ -1148,36 +1154,11 @@ export const ColorConverter: React.FC = () => {
           <div className="flex flex-col gap-2 bg-zinc-900/40 border border-zinc-850 p-3.5 rounded-lg">
             <h3 className="text-xs font-mono font-bold text-zinc-300 uppercase tracking-wide">Monochromatic</h3>
             <div className="flex items-stretch rounded overflow-hidden h-14 border border-zinc-950 bg-zinc-950">
-              <div 
-                className="flex-1 cursor-pointer transition-transform hover:scale-105" 
-                style={{ backgroundColor: mono1Hex }}
-                onClick={() => triggerCopy(mono1Hex, 'palette')}
-                title={`Darker 2: ${mono1Hex}`}
-              />
-              <div 
-                className="flex-1 cursor-pointer transition-transform hover:scale-105" 
-                style={{ backgroundColor: mono2Hex }}
-                onClick={() => triggerCopy(mono2Hex, 'palette')}
-                title={`Darker 1: ${mono2Hex}`}
-              />
-              <div 
-                className="flex-1 cursor-pointer transition-transform hover:scale-105" 
-                style={{ backgroundColor: activeColorHex }}
-                onClick={() => triggerCopy(activeColorHex, 'palette')}
-                title={`Active: ${activeColorHex}`}
-              />
-              <div 
-                className="flex-1 cursor-pointer transition-transform hover:scale-105" 
-                style={{ backgroundColor: mono3Hex }}
-                onClick={() => triggerCopy(mono3Hex, 'palette')}
-                title={`Lighter 1: ${mono3Hex}`}
-              />
-              <div 
-                className="flex-1 cursor-pointer transition-transform hover:scale-105" 
-                style={{ backgroundColor: mono4Hex }}
-                onClick={() => triggerCopy(mono4Hex, 'palette')}
-                title={`Lighter 2: ${mono4Hex}`}
-              />
+              {renderPaletteBlock(mono1Hex, 'Darker 2')}
+              {renderPaletteBlock(mono2Hex, 'Darker 1')}
+              {renderPaletteBlock(activeColorHex, 'Active')}
+              {renderPaletteBlock(mono3Hex, 'Lighter 1')}
+              {renderPaletteBlock(mono4Hex, 'Lighter 2')}
             </div>
             <div className="flex justify-between text-[9px] font-mono text-zinc-500">
               <span>{mono1Hex}</span>

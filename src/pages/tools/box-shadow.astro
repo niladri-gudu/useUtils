@@ -1,0 +1,104 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { BoxShadowGenerator } from '../../components/BoxShadowGenerator';
+
+const faqs = [
+  {
+    question: "How do I make a box shadow in CSS?",
+    answer: "You use the <code>box-shadow</code> property in CSS to cast a shadow from an element. The basic syntax is <code>box-shadow: offset-x offset-y blur-radius spread-radius color;</code>. For example: <code>box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);</code>."
+  },
+  {
+    question: "What does the inset keyword do in box-shadow?",
+    answer: "The <code>inset</code> keyword changes the shadow from an outer shadow (which makes the element look elevated) to an inner shadow (which makes the element look sunken or pressed into the background). It is placed at either the beginning or the end of the shadow declaration."
+  },
+  {
+    question: "What is the difference between blur radius and spread radius in CSS?",
+    answer: "<strong>Blur radius</strong> (the third value) controls how sharp or feathered the shadow's edges are. Higher values make the shadow softer and wider. <strong>Spread radius</strong> (the fourth value) expands or contracts the shadow source shape. Positive values make the shadow larger than the element; negative values shrink it."
+  },
+  {
+    question: "How do I layer multiple box shadows in CSS?",
+    answer: "You specify multiple box shadows by separating each declaration with a comma. The browser draws them in order from first to last, meaning the first shadow listed is drawn on top of subsequent ones. For example: <code>box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);</code>."
+  },
+  {
+    question: "How do I convert standard CSS box-shadow to Tailwind CSS?",
+    answer: "In Tailwind CSS, you can apply custom shadows using arbitrary value brackets: <code>shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)]</code>. You must replace spaces with underscores (<code>_</code>) inside the square brackets so Tailwind can parse the class correctly."
+  },
+  {
+    question: "Can I apply a box-shadow to elements with border-radius?",
+    answer: "Yes. The CSS <code>box-shadow</code> property automatically respects the <code>border-radius</code> of the element it is applied to. If the element has <code>border-radius: 12px;</code>, the cast shadow will also feature matching rounded corners."
+  },
+  {
+    question: "Does box-shadow affect the layout of other elements?",
+    answer: "No, CSS box-shadow is entirely a visual decoration. Unlike borders or margins, it does not occupy space in the document layout flow, meaning it will not cause reflow or displace adjacent DOM elements when toggled or resized."
+  },
+  {
+    question: "How do I create a drop-shadow on transparent PNG images?",
+    answer: "<code>box-shadow</code> only targets the rectangular bounding box of an element. To cast a shadow that respects the transparency of PNG images or SVG paths, you should use the CSS filter property instead: <code>filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.2));</code>."
+  },
+  {
+    question: "How do I make a neon glowing shadow effect?",
+    answer: "To create a neon glow, set the X and Y offsets to <code>0px</code>, use a vibrant color, and specify a large blur radius with a positive spread. Layering multiple shadows (one with small blur and high opacity, one with large blur and lower opacity) makes the glow look much brighter and realistic."
+  },
+  {
+    question: "Why should I use multiple shadow layers instead of one?",
+    answer: "Real-world shadows are created by light sources with physical dimensions, causing the shadow to have a soft, feathered falloff. A single CSS shadow looks flat and artificial. By layering 2 or 3 shadows with different offsets, blurs, and opacities, you can construct realistic, high-fidelity ambient shadows."
+  }
+];
+---
+
+<ToolPageLayout
+  title="CSS Box-Shadow Generator: Interactive Multi-Layer Shadow Builder"
+  description="Generate complex, realistic multi-layered CSS box shadows visually. Tweak offsets, blur, spread, colors, and opacity with real-time updates and export standard CSS or Tailwind classes."
+  keywords="css box shadow generator, box shadow generator, tailwind shadow generator, layered box shadow, css generator, box-shadow css, web design tools"
+  toolTitle="CSS Box-Shadow Generator"
+  toolDescription="Design high-fidelity, layered CSS box shadows with interactive sliders. Tweak X/Y offsets, blur, spread, colors, and opacity, select premium presets, and copy production-ready CSS or Tailwind CSS configurations instantly."
+  faqs={faqs}
+>
+  <BoxShadowGenerator client:load />
+
+  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Design High-Fidelity CSS Box Shadows
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Default box shadows generated by singular declarations often look flat, artificial, and harsh. Real-world shadows are cast by light sources that have physical dimensions, resulting in soft, feathered transitions. To replicate this on the web, expert designers layer multiple shadows on top of each other.
+      </p>
+      <p class="leading-relaxed">
+        Our CSS Box-Shadow Generator makes layered shadow design intuitive. You can add new layers, adjust individual parameters, drag layers to reorder them in the drawing stack, and toggle their visibility. The final CSS values are combined into a comma-separated list that represents a single, highly realistic aesthetic effect.
+      </p>
+    </div>
+    
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Understanding CSS Box-Shadow Parameters
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Each shadow layer consists of several fundamental properties:
+      </p>
+      <ul class="list-disc pl-5 space-y-2 mb-4">
+        <li><strong class="text-zinc-200">X-Offset:</strong> Moves the shadow horizontally. Positive values shift it right, negative values shift it left.</li>
+        <li><strong class="text-zinc-200">Y-Offset:</strong> Moves the shadow vertically. Positive values push it down (indicating a light source from above), negative values push it up.</li>
+        <li><strong class="text-zinc-200">Blur Radius:</strong> Controls the feathering of the shadow. A blur of 0px creates a hard, crisp edge, while higher values create softer, wider gradients.</li>
+        <li><strong class="text-zinc-200">Spread Radius:</strong> Expands or contracts the shadow source shape. Positive values make the shadow larger than the element, whereas negative values shrink it (extremely useful for preventing shadows from leaking out of the sides of cards).</li>
+        <li><strong class="text-zinc-200">Inset vs Outset:</strong> Inset shifts the shadow to the inside of the frame, rendering a sunken or pocket-like depth. Outset casts the shadow outwards, giving the appearance of floating.</li>
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Translating Custom CSS Shadows into Tailwind CSS Arbitrary Utilities
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Tailwind CSS handles standard utility-based shadows with classes like <code>shadow-sm</code>, <code>shadow-md</code>, and <code>shadow-lg</code>. However, when designing customized UI elements that require a specific branding feel or layered soft shadows, Tailwind's arbitrary value system is preferred.
+      </p>
+      <p class="leading-relaxed">
+        To translate a multi-layered box shadow into Tailwind, separate the values with a comma inside square brackets, e.g. <code>shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-2px_rgba(0,0,0,0.05)]</code>. Be sure to replace spaces with underscores <code>_</code> so Tailwind's utility class parser compiles it correctly. The output block on the right-hand panel compiles this string automatically, letting you copy and paste the clean class instantly into your project components.
+      </p>
+    </div>
+  </div>
+</ToolPageLayout>

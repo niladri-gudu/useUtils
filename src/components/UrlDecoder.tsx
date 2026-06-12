@@ -1,4 +1,11 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { 
+  parseUrlString, 
+  rebuildUrl, 
+  type QueryParam, 
+  type URLBreakdown 
+} from '../utils-engine/url';
+import { diffChars, type DiffNode } from '../utils-engine/text';
 
 // ==========================================
 // Robust Clipboard Copy Helper
@@ -39,184 +46,11 @@ const copyToClipboard = (text: string): boolean => {
 };
 
 // ==========================================
-// URL Parsing & Rebuilding Types & Helpers
-// ==========================================
-interface QueryParam {
-  id: string;
-  key: string;
-  value: string;
-  enabled: boolean;
-}
-
-interface URLBreakdown {
-  protocol: string;
-  host: string;
-  port: string;
-  pathname: string;
-  hash: string;
-  search: string;
-  isValidUrl: boolean;
-  isRelative: boolean;
-}
-
-const parseUrlString = (str: string): { breakdown: URLBreakdown; params: QueryParam[] } => {
-  const defaultBreakdown: URLBreakdown = {
-    protocol: '',
-    host: '',
-    port: '',
-    pathname: '',
-    hash: '',
-    search: '',
-    isValidUrl: false,
-    isRelative: false
-  };
-
-  if (!str.trim()) {
-    return { breakdown: defaultBreakdown, params: [] };
-  }
-
-  try {
-    let url: URL;
-    let isRelative = false;
-
-    // Check if it's a full URL or a relative path / query string
-    if (str.includes('://')) {
-      url = new URL(str);
-    } else if (str.startsWith('/') || str.startsWith('?') || str.includes('=')) {
-      url = new URL(str, 'https://dummy.local');
-      isRelative = true;
-    } else {
-      // Not a clear URL structure
-      return { breakdown: defaultBreakdown, params: [] };
-    }
-
-    const breakdown: URLBreakdown = {
-      protocol: isRelative ? '' : url.protocol,
-      host: isRelative ? '' : url.host,
-      port: isRelative ? '' : url.port,
-      pathname: url.pathname,
-      hash: url.hash,
-      search: url.search,
-      isValidUrl: true,
-      isRelative
-    };
-
-    const params: QueryParam[] = [];
-    url.searchParams.forEach((value, key) => {
-      params.push({
-        id: Math.random().toString(36).substring(2, 9),
-        key,
-        value,
-        enabled: true
-      });
-    });
-
-    return { breakdown, params };
-  } catch (e) {
-    return { breakdown: defaultBreakdown, params: [] };
-  }
-};
-
-const rebuildUrl = (
-  originalUrlStr: string,
-  params: QueryParam[],
-  breakdown: URLBreakdown
-): string => {
-  try {
-    if (!breakdown.isValidUrl) return originalUrlStr;
-
-    const isFullUrl = originalUrlStr.includes('://');
-    const url = isFullUrl
-      ? new URL(originalUrlStr)
-      : new URL(originalUrlStr, 'https://dummy.local');
-
-    // Clear existing params
-    const keys = Array.from(url.searchParams.keys());
-    keys.forEach(k => url.searchParams.delete(k));
-
-    // Append active params
-    params.forEach(p => {
-      if (p.enabled && p.key) {
-        url.searchParams.append(p.key, p.value);
-      }
-    });
-
-    if (isFullUrl) {
-      return url.toString();
-    } else {
-      let path = url.pathname;
-      let search = url.search;
-      let hash = url.hash;
-
-      // If the original URL did not start with a slash and pathname is just '/', return search + hash
-      if (!originalUrlStr.startsWith('/') && path === '/') {
-        return search + hash;
-      }
-      return path + search + hash;
-    }
-  } catch (e) {
-    return originalUrlStr;
-  }
-};
-
-// ==========================================
-// Character Diff Helpers
-// ==========================================
-interface DiffNode {
-  type: 'added' | 'removed' | 'common';
-  value: string;
-}
-
-const diffChars = (oldStr: string, newStr: string): DiffNode[] => {
-  const n = oldStr.length;
-  const m = newStr.length;
-
-  if (n > 1200 || m > 1200) {
-    return [
-      { type: 'removed', value: oldStr },
-      { type: 'added', value: newStr }
-    ];
-  }
-
-  const dp: number[][] = Array(n + 1)
-    .fill(0)
-    .map(() => Array(m + 1).fill(0));
-
-  for (let i = 1; i <= n; i++) {
-    for (let j = 1; j <= m; j++) {
-      if (oldStr[i - 1] === newStr[j - 1]) {
-        dp[i][j] = dp[i - 1][j - 1] + 1;
-      } else {
-        dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
-      }
-    }
-  }
-
-  let i = n, j = m;
-  const result: DiffNode[] = [];
-
-  while (i > 0 || j > 0) {
-    if (i > 0 && j > 0 && oldStr[i - 1] === newStr[j - 1]) {
-      result.unshift({ type: 'common', value: oldStr[i - 1] });
-      i--;
-      j--;
-    } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
-      result.unshift({ type: 'added', value: newStr[j - 1] });
-      j--;
-    } else {
-      result.unshift({ type: 'removed', value: oldStr[i - 1] });
-      i--;
-    }
-  }
-
-  return result;
-};
-
-// ==========================================
 // Samples
 // ==========================================
 const SAMPLE_ENCODED_URL = 'https%3A%2F%2Fapi.useutils.com%3A443%2Fv1%2Fsearch%2Fquery%3Fcategory%3Ddeveloper%2520tools%26limit%3D10%26secure%3Dtrue%26sort%3Dasc%23results-header';
 const SAMPLE_RAW_URL_WITH_PARAMS = 'https://example.com/login?redirect_uri=https%3A%2F%2Fuseutils.com%2Fdashboard&client_id=client_9j2k3l&scope=read%20write%20admin';
+
 
 export const UrlDecoder: React.FC = () => {
   const [input, setInput] = useState<string>('');

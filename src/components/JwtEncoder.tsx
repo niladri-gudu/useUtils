@@ -1,4 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { 
+  base64UrlEncode, 
+  base64UrlDecode, 
+  signHMAC 
+} from '../utils-engine/jwt';
 
 // ==========================================
 // Robust Clipboard Copy Helper
@@ -39,63 +44,6 @@ const copyToClipboard = (text: string): boolean => {
   }
 };
 
-// ==========================================
-// Base64Url Encoding Utility (UTF-8 safe)
-// ==========================================
-const base64UrlEncode = (str: string): string => {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(str);
-  let binString = '';
-  data.forEach((b) => {
-    binString += String.fromCharCode(b);
-  });
-  const base64 = btoa(binString);
-  return base64.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
-};
-
-// ==========================================
-// Base64Url Decoding Utility
-// ==========================================
-const base64UrlDecode = (str: string): string => {
-  let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
-  while (base64.length % 4) {
-    base64 += '=';
-  }
-  return decodeURIComponent(
-    atob(base64)
-      .split('')
-      .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-      .join('')
-  );
-};
-
-// ==========================================
-// Web Crypto HMAC Signing Functions
-// ==========================================
-const signHMAC = async (message: string, secret: string, hashAlgorithm: string): Promise<string> => {
-  const encoder = new TextEncoder();
-  const keyData = encoder.encode(secret);
-  const data = encoder.encode(message);
-
-  const key = await window.crypto.subtle.importKey(
-    'raw',
-    keyData,
-    { name: 'HMAC', hash: hashAlgorithm },
-    false,
-    ['sign']
-  );
-
-  const signatureBuffer = await window.crypto.subtle.sign(
-    'HMAC',
-    key,
-    data
-  );
-
-  const hashArray = Array.from(new Uint8Array(signatureBuffer));
-  const hashString = hashArray.map((b) => String.fromCharCode(b)).join('');
-  const base64 = btoa(hashString);
-  return base64.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
-};
 
 // ==========================================
 // Mock Profile Generator Constants & Helpers

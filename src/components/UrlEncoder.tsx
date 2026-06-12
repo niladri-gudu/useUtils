@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { strictHexEncode } from '../utils-engine/url';
+import { diffChars, type DiffNode } from '../utils-engine/text';
 
 // ==========================================
 // Robust Clipboard Copy Helper
@@ -39,76 +41,11 @@ const copyToClipboard = (text: string): boolean => {
 };
 
 // ==========================================
-// Strict Hex Encoding Helper
-// ==========================================
-const strictHexEncode = (str: string): string => {
-  return str
-    .split('')
-    .map(c => {
-      const hex = c.charCodeAt(0).toString(16).toUpperCase();
-      return '%' + (hex.length < 2 ? '0' + hex : hex);
-    })
-    .join('');
-};
-
-// ==========================================
-// Character Diff Helpers
-// ==========================================
-interface DiffNode {
-  type: 'added' | 'removed' | 'common';
-  value: string;
-}
-
-const diffChars = (oldStr: string, newStr: string): DiffNode[] => {
-  const n = oldStr.length;
-  const m = newStr.length;
-
-  if (n > 1200 || m > 1200) {
-    return [
-      { type: 'removed', value: oldStr },
-      { type: 'added', value: newStr }
-    ];
-  }
-
-  const dp: number[][] = Array(n + 1)
-    .fill(0)
-    .map(() => Array(m + 1).fill(0));
-
-  for (let i = 1; i <= n; i++) {
-    for (let j = 1; j <= m; j++) {
-      if (oldStr[i - 1] === newStr[j - 1]) {
-        dp[i][j] = dp[i - 1][j - 1] + 1;
-      } else {
-        dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
-      }
-    }
-  }
-
-  let i = n, j = m;
-  const result: DiffNode[] = [];
-
-  while (i > 0 || j > 0) {
-    if (i > 0 && j > 0 && oldStr[i - 1] === newStr[j - 1]) {
-      result.unshift({ type: 'common', value: oldStr[i - 1] });
-      i--;
-      j--;
-    } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
-      result.unshift({ type: 'added', value: newStr[j - 1] });
-      j--;
-    } else {
-      result.unshift({ type: 'removed', value: oldStr[i - 1] });
-      i--;
-    }
-  }
-
-  return result;
-};
-
-// ==========================================
 // Samples
 // ==========================================
 const SAMPLE_TEXT = 'https://api.useutils.com/v1/search?q=developer tools&limit=10&secure=true#main';
 const SAMPLE_RAW = 'name=John Doe&email=john.doe@example.com&skills=React,TypeScript,Astro&status=active!';
+
 
 export const UrlEncoder: React.FC = () => {
   const [input, setInput] = useState<string>('');

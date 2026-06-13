@@ -69,7 +69,8 @@ const ALL_TOOLS: Tool[] = [
   { id: 'variable-case-converter', name: 'Variable Case Converter', description: 'Convert variable naming cases', category: 'text', icon: '📝' },
 
   // Encoding
-  { id: 'base64-encoder', name: 'Base64 Encoder', description: 'Encode/decode Base64', category: 'encoding', isPopular: true, icon: '🔐' },
+  { id: 'base64-encoder', name: 'Base64 Encoder', description: 'Encode plain text or binary files into Base64 format locally. Supports Data URIs, CSS background-image rules, and HTML tags.', category: 'encoding', isPopular: true, isActive: true, href: '/tools/base64-encoder', icon: '🔐' },
+  { id: 'base64-decoder', name: 'Base64 Decoder', description: 'Decode Base64 strings or Data URIs back into plain text or binary files. Includes file-type detection, visual previews, and local download options.', category: 'encoding', isPopular: true, isActive: true, href: '/tools/base64-decoder', icon: '🔓' },
   { id: 'url-encoder', name: 'URL Encoder', description: 'Encode strings for URL parameters with multiple specifications (Standard, Full URI, Strict RFC 3986, Form-encoded, Strict Hex).', category: 'encoding', isPopular: true, isActive: true, href: '/tools/url-encoder', icon: '🔗' },
   { id: 'url-decoder', name: 'URL Decoder', description: 'Decode percent-encoded URL parameters or clean form-encoded data. Features an interactive query parameter builder and structural URL dissection.', category: 'encoding', isPopular: true, isActive: true, href: '/tools/url-decoder', icon: '🔗' },
   { id: 'html-encoder', name: 'HTML Encoder', description: 'Encode/decode HTML entities', category: 'encoding', icon: '🏷️' },
@@ -107,7 +108,7 @@ const ALL_TOOLS: Tool[] = [
   { id: 'tailwind-picker', name: 'Tailwind Opacity/Color Picker', description: 'Interactive Tailwind CSS color scales and opacity modifier charts with WCAG testing.', category: 'css', isActive: true, href: '/tools/tailwind-picker', icon: '⚡' },
 
   // Regex
-  { id: 'regex-tester', name: 'Regex Tester', description: 'Test regular expressions', category: 'regex', isPopular: true, icon: '🔍' },
+  { id: 'regex-tester', name: 'Regex Tester', description: 'Test regular expressions in real-time with live match highlighting, detailed capture groups breakdown, flag configuration, replacement testing, and common regex presets.', category: 'regex', isPopular: true, isActive: true, href: '/tools/regex-tester', icon: '🔍' },
   { id: 'regex-cheatsheet', name: 'Regex Cheatsheet', description: 'Regular expressions reference', category: 'regex', icon: '📖' },
 
   // Validators

@@ -1,0 +1,137 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { Base64Decoder } from '../../components/Base64Decoder';
+
+const tabs = [
+  { label: 'Encoder', href: '/tools/base64-encoder' },
+  { label: 'Decoder', href: '/tools/base64-decoder', active: true }
+];
+
+const faqs = [
+  {
+    question: "What is Base64 decoding?",
+    answer: "Base64 decoding is the process of translating a Base64-encoded ASCII text string back into its original binary data or plain text format."
+  },
+  {
+    question: "Can I decode a Base64 string that represents an image?",
+    answer: "Yes. Our decoder automatically detects image headers (PNG, JPEG, GIF, WebP, SVG) from the decoded binary data, renders a visual preview of the image, and lets you download it with its correct extension."
+  },
+  {
+    question: "How do I decode a Base64 string in JavaScript?",
+    answer: "In JavaScript, you can use the native <code>atob()</code> function for ASCII text: <code>atob(base64String)</code>. For UTF-8 strings containing non-ASCII symbols, you should decode the binary characters back into a bytes array, then parse them: <br /><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto whitespace-pre\">const binString = atob(base64);\nconst bytes = Uint8Array.from(binString, c => c.charCodeAt(0));\nconst decodedText = new TextDecoder().decode(bytes);</code>"
+  },
+  {
+    question: "What are 'magic bytes'?",
+    answer: "Magic bytes are the initial signatures (usually the first few bytes) of a file that identify its format (e.g., <code>89 50 4E 47</code> for PNG, or <code>%PDF</code> for PDF). Our decoder scans these bytes to identify the correct file type for download."
+  },
+  {
+    question: "How does the local downloader work?",
+    answer: "The downloader processes the base64 string, converts the binary data into a standard browser Blob, generates a local object URL, and triggers a download. Since this is fully client-side, the file is never uploaded to a server."
+  },
+  {
+    question: "Why do I get a 'Malformed UTF-8 sequence' error when decoding text?",
+    answer: "This happens when you try to decode a binary file (like a ZIP archive or image) in 'Text Plain' mode. Binary bytes do not conform to UTF-8 character specifications. Switch the output mode to 'Binary File' instead."
+  },
+  {
+    question: "What is the difference between Base64 and Base64URL decoding?",
+    answer: "Base64URL modifies the character alphabet of standard Base64 to make it safe for URLs (replacing <code>+</code> with <code>-</code> and <code>/</code> with <code>_</code>) and usually omits the trailing <code>=</code> padding. Standard decoders must replace these characters back before running base64 decoding."
+  },
+  {
+    question: "How do I decode a Data URI?",
+    answer: "A Data URI begins with <code>data:[mediatype];base64,</code> followed by the encoded string. To decode it, you must first strip out this header prefix and then decode the remaining string as standard Base64. Our online decoder does this automatically for you."
+  },
+  {
+    question: "Is it safe to decode passwords or sensitive base64 payloads here?",
+    answer: "Yes, completely safe. The decoding is performed locally inside your web browser using JavaScript. No network requests are made with your input data."
+  },
+  {
+    question: "What is padding in Base64 and can I decode strings without it?",
+    answer: "Padding characters (<code>=</code>) are added to the end of a Base64 string to ensure its length is a multiple of 4. While the specification requires padding, many modern decoders (including this one) are robust enough to parse strings even if the padding has been stripped, by calculating the missing bits automatically."
+  }
+];
+---
+
+<ToolPageLayout
+  title="Base64 Decoder Online: Convert Base64 Back to Text & Files"
+  description="Decode Base64 strings or Data URIs back to their original plain text or binary files. Features automatic file-type detection, download actions, and image previews."
+  keywords="base64 decoder, base64 to file, base64 to image, data url decoder, base64 string to pdf, decode base64 online"
+  toolTitle="Base64 Decoder"
+  toolDescription="Decode Base64 strings back to their original plain text or binary files. Automatically detects file types, provides image previews, and supports downloading decoded files locally."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <Base64Decoder client:load />
+
+  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the Base64 Decoder
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our Base64 Decoder translates Base64-encoded strings or Data URIs back to their original format. Paste your Base64 string into the input text area. The tool automatically handles standard Base64 as well as full Data URI schemas (e.g. <code>data:image/png;base64,...</code>) by stripping header strings.
+      </p>
+      <p class="leading-relaxed">
+        Toggle the output mode between <strong class="text-zinc-200">Text Plain</strong> (for reading plain text, HTML, or JSON payloads) and <strong class="text-zinc-200">Binary File</strong> (for recovering images, PDFs, ZIP archives, etc.). If a valid image is decoded, a preview will render in the preview pane.
+      </p>
+    </div>
+
+    <!-- Section: Magic Bytes Table -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        File Header Magic Bytes Detection
+      </h2>
+      <p class="leading-relaxed mb-4">
+        When converting Base64 back to binary files, the decoder automatically inspects the first few bytes (signatures) of the decoded stream. This enables smart detection of the correct MIME type and file extension even if the original metadata was lost:
+      </p>
+      
+      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
+              <th class="p-3">File Format</th>
+              <th class="p-3">Magic Bytes (Hex)</th>
+              <th class="p-3">ASCII Representation</th>
+              <th class="p-3">MIME Type</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
+            <tr>
+              <td class="p-3 text-zinc-200">PNG Image</td>
+              <td class="p-3"><code>89 50 4E 47 0D 0A 1A 0A</code></td>
+              <td class="p-3"><code>.PNG....</code></td>
+              <td class="p-3"><code>image/png</code></td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">JPEG Image</td>
+              <td class="p-3"><code>FF D8 FF E0</code> (or E1/E2)</td>
+              <td class="p-3"><code>....</code></td>
+              <td class="p-3"><code>image/jpeg</code></td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">GIF Image</td>
+              <td class="p-3"><code>47 49 46 38 37 61</code> (or 3961)</td>
+              <td class="p-3"><code>GIF87a / GIF89a</code></td>
+              <td class="p-3"><code>image/gif</code></td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">PDF Document</td>
+              <td class="p-3"><code>25 50 44 46</code></td>
+              <td class="p-3"><code>%PDF</code></td>
+              <td class="p-3"><code>application/pdf</code></td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">ZIP Archive</td>
+              <td class="p-3"><code>50 4B 03 04</code></td>
+              <td class="p-3"><code>PK..</code></td>
+              <td class="p-3"><code>application/zip</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ToolPageLayout>

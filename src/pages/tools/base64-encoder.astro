@@ -1,0 +1,137 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { Base64Encoder } from '../../components/Base64Encoder';
+
+const tabs = [
+  { label: 'Encoder', href: '/tools/base64-encoder', active: true },
+  { label: 'Decoder', href: '/tools/base64-decoder' }
+];
+
+const faqs = [
+  {
+    question: "What is Base64 encoding?",
+    answer: "Base64 encoding is a binary-to-text encoding scheme that translates binary data into an ASCII string format using a set of 64 characters (A-Z, a-z, 0-9, +, /), with '=' used for padding. This ensures that the data remains intact during transit over systems that only support text."
+  },
+  {
+    question: "How does Base64 encoding work?",
+    answer: "Base64 encoding works by dividing groups of 3 bytes (24 bits) from the input data into 4 groups of 6 bits each. Each 6-bit group represents a number from 0 to 63, which is then mapped to its corresponding character in the Base64 alphabet."
+  },
+  {
+    question: "Does Base64 encoding encrypt my data?",
+    answer: "No, Base64 is not encryption. It is a simple encoding scheme that is easily reversible by anyone. Do not use Base64 to secure sensitive credentials or payloads without encrypting them first."
+  },
+  {
+    question: "What characters are used in the Base64 alphabet?",
+    answer: "The Base64 alphabet consists of 64 characters: uppercase letters (<code>A-Z</code>), lowercase letters (<code>a-z</code>), numerals (<code>0-9</code>), and the symbols <code>+</code> and <code>/</code>. A 65th character, the equals sign (<code>=</code>), is used as a padding indicator at the end of the string."
+  },
+  {
+    question: "What is the difference between Base64 and Base64URL?",
+    answer: "Standard Base64 contains characters like '+' and '/' which have special meanings in URLs (acting as separators). Base64URL replaces '+' with '-' and '/' with '_', and usually omits the '=' padding character to make the output safe to pass in URL paths or query parameters."
+  },
+  {
+    question: "Why does Base64 increase file sizes by 33%?",
+    answer: "Because Base64 represents 3 bytes of data using 4 ASCII characters, it increases the total data size by exactly 33.3%. If you use line wrapping or headers (like in Data URIs), the overhead can be slightly higher."
+  },
+  {
+    question: "What is a Data URI?",
+    answer: "A Data URI allows you to embed files directly into HTML or CSS using the scheme <code>data:[mediatype];base64,[data]</code>. This avoids needing separate HTTP requests to load small icons or assets, improving initial page load times."
+  },
+  {
+    question: "How do I use Base64 to embed images in HTML or CSS?",
+    answer: "You can embed a Base64 image in HTML using <code>&lt;img src=\"data:image/png;base64,iVBORw...\" alt=\"Image\" /&gt;</code>. In CSS, you can embed it inside a background property: <code>background-image: url(\"data:image/png;base64,iVBORw...\");</code>."
+  },
+  {
+    question: "Is my data secure when using this online encoder?",
+    answer: "Yes, 100%. Like all tools on useUtils, the Base64 Encoder operates completely client-side in your web browser. Your text inputs and files are processed in your local memory sandbox and are never sent to a server."
+  },
+  {
+    question: "How do I encode text to Base64 in JavaScript?",
+    answer: "In JavaScript, you can use the native <code>btoa()</code> function for ASCII text: <code>btoa('hello')</code>. For Unicode (UTF-8) text, first encode the string into bytes using a TextEncoder, then convert the bytes: <br /><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto whitespace-pre\">const bytes = new TextEncoder().encode('text');\nconst base64 = btoa(String.fromCharCode(...bytes));</code>"
+  }
+];
+---
+
+<ToolPageLayout
+  title="Base64 Encoder Online: Convert Text & Files to Base64 Safely"
+  description="Convert plain text, code, or binary files (images, PDFs) into Base64 encoded strings instantly. Supports Data URI schema wrappers, CSS backgrounds, and HTML tags."
+  keywords="base64 encoder, file to base64, text to base64, data uri generator, base64 image generator, online base64 converter"
+  toolTitle="Base64 Encoder"
+  toolDescription="Encode plain text or binary files into Base64 format locally in your web browser. Drag and drop any image, document, or audio file to generate standard Base64, Data URI, CSS backgrounds, or HTML image tags."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <Base64Encoder client:load />
+
+  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the Base64 Encoder
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our Base64 Encoder allows you to convert text or binary files directly into ASCII characters. Paste your text inside the <strong class="text-zinc-200">Text tab</strong>, or drag-and-drop any image, PDF, or document inside the <strong class="text-zinc-200">File Drop tab</strong>. The encoder converts the input instantly in your browser sandbox.
+      </p>
+      <p class="leading-relaxed">
+        Choose your desired output wrappers like <strong class="text-zinc-200">Data URI</strong> (for inline source embeddings), <strong class="text-zinc-200">CSS backgrounds</strong>, or <strong class="text-zinc-200">HTML image tags</strong>. Click the copy buttons or use standard keyboard shortcuts (<kbd class="font-mono bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">⌘ C</kbd>) to copy the output.
+      </p>
+    </div>
+
+    <!-- Section: Comparison of Data Wrapping Options -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Comparison of Data Wrapping Options
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Selecting the correct output format depends on how you plan to use the Base64 representation in your source code:
+      </p>
+      
+      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
+              <th class="p-3">Wrapper Format</th>
+              <th class="p-3">Structure / Schema</th>
+              <th class="p-3">Typical Use Case</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
+            <tr>
+              <td class="p-3 text-zinc-200">Raw Base64</td>
+              <td class="p-3"><code>aGVsbG8gd29ybGQ=</code></td>
+              <td class="p-3">API payloads, custom serialization, environment configurations</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">Data URI</td>
+              <td class="p-3"><code>data:text/plain;base64,aGVsbG8gd29ybGQ=</code></td>
+              <td class="p-3">Inline source linking, web page image tags, small inline assets</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">CSS Background</td>
+              <td class="p-3"><code>background-image: url("data:image/png;base64,...");</code></td>
+              <td class="p-3">Embedding small graphic icons or indicators directly inside stylesheet classes</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">HTML Image Tag</td>
+              <td class="p-3"><code>&lt;img src="data:image/png;base64,..." alt="..." /&gt;</code></td>
+              <td class="p-3">Injecting dynamic preview graphics or tiny logos inline in markup files</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section: File Size Overhead -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Understanding Base64 Overhead
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Since Base64 represents data in groups of 6 bits rather than 8 bits, every group of 3 raw binary bytes is converted to 4 character bytes. This yields a mathematically fixed <strong class="text-zinc-200">33.3% increase in data size</strong>. If your file is 75 KB, the resulting base64 representation will be approximately 100 KB. Because of this overhead, Base64 is recommended primarily for small files (under 100 KB) to avoid significant network payload bloating.
+      </p>
+    </div>
+  </div>
+</ToolPageLayout>

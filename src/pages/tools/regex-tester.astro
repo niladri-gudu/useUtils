@@ -1,0 +1,34 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { RegexTester } from '../../components/RegexTester';
+
+const faqs = [
+  {
+    question: "What is a regular expression (Regex)?",
+    answer: "A regular expression is a sequence of characters that forms a search pattern. It can be used for text search, text replace, and input validation operations using highly customized matching criteria."
+  },
+  {
+    question: "How do regular expression flags work?",
+    answer: "Flags modify the search behavior of a regular expression. The global flag (<code>g</code>) searches for all matches instead of stopping after the first one. Case-insensitive (<code>i</code>) ignores capitalization. Multiline (<code>m</code>) treats anchor boundaries (<code>^</code> and <code>$</code>) line-by-line. DotAll (<code>s</code>) lets the dot character match newlines."
+  },
+  {
+    question: "Is my search data secure in this tool?",
+    answer: "Yes, 100%. All pattern compilation and test string evaluations are performed locally inside your browser using the native JavaScript <code>RegExp</code> engine. No data is sent to external servers."
+  },
+  {
+    question: "What does the substitution/replace mode do?",
+    answer: "Substitution mode allows you to swap out matched expressions with a new string. You can use standard replacement tokens like <code>$1</code> or <code>$2</code> to reference specific capture group data or <code>$&</code> to reference the entire match."
+  }
+];
+---
+
+<ToolPageLayout
+  title="Regex Tester Online: Test & Debug Regular Expressions"
+  description="Test and debug regular expressions in real-time. Features live match highlighting, detailed capture groups breakdown, flag configuration, replacement testing, and common regex presets."
+  keywords="regex tester, regular expression debugger, live regex highlighter, regex match extractor, javascript regex engine"
+  toolTitle="Regex Tester & Visualizer"
+  toolDescription="Test and debug JavaScript regular expressions in real-time. Load common developer presets, inspect captured groups, and configure search flags instantly."
+  faqs={faqs}
+>
+  <RegexTester client:load />
+</ToolPageLayout>

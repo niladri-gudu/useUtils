@@ -118,7 +118,7 @@ export const P2PShare: React.FC<P2PShareProps> = ({ roomId: initialRoomId }) => 
   // Get active room share link
   const getShareLink = useCallback(() => {
     if (typeof window === 'undefined') return '';
-    return `${window.location.origin}/tools/p2p-share/${roomId}`;
+    return `${window.location.origin}/labs/p2p-share/${roomId}`;
   }, [roomId]);
 
 

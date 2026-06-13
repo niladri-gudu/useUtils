@@ -333,100 +333,107 @@ export default function ToolsList() {
   return (
     <div className="w-full flex flex-col min-h-screen text-zinc-100 bg-canvas selection:bg-accent-emerald/20 selection:text-accent-emerald font-sans">
       
-      {/* Hero Header Section */}
-      <section className="w-full max-w-7xl mx-auto px-4 pt-12 pb-8 flex flex-col items-center justify-center text-center gap-6 border-b border-border-hairline">
-        <div className="flex flex-col gap-3 max-w-3xl">
-          <div className="mx-auto w-12 h-12 rounded-lg bg-accent-emerald/10 border border-accent-emerald/20 flex items-center justify-center text-accent-emerald shadow-lg animate-pulse">
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+      {/* Workspace Header */}
+      <div className="w-full max-w-7xl mx-auto px-4 pt-8 pb-6 border-b border-border-hairline/60 flex flex-col gap-3">
+        <a href="/" className="text-xs font-mono text-accent-emerald hover:text-emerald-300 transition-colors flex items-center gap-1.5 self-start select-none">
+          <span>←</span> <span>Back to Dashboard</span>
+        </a>
+        <div className="flex flex-col gap-2 mt-1">
+          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-zinc-50 flex items-center gap-2.5">
+            <span>🛠️</span> Developer Tools
+          </h1>
+          <p className="text-zinc-400 text-sm max-w-2xl leading-relaxed font-sans">
+            Offline micro-utilities for common formatting, encoding, generation, and validation tasks. Secure, fast, and processed entirely inside your browser.
+          </p>
+        </div>
+      </div>
+
+      {/* Privacy Status Banner */}
+      <div className="w-full max-w-7xl mx-auto px-4 mt-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 bg-panel border border-border-hairline rounded-lg px-4 py-3">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-2.5 w-2.5 relative">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent-emerald"></span>
+            </span>
+            <span className="text-xs md:text-sm text-zinc-300 font-medium font-sans">
+              Processed locally in browser. Zero server transmission.
+            </span>
+          </div>
+          <div className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">
+            100% Offline Sandbox
+          </div>
+        </div>
+      </div>
+
+      {/* Interactive Search Bar & Filters */}
+      <div className="w-full max-w-7xl mx-auto px-4 mt-6 flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div className="relative w-full max-w-xl">
+          <input
+            ref={searchInputRef}
+            type="text"
+            placeholder="Search tools... (e.g., JSON, Base64, JWT, CSS)"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-panel border border-border-hairline hover:border-zinc-700 focus:border-accent-emerald focus:ring-1 focus:ring-accent-emerald/30 rounded-xl py-3 pl-11 pr-20 text-sm font-mono text-zinc-100 placeholder-zinc-500 outline-none transition-all"
+          />
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
-          <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-zinc-50">
-            useUtils
-          </h1>
-          <p className="text-zinc-300 font-mono text-sm md:text-base tracking-wider uppercase">
-            100+ Free Online Tools for Developers
-          </p>
-          <p className="text-zinc-400 text-xs md:text-sm max-w-xl mx-auto leading-relaxed mt-1">
-            All tools run entirely in your browser. Zero server uploads, 100% private and secure.
-          </p>
-        </div>
-
-        {/* Global Privacy Status Pill */}
-        <div className="inline-flex items-center gap-2 bg-zinc-900 border border-border-hairline rounded-full px-3 py-1.5 text-xs text-accent-emerald font-mono">
-          <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-ping"></span>
-          Processed locally in browser. Zero server transmission.
-        </div>
-
-        {/* Interactive Search Bar & Filters */}
-        <div className="w-full max-w-2xl mt-4 flex flex-col gap-3 items-center">
-          <div className="relative w-full">
-            <input
-              ref={searchInputRef}
-              type="text"
-              placeholder="Search tools... (e.g., JSON, Base64, JWT, CSS)"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-panel border border-border-hairline hover:border-zinc-700 focus:border-accent-emerald focus:ring-1 focus:ring-accent-emerald/30 rounded-xl py-3.5 pl-11 pr-20 text-sm font-mono text-zinc-100 placeholder-zinc-500 outline-none transition-all"
-            />
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          {searchQuery ? (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200 bg-zinc-800/50 hover:bg-zinc-800 p-1.5 rounded-md transition-colors cursor-pointer"
+              aria-label="Clear search"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
               </svg>
+            </button>
+          ) : (
+            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none select-none">
+              <kbd className="font-mono bg-zinc-800/80 px-1.5 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">⌘ K</kbd>
+              <kbd className="font-mono bg-zinc-800/80 px-1.5 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">/</kbd>
             </div>
-            {searchQuery ? (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-200 bg-zinc-800/50 hover:bg-zinc-800 p-1.5 rounded-md transition-colors cursor-pointer"
-                aria-label="Clear search"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            ) : (
-              <div className="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none select-none">
-                <kbd className="font-mono bg-zinc-800/80 px-1.5 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">⌘ K</kbd>
-                <kbd className="font-mono bg-zinc-800/80 px-1.5 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">/</kbd>
-              </div>
-            )}
-          </div>
-
-          {/* Quick Filters */}
-          <div className="flex items-center gap-1.5 mt-1 bg-zinc-900 border border-border-hairline/60 p-1 rounded-lg shadow-inner">
-            <button
-              onClick={() => setActiveTab('all')}
-              className={`px-3.5 py-1.5 rounded-md text-xs font-mono select-none border transition-colors duration-75 ${
-                activeTab === 'all'
-                  ? 'bg-panel text-accent-emerald border-border-hairline shadow-sm font-semibold'
-                  : 'border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
-              }`}
-            >
-              All Tools ({totalCount})
-            </button>
-            <button
-              onClick={() => setActiveTab('active')}
-              className={`px-3.5 py-1.5 rounded-md text-xs font-mono select-none border transition-colors duration-75 ${
-                activeTab === 'active'
-                  ? 'bg-panel text-accent-emerald border-border-hairline shadow-sm font-semibold'
-                  : 'border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
-              }`}
-            >
-              Active ({activeCount})
-            </button>
-            <button
-              onClick={() => setActiveTab('coming-soon')}
-              className={`px-3.5 py-1.5 rounded-md text-xs font-mono select-none border transition-colors duration-75 ${
-                activeTab === 'coming-soon'
-                  ? 'bg-panel text-accent-emerald border-border-hairline shadow-sm font-semibold'
-                  : 'border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
-              }`}
-            >
-              Pipeline ({totalCount - activeCount})
-            </button>
-          </div>
+          )}
         </div>
-      </section>
+
+        {/* Quick Filters */}
+        <div className="flex items-center gap-1.5 bg-zinc-900 border border-border-hairline/60 p-1 rounded-lg shadow-inner self-stretch md:self-auto justify-center">
+          <button
+            onClick={() => setActiveTab('all')}
+            className={`px-3.5 py-1.5 rounded-md text-xs font-mono select-none border transition-colors duration-75 ${
+              activeTab === 'all'
+                ? 'bg-panel text-accent-emerald border-border-hairline shadow-sm font-semibold'
+                : 'border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
+            }`}
+          >
+            All Tools ({totalCount})
+          </button>
+          <button
+            onClick={() => setActiveTab('active')}
+            className={`px-3.5 py-1.5 rounded-md text-xs font-mono select-none border transition-colors duration-75 ${
+              activeTab === 'active'
+                ? 'bg-panel text-accent-emerald border-border-hairline shadow-sm font-semibold'
+                : 'border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
+            }`}
+          >
+            Active ({activeCount})
+          </button>
+          <button
+            onClick={() => setActiveTab('coming-soon')}
+            className={`px-3.5 py-1.5 rounded-md text-xs font-mono select-none border transition-colors duration-75 ${
+              activeTab === 'coming-soon'
+                ? 'bg-panel text-accent-emerald border-border-hairline shadow-sm font-semibold'
+                : 'border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
+            }`}
+          >
+            Pipeline ({totalCount - activeCount})
+          </button>
+        </div>
+      </div>
 
       {/* Main Grid View & Sidebar */}
       <div className="w-full max-w-7xl mx-auto px-4 py-8 flex gap-8 flex-grow">

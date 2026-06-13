@@ -1,0 +1,204 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+const configs = [
+  {
+    id: "tsconfig-builder",
+    name: "tsconfig.json Builder",
+    description: "Visually configure target runtime, module resolution, strict compiler checks, source maps, and directory paths, and copy an optimized TypeScript config.",
+    icon: "⚙️"
+  },
+  {
+    id: "dockerfile-builder",
+    name: "Dockerfile & Compose Builder",
+    description: "Generate highly-optimized multi-stage Dockerfiles and docker-compose configurations for Node.js, Python, Go, Rust, and static web sites.",
+    icon: "🐳"
+  },
+  {
+    id: "eslint-flat-config",
+    name: "eslint.config.js flat compiler",
+    description: "Scaffold clean ESLint configs using the modern Flat Config format. Toggle rulesets, typescript-eslint parser, prettier integrations, and plugins.",
+    icon: "🧹"
+  },
+  {
+    id: "tailwind-config-builder",
+    name: "tailwind.config.js Builder",
+    description: "Build custom Tailwind themes visually. Define font stacks, color palettes, spacing units, and responsive breakpoints in seconds.",
+    icon: "🎨"
+  },
+  {
+    id: "github-actions-builder",
+    name: "GitHub Actions Workflow Maker",
+    description: "Design CI/CD workflows for automated building, testing, linting, and multi-cloud deployment configurations. Copy copy-pasteable YAML pipelines.",
+    icon: "🚀"
+  }
+];
+---
+
+<Layout 
+  title="Configs - Interactive Boilerplate Builders - useUtils" 
+  description="Generate optimized configurations for Docker, TypeScript, ESLint, TailwindCSS, and GitHub Actions workflow pipelines visually."
+>
+  <Header />
+
+  <main class="flex-grow w-full max-w-7xl mx-auto px-4 py-8 flex flex-col gap-8">
+    <!-- Breadcrumb / Header -->
+    <div class="flex flex-col gap-3 pt-2 pb-6 border-b border-border-hairline/60">
+      <a href="/" class="text-xs font-mono text-accent-emerald hover:text-emerald-300 transition-colors flex items-center gap-1.5 self-start select-none">
+        <span>←</span> <span>Back to Dashboard</span>
+      </a>
+      <div class="flex flex-col gap-2 mt-1">
+        <h1 class="text-2xl md:text-3xl font-semibold tracking-tight text-zinc-50 flex items-center gap-2.5">
+          <span>⚙️</span> Boilerplate Builders
+        </h1>
+        <p class="text-zinc-400 text-sm max-w-2xl leading-relaxed font-sans">
+          Interactive config builders and boilerplate generators. Customize project options through interactive checkboxes and download clean configuration files instantly.
+        </p>
+      </div>
+    </div>
+
+    <!-- Privacy Status Banner -->
+    <div class="flex flex-wrap items-center justify-between gap-4 bg-panel border border-border-hairline rounded-lg px-4 py-3">
+      <div class="flex items-center gap-2.5">
+        <span class="flex h-2.5 w-2.5 relative">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent-emerald"></span>
+        </span>
+        <span class="text-xs md:text-sm text-zinc-300 font-medium font-sans">
+          Processed locally in browser. Zero server transmission.
+        </span>
+      </div>
+      <div class="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">
+        100% Client-Side Scaffold
+      </div>
+    </div>
+
+    <!-- Active State Info -->
+    <div class="bg-zinc-900/40 border border-border-hairline rounded-xl p-8 flex flex-col items-center justify-center text-center gap-4 py-16">
+      <div class="w-12 h-12 rounded-full bg-accent-emerald/10 border border-accent-emerald/20 flex items-center justify-center text-accent-emerald">
+        <svg class="w-6 h-6 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        </svg>
+      </div>
+      <div class="flex flex-col gap-1.5 max-w-md">
+        <h3 class="text-base font-semibold text-zinc-50">Config builders under development</h3>
+        <p class="text-xs text-zinc-400 leading-relaxed">
+          We are currently coding these configuration modules. Upvote your favorite builders below to prioritize their release!
+        </p>
+      </div>
+    </div>
+
+    <!-- Configs Grid -->
+    <div class="flex flex-col gap-4">
+      <div class="flex items-center gap-2 border-b border-border-hairline/60 pb-2">
+        <span class="text-sm font-semibold text-zinc-300 font-mono tracking-wider uppercase">Pipeline Builders</span>
+        <span class="text-[11px] text-zinc-500 font-sans">• Help us prioritize what to build next</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {configs.map((cfg) => (
+          <div class="flex flex-col justify-between bg-panel border border-border-hairline rounded-xl p-5 gap-4 hover:-translate-y-1 transition-all duration-300 ease-out group select-none">
+            <div class="flex flex-col gap-2.5">
+              <div class="flex items-center justify-between">
+                <span class="w-8 h-8 rounded-lg bg-zinc-900 border border-border-hairline flex items-center justify-center text-sm">
+                  {cfg.icon}
+                </span>
+                <span class="text-[9px] font-mono bg-zinc-900 border border-border-hairline/80 text-zinc-500 px-1.5 py-0.5 rounded tracking-wide uppercase">
+                  Pipeline
+                </span>
+              </div>
+              <h4 class="text-base font-semibold text-zinc-50 group-hover:text-accent-emerald transition-colors font-sans mt-1">
+                {cfg.name}
+              </h4>
+              <p class="text-xs text-zinc-400 leading-relaxed font-sans line-clamp-3">
+                {cfg.description}
+              </p>
+            </div>
+
+            <div class="pt-2">
+              <button
+                data-id={cfg.id}
+                class="upvote-btn flex items-center justify-between w-full bg-zinc-950 border border-border-hairline/60 group-hover:border-zinc-700 text-zinc-400 hover:text-zinc-300 font-mono text-xs py-2 px-3 rounded-lg cursor-pointer transition-all duration-200 hover:bg-zinc-900 active:scale-95"
+              >
+                <span>Upvote Builder</span>
+                <span class="vote-count text-[10px] text-zinc-500 font-mono bg-zinc-900 px-1.5 py-0.5 rounded">...</span>
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Generate stable base count based on name hash
+    const getBaseVotes = (id) => {
+      let hash = 0;
+      for (let i = 0; i < id.length; i++) {
+        hash = id.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return Math.abs(hash % 150) + 42;
+    };
+
+    const upvoteBtns = document.querySelectorAll('.upvote-btn');
+    
+    // Load existing clicked states
+    let votedState = {};
+    try {
+      const stored = localStorage.getItem('useutils_upvotes_clicked');
+      if (stored) votedState = JSON.parse(stored);
+    } catch (e) {
+      console.error(e);
+    }
+
+    upvoteBtns.forEach(btn => {
+      const id = btn.getAttribute('data-id');
+      const base = getBaseVotes(id);
+      
+      // Load current counts from localstorage or use base
+      let currentVotes = base;
+      const storedCount = localStorage.getItem(`useutils_votes_${id}`);
+      if (storedCount) {
+        currentVotes = parseInt(storedCount);
+      } else if (votedState[id]) {
+        currentVotes = base + 1;
+        localStorage.setItem(`useutils_votes_${id}`, currentVotes.toString());
+      }
+
+      const countPill = btn.querySelector('.vote-count');
+      if (countPill) {
+        countPill.textContent = `${currentVotes} ▲`;
+      }
+
+      // If already voted, disable it visually
+      if (votedState[id]) {
+        btn.classList.add('bg-accent-emerald/10', 'border-accent-emerald/30', 'text-accent-emerald', 'pointer-events-none');
+        btn.querySelector('span').textContent = 'Upvoted';
+      }
+
+      btn.addEventListener('click', () => {
+        if (votedState[id]) return;
+
+        // Perform upvote
+        const newVotes = currentVotes + 1;
+        localStorage.setItem(`useutils_votes_${id}`, newVotes.toString());
+        
+        votedState[id] = true;
+        localStorage.setItem('useutils_upvotes_clicked', JSON.stringify(votedState));
+
+        // Update UI
+        if (countPill) {
+          countPill.textContent = `${newVotes} ▲`;
+        }
+        btn.classList.add('bg-accent-emerald/10', 'border-accent-emerald/30', 'text-accent-emerald', 'pointer-events-none');
+        btn.querySelector('span').textContent = 'Upvoted';
+      });
+    });
+  });
+</script>

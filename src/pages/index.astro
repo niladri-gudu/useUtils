@@ -2,14 +2,232 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import ToolsList from '../components/ToolsList';
+
+const workspaces = [
+  {
+    id: "tools",
+    key: "1",
+    name: "Developer Tools",
+    subtitle: "Offline Micro-Utilities",
+    description: "Search and filter through 100+ local-first utilities. Format JSON, encode Base64, decode JWT tokens, configure cron expressions, or test regex.",
+    icon: "🛠️",
+    href: "/tools",
+    status: "15 Active Tools",
+    isActive: true
+  },
+  {
+    id: "playground",
+    key: "2",
+    name: "Interactive Runtimes",
+    subtitle: "WASM & Sandboxed Frames",
+    description: "Write and evaluate code in sandboxed client-side environments. Visual regex compilers, local SQL databases, and live frontend frameworks.",
+    icon: "🎮",
+    href: "/playground",
+    status: "Beta Release",
+    isActive: false
+  },
+  {
+    id: "cheatsheets",
+    key: "3",
+    name: "High-Density References",
+    subtitle: "Developer Cheat Sheets",
+    description: "Quick-reference cards designed for second monitor display. Copy syntax configurations for Git workflows, CSS layouts, Markdown, and regex.",
+    icon: "📚",
+    href: "/cheatsheets",
+    status: "Coming Soon",
+    isActive: false
+  },
+  {
+    id: "labs",
+    key: "4",
+    name: "Experimental & P2P",
+    subtitle: "Real-Time WebRTC Apps",
+    description: "Collaborative developer experiments and serverless P2P tools. Share large files securely or collaborate on design canvases directly between browsers.",
+    icon: "🔬",
+    href: "/labs",
+    status: "Coming Soon",
+    isActive: false
+  },
+  {
+    id: "configs",
+    key: "5",
+    name: "Boilerplate Builders",
+    subtitle: "Visual Config Scaffolding",
+    description: "Build project configurations visually through interactive checklists. Export copy-pasteable configs for Docker, TypeScript, ESLint, or GitHub Actions.",
+    icon: "⚙️",
+    href: "/configs",
+    status: "Coming Soon",
+    isActive: false
+  }
+];
 ---
 
 <Layout 
-  title="useUtils - Premium Local-First Developer Utilities" 
-  description="A suite of local-first developer utilities processed entirely in your browser. Secure, fast, and gorgeous."
+  title="useUtils - Premium Local-First Developer Workspaces" 
+  description="A suite of local-first developer utilities, visual config builders, interactive runtimes, cheatsheets, and WebRTC experiments. 100% private."
 >
   <Header />
-  <ToolsList client:load />
+
+  <main class="flex-grow w-full max-w-7xl mx-auto px-4 py-12 flex flex-col gap-10">
+    
+    <!-- Hero / Title Section -->
+    <section class="flex flex-col items-center justify-center text-center gap-6 pt-4 pb-8 border-b border-border-hairline/60">
+      <div class="flex flex-col gap-3 max-w-3xl">
+        <div class="mx-auto w-14 h-14 rounded-xl bg-accent-emerald/10 border border-accent-emerald/20 flex items-center justify-center text-accent-emerald shadow-lg animate-pulse">
+          <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+          </svg>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-zinc-50 font-sans">
+          useUtils
+        </h1>
+        <p class="text-zinc-300 font-mono text-sm md:text-base tracking-wider uppercase">
+          The Offline-First Developer Workspace Suite
+        </p>
+        <p class="text-zinc-400 text-xs md:text-sm max-w-xl mx-auto leading-relaxed mt-1">
+          A secure sandbox of offline developer tools, visual compilers, configuration builders, and WebRTC network environments running entirely in your browser.
+        </p>
+      </div>
+
+      <!-- Local Transmission Pill -->
+      <div class="inline-flex items-center gap-2 bg-zinc-900 border border-border-hairline rounded-full px-3 py-1.5 text-xs text-accent-emerald font-mono">
+        <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-ping"></span>
+        Processed locally in browser. Zero server transmission.
+      </div>
+    </section>
+
+    <!-- Workspace Hub Grid -->
+    <section class="flex flex-col gap-4">
+      <div class="flex items-center justify-between border-b border-border-hairline/60 pb-2">
+        <span class="text-sm font-semibold text-zinc-300 font-mono tracking-wider uppercase">Select Workspace Hub</span>
+        <span class="text-[11px] text-zinc-500 font-mono hidden sm:inline">Use hotkeys <kbd class="bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-zinc-400">1</kbd> - <kbd class="bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-zinc-400">5</kbd> to jump</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2">
+        {workspaces.map((ws) => (
+          <a
+            href={ws.href}
+            class={`flex flex-col justify-between bg-panel border rounded-xl p-6 gap-6 transition-all duration-300 ease-out group hover:-translate-y-1 ${
+              ws.isActive 
+                ? 'border-accent-emerald/20 hover:border-accent-emerald/50 hover:shadow-[0_8px_30px_rgba(52,211,153,0.06)] hover:bg-zinc-900/40' 
+                : 'border-border-hairline hover:border-zinc-700 hover:shadow-[0_8px_30px_rgba(255,255,255,0.015)] hover:bg-zinc-900/30'
+            }`}
+          >
+            <div class="flex flex-col gap-4">
+              <!-- Card Top -->
+              <div class="flex items-center justify-between">
+                <span class="w-10 h-10 rounded-xl bg-zinc-900 border border-border-hairline flex items-center justify-center text-lg group-hover:border-accent-emerald/30 group-hover:text-accent-emerald transition-colors">
+                  {ws.icon}
+                </span>
+                <div class="flex items-center gap-2">
+                  <span class={`text-[9px] font-mono border px-2 py-0.5 rounded tracking-wide uppercase font-semibold ${
+                    ws.isActive 
+                      ? 'bg-accent-emerald/10 border-accent-emerald/20 text-accent-emerald' 
+                      : 'bg-zinc-900 border-border-hairline text-zinc-500'
+                  }`}>
+                    {ws.status}
+                  </span>
+                  <kbd class="font-mono bg-zinc-800/80 px-1.5 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400 shadow-sm">
+                    {ws.key}
+                  </kbd>
+                </div>
+              </div>
+
+              <!-- Card Content -->
+              <div class="flex flex-col gap-1.5">
+                <span class="text-xs font-mono text-zinc-500 uppercase tracking-wider">
+                  {ws.subtitle}
+                </span>
+                <h3 class="text-lg font-bold text-zinc-50 group-hover:text-accent-emerald transition-colors font-sans">
+                  {ws.name}
+                </h3>
+                <p class="text-xs text-zinc-400 leading-relaxed font-sans mt-1">
+                  {ws.description}
+                </p>
+              </div>
+            </div>
+
+            <!-- Card Action Footer -->
+            <div class="pt-2">
+              <span class="inline-flex items-center justify-between w-full bg-zinc-900 border border-border-hairline group-hover:bg-accent-emerald group-hover:text-zinc-950 group-hover:border-accent-emerald text-zinc-300 font-mono text-xs font-semibold py-2.5 px-4 rounded-lg transition-all duration-200">
+                <span>Enter Workspace</span>
+                <span>→</span>
+              </span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Sandbox Technical Metrics -->
+    <section class="mt-4 border-t border-border-hairline/60 pt-10">
+      <div class="bg-zinc-900/40 border border-border-hairline rounded-xl p-6 md:p-8 flex flex-col gap-6 max-w-4xl mx-auto">
+        <h3 class="text-sm font-semibold text-zinc-300 font-mono tracking-wider uppercase flex items-center gap-2">
+          <span>🛡️</span> local-first sandbox validation
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="flex flex-col gap-1">
+            <span class="text-xs font-mono text-zinc-500 uppercase">Sandbox Mode</span>
+            <span class="text-sm font-semibold text-zinc-100 font-sans flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-accent-emerald animate-pulse"></span>
+              Client-Only Container
+            </span>
+            <p class="text-[11px] text-zinc-400 leading-relaxed mt-1">
+              All tools run inside a sandboxed iframe. Your keys, files, and inputs are never exposed to remote endpoints.
+            </p>
+          </div>
+          
+          <div class="flex flex-col gap-1">
+            <span class="text-xs font-mono text-zinc-500 uppercase">Data Transmission</span>
+            <span class="text-sm font-semibold text-zinc-100 font-sans flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-accent-emerald"></span>
+              0 Bytes Sent
+            </span>
+            <p class="text-[11px] text-zinc-400 leading-relaxed mt-1">
+              Zero network tracking on content parses. WebRTC connections use standard ephemeral signaling and disconnect immediately.
+            </p>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <span class="text-xs font-mono text-zinc-500 uppercase">Code Integrity</span>
+            <span class="text-sm font-semibold text-zinc-100 font-sans flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-accent-emerald"></span>
+              In-House Utilities
+            </span>
+            <p class="text-[11px] text-zinc-400 leading-relaxed mt-1">
+              Every package and utility is written natively using JS/Web APIs. No bloated third-party wrapper APIs.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
   <Footer />
 </Layout>
+
+<script is:inline>
+  document.addEventListener('keydown', (e) => {
+    // Prevent routing if user is typing in form controls
+    const active = document.activeElement;
+    if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) {
+      return;
+    }
+
+    // Map hotkeys to paths
+    const routeMap = {
+      '1': '/tools',
+      '2': '/playground',
+      '3': '/cheatsheets',
+      '4': '/labs',
+      '5': '/configs'
+    };
+
+    if (routeMap[e.key]) {
+      e.preventDefault();
+      window.location.href = routeMap[e.key];
+    }
+  });
+</script>

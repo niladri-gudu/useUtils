@@ -1,0 +1,15 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import ToolsList from '../../components/ToolsList';
+---
+
+<Layout 
+  title="useUtils - Offline Developer Tools Directory" 
+  description="Search and filter through 100+ local-first developer tools, formatting utilities, converters, and generators. 100% private in-browser execution."
+>
+  <Header />
+  <ToolsList client:load />
+  <Footer />
+</Layout>

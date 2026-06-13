@@ -31,7 +31,7 @@ import Footer from '../components/Footer.astro';
           1. The Local-First Privacy Guarantee
         </h2>
         <p class="text-zinc-400 text-xs md:text-sm leading-relaxed font-sans pl-4">
-          Unlike traditional web utilities that process data on backend servers, <strong class="text-zinc-200">useUtils</strong> functions entirely inside your client browser sandbox. When you encode, decode, sign, or parse tokens and keys, the computations are handled by local JavaScript and Web Crypto APIs.
+          Unlike traditional web utilities that process data on backend servers, <strong class="text-zinc-200">useUtils</strong> functions entirely inside your client browser sandbox. When you encode, decode, sign tokens, build configuration files, query local SQLite databases (via WebAssembly), or parse raw payloads, the computations are handled 100% locally by client-side APIs.
         </p>
       </div>
 
@@ -39,10 +39,10 @@ import Footer from '../components/Footer.astro';
       <div class="flex flex-col gap-2">
         <h2 class="text-base font-semibold text-zinc-50 tracking-tight flex items-center gap-2.5">
           <span class="w-1.5 h-4 bg-accent-emerald rounded-full"></span>
-          2. No Server Transmission
+          2. Ephemeral P2P WebRTC Signaling
         </h2>
         <p class="text-zinc-400 text-xs md:text-sm leading-relaxed font-sans pl-4">
-          We do not transmit your data over the network. Your keys, claims, secrets, and configuration inputs are never sent to our servers or stored in any database. Your browser console network tab can be audited at any time to verify that zero external network calls are made during utility computations.
+          Our experimental WebRTC sharing tools (such as P2P File Sharing) establish direct point-to-point data streams. To establish the connection, we utilize a temporary, stateless signaling server solely to broker network metadata (SDP offers/answers and ICE candidate maps). The signaling server is completely serverless (hosted on Cloudflare Workers), holds zero logs, records zero file details, and terminates immediately once the peer handshake completes.
         </p>
       </div>
 
@@ -50,10 +50,10 @@ import Footer from '../components/Footer.astro';
       <div class="flex flex-col gap-2">
         <h2 class="text-base font-semibold text-zinc-50 tracking-tight flex items-center gap-2.5">
           <span class="w-1.5 h-4 bg-accent-emerald rounded-full"></span>
-          3. Browser Storage
+          3. Browser Sandbox Storage
         </h2>
         <p class="text-zinc-400 text-xs md:text-sm leading-relaxed font-sans pl-4">
-          To improve user experience, some tools may store your non-sensitive preferences (such as light or dark theme choices) locally inside your browser's <code class="font-mono text-xs bg-zinc-950 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">localStorage</code>. We never store sensitive credentials, secrets, or keys in local storage.
+          To improve user experience, some tools may store non-sensitive preference indexes or project configuration templates locally inside your browser's <code class="font-mono text-xs bg-zinc-950 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">localStorage</code> or <code class="font-mono text-xs bg-zinc-950 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">IndexedDB</code>. We never store sensitive credentials, parsed files, database tables, or cryptographic secrets on our servers.
         </p>
       </div>
 
@@ -64,7 +64,7 @@ import Footer from '../components/Footer.astro';
           4. Updates to This Policy
         </h2>
         <p class="text-zinc-400 text-xs md:text-sm leading-relaxed font-sans pl-4">
-          As our toolset grows, we will continue to adhere to our strict client-side-only execution standard. Any updates to this policy will reflect this core architectural constraint.
+          As our multi-workspace platform grows (including new Playgrounds, Config tools, and Cheatsheets), we will continue to adhere to our strict client-side-only execution standard. Any updates to this policy will reflect this core architectural constraint.
         </p>
       </div>
 
@@ -72,7 +72,7 @@ import Footer from '../components/Footer.astro';
       <div class="mt-4 p-5 bg-zinc-900/30 border border-border-hairline rounded-lg flex items-start gap-3.5">
         <div class="w-2.5 h-2.5 rounded-full bg-accent-emerald shrink-0 mt-1"></div>
         <p class="text-zinc-400 text-xs md:text-sm leading-relaxed">
-          <strong class="text-zinc-200">Privacy Audit Tool:</strong> You can inspect our source code directly in our repository or view the network tab in your browser's Developer Tools to confirm that no server transmissions occur.
+          <strong class="text-zinc-200">Privacy Audit Tool:</strong> You can inspect our open-source codebase directly or view the network tab in your browser's Developer Tools to confirm that no server data transmissions occur.
         </p>
       </div>
 

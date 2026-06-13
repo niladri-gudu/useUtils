@@ -38,7 +38,7 @@ const CATEGORIES: Category[] = [
 const ALL_TOOLS: Tool[] = [
   // JSON Tools
   { id: 'json-validator', name: 'JSON Validator', description: 'Validate and format JSON', category: 'json', isPopular: true, icon: '✓' },
-  { id: 'json-formatter', name: 'JSON Formatter', description: 'Format and beautify JSON', category: 'json', icon: '✨' },
+  { id: 'json-formatter', name: 'JSON Formatter & Validator', description: 'Format, validate, query, and convert JSON documents. Features real-time error pointing, an interactive collapsible tree view with keypath copy, and YAML/XML/CSV translations.', category: 'json', isPopular: true, isActive: true, href: '/tools/json-formatter', icon: '✨' },
   { id: 'json-minifier', name: 'JSON Minifier', description: 'Minify JSON to save space', category: 'json', icon: '⚡' },
   { id: 'json-viewer', name: 'JSON Viewer', description: 'View JSON in tree format', category: 'json', icon: '🌳' },
   { id: 'json-to-csv', name: 'JSON to CSV', description: 'Convert JSON to CSV', category: 'json', icon: '→' },

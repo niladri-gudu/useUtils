@@ -56,7 +56,7 @@ const PRESETS: Preset[] = [
   {
     id: 'email',
     name: 'Email Address',
-    pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
+    pattern: '\\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\\b',
     flags: 'gim',
     testString: 'Please contact us at support@useutils.com or info.sales@company.co.uk.\nInvalid emails: user@, test@com, @domain.com',
     description: 'Matches standard email addresses.'

@@ -49,5 +49,8 @@ Do NOT mimic competitive anti-patterns (no crowded grids, standard modern web la
 
 if creating a new page, add it to the sitemap.xml file
 
-dont dfeploy after make every changes
+dont deploy after make every changes
 i will say when to deploy and all that
+
+and also use the utils-engine to keep the core logic for the tool
+so that later i can use that to make an npm package

@@ -1,0 +1,124 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { JsonFormatter } from '../../components/JsonFormatter';
+
+const faqs = [
+  {
+    question: "What is a JSON Formatter and why is it useful?",
+    answer: "A JSON Formatter is a tool that takes a raw, minified, or unformatted JSON (JavaScript Object Notation) string and restructures it with proper indentation, line breaks, and syntax coloring. This makes complex nested data readable for human developers, making debugging APIs, parsing configuration files, and examining database payloads much faster and less error-prone."
+  },
+  {
+    question: "How does real-time JSON validation work?",
+    answer: "The validator attempts to parse your input string using the browser's native <code>JSON.parse</code> API. If parsing fails, it catches the resulting <code>SyntaxError</code>. The tool extracts coordinates (line and column) from the error details by comparing the error offset against newlines, immediately highlighting exactly where the syntax issue occurred so you can fix it."
+  },
+  {
+    question: "Are my JSON documents secure when using this tool?",
+    answer: "Yes, 100%. Like all tools on useUtils, all processing, validation, formatting, and translations happen strictly inside your web browser using client-side JavaScript APIs. No data is ever transmitted, uploaded, or cached on our servers, ensuring your sensitive configuration parameters, API payloads, or database keys remain completely private."
+  },
+  {
+    question: "How do I query or filter JSON using JavaScript expressions?",
+    answer: "You can type a query expression in the live query input box. The tool evaluates the expression against the parsed JSON object. You can access properties using standard dot notation (e.g., <code>data.user.profile</code>) or run array transformations (e.g., <code>data.user.skills.map(s => s.toUpperCase())</code> or <code>items.filter(i => i.price > 10)</code>) to isolate the exact subsets of data you need instantly."
+  },
+  {
+    question: "Can I convert JSON to YAML and YAML to JSON?",
+    answer: "Yes. The tool includes native, zero-dependency translation engines. Choosing 'JSON → YAML' converts your structured object into clean, indented YAML key-value pairs, recognizing block scalars for multiline strings. Selecting 'YAML → JSON' processes standard nesting and list elements to output valid formatted JSON."
+  },
+  {
+    question: "How does XML-to-JSON and JSON-to-XML conversion work without server uploads?",
+    answer: "XML conversion uses the browser's built-in <code>DOMParser</code> to convert your XML string into an XML DOM document tree directly in the browser's memory, which is then parsed recursively into a JSON object. For JSON-to-XML, the tool recursively walks through the JSON keys and generates structured XML tags, escaping special characters to prevent document breakages."
+  },
+  {
+    question: "How do I convert a JSON array of objects to CSV?",
+    answer: "Choosing the 'JSON → CSV' function flattens your JSON structure. The utility collects all unique keys from the objects in the array to build the CSV header row. It then walks through each object to generate comma-separated values, enclosing fields in double-quotes and escaping nested quotes to ensure compatibility with spreadsheet programs like Excel or Google Sheets."
+  },
+  {
+    question: "What causes 'SyntaxError: Unexpected token...' and how do I fix it?",
+    answer: "This error occurs when the JSON string violates standard specifications. Common triggers include using single quotes instead of double quotes for keys or strings, leaving trailing commas after the last element in an object or array, missing commas between key-value pairs, or unescaped control characters. The validator will point you to the line and column of the malformed character so you can correct it."
+  },
+  {
+    question: "What is the difference between JSON formatting and JSON minification?",
+    answer: "JSON formatting (beautifying) adds whitespace, line breaks, and indentation (typically 2 or 4 spaces) to make the text readable for humans. JSON minification strips out all non-essential whitespace, carriage returns, and newlines to compress the document size. Minified JSON is ideal for production network transmissions to minimize payload sizes and save bandwidth."
+  },
+  {
+    question: "Can I copy specific nested keypaths from the JSON tree view?",
+    answer: "Yes! Switch to the 'Tree View' tab to inspect your JSON as an expandable, interactive nodes outline. Hovering over any key or value in the hierarchy reveals a 'Copy Path' button. Clicking it copies the JavaScript dot-path (e.g., <code>$.data.user.profile.role</code>) to your clipboard, making it simple to write code referencing that specific node."
+  }
+];
+---
+
+<ToolPageLayout
+  title="JSON Formatter & Validator Online: Format, Query, and Convert JSON"
+  description="Format, validate, minify, query, and convert JSON documents locally in real-time. Supports tree view inspection, keypath copying, live JS filters, and YAML/XML/CSV translations."
+  keywords="json formatter, json validator, beautify json, json parser, query json, json to yaml, yaml to json, json to csv, xml to json, json tree explorer"
+  toolTitle="JSON Formatter & Validator"
+  toolDescription="Format, validate, query, and convert JSON documents locally in your browser. Parse malformed syntax with line highlights, sort keys, extract paths, and translate formats instantly."
+  faqs={faqs}
+>
+  <JsonFormatter client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the JSON Formatter & Validator
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our JSON Formatter is designed to streamline work with structured datasets. Paste your JSON payload into the <strong class="text-zinc-200">Source Document input</strong>. The validator immediately inspects your text: if it's valid, it indicates success; if it contains syntax errors, it highlights the exact line and column numbers of the invalid token.
+      </p>
+      <p class="leading-relaxed">
+        Choose your desired indentation size (2 spaces, 4 spaces, or tabs) and toggle alphabetized sorting of object keys. The output is formatted in real-time. You can toggle between the <strong class="text-zinc-200">Text View</strong> for copying raw text and the <strong class="text-zinc-200">Tree View</strong> to interactively expand, collapse, and query nested JSON branches.
+      </p>
+    </div>
+
+    <!-- Section: Advanced Filtering -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Interactive JSON Query & Filtering
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Rather than copying massive JSON files to find specific nested parameters, utilize the <strong class="text-zinc-200">Live JSON Query Bar</strong>. By using standard JavaScript expressions prefixed with <code>$</code>, you can extract individual properties, map specific array fields, or filter items based on complex conditional rules:
+      </p>
+      <ul class="list-disc pl-5 flex flex-col gap-2 mb-4 text-zinc-400">
+        <li><code class="font-mono text-zinc-300">$.user.id</code> – Returns a single nested value.</li>
+        <li><code class="font-mono text-zinc-300">$.users.map(u =&gt; u.username)</code> – Extracts an array of usernames from a list of objects.</li>
+        <li><code class="font-mono text-zinc-300">$.items.filter(item =&gt; item.active &amp;&amp; item.price &gt; 100)</code> – Performs a conditional filter on lists.</li>
+      </ul>
+      <p class="leading-relaxed">
+        The filtered subset updates instantly in the output viewer, allowing you to isolate and copy only the pertinent data.
+      </p>
+    </div>
+
+    <!-- Section: Translations -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Cross-Format Translations (YAML, XML, CSV)
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Modern developer ecosystems use multiple schemas and configurations. Our utility supports instant format conversions without server transmission:
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">JSON ↔ YAML</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Translate JSON structures to YAML configurations for Kubernetes, GitHub Actions, or Serverless configs, and vice versa.
+          </p>
+        </div>
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">JSON ↔ XML</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Parse SOAP/XML API responses to clean JSON using browser-native DOM processing, or convert JSON structures back to nested XML tags.
+          </p>
+        </div>
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">JSON → CSV</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Convert an array of nested JSON data into a clean, flat CSV sheet format ready to be loaded into Excel or Google Sheets.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ToolPageLayout>

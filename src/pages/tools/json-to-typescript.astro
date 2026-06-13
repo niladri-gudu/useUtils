@@ -1,0 +1,164 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { JsonToTsConverter } from '../../components/JsonToTsConverter';
+
+const faqs = [
+  {
+    question: "What is JSON to TypeScript conversion and why is it useful?",
+    answer: "JSON to TypeScript conversion involves parsing a sample JSON payload and automatically generating matching TypeScript interface or type declarations. This is highly useful for frontend and backend developers who consume APIs; it eliminates manual type definitions, prevents spelling mistakes, and provides compile-time type safety and IDE autocomplete in modern editors like VS Code."
+  },
+  {
+    question: "How does this converter handle nested objects inside JSON?",
+    answer: "Our converter recursively traverses the entire JSON tree. When it encounters nested objects, it extracts them and creates separate, modular TypeScript interfaces or Zod schemas rather than using messy inline object types. It names these extracted interfaces based on the object keys (capitalized and camelCased) and references them in the parent type."
+  },
+  {
+    question: "Can this tool generate Zod schemas for runtime validation?",
+    answer: "Yes. In addition to TypeScript interfaces and type aliases, you can toggle the output format to <strong>Zod Schema</strong>. This generates full Zod validator code (e.g. <code>z.object</code>, <code>z.array</code>, etc.) that matches your JSON's shape, allowing you to validate untrusted API data at your application boundaries."
+  },
+  {
+    question: "How does the tool infer array item types from mixed arrays?",
+    answer: "If an array contains objects with varying fields, the converter performs a structural merge. It gathers the union of all keys across all array elements. If a key is missing in some elements, it is marked as optional (<code>?</code>). If keys have differing data types (e.g. string in one, number in another), it merges them into a TypeScript union (e.g. <code>string | number</code>)."
+  },
+  {
+    question: "Does the converter support ISO-8601 date strings?",
+    answer: "Yes, when <strong>Detect ISO-8601 DateTime strings</strong> is enabled, the parser tests string values against standard ISO timestamps (e.g. <code>2026-06-13T08:11:41.000Z</code>). If matched, it converts the field to a native <code>Date</code> type in TypeScript, or a <code>z.coerce.date()</code> schema in Zod, rather than treating it as a generic string."
+  },
+  {
+    question: "Are properties generated with readonly modifiers?",
+    answer: "Yes. By enabling the <strong>Readonly modifier</strong> option, all generated properties are prefixed with the <code>readonly</code> keyword. This enforces immutability, ensuring that properties on objects parsed from API responses cannot be reassigned elsewhere in your code."
+  },
+  {
+    question: "Is my JSON payload sent to any server during conversion?",
+    answer: "No. Like all tools on useUtils, the JSON to TypeScript & Zod Schema Converter runs 100% locally in your web browser. No JSON data, variable names, or parsed types are transmitted to external servers. Your credentials, API structures, and payloads remain entirely private."
+  },
+  {
+    question: "What is the difference between generating a TypeScript Interface vs a Type Alias?",
+    answer: "TypeScript <strong>Interfaces</strong> define a contract for object shapes and support declaration merging (you can extend them using <code>extends</code>). <strong>Type Aliases</strong> are more versatile as they can describe object shapes, primitives, arrays, union types, or intersections, but they cannot be reopened to add new properties after declaration."
+  },
+  {
+    question: "How do I customize the name of the root interface or schema?",
+    answer: "You can enter your custom identifier in the <strong>Root Object Name</strong> input field (defaults to <code>RootObject</code>). The converter sanitizes your input to ensure it is a valid JavaScript variable name and uses it for the top-level interface or Zod schema definition."
+  },
+  {
+    question: "Can I format or minify my input JSON within this tool?",
+    answer: "Yes, the tool features built-in utility buttons: <strong>Prettify</strong> formats your input JSON with clean 2-space indentation and checks for errors, while <strong>Minify</strong> strips out all whitespace and carriage returns to make the JSON payload as compact as possible."
+  },
+  {
+    question: "How does the tool handle null values or empty arrays in JSON?",
+    answer: "If a JSON value is <code>null</code>, the tool types it as <code>null</code> (or <code>z.null()</code> in Zod). For empty arrays where no types can be inferred, it defaults the elements to <code>any</code> (or <code>z.any()</code> in Zod) as a safe fallback."
+  }
+];
+---
+
+<ToolPageLayout
+  title="JSON to TypeScript & Zod Schema Converter Online - useUtils"
+  description="Convert JSON payloads to TypeScript interfaces, type aliases, or Zod schemas in real-time. Features recursive parsing, ISO date inference, field merging, and local validation."
+  keywords="json to typescript, json to zod, typescript generator, convert json to ts, zod schema from json, typescript interface generator, json to types"
+  toolTitle="JSON to TypeScript & Zod Schema Converter"
+  toolDescription="Convert JSON payloads into robust, type-safe TypeScript Interfaces, Type aliases, or Zod Validation schemas instantly. Recursively merges array structures, infers ISO timestamps, and validates code 100% locally."
+  faqs={faqs}
+>
+  <JsonToTsConverter client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the JSON to TypeScript & Zod Converter
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Generating typescript interfaces from JSON has never been faster. Simply paste your raw JSON string into the input editor pane on the left, customize your settings, and copy the type-safe definitions from the right pane.
+      </p>
+      <ul class="list-disc list-inside space-y-2 pl-2">
+        <li>Paste your JSON payload into the input editor or load our pre-made <strong class="text-zinc-200">Sample</strong>.</li>
+        <li>Format your input on the fly with the <strong class="text-zinc-200">Prettify</strong> or <strong class="text-zinc-200">Minify</strong> options.</li>
+        <li>Choose your output target format: <strong class="text-zinc-200">TS Interfaces</strong>, <strong class="text-zinc-200">TS Types</strong>, or <strong class="text-zinc-200">Zod Schema</strong>.</li>
+        <li>Configure output parameters: name the root object, toggle export keywords, detect date strings, make keys optional or readonly.</li>
+        <li>Click <strong class="text-zinc-200">Copy Output</strong> to clipboard or <strong class="text-zinc-200">Download (.ts)</strong> to save it directly into your codebase.</li>
+      </ul>
+    </div>
+
+    <!-- Section: Core Differences -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Interfaces, Types, and Zod: Which should you choose?
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our tool handles three distinct formatting paradigms depending on your project architecture:
+      </p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">TypeScript Interfaces</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Standard contracts for objects in TS. Ideal for defining public APIs and model layers. They support compilation optimization and allow extension.
+          </p>
+        </div>
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">TypeScript Type Aliases</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Best for union types, primitive mappings, or utility types. Helpful if your root JSON represents an array or raw primitive directly.
+          </p>
+        </div>
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Zod Schemas</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Goes beyond build-time type safety by providing runtime validation. Ensures that incoming network responses match your expected schema.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Options Table -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Parameters & Conversion Configuration Reference
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Fine-tune how your JSON schemas are processed with these visual parameters:
+      </p>
+      
+      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
+              <th class="p-3">Parameter Option</th>
+              <th class="p-3">Description</th>
+              <th class="p-3">Conversion Effect</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
+            <tr>
+              <td class="p-3 text-zinc-200 font-bold">Root Object Name</td>
+              <td class="p-3">Defines the root object identifier.</td>
+              <td class="p-3"><code>interface UserResponse</code> instead of <code>RootObject</code>.</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200 font-bold">Export Keyword</td>
+              <td class="p-3">Toggles prepending of the export keyword.</td>
+              <td class="p-3">Adds <code>export</code> before interfaces or schemas.</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200 font-bold">Detect ISO-8601 Date</td>
+              <td class="p-3">Translates string dates to dates.</td>
+              <td class="p-3">Uses <code>Date</code> or <code>z.coerce.date()</code>.</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200 font-bold">Force Optional (?)</td>
+              <td class="p-3">Forces all nested parameters to be optional.</td>
+              <td class="p-3">Adds <code>?</code> (or <code>.optional()</code>) to every property key.</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200 font-bold">Readonly Modifier</td>
+              <td class="p-3">Enforces immutability on object keys.</td>
+              <td class="p-3">Prepends <code>readonly</code> modifier to TypeScript properties.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ToolPageLayout>

@@ -86,7 +86,7 @@ const ALL_TOOLS: Tool[] = [
   { id: 'csv-to-json', name: 'CSV to JSON', description: 'Convert CSV to JSON', category: 'converters', icon: '→' },
   { id: 'xml-to-json', name: 'XML to JSON', description: 'Convert XML to JSON', category: 'converters', icon: '→' },
   { id: 'yaml-to-json', name: 'YAML to JSON', description: 'Convert YAML to JSON', category: 'converters', icon: '→' },
-  { id: 'json-to-typescript', name: 'JSON to TypeScript', description: 'Generate TypeScript interfaces', category: 'converters', icon: '→' },
+  { id: 'json-to-typescript', name: 'JSON to TypeScript & Zod Schema', description: 'Convert JSON payloads into TypeScript Interfaces, Type aliases, or Zod validation schemas in real-time. Features recursive schema generation, custom naming, and optional key configurations.', category: 'converters', isPopular: true, isActive: true, href: '/tools/json-to-typescript', icon: '→' },
   { id: 'json-to-java', name: 'JSON to Java', description: 'Generate Java classes', category: 'converters', icon: '→' },
   { id: 'json-to-python', name: 'JSON to Python', description: 'Generate Python dataclasses', category: 'converters', icon: '→' },
   { id: 'json-to-go', name: 'JSON to Go', description: 'Generate Go structs', category: 'converters', icon: '→' },

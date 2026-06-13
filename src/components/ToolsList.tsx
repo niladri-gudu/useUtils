@@ -160,7 +160,7 @@ const ALL_TOOLS: Tool[] = [
   { id: 'time-zone-converter', name: 'Time Zone Converter', description: 'Convert time between timezones', category: 'datetime', icon: '🌍' },
   { id: 'date-calculator', name: 'Date Calculator', description: 'Add/subtract dates and calculate differences', category: 'datetime', icon: '🧮' },
   { id: 'relative-time-generator', name: 'Relative Time Generator', description: 'Generate relative time strings', category: 'datetime', icon: '⏰' },
-  { id: 'cron-expression-generator', name: 'Cron Expression Generator', description: 'Generate and test cron expressions', category: 'datetime', icon: '⏲️' },
+  { id: 'cron-expression-generator', name: 'Cron Expression Generator', description: 'Generate, parse, and test cron expressions in real-time. Features interactive visual builder, next execution time list, and dynamic human-readable description.', category: 'datetime', isPopular: true, isActive: true, href: '/tools/cron-expression-generator', icon: '⏲️' },
   { id: 'date-range-generator', name: 'Date Range Generator', description: 'Generate date ranges for testing', category: 'datetime', icon: '📆' },
   { id: 'iso-8601-parser', name: 'ISO 8601 Parser', description: 'Parse and validate ISO 8601 dates', category: 'datetime', icon: '🔍' },
   { id: 'duration-calculator', name: 'Duration Calculator', description: 'Calculate time durations', category: 'datetime', icon: '⏳' },

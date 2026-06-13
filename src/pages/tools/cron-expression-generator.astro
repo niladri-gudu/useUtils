@@ -1,0 +1,180 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { CronGenerator } from '../../components/CronGenerator';
+
+const faqs = [
+  {
+    question: "What is a cron expression and how is it structured?",
+    answer: "A cron expression is a compact string representation used to schedule background jobs or tasks in UNIX-like systems. It consists of 5 fields separated by white space: <code>minute</code> (0-59), <code>hour</code> (0-23), <code>day of month</code> (1-31), <code>month</code> (1-12 or JAN-DEC), and <code>day of week</code> (0-6 or SUN-SAT). Standard UNIX schedules execute tasks when all fields match the current system time."
+  },
+  {
+    question: "How does the step or interval syntax (/) work in cron?",
+    answer: "The slash (<code>/</code>) character is used to specify step increments. For example, <code>*/5</code> in the minutes field means 'every 5 minutes'. You can also use it with ranges: <code>10-45/15</code> means 'every 15 minutes starting at minute 10 and ending at minute 45' (executing at minutes 10, 25, and 40)."
+  },
+  {
+    question: "What is the difference between standard UNIX cron and non-standard crons?",
+    answer: "Standard UNIX cron (crontab) utilizes exactly 5 fields. Some programming frameworks or cloud scheduler platforms (like Quartz, Spring Scheduler, or AWS EventBridge) support non-standard crons with 6 or 7 fields, adding <code>seconds</code> at the beginning and optionally <code>years</code> at the end. This tool focuses on standard 5-field UNIX crontab configurations."
+  },
+  {
+    question: "How do the Day of Month and Day of Week fields interact in cron?",
+    answer: "In UNIX cron, if both the Day of Month and Day of Week fields are restricted (i.e. neither is a wildcard <code>*</code>), the scheduler evaluates them using an <strong>OR</strong> operation instead of an AND operation. This means the job will run if <em>either</em> the current day matches the Day of Month selection <em>or</em> it matches the Day of Week selection."
+  },
+  {
+    question: "How do I specify multiple specific values in a single cron field?",
+    answer: "You can specify a list of values by separating them with commas (<code>,</code>). For example, entering <code>0,15,30,45</code> in the minutes field will schedule the job to run at the beginning, quarter-past, half-past, and quarter-to hours."
+  },
+  {
+    question: "Can I use text names for months and weekdays in cron expressions?",
+    answer: "Yes, standard UNIX cron supports 3-letter case-insensitive abbreviations for months (e.g. <code>JAN, FEB, MAR</code>) and weekdays (e.g. <code>SUN, MON, TUE</code>). When using names, you cannot specify ranges or lists of names in some older cron implementations, so numbers are generally preferred for maximum compatibility."
+  },
+  {
+    question: "Is Sunday represented by 0 or 7 in cron?",
+    answer: "In UNIX crontab, Sunday is represented by both <code>0</code> and <code>7</code>. They are completely equivalent and evaluate to the same weekday condition. Monday is 1, and Saturday is 6."
+  },
+  {
+    question: "What does the wildcard (*) symbol mean in a cron expression?",
+    answer: "The asterisk (<code>*</code>) is a wildcard symbol representing 'all values'. Placing it in a field means the cron job will execute for every possible value in that position. For example, a <code>*</code> in the hour field means it runs during every hour."
+  },
+  {
+    question: "How do I schedule a job to run only on weekdays (Monday through Friday)?",
+    answer: "To target weekdays, set the Day of Week field (the 5th field) to <code>1-5</code>. For example, <code>0 9 * * 1-5</code> will execute the cron job at exactly 9:00 AM every Monday through Friday."
+  },
+  {
+    question: "Is my cron string parsed securely in this generator?",
+    answer: "Yes. Like all tools on useUtils, the Cron Expression Generator runs 100% client-side in your web browser. No data, queries, or selections are sent to external servers or logged. Your system's backend cron patterns remain completely private."
+  },
+  {
+    question: "How do I specify ranges in a cron expression?",
+    answer: "Ranges are defined using the hyphen (<code>-</code>) character. For example, <code>9-17</code> in the hours field means the job will run during every hour starting from 9:00 AM through 5:00 PM inclusive."
+  }
+];
+---
+
+<ToolPageLayout
+  title="Cron Expression Generator & Tester Online - useUtils"
+  description="Generate, validate, translate, and test UNIX cron expressions in real-time. Features interactive visual builder, next execution times calculator, and syntax reference."
+  keywords="cron expression generator, cron builder, crontab generator, cron translator, cron tester, next execution times cron, crontab helper, cron syntax"
+  toolTitle="Cron Expression Generator"
+  toolDescription="Visually build, parse, and validate UNIX crontab schedules in real-time. Automatically translate expressions to human-readable sentences and predict upcoming execution times locally in your browser."
+  faqs={faqs}
+>
+  <CronGenerator client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the Cron Expression Generator
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our visual cron generator takes the mystery out of scheduling tasks. You can either type a raw cron string into the input field at the top to validate and translate it, or use the interactive tabbed builder to generate one step-by-step:
+      </p>
+      <ul class="list-disc list-inside space-y-2 pl-2">
+        <li>Select a pre-built schedule from the <strong class="text-zinc-200">Presets</strong> tab for standard execution routines.</li>
+        <li>Customize individual fields (Minutes, Hours, Days, Months, Weekdays) using simple radio toggles: Every value, Step intervals, Range, or Specific lists.</li>
+        <li>The generator immediately compiles your selections into a valid UNIX cron string, translates it into standard English, and projects the next 5 execution dates based on your local system time.</li>
+      </ul>
+    </div>
+
+    <!-- Section: Cron Structure Explanation -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        UNIX Cron Syntax Structure & Reference
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Standard UNIX crontabs rely on exactly 5 fields separated by spaces. The order and permitted values are strictly enforced as follows:
+      </p>
+      
+      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
+              <th class="p-3">Position</th>
+              <th class="p-3">Field Name</th>
+              <th class="p-3">Allowed Values</th>
+              <th class="p-3">Special Characters</th>
+              <th class="p-3">Example</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
+            <tr>
+              <td class="p-3 text-zinc-200">1</td>
+              <td class="p-3">Minute</td>
+              <td class="p-3">0 - 59</td>
+              <td class="p-3">* , - /</td>
+              <td class="p-3"><code>*/15</code> (every 15m)</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">2</td>
+              <td class="p-3">Hour</td>
+              <td class="p-3">0 - 23</td>
+              <td class="p-3">* , - /</td>
+              <td class="p-3"><code>9-17</code> (9 AM to 5 PM)</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">3</td>
+              <td class="p-3">Day of Month</td>
+              <td class="p-3">1 - 31</td>
+              <td class="p-3">* , - /</td>
+              <td class="p-3"><code>1,15</code> (1st and 15th)</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">4</td>
+              <td class="p-3">Month</td>
+              <td class="p-3">1 - 12 (or JAN-DEC)</td>
+              <td class="p-3">* , - /</td>
+              <td class="p-3"><code>*/3</code> (every quarter)</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">5</td>
+              <td class="p-3">Day of Week</td>
+              <td class="p-3">0 - 6 (or SUN-SAT, 0 or 7 = SUN)</td>
+              <td class="p-3">* , - /</td>
+              <td class="p-3"><code>1-5</code> (Mon to Fri)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section: Practical Examples -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Common Scheduling Examples
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Every hour on the hour</strong>
+          <code class="text-accent-emerald font-mono text-xs block mb-2">0 * * * *</code>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Executes at minute 0 of every hour (e.g. 9:00, 10:00, 11:00). Excellent for running recurring light data checks.
+          </p>
+        </div>
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Every 30 minutes on weekdays</strong>
+          <code class="text-accent-emerald font-mono text-xs block mb-2">*/30 * * * 1-5</code>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Executes every 30 minutes, 24 hours a day, but only from Monday through Friday. Often used for syncing files during work hours.
+          </p>
+        </div>
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Once a day at midnight</strong>
+          <code class="text-accent-emerald font-mono text-xs block mb-2">0 0 * * *</code>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Runs exactly at 12:00 AM every day. Ideal for daily database backups or cleanup routines.
+          </p>
+        </div>
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">First day of every month at 3:00 AM</strong>
+          <code class="text-accent-emerald font-mono text-xs block mb-2">0 3 1 * *</code>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Runs once a month on the 1st day at 3:00 AM. Perfect for monthly billing operations or generating monthly usage reports.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ToolPageLayout>

@@ -120,7 +120,7 @@ const ALL_TOOLS: Tool[] = [
   { id: 'username-validator', name: 'Username Validator', description: 'Validate usernames', category: 'validators', icon: '👤' },
 
   // Generators
-  { id: 'uuid-generator', name: 'UUID Generator', description: 'Generate UUIDs', category: 'generators', icon: '🆔' },
+  { id: 'uuid-generator', name: 'UUID & Token Generator', description: 'Generate cryptographically secure UUIDs (v4 & v7), NanoIDs, passwords, and random byte sequences locally. Features a built-in UUID v7 timestamp parser and entropy analysis.', category: 'generators', isPopular: true, isActive: true, href: '/tools/uuid-generator', icon: '🆔' },
   { id: 'lorem-ipsum', name: 'Lorem Ipsum', description: 'Generate placeholder text', category: 'generators', icon: '📝' },
   { id: 'random-number', name: 'Random Number', description: 'Generate random numbers', category: 'generators', icon: '🎲' },
   { id: 'fake-user-generator', name: 'Fake User Generator', description: 'Generate fake user data', category: 'generators', icon: '👤' },

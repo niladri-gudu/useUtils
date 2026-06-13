@@ -1,0 +1,162 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { UuidGenerator } from '../../components/UuidGenerator';
+
+const faqs = [
+  {
+    question: "What is a UUID and what is it used for?",
+    answer: "A UUID (Universally Unique Identifier) is a 128-bit value used to uniquely identify resources in computer systems without relying on a central coordination authority. It is widely used for primary keys in database tables, API transaction logs, web session identifiers, and unique file naming."
+  },
+  {
+    question: "What is the difference between UUID v4 and UUID v7?",
+    answer: "UUID v4 is generated entirely using random numbers (122 random bits), making it completely unordered. UUID v7 is a newer, timestamp-ordered specification where the first 48 bits encode a Unix timestamp in milliseconds, followed by 74 random bits. This chronological ordering makes UUID v7 ideal for database primary keys because it maintains natural insert order."
+  },
+  {
+    question: "How does UUID v7 improve database indexing and write performance?",
+    answer: "Traditional UUID v4s are random and cause severe index fragmentation or 'index thrashing' because inserts occur at random positions within B-Tree index pages. UUID v7 is monotonically increasing over time, meaning new records are always appended to the end of the index. This prevents costly database page splits, reduces disk I/O, and speeds up write throughput."
+  },
+  {
+    question: "What is a NanoID and how does it compare to UUID?",
+    answer: "NanoID is a compact, cryptographically secure, and customizable unique string generator. While UUIDs have a fixed 36-character format with hyphens (e.g., 8-4-4-4-12), NanoID allows developers to customize both the character length and the alphabet. It uses a larger alphabet (64 characters by default), making its generated strings shorter than UUIDs for the same level of cryptographic entropy."
+  },
+  {
+    question: "How is cryptographically secure randomness achieved in the browser?",
+    answer: "This tool leverages the Web Cryptography API's <code>window.crypto.getRandomValues()</code> method. Unlike <code>Math.random()</code>, which uses a predictable pseudo-random number generator (PRNG), the native browser Crypto API accesses operating-system level entropy sources (such as kernel entropy pools or hardware interrupts) to generate true cryptographically secure random values (CSPRNG)."
+  },
+  {
+    question: "How can I extract the timestamp from a UUID v7?",
+    answer: "The first 48 bits (12 hexadecimal characters) of a UUID v7 represent a Unix epoch timestamp in milliseconds. You can parse a UUID v7 by removing the hyphens, isolating the first 12 characters, and converting this hexadecimal string into a decimal integer. That integer represents the millisecond epoch, which can be instantly cast into a standard Date object."
+  },
+  {
+    question: "What is Shannon Entropy and why is it displayed?",
+    answer: "Shannon Entropy measures the amount of uncertainty, randomness, or information density in a string of text, expressed in bits per character. A higher entropy indicates that the string is more random and less predictable. It is useful for testing passwords, security keys, and random tokens to ensure they contain sufficient randomness to resist brute-force attacks."
+  },
+  {
+    question: "Why should I avoid ambiguous characters in generated passwords?",
+    answer: "Ambiguous characters like <code>1</code> (one), <code>l</code> (lowercase L), <code>I</code> (uppercase i), <code>0</code> (zero), and <code>O</code> (uppercase o) look highly similar in many monospaced or sans-serif fonts. Excluding these characters prevents human transcription errors and user confusion when passwords or tokens are read visually or typed manually."
+  },
+  {
+    question: "Is my generated data secure and private on this site?",
+    answer: "Yes, 100%. All cryptographic key generation, shuffling, and UUID parsing happen entirely inside your local browser sandbox using native JavaScript APIs. No inputs, options, or generated tokens are sent to any external server. You can even run this page completely offline."
+  },
+  {
+    question: "What is Base58 encoding and when should it be used?",
+    answer: "Base58 is a binary-to-text encoding schema that represents raw byte arrays as alphanumeric strings. It uses a 58-character alphabet that excludes easily confused characters (<code>0</code>, <code>O</code>, <code>I</code>, <code>l</code>) and non-alphanumeric symbols (<code>+</code>, <code>/</code>). It was popularized by Bitcoin for addresses because it is safe for visual reading, double-clicking to select, and URL representation."
+  },
+  {
+    question: "How many UUIDs can I generate in one batch?",
+    answer: "You can generate up to 500 tokens or identifiers per batch in real-time. If you need more, you can click 'Regenerate Batch' or configure the settings to copy multiple sets. The client-side generation engine executes instantly."
+  }
+];
+---
+
+<ToolPageLayout
+  title="UUID Generator Online: Generate UUID v4 & v7 Instantly"
+  description="Generate cryptographically secure random UUIDs (v4 & v7), NanoIDs, secure passwords, and custom random byte sequences locally. Features a built-in UUID v7 timestamp parser and entropy analysis."
+  keywords="uuid generator, uuid v4 generator, uuid v7 generator, nanoid generator, secure password generator, random bytes generator, uuid v7 parser"
+  toolTitle="UUID & Cryptographic Token Generator"
+  toolDescription="Generate cryptographically secure random tokens, passwords, and identifiers locally in your web browser. Dissect UUID v7 tokens to retrieve their chronological timestamps."
+  faqs={faqs}
+>
+  <UuidGenerator client:load />
+
+  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    
+    {/* Section 1: Intro */}
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the UUID & Token Generator
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our UUID & Token Generator provides a high-fidelity dashboard for producing secure identifier strings, passwords, and byte streams. In the left control panel, you can select the desired generator type (including <strong class="text-zinc-200">UUID v4</strong>, <strong class="text-zinc-200">UUID v7</strong>, <strong class="text-zinc-200">NanoID</strong>, <strong class="text-zinc-200">Password</strong>, and <strong class="text-zinc-200">Raw Bytes</strong>) and specify formatting details such as prefixes, suffixes, delimiters, and casing.
+      </p>
+      <p class="leading-relaxed">
+        The generated results appear instantly in the right pane. You can copy the entire block using the <strong class="text-zinc-200">Copy All</strong> button, download the tokens as a <strong class="text-zinc-200">.txt text file</strong>, or click individual items to copy single tokens.
+      </p>
+    </div>
+
+    {/* Section 2: Format Comparison Table */}
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Comparing Token & Identifier Standards
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Choosing the right identifier scheme depends on your application architecture, performance requirements, and visual constraints:
+      </p>
+      
+      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
+              <th class="p-3">Identifier Type</th>
+              <th class="p-3">Format Pattern</th>
+              <th class="p-3">Chronological Ordering</th>
+              <th class="p-3">Primary Use Case</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
+            <tr>
+              <td class="p-3 text-zinc-200">UUID v4 (Random)</td>
+              <td class="p-3"><code>f47ac10b-58cc-4372-a567-0e02b2c3d479</code></td>
+              <td class="p-3 text-red-400">None (Purely Random)</td>
+              <td class="p-3 text-zinc-350">Distributed systems, transient session IDs, general keys</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">UUID v7 (Ordered)</td>
+              <td class="p-3"><code>018fb1ea-d2f6-7b18-80f2-77732a39281a</code></td>
+              <td class="p-3 text-accent-emerald font-semibold">Yes (Timestamp-based)</td>
+              <td class="p-3 text-zinc-350">Database primary keys, logging index fields, audit trails</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">NanoID (Compact)</td>
+              <td class="p-3"><code>V1StGXR8_Z5jdHi6B-myT</code></td>
+              <td class="p-3 text-red-400">None (Purely Random)</td>
+              <td class="p-3 text-zinc-350">URL-safe resource links, public identifiers, short codes</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">Secure Password</td>
+              <td class="p-3"><code>k#H5&amp;p9A!zXm7@wQ</code></td>
+              <td class="p-3 text-red-400">None (Purely Random)</td>
+              <td class="p-3 text-zinc-350">User credentials, temporary passwords, security salts</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">Raw Crypto Bytes</td>
+              <td class="p-3"><code>8d2aef912fbc54d2e...</code></td>
+              <td class="p-3 text-red-400">None (Purely Random)</td>
+              <td class="p-3 text-zinc-350">Cryptographic hashes, signing keys, binary buffer testing</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {/* Section 3: UUID v7 Deep Dive */}
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Deep Dive: Why UUID v7 is the New Industry Standard
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Under RFC 9562, UUID v7 was introduced to solve the major database drawback of UUID v4. Since database primary key indexes are typically structured as B-Trees, inserting completely random UUID v4 values forces the engine to continually shuffle nodes to maintain balance. This results in heavy index fragmentation, slow writes, and sub-optimal page splits.
+      </p>
+      <p class="leading-relaxed mb-4">
+        By embedding a Unix timestamp in milliseconds inside the first 48 bits of the UUID v7 structure, the keys become naturally chronological. They can be sorted lexicographically, meaning database inserts occur sequentially at the end of the table index. This optimization results in faster index traversals and dramatically increases database write performance.
+      </p>
+    </div>
+
+    {/* Section 4: Local Browser Sandbox Security */}
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Zero Server Transmission Security Model
+      </h2>
+      <p class="leading-relaxed">
+        Many online token generators upload parameters to a backend server to process calculations, presenting a major security vulnerability for sensitive application development. useUtils implements a strict local browser sandbox. The generator utilizes the native Web Cryptography API (`crypto.getRandomValues`) inside your browser thread. No credentials, options, or generated values are ever transmitted over the network, ensuring complete protection for your keys.
+      </p>
+    </div>
+
+  </div>
+</ToolPageLayout>

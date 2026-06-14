@@ -1,0 +1,129 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { CsvJsonConverter } from '../../components/CsvJsonConverter';
+
+const faqs = [
+  {
+    question: "What is the difference between CSV and JSON formats?",
+    answer: "CSV (Comma-Separated Values) is a plain-text tabular format where each line represents a row, and fields are separated by delimiters like commas. It is extremely compact and ideal for spreadsheets (Excel, Google Sheets). JSON (JavaScript Object Notation) is a hierarchical, key-value data structure that supports nested arrays and objects, making it the industry standard for APIs and web application data interchange."
+  },
+  {
+    question: "How does this online CSV to JSON converter protect my privacy?",
+    answer: "Your security is our priority. Like all useUtils utilities, this converter executes <strong>100% locally in your browser sandbox</strong>. No text inputs, uploaded files, parsed objects, or configuration states are ever sent to a server. All conversions and spreadsheet edits occur locally in memory using JavaScript and Web APIs."
+  },
+  {
+    question: "What is the RFC 4180 standard for CSV files?",
+    answer: "RFC 4180 is the official technical specification that standardizes CSV layouts. It specifies that records should be separated by carriage return newlines (CRLF), headers are optional, and fields containing special characters (like commas, double quotes, or newlines) must be wrapped in double quotes. A double quote inside a field must be escaped by prefixing it with another double quote (e.g., <code>\"field \"\"val\"\"\"</code>)."
+  },
+  {
+    question: "How does the column data-type profiler work?",
+    answer: "When you paste a CSV or JSON payload, our engine scans all elements within each column to assess their semantic data types. It differentiates between <strong>Integers, Floats, Booleans, Nulls, and Strings</strong>. It displays a type label below the column header (e.g. <code>Integer (100% match)</code>) to help you understand your schema and discover format discrepancies."
+  },
+  {
+    question: "How are commas and line breaks handled inside CSV text cells?",
+    answer: "To include commas, semicolons, or line breaks inside a cell value, the entire cell must be wrapped in double quotes. For example, a row like <code>1,\"London, UK\",Active</code> will correctly parse into three columns (<code>1</code>, <code>London, UK</code>, and <code>Active</code>) instead of splitting on the comma inside the city name."
+  },
+  {
+    question: "Can I convert JSON back to CSV using this tool?",
+    answer: "Yes, this tool is fully bidirectional. You can toggle the <strong>Conversion Pathway</strong> to JSON → CSV, paste a valid JSON array of objects, array of arrays, or keyed column structure, and instantly generate clean, downloadable CSV formatted text."
+  },
+  {
+    question: "What JSON output structures are supported (Objects array vs 2D array)?",
+    answer: "We support three common formats: <br />1. <strong>Array of Objects</strong>: Each CSV row becomes an object with headers as keys. Ideal for MongoDB or standard API schemas. <br />2. <strong>2D Array of Arrays</strong>: Rows and columns become a nested list of lists. Ideal for raw mathematical modeling. <br />3. <strong>Keyed Columns</strong>: An object where keys are header names pointing to list arrays. Ideal for data frames and charting libraries."
+  },
+  {
+    question: "Why does my JSON input show a syntax error?",
+    answer: "JSON is highly strict. The most common errors include: <strong>trailing commas</strong> at the end of lists/objects, using single quotes (<code>'</code>) instead of double quotes (<code>\"</code>) for string keys and values, unescaped backslashes, or missing braces. Check the red validation notice below the editor box for the exact line and column location of the issue."
+  },
+  {
+    question: "Is there a file size limit for converting CSV files locally?",
+    answer: "Because processing happens entirely within your browser, the limit depends on your device's RAM and CPU. The tool easily handles files up to 20MB to 50MB (roughly 500,000 rows) in a few seconds. For extremely large files, we recommend splitting them into smaller chunks to prevent browser tab crashes."
+  },
+  {
+    question: "How do I load tabular data into a JavaScript array using client-side code?",
+    answer: "You can read local files using the HTML5 <code>FileReader</code> API. Here is a simple snippet: <br /><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto whitespace-pre\">const fileReader = new FileReader();\nfileReader.onload = (e) => {\n  const rawText = e.target.result;\n  // Send text to your parser...\n};\nfileReader.readAsText(myFile);</code>"
+  },
+  {
+    question: "How do I parse a standard CSV string manually in JavaScript?",
+    answer: "A basic comma-split is error-prone because it breaks on commas inside quotes. To parse robust CSV manually, use a regex or a scanner. Here is a simple split line helper: <br /><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto whitespace-pre\">function splitCsvLine(line, delimiter = ',') {\n  const regex = new RegExp(`(\\\"[^\\\"]*\\\"|[^${delimiter}]+)`, 'g');\n  return line.match(regex).map(cell => cell.replace(/^\"|\"$/g, ''));\n}</code>"
+  }
+];
+---
+
+<ToolPageLayout
+  title="Interactive CSV to JSON & JSON to CSV Converter Online"
+  description="Convert CSV spreadsheets to JSON arrays or JSON structures to CSV online. Features an interactive spreadsheet-like grid editor, delimiter auto-detection, column type profiling, and 100% offline browser security."
+  keywords="csv to json, json to csv, csv converter, edit csv online, csv visual editor, csv data type detector, tab delimited to json, browser csv parser"
+  toolTitle="CSV ⇄ JSON Converter & Grid Editor"
+  toolDescription="Convert spreadsheet files and arrays bidirectionally between CSV and JSON. Edit your rows and columns visually using our interactive grid spreadsheet, auto-detect delimiters, profile data-types, and download results locally."
+  faqs={faqs}
+>
+  <CsvJsonConverter client:load />
+
+  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    
+    <!-- Section: How to use -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the Interactive CSV & JSON Suite
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our CSV/JSON converter offers an interactive experience built for developers. Unlike basic converters, you can review, manipulate, and shape your data before exporting:
+      </p>
+      <ul class="list-disc pl-5 space-y-2 mb-4 leading-relaxed">
+        <li><strong class="text-zinc-200">Paste or Upload:</strong> Paste your raw text data directly into the editor or drag and drop a local <code>.csv</code> or <code>.json</code> file. The utility will dynamically adjust the conversion pathway.</li>
+        <li><strong class="text-zinc-200">Configure Parsers:</strong> Modify cell-type auto-detection, select custom delimiters (comma, semicolon, tab, pipe), and toggles for column headers.</li>
+        <li><strong class="text-zinc-200">Interact in the Grid:</strong> Swap to the <strong class="text-zinc-200">Grid Editor</strong> tab to edit cells like a spreadsheet. Add or delete rows/columns directly. All edits reflect back into your source code and output streams in real-time.</li>
+        <li><strong class="text-zinc-200">Download Offline:</strong> Export the result as a local download or copy it to your clipboard with a single click.</li>
+      </ul>
+    </div>
+
+    <!-- Section: Column profiling and structural benefits -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Under the Hood: Column Profiler & Type Detection
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Converting databases or large spreadsheets often leads to type corruption—for instance, numbers getting wrapped as string primitives (<code>\"123\"</code> instead of <code>123</code>). Our built-in profiler acts as a safeguard:
+      </p>
+      <p class="leading-relaxed mb-4">
+        It evaluates column elements line-by-line. If a column contains entirely integers, the header updates with an <code>Integer</code> badge, and the JSON output automatically casts those cell values to true numeric types. If a column has mixed text and digits, it reports a <code>String</code> or <code>Mixed</code> state. This preserves data integrity for database migration.
+      </p>
+    </div>
+
+    <!-- Section: JSON Structures Compared -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Choosing the Right JSON Structure
+      </h2>
+      <p class="leading-relaxed mb-4">
+        When transforming CSV arrays, you can output three distinct formats depending on your downstream technology needs:
+      </p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div class="bg-zinc-900/40 border border-border-hairline p-4 rounded-lg flex flex-col gap-2">
+          <h3 class="text-zinc-200 font-semibold text-xs font-mono">1. Array of Objects</h3>
+          <p class="text-[11px] leading-relaxed">
+            Maps every row into a dictionary keypath. Keys are headers. Best for web APIs, document databases, and REST ingestion.
+          </p>
+        </div>
+        <div class="bg-zinc-900/40 border border-border-hairline p-4 rounded-lg flex flex-col gap-2">
+          <h3 class="text-zinc-200 font-semibold text-xs font-mono">2. 2D Array</h3>
+          <p class="text-[11px] leading-relaxed">
+            Splits rows into sub-arrays of pure cell values. This removes duplicate header keys, resulting in smaller payload sizes.
+          </p>
+        </div>
+        <div class="bg-zinc-900/40 border border-border-hairline p-4 rounded-lg flex flex-col gap-2">
+          <h3 class="text-zinc-200 font-semibold text-xs font-mono">3. Keyed Columns</h3>
+          <p class="text-[11px] leading-relaxed">
+            Transposes the grid into vertical lists mapped under column labels. Perfect for graphing utilities and Python pandas datasets.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ToolPageLayout>

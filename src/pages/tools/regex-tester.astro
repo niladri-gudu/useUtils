@@ -18,6 +18,30 @@ const faqs = [
   {
     question: "What does the substitution/replace mode do?",
     answer: "Substitution mode allows you to swap out matched expressions with a new string. You can use standard replacement tokens like <code>$1</code> or <code>$2</code> to reference specific capture group data or <code>$&</code> to reference the entire match."
+  },
+  {
+    question: "What are capture groups in regular expressions?",
+    answer: "Capture groups are defined by wrapping a part of the regex pattern in parentheses <code>(...)</code>. They allow you to isolate and extract specific parts of a match, or reference them later in the pattern or during replacement using backreferences like <code>$1</code>, <code>$2</code>, etc."
+  },
+  {
+    question: "What is the difference between lazy and greedy matching?",
+    answer: "By default, regex quantifiers (like <code>*</code>, <code>+</code>, and <code>?</code>) are 'greedy', meaning they match as much text as possible. Adding a question mark <code>?</code> after the quantifier (e.g., <code>*?</code>, <code>+?</code>) makes it 'lazy' (non-greedy), causing it to match the shortest possible substring."
+  },
+  {
+    question: "How do lookahead and lookbehind assertions work?",
+    answer: "Lookarounds are zero-width assertions that match a position without consuming characters. Positive lookahead <code>(?=...)</code> asserts that the pattern inside is followed by the match; negative lookahead <code>(?!...)</code> asserts it is not. Positive lookbehind <code>(?&lt;=...)</code> and negative lookbehind <code>(?&lt;!...)</code> perform similar checks for preceding characters."
+  },
+  {
+    question: "How do I match newlines using the dot (.) character?",
+    answer: "In standard JavaScript regex, the dot <code>.</code> matches any character except line break characters. To include newlines in the dot match, you must enable the DotAll (<code>s</code>) flag, or use a comprehensive character class such as <code>[\\s\\S]</code> (which matches any whitespace or non-whitespace character)."
+  },
+  {
+    question: "How do I escape special characters in regex?",
+    answer: "Regex meta-characters that have special syntactical meaning (such as <code>[ ] ( ) { } * + ? . \\ ^ $ |</code>) must be prefixed with a backslash <code>\\</code> to be matched literally. For example, to match a literal period, use <code>\\.</code>."
+  },
+  {
+    question: "What are non-capturing groups in regex and when should I use them?",
+    answer: "Non-capturing groups are defined using <code>(?:...)</code>. They allow you to group characters or sub-patterns for alternation or quantifiers without storing the matched substring. This avoids creating unnecessary capture groups, makes references cleaner, and slightly optimizes parsing performance."
   }
 ];
 ---
@@ -31,4 +55,95 @@ const faqs = [
   faqs={faqs}
 >
   <RegexTester client:load />
+
+  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the Regex Tester & Visualizer
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our Regular Expression (Regex) Tester is designed to help you construct, validate, and debug regular expressions on-the-fly. Paste your test string in the input field, write your regex pattern, and see match highlighting update in real-time. 
+      </p>
+      <p class="leading-relaxed">
+        Use the toggle panel to switch on various flags such as Global (<code class="font-mono text-zinc-200">g</code>), Case-insensitive (<code class="font-mono text-zinc-200">i</code>), or Multiline (<code class="font-mono text-zinc-200">m</code>). You can also expand the Capture Groups section to see exactly what indices each match occupies, and test replacements with the Substitution panel.
+      </p>
+    </div>
+
+    <!-- Section: Reference Table -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Common Regex Syntax Reference
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Here is a quick reference table of standard regular expression tokens and character classes supported by the native JavaScript engine:
+      </p>
+      
+      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
+              <th class="p-3">Token</th>
+              <th class="p-3">Description</th>
+              <th class="p-3">Example Pattern</th>
+              <th class="p-3">Matches</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
+            <tr>
+              <td class="p-3 text-zinc-200"><code>.</code></td>
+              <td class="p-3 font-sans">Any single character except newline</td>
+              <td class="p-3"><code>h.t</code></td>
+              <td class="p-3 text-accent-emerald">"hat", "hot", "hwt"</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200"><code>\d</code></td>
+              <td class="p-3 font-sans">Any digit (equivalent to <code>[0-9]</code>)</td>
+              <td class="p-3"><code>user_\d\d</code></td>
+              <td class="p-3 text-accent-emerald">"user_23", "user_99"</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200"><code>\w</code></td>
+              <td class="p-3 font-sans">Alphanumeric character plus underscore</td>
+              <td class="p-3"><code>\w+</code></td>
+              <td class="p-3 text-accent-emerald">"hello", "code_1"</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200"><code>\s</code></td>
+              <td class="p-3 font-sans">Any whitespace character (space, tab, newline)</td>
+              <td class="p-3"><code>item\s\d</code></td>
+              <td class="p-3 text-accent-emerald">"item 1", "item\t2"</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200"><code>^</code> / <code>$</code></td>
+              <td class="p-3 font-sans">Start / end of string or line (with multiline flag)</td>
+              <td class="p-3"><code>^auth$</code></td>
+              <td class="p-3 text-accent-emerald">"auth" (exact match only)</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200"><code>*</code> / <code>+</code> / <code>?</code></td>
+              <td class="p-3 font-sans">Quantifiers: zero-or-more, one-or-more, zero-or-one</td>
+              <td class="p-3"><code>colou?r</code></td>
+              <td class="p-3 text-accent-emerald">"color", "colour"</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200"><code>[a-z]</code></td>
+              <td class="p-3 font-sans">Character set: match any character inside the brackets</td>
+              <td class="p-3"><code>[c-h]at</code></td>
+              <td class="p-3 text-accent-emerald">"cat", "hat", but not "bat"</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200"><code>(?:...)</code></td>
+              <td class="p-3 font-sans">Non-capturing group (groups without extracting)</td>
+              <td class="p-3"><code>(?:git|hub)</code></td>
+              <td class="p-3 text-accent-emerald">"git" or "hub"</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </ToolPageLayout>

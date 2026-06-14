@@ -1,0 +1,156 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { UnixTimestampConverter as Converter } from '../../components/UnixTimestampConverter';
+
+const faqs = [
+  {
+    question: "What is a Unix timestamp and how does it work?",
+    answer: "A Unix timestamp (also known as Epoch time or POSIX time) is an integer value representing the total number of seconds that have elapsed since the Unix Epoch: January 1, 1970, at 00:00:00 Coordinated Universal Time (UTC), minus leap seconds. It is widely used in operating systems, file formats, and database systems to store dates and times as simple numeric variables, making temporal math and sorting extremely efficient."
+  },
+  {
+    question: "Why is Unix time measured starting from January 1, 1970?",
+    answer: "The date of January 1, 1970, was arbitrarily chosen as the epoch (the starting reference point) for the Unix operating system. The creators of Unix (Ken Thompson and Dennis Ritchie) needed a simple baseline to start counting system ticks. The initial systems measured time in fractions of a second, which was later standardized to standard seconds starting from Jan 1, 1970, for simplicity and cross-compatibility."
+  },
+  {
+    question: "What is the Year 2038 problem (Y2038 bug)?",
+    answer: "The Year 2038 problem occurs because many legacy operating systems and files represent Unix time as a 32-bit signed integer. The maximum value that can be represented by a 32-bit signed integer is <code>2,147,483,647</code>. This threshold will be reached on <strong>January 19, 2038, at 03:14:07 UTC</strong>. One second later, the integer will overflow and wrap around to a negative value (<code>-2,147,483,648</code>), which translates to December 13, 1901. Modern operating systems prevent this by upgrading timestamp variables to 64-bit integers, pushing the overflow limit billions of years into the future."
+  },
+  {
+    question: "How do timezones affect a Unix timestamp?",
+    answer: "Unix timestamps are entirely timezone-independent. By definition, a Unix timestamp represents the exact number of seconds since the epoch in Coordinated Universal Time (UTC) everywhere in the world. When you convert a timestamp to a local date string, the local timezone offset (e.g., Eastern Standard Time or Indian Standard Time) is applied dynamically by the displaying device. The underlying timestamp value remains identical."
+  },
+  {
+    question: "What is the difference between Unix time in seconds vs milliseconds?",
+    answer: "Standard Unix timestamps are represented in seconds (10 digits, e.g., <code>1718365200</code>). However, high-precision environments—including JavaScript, Java, and modern API protocols—utilize milliseconds (13 digits, e.g., <code>1718365200000</code>) to store fractional time. Microseconds (16 digits) and nanoseconds (19 digits) are standard in database kernels (like PostgreSQL) and language environments (like Go or Rust) to resolve micro-operations."
+  },
+  {
+    question: "Does Unix time include leap seconds?",
+    answer: "No, Unix time does not account for leap seconds. Unix time counts days as exactly 86,400 seconds each. When a leap second is officially added to Coordinated Universal Time (UTC) to compensate for variations in Earth's rotation, the Unix clock repeats the last second of the day or adjusts backward, causing a minor deviation that systems resolve dynamically."
+  },
+  {
+    question: "How do I get the current Unix timestamp in JavaScript or Node.js?",
+    answer: "To retrieve the current timestamp in milliseconds, call <code>Date.now()</code>. To convert it into standard seconds, divide the value by 1,000 and round down: <code>Math.floor(Date.now() / 1000)</code>. You can also construct a timestamp from a specific date string using <code>Date.parse('2026-06-14') / 1000</code>."
+  },
+  {
+    question: "How can I parse natural relative dates (like '5 days ago') in programming?",
+    answer: "In JavaScript, you can calculate relative dates by instantiating a new Date object, retrieving its timestamp, and subtracting or adding the offset in milliseconds. For example, to get '5 days ago', subtract the product of days, hours, minutes, seconds, and milliseconds: <code>new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)</code>."
+  },
+  {
+    question: "Is my pasted data safe and private when using this online converter?",
+    answer: "Yes, 100% secure. Unlike traditional epoch converters that make API calls to backend servers to compute date formatting, useUtils executes all conversions, log parsing, and offset calculations inside your local browser sandbox. No parameters, strings, or logs are ever transmitted over the internet."
+  },
+  {
+    question: "How do I convert a human date string back into a Unix epoch timestamp?",
+    answer: "Most modern languages feature built-in date parsers. In JavaScript, you can pass any ISO 8601 or RFC 2822 date string into <code>new Date('date_string')</code> and call <code>.getTime()</code> to receive its millisecond epoch representation. In Python, use <code>datetime.fromisoformat('date_string').timestamp()</code>."
+  },
+  {
+    question: "What is a Julian Date and how does it relate to Unix time?",
+    answer: "A Julian Date is a continuous count of days since the beginning of the Julian Period (January 1, 4713 BC). While Unix time counts seconds from 1970, Julian Dates count fractional days from a historical astronomical epoch. Julian Dates are primarily used in astronomy to calculate differences between events separated by centuries. Our tool provides real-time translations between Unix epoch and Julian Dates."
+  }
+];
+---
+
+<ToolPageLayout
+  title="Unix Timestamp Converter: Convert Epoch Time & Log Dates Online"
+  description="Convert Unix epoch timestamps to human-readable dates and parse relative date strings locally. Features real-time ticking clocks, time scrubber sliders, offsets, Year 2038 warnings, and a batch log scanner."
+  keywords="unix timestamp converter, epoch converter, epoch time converter, unix epoch converter, convert epoch date, log timestamp extractor, time scrubber, relative date parser, time math offsets, year 2038 bug"
+  toolTitle="Unix Timestamp & Epoch Date Converter"
+  toolDescription="Convert between Unix timestamps and standard dates in real-time. Scrub through timeline sliders, adjust temporal offsets, diagnose Year 2038 overflows, and extract batch epoch instances from server logs."
+  faqs={faqs}
+>
+  <Converter client:load />
+
+  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    
+    {/* Section 1: Intro */}
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Convert Unix Epoch Timestamps to Dates
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our Unix Timestamp Converter provides a local developer dashboard to translate epoch numeric codes into formatted human dates. In the left panel, you can type or paste a timestamp in <strong class="text-zinc-200">seconds, milliseconds, microseconds, or nanoseconds</strong>. If the ticking clock is running, you can click "Freeze" to capture the current timestamp or input a value manually.
+      </p>
+      <p class="leading-relaxed">
+        The tool instantly updates standard formats on the right—including your system's <strong class="text-zinc-200">Local Time</strong>, <strong class="text-zinc-200">GMT/UTC</strong>, and <strong class="text-zinc-200">ISO 8601 strings</strong>. You can customize the timezone drop-down to preview how standard times display across international regions without manual offset addition.
+      </p>
+    </div>
+
+    {/* Section 2: Units Breakdown */}
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Epoch Timestamp Subdivisions
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Depending on the platform or database layer, epoch integers represent different resolutions of time:
+      </p>
+      
+      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
+              <th class="p-3">Unit</th>
+              <th class="p-3">Digits</th>
+              <th class="p-3">Example Representation</th>
+              <th class="p-3">Standard Environments</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
+            <tr>
+              <td class="p-3 text-zinc-200">Seconds (s)</td>
+              <td class="p-3">10</td>
+              <td class="p-3"><code>1718365200</code></td>
+              <td class="p-3 text-zinc-350">Unix Shell, PHP, Python <code>time.time()</code>, MySQL</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">Milliseconds (ms)</td>
+              <td class="p-3">13</td>
+              <td class="p-3"><code>1718365200000</code></td>
+              <td class="p-3 text-zinc-350">JavaScript <code>Date.now()</code>, Java, Web APIs, MongoDB</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">Microseconds (us)</td>
+              <td class="p-3">16</td>
+              <td class="p-3"><code>1718365200000000</code></td>
+              <td class="p-3 text-zinc-350">C++, Python <code>datetime</code> micro-ops, PostgreSQL timestamps</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">Nanoseconds (ns)</td>
+              <td class="p-3">19</td>
+              <td class="p-3"><code>1718365200000000000</code></td>
+              <td class="p-3 text-zinc-350">Go <code>time.Now().UnixNano()</code>, Rust system timers, Linux kernels</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {/* Section 3: Year 2038 Bug */}
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Understanding the Year 2038 Overflow Threat
+      </h2>
+      <p class="leading-relaxed mb-4">
+        As the digital infrastructure matures, the Year 2038 problem (often abbreviated as Y2K38) presents a significant concern for database integrity. Any application using 32-bit signed integers (which cap at <code>2,147,483,647</code>) to store seconds will fail on January 19, 2038, when the timestamp overflows. 
+      </p>
+      <p class="leading-relaxed">
+        Our built-in <strong class="text-zinc-200">Threat Level Indicator</strong> monitors the inputs in real-time. If the date exceeds the 32-bit limit, the system alerts you and explains the implications. To prepare your codebase, audit schemas to ensure timestamps are defined as 64-bit integers (e.g. <code>BIGINT</code> in SQL or <code>int64</code> in Go), which can record dates safely for over 292 billion years.
+      </p>
+    </div>
+
+    {/* Section 4: Log Scanner utility */}
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Extracting Batch Timestamps from Server Logs
+      </h2>
+      <p class="leading-relaxed">
+        When debugging production logs or API crash reports, timestamps are often scattered across text files as raw digits (e.g., <code>1718365200</code>). Copy-pasting each number into a converter is tedious. The useUtils <strong class="text-zinc-200">Log Timestamp Scanner</strong> lets you paste raw server prints directly. The engine parses the content, highlights all extracted numerical matches, compiles them in a table, and allows you to copy individual dates or timestamps with a single click.
+      </p>
+    </div>
+
+  </div>
+</ToolPageLayout>

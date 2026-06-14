@@ -155,7 +155,7 @@ const ALL_TOOLS: Tool[] = [
   { id: 'list-utilities', name: 'List Utilities', description: 'Various list operations', category: 'quick', icon: '📋' },
 
   // Date & Time
-  { id: 'unix-timestamp-converter', name: 'Unix Timestamp Converter', description: 'Convert Unix timestamps to dates', category: 'datetime', isPopular: true, icon: '⏱️' },
+  { id: 'unix-timestamp-converter', name: 'Unix Timestamp Converter & Epoch Tool', description: 'Convert Unix timestamps and epoch dates in real-time. Supports seconds, milliseconds, microseconds, nanoseconds, timeline scrubber sliders, time math offsets, Year 2038 overflow alerts, and raw log batch scanner extraction.', category: 'datetime', isPopular: true, isActive: true, href: '/tools/unix-timestamp-converter', icon: '⏱️' },
   { id: 'date-formatter', name: 'Date Formatter', description: 'Format dates in various patterns', category: 'datetime', icon: '📅' },
   { id: 'time-zone-converter', name: 'Time Zone Converter', description: 'Convert time between timezones', category: 'datetime', icon: '🌍' },
   { id: 'date-calculator', name: 'Date Calculator', description: 'Add/subtract dates and calculate differences', category: 'datetime', icon: '🧮' },

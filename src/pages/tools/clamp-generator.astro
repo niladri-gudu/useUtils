@@ -1,0 +1,114 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { ClampGenerator } from '../../components/ClampGenerator';
+
+const faqs = [
+  {
+    question: "What is the CSS clamp() function?",
+    answer: "The <code>clamp()</code> function is a CSS comparison function that limits a value between an upper and lower bound. It accepts three parameters in order: a minimum value, a preferred value (typically using viewport units like <code>vw</code>), and a maximum value. For example: <code>font-size: clamp(1rem, 2.5vw + 0.5rem, 3rem);</code> ensures that the font size dynamically scales with the viewport, but never shrinks below <code>1rem</code> or grows beyond <code>3rem</code>."
+  },
+  {
+    question: "How do you calculate fluid typography using clamp()?",
+    answer: "Fluid typography is calculated by establishing a linear scaling rate between a minimum size (at a minimum screen size, e.g., 320px) and a maximum size (at a maximum screen size, e.g., 1200px). The math calculates the slope of this line and its y-axis intercept. The resulting formula combines a fixed unit (such as <code>rem</code>) and a viewport unit (such as <code>vw</code>) to create the preferred middle argument of the <code>clamp()</code> function."
+  },
+  {
+    question: "Why is fluid typography better than CSS media queries?",
+    answer: "Traditional responsive design relies on CSS media queries to change font sizes abruptly at specific screen widths (breakpoints). This creates stepped jumps in size that can break layouts or look unpolished. Fluid typography using <code>clamp()</code> continuously interpolates sizes smoothly across all viewport widths, guaranteeing a perfect fit on any device size (including custom resizes) without layout shifts or bloated CSS query files."
+  },
+  {
+    question: "Is CSS clamp() fully supported by modern browsers?",
+    answer: "Yes, CSS <code>clamp()</code> has exceptional browser support, covering over 97% of global users. It is natively supported in all modern versions of Google Chrome, Apple Safari, Mozilla Firefox, Microsoft Edge, and Opera since early 2020. For legacy browsers, you can include a fallback size declaration directly before the <code>clamp()</code> rule: <code>font-size: 24px; font-size: clamp(1rem, 1.5rem + 1vw, 2.5rem);</code>."
+  },
+  {
+    question: "How does CSS clamp() affect web accessibility (WCAG)?",
+    answer: "To comply with WCAG Success Criterion 1.4.4 (Resize Text), fluid sizes should always use relative units (like <code>rem</code> or <code>em</code>) rather than absolute units (like <code>px</code>). If you define a preferred size using viewport units alone (e.g. <code>font-size: 4vw;</code>), the text will fail to scale when users zoom in or out using browser settings. By using a hybrid formula (e.g. <code>0.5rem + 2vw</code>), browser scaling is fully respected, maintaining complete accessibility."
+  },
+  {
+    question: "How do I configure fluid typography in Tailwind CSS?",
+    answer: "In Tailwind CSS v4, you can declare fluid font sizes directly inside your CSS entry point's <code>@theme</code> directive, for example: <code>--font-size-h1: clamp(2rem, 1.5rem + 3vw, 4rem);</code>. In Tailwind CSS v3, you can add clamp rules inside <code>tailwind.config.js</code> under <code>theme.extend.fontSize</code>, or apply them inline using arbitrary class brackets: <code>text-[clamp(1rem,0.6rem+2vw,3rem)]</code> (note that spaces must be replaced with underscores <code>_</code> inside the brackets)."
+  },
+  {
+    question: "What is a modular scale in typography?",
+    answer: "A modular scale is a sequence of values that scale in harmony based on a consistent mathematical ratio, such as the Golden Ratio (1.618), Perfect Fifth (1.5), or Perfect Fourth (1.333). In design, applying a modular scale keeps layouts balanced. Our CSS Clamp Generator lets you input different ratios for mobile and desktop screen sizes, generating a fully responsive, proportional fluid scale system from <code>xs</code> up to <code>7xl</code>."
+  },
+  {
+    question: "What is the root font size and how does it impact clamp()?",
+    answer: "The root font size is the font size declared on the document's <code>&lt;html&gt;</code> element. By default, major browsers set this to <code>16px</code>. In clamp calculations, the root size serves as the base divisor when converting pixel values to accessibility-compliant <code>rem</code> units. For example, if your root size is 16px, a target font size of 24px compiles to <code>1.5rem</code>."
+  },
+  {
+    question: "Can I use CSS clamp() for properties other than font-size?",
+    answer: "Yes! The CSS <code>clamp()</code> function is extremely versatile and works for any property that accepts length units. It is highly recommended for layout padding, section margins, CSS Grid gaps, flexbox gaps, border-radii, and element widths. Creating fluid spacing scales (e.g., <code>--spacing-md: clamp(1rem, 0.8rem + 1vw, 2rem)</code>) keeps columns and margins clean across phone, tablet, and widescreen layouts."
+  },
+  {
+    question: "How does the calculator handle negative viewport intersections?",
+    answer: "During calculation, if a font size scales rapidly over a narrow viewport range, the linear line equation can yield a negative y-intercept. This is mathematically correct and fully parsed by browsers as <code>clamp(1rem, 4vw - 0.5rem, 3rem)</code>. Our generator automatically identifies negative intersections and formats the output string using clean subtraction (e.g., <code>4vw - 0.5rem</code>) for maximum readable code cleanliness."
+  }
+];
+---
+
+<ToolPageLayout
+  title="CSS Clamp Generator: Fluid Typography & Spacing Calculator"
+  description="Generate responsive CSS clamp() functions for fluid typography and spacing. Define viewport limits, construct custom modular scales, and export ready-to-use CSS, SCSS, or Tailwind configurations."
+  keywords="css clamp generator, fluid typography calculator, css fluid typography, clamp calculator, tailwind fluid type scale, responsive font size generator, css generator, spacing calculator"
+  toolTitle="CSS Clamp Generator"
+  toolDescription="Design responsive fluid typography and spacing scales. Tweak viewport boundaries, define sizes in rem or px, inspect visual curves, and export CSS Variables or Tailwind CSS configurations. Processed entirely locally."
+  faqs={faqs}
+>
+  <ClampGenerator client:load />
+
+  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        The Mathematics and Logic of CSS clamp()
+      </h2>
+      <p class="leading-relaxed mb-4">
+        The CSS <code>clamp()</code> function takes three expressions: a minimum boundary, a preferred scaling value, and a maximum boundary. When the browser evaluates this function, it computes the preferred value, but ensures it stays strictly within the specified limits.
+      </p>
+      <p class="leading-relaxed mb-4">
+        To make typography fluid, we express the preferred value as a linear function of the viewport width. The formula uses two coordinate points: <code>(minViewport, minSize)</code> and <code>(maxViewport, maxSize)</code>.
+      </p>
+      <div className="bg-zinc-950 border border-border-hairline/60 rounded-lg p-4 font-mono text-xs text-zinc-300 my-4">
+        <div className="text-zinc-500">// Calculating the slope of the line</div>
+        <div>Slope = (maxSize - minSize) / (maxViewport - minViewport)</div>
+        <div className="text-zinc-500 mt-2">// Expressing the slope as a percentage of viewport width</div>
+        <div>Slope_VW = Slope * 100</div>
+        <div className="text-zinc-500 mt-2">// Finding the y-intercept (intersection value at 0px width)</div>
+        <div>Intersection = minSize - (minViewport * Slope)</div>
+      </div>
+      <p class="leading-relaxed">
+        The final combined value is represented in CSS as <code>clamp(minSize, intersection + slope_vw, maxSize)</code>. Our tool calculates this math instantly on the client side, ensuring no delay and maximum efficiency.
+      </p>
+    </div>
+    
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Designing Accessible Fluid Type Scales
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Web accessibility guidelines (such as WCAG 2.1) require that users must be able to resize text to at least 200% without breaking layouts. This is critical for users with visual impairments.
+      </p>
+      <p class="leading-relaxed mb-4">
+        If a developer implements fluid typography using only viewport units (e.g. <code>font-size: 5vw;</code>), the text is tied directly to the browser window size. When the user selects "Zoom In" in their browser, the viewport size does not change, which means the text size remains static. The site fails accessibility compliance.
+      </p>
+      <p class="leading-relaxed">
+        By introducing a relative unit like <code>rem</code> or <code>em</code> into the preferred value equation (e.g., <code>clamp(1rem, 0.75rem + 1.5vw, 2.5rem)</code>), the text is tied partially to the root font-size. When the user zooms in, the browser scales the base root size, which multiplies the relative <code>rem</code> portion, ensuring text scales cleanly and maintains accessibility.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Generating Harmonious Systems with Modular Scales
+      </h2>
+      <p class="leading-relaxed mb-4">
+        A single fluid size is helpful for headlines, but modern web applications require a comprehensive system. A typographic scale defines a structured relationship between body copy, subheadings, and titles.
+      </p>
+      <p class="leading-relaxed">
+        Our CSS Clamp Generator features a built-in **Fluid Type Scale Generator** that computes values for eleven standard sizes from <code>xs</code> to <code>7xl</code>. You can configure standard scale ratios (like the Perfect Fourth <code>1.333</code> for mobile devices, and the Golden Ratio <code>1.618</code> for spacious desktop layouts). The tool automatically interpolates baseline sizes and calculates individual clamp formulas for the entire scale. You can review, customize individual pixel borders in the interactive matrix, and export the entire configuration in CSS, Tailwind v4 theme variables, Tailwind v3 configs, or SCSS declarations.
+      </p>
+    </div>
+  </div>
+</ToolPageLayout>

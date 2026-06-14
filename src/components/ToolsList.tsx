@@ -19,24 +19,15 @@ interface Category {
 }
 
 const CATEGORIES: Category[] = [
-  { id: 'featured', name: 'Featured Tools', icon: '⭐' },
-  { id: 'json', name: 'JSON Tools', icon: '{ }', description: 'Validate, format, convert and manipulate JSON data' },
-  { id: 'text', name: 'Text Tools', icon: '📝', description: 'Text manipulation and conversion utilities' },
-  { id: 'encoding', name: 'Encoding', icon: '🔐', description: 'Encode and decode various formats' },
-  { id: 'converters', name: 'Converters', icon: '🔄', description: 'Convert between different data formats' },
-  { id: 'css', name: 'CSS Tools', icon: '🎨', description: 'CSS generators and utilities' },
-  { id: 'regex', name: 'Regex', icon: '🔍', description: 'Regular expression tools' },
-  { id: 'validators', name: 'Validators', icon: '✓', description: 'Validate various data types' },
-  { id: 'generators', name: 'Generators', icon: '⚡', description: 'Generate UUIDs, passwords and more' },
-  { id: 'file', name: 'File Tools', icon: '📁', description: 'Image and file processing tools' },
-  { id: 'html', name: 'HTML Tools', icon: '🏷️', description: 'HTML formatting and minification' },
-  { id: 'dev', name: 'Dev Tools', icon: '💻', description: 'Developer utilities and references' },
-  { id: 'quick', name: 'Quick Tools', icon: '⚡', description: 'Quick micro utilities' },
-  { id: 'datetime', name: 'Date & Time', icon: '🕐', description: 'Date and time conversion and calculation tools' }
+  { id: 'text', name: 'Text Utilities', icon: '📝', description: 'Manipulate strings, convert cases, test regular expressions, and format markup' },
+  { id: 'json', name: 'Data & JSON', icon: '{ }', description: 'Validate, format, convert, and query JSON, XML, YAML, and CSV' },
+  { id: 'encoding', name: 'Crypto & Encode', icon: '🔐', description: 'Encode, decode, hash, and validate secure payloads, URLs, and JWTs' },
+  { id: 'css', name: 'CSS & Design', icon: '🎨', description: 'Visual generators, color converters, layout utilities, and shadows' },
+  { id: 'generators', name: 'Generators & Time', icon: '⚡', description: 'Generate tokens, UUIDs, passwords, mock data, and convert timestamps' }
 ];
 
 const ALL_TOOLS: Tool[] = [
-  // JSON Tools
+  // JSON & Data Tools
   { id: 'json-validator', name: 'JSON Validator', description: 'Validate and format JSON', category: 'json', isPopular: true, icon: '✓' },
   { id: 'json-formatter', name: 'JSON Formatter & Validator', description: 'Format, validate, query, and convert JSON documents. Features real-time error pointing, an interactive collapsible tree view with keypath copy, and YAML/XML/CSV translations.', category: 'json', isPopular: true, isActive: true, href: '/tools/json-formatter', icon: '✨' },
   { id: 'json-minifier', name: 'JSON Minifier', description: 'Minify JSON to save space', category: 'json', icon: '⚡' },
@@ -49,8 +40,16 @@ const ALL_TOOLS: Tool[] = [
   { id: 'json-escape', name: 'JSON Escape', description: 'Escape/unescape JSON strings', category: 'json', icon: '\\' },
   { id: 'json-to-table', name: 'JSON to Table', description: 'Convert JSON to HTML table', category: 'json', icon: '📊' },
   { id: 'json-schema-validator', name: 'JSON Schema Validator', description: 'Validate JSON against schema', category: 'json', icon: '🛡️' },
+  { id: 'csv-to-json', name: 'CSV to JSON', description: 'Convert CSV to JSON', category: 'json', icon: '→' },
+  { id: 'xml-to-json', name: 'XML to JSON', description: 'Convert XML to JSON', category: 'json', icon: '→' },
+  { id: 'yaml-to-json', name: 'YAML to JSON', description: 'Convert YAML to JSON', category: 'json', icon: '→' },
+  { id: 'json-to-typescript', name: 'JSON to TypeScript & Zod Schema', description: 'Convert JSON payloads into TypeScript Interfaces, Type aliases, or Zod validation schemas in real-time. Features recursive schema generation, custom naming, and optional key configurations.', category: 'json', isPopular: true, isActive: true, href: '/tools/json-to-typescript', icon: '→' },
+  { id: 'json-to-java', name: 'JSON to Java', description: 'Generate Java classes', category: 'json', icon: '→' },
+  { id: 'json-to-python', name: 'JSON to Python', description: 'Generate Python dataclasses', category: 'json', icon: '→' },
+  { id: 'json-to-go', name: 'JSON to Go', description: 'Generate Go structs', category: 'json', icon: '→' },
+  { id: 'csv-viewer', name: 'CSV Viewer', description: 'View and edit CSV files', category: 'json', icon: '📊' },
 
-  // Text Tools
+  // Text Utilities
   { id: 'case-converter', name: 'Case Converter', description: 'Convert text between camelCase, PascalCase, snake_case, kebab-case, UPPERCASE, lowercase, and more. Features smart layout, auto-casing detection, and line-by-line conversion.', category: 'text', isPopular: true, isActive: true, href: '/tools/case-converter', icon: 'Aa' },
   { id: 'diff-checker', name: 'Diff Checker & Text Compare', description: 'Compare two texts, code snippets, JSON objects, or files in real-time. Features split & unified views, word-level highlights, semantic JSON key sorting, and interactive merging.', category: 'text', isPopular: true, isActive: true, href: '/tools/diff-checker', icon: '⚖️' },
   { id: 'word-counter', name: 'Word Counter', description: 'Count words and characters', category: 'text', icon: '🔢' },
@@ -59,7 +58,6 @@ const ALL_TOOLS: Tool[] = [
   { id: 'reverse-text', name: 'Reverse Text', description: 'Reverse text or lines', category: 'text', icon: '↩️' },
   { id: 'find-replace', name: 'Find & Replace', description: 'Find and replace text', category: 'text', icon: '🔄' },
   { id: 'slug-generator', name: 'Slug Generator', description: 'Generate URL slugs', category: 'text', icon: '🔗' },
-  { id: 'random-string', name: 'Random String', description: 'Generate random strings', category: 'text', icon: '🎲' },
   { id: 'text-trimmer', name: 'Text Trimmer', description: 'Trim whitespace from text', category: 'text', icon: '✂️' },
   { id: 'text-splitter', name: 'Text Splitter', description: 'Split and join text', category: 'text', icon: '✂️' },
   { id: 'remove-special-characters', name: 'Remove Special Characters', description: 'Remove special characters', category: 'text', icon: '🧹' },
@@ -67,8 +65,18 @@ const ALL_TOOLS: Tool[] = [
   { id: 'extract-urls', name: 'Extract URLs', description: 'Extract URLs from text', category: 'text', icon: '🔗' },
   { id: 'character-counter', name: 'Character Counter', description: 'Count characters with details', category: 'text', icon: '📊' },
   { id: 'variable-case-converter', name: 'Variable Case Converter', description: 'Convert variable naming cases', category: 'text', icon: '📝' },
+  { id: 'regex-tester', name: 'Regex Tester', description: 'Test regular expressions in real-time with live match highlighting, detailed capture groups breakdown, flag configuration, replacement testing, and common regex presets.', category: 'text', isPopular: true, isActive: true, href: '/tools/regex-tester', icon: '🔍' },
+  { id: 'regex-cheatsheet', name: 'Regex Cheatsheet', description: 'Regular expressions reference', category: 'text', icon: '📖' },
+  { id: 'html-minifier', name: 'HTML Minifier', description: 'Minify HTML code', category: 'text', icon: '⚡' },
+  { id: 'html-formatter', name: 'HTML Formatter', description: 'Format and beautify HTML', category: 'text', icon: '✨' },
+  { id: 'regex-snippets', name: 'Regex Snippets', description: 'Common regex patterns', category: 'text', icon: '📚' },
+  { id: 'remove-duplicates-quick', name: 'Remove Duplicates', description: 'Remove duplicates from list', category: 'text', icon: '🗑️' },
+  { id: 'count-occurrences', name: 'Count Occurrences', description: 'Count item occurrences', category: 'text', icon: '🔢' },
+  { id: 'alphabetize-list', name: 'Alphabetize List', description: 'Alphabetize lists', category: 'text', icon: '🔤' },
+  { id: 'shuffle-list', name: 'Shuffle List', description: 'Randomize list order', category: 'text', icon: '🔀' },
+  { id: 'list-utilities', name: 'List Utilities', description: 'Various list operations', category: 'text', icon: '📋' },
 
-  // Encoding
+  // Cryptography & Encoding
   { id: 'base64-encoder', name: 'Base64 Encoder', description: 'Encode plain text or binary files into Base64 format locally. Supports Data URIs, CSS background-image rules, and HTML tags.', category: 'encoding', isPopular: true, isActive: true, href: '/tools/base64-encoder', icon: '🔐' },
   { id: 'base64-decoder', name: 'Base64 Decoder', description: 'Decode Base64 strings or Data URIs back into plain text or binary files. Includes file-type detection, visual previews, and local download options.', category: 'encoding', isPopular: true, isActive: true, href: '/tools/base64-decoder', icon: '🔓' },
   { id: 'url-encoder', name: 'URL Encoder', description: 'Encode strings for URL parameters with multiple specifications (Standard, Full URI, Strict RFC 3986, Form-encoded, Strict Hex).', category: 'encoding', isPopular: true, isActive: true, href: '/tools/url-encoder', icon: '🔗' },
@@ -81,20 +89,14 @@ const ALL_TOOLS: Tool[] = [
   { id: 'binary-converter', name: 'Binary Converter', description: 'Convert text to binary', category: 'encoding', icon: '01' },
   { id: 'hex-converter', name: 'Hex Converter', description: 'Convert text to hexadecimal', category: 'encoding', icon: '🔢' },
   { id: 'rot13-encoder', name: 'ROT13 Encoder', description: 'ROT13 cipher encoder', category: 'encoding', icon: '🔄' },
+  { id: 'email-validator', name: 'Email Validator', description: 'Validate email addresses', category: 'encoding', icon: '📧' },
+  { id: 'url-validator', name: 'URL Validator', description: 'Validate URLs', category: 'encoding', icon: '🔗' },
+  { id: 'password-strength', name: 'Password Strength', description: 'Check password strength', category: 'encoding', icon: '🔒' },
+  { id: 'credit-card-validator', name: 'Credit Card Validator', description: 'Validate credit card numbers', category: 'encoding', icon: '💳' },
+  { id: 'phone-validator', name: 'Phone Validator', description: 'Validate phone numbers', category: 'encoding', icon: '📱' },
+  { id: 'username-validator', name: 'Username Validator', description: 'Validate usernames', category: 'encoding', icon: '👤' },
 
-  // Converters
-  { id: 'csv-to-json', name: 'CSV to JSON', description: 'Convert CSV to JSON', category: 'converters', icon: '→' },
-  { id: 'xml-to-json', name: 'XML to JSON', description: 'Convert XML to JSON', category: 'converters', icon: '→' },
-  { id: 'yaml-to-json', name: 'YAML to JSON', description: 'Convert YAML to JSON', category: 'converters', icon: '→' },
-  { id: 'json-to-typescript', name: 'JSON to TypeScript & Zod Schema', description: 'Convert JSON payloads into TypeScript Interfaces, Type aliases, or Zod validation schemas in real-time. Features recursive schema generation, custom naming, and optional key configurations.', category: 'converters', isPopular: true, isActive: true, href: '/tools/json-to-typescript', icon: '→' },
-  { id: 'json-to-java', name: 'JSON to Java', description: 'Generate Java classes', category: 'converters', icon: '→' },
-  { id: 'json-to-python', name: 'JSON to Python', description: 'Generate Python dataclasses', category: 'converters', icon: '→' },
-  { id: 'json-to-go', name: 'JSON to Go', description: 'Generate Go structs', category: 'converters', icon: '→' },
-  { id: 'timestamp-converter', name: 'Timestamp Converter', description: 'Convert timestamps and dates', category: 'converters', icon: '🕐' },
-  { id: 'epoch-converter', name: 'Epoch Converter', description: 'Convert Unix epoch time', category: 'converters', icon: '⏰' },
-  { id: 'number-base-converter', name: 'Number Base Converter', description: 'Convert between number bases', category: 'converters', icon: '🔢' },
-
-  // CSS Tools
+  // CSS & Design
   { id: 'css-minifier', name: 'CSS Minifier', description: 'Minify CSS code', category: 'css', icon: '⚡' },
   { id: 'css-formatter', name: 'CSS Formatter', description: 'Format and beautify CSS', category: 'css', icon: '✨' },
   { id: 'color-picker', name: 'Color Picker', description: 'Pick and preview colors', category: 'css', icon: '🎨' },
@@ -104,65 +106,38 @@ const ALL_TOOLS: Tool[] = [
   { id: 'border-radius-generator', name: 'Border Radius Generator', description: 'Generate border radius', category: 'css', icon: '⭕' },
   { id: 'flexbox-playground', name: 'Flexbox Playground', description: 'Visual flexbox editor', category: 'css', icon: '📐' },
   { id: 'grid-generator', name: 'Grid Generator', description: 'CSS Grid layout generator', category: 'css', icon: '⊞' },
-  { id: 'clamp-generator', name: 'Clamp Generator', description: 'CSS clamp() calculator', category: 'css', icon: '📏' },
+  { id: 'clamp-generator', name: 'CSS Clamp & Fluid Type Scale Generator', description: 'Calculate responsive CSS clamp() functions for fluid typography and spacing. Create custom modular scales, preview sizes in real-time, and export CSS or Tailwind configs.', category: 'css', isPopular: true, isActive: true, href: '/tools/clamp-generator', icon: '📏' },
   { id: 'tailwind-picker', name: 'Tailwind Opacity/Color Picker', description: 'Interactive Tailwind CSS color scales and opacity modifier charts with WCAG testing.', category: 'css', isActive: true, href: '/tools/tailwind-picker', icon: '⚡' },
+  { id: 'color-palette', name: 'Color Palette', description: 'Generate color palettes', category: 'css', icon: '🎨' },
 
-  // Regex
-  { id: 'regex-tester', name: 'Regex Tester', description: 'Test regular expressions in real-time with live match highlighting, detailed capture groups breakdown, flag configuration, replacement testing, and common regex presets.', category: 'regex', isPopular: true, isActive: true, href: '/tools/regex-tester', icon: '🔍' },
-  { id: 'regex-cheatsheet', name: 'Regex Cheatsheet', description: 'Regular expressions reference', category: 'regex', icon: '📖' },
-
-  // Validators
-  { id: 'email-validator', name: 'Email Validator', description: 'Validate email addresses', category: 'validators', icon: '📧' },
-  { id: 'url-validator', name: 'URL Validator', description: 'Validate URLs', category: 'validators', icon: '🔗' },
-  { id: 'password-strength', name: 'Password Strength', description: 'Check password strength', category: 'validators', icon: '🔒' },
-  { id: 'credit-card-validator', name: 'Credit Card Validator', description: 'Validate credit card numbers', category: 'validators', icon: '💳' },
-  { id: 'phone-validator', name: 'Phone Validator', description: 'Validate phone numbers', category: 'validators', icon: '📱' },
-  { id: 'username-validator', name: 'Username Validator', description: 'Validate usernames', category: 'validators', icon: '👤' },
-
-  // Generators
+  // Generators & Time
   { id: 'uuid-generator', name: 'UUID & Token Generator', description: 'Generate cryptographically secure UUIDs (v4 & v7), NanoIDs, passwords, and random byte sequences locally. Features a built-in UUID v7 timestamp parser and entropy analysis.', category: 'generators', isPopular: true, isActive: true, href: '/tools/uuid-generator', icon: '🆔' },
   { id: 'lorem-ipsum', name: 'Lorem Ipsum', description: 'Generate placeholder text', category: 'generators', icon: '📝' },
   { id: 'random-number', name: 'Random Number', description: 'Generate random numbers', category: 'generators', icon: '🎲' },
   { id: 'fake-user-generator', name: 'Fake User Generator', description: 'Generate fake user data', category: 'generators', icon: '👤' },
-  { id: 'color-palette', name: 'Color Palette', description: 'Generate color palettes', category: 'generators', icon: '🎨' },
   { id: 'qr-code-generator', name: 'QR Code Generator', description: 'Generate QR codes', category: 'generators', icon: '▦' },
   { id: 'barcode-generator', name: 'Barcode Generator', description: 'Generate barcodes', category: 'generators', icon: '▬' },
-
-  // File Tools
-  { id: 'image-resize', name: 'Image Resize', description: 'Resize images in browser', category: 'file', icon: '🖼️' },
-  { id: 'image-compress', name: 'Image Compress', description: 'Compress images', category: 'file', icon: '🗜️' },
-  { id: 'image-converter', name: 'Image Converter', description: 'Convert image formats', category: 'file', icon: '🔄' },
-  { id: 'exif-viewer', name: 'EXIF Viewer', description: 'View image EXIF data', category: 'file', icon: '📷' },
-  { id: 'csv-viewer', name: 'CSV Viewer', description: 'View and edit CSV files', category: 'file', icon: '📊' },
-
-  // HTML Tools
-  { id: 'html-minifier', name: 'HTML Minifier', description: 'Minify HTML code', category: 'html', icon: '⚡' },
-  { id: 'html-formatter', name: 'HTML Formatter', description: 'Format and beautify HTML', category: 'html', icon: '✨' },
-
-  // Dev Tools
-  { id: 'api-request-builder', name: 'API Request Builder', description: 'Build API requests', category: 'dev', icon: '🔌' },
-  { id: 'http-status-codes', name: 'HTTP Status Codes', description: 'HTTP status code reference', category: 'dev', icon: '📡' },
-  { id: 'mime-types', name: 'MIME Types', description: 'MIME type lookup', category: 'dev', icon: '📄' },
-  { id: 'regex-snippets', name: 'Regex Snippets', description: 'Common regex patterns', category: 'dev', icon: '📚' },
-
-  // Quick Tools
-  { id: 'remove-duplicates-quick', name: 'Remove Duplicates', description: 'Remove duplicates from list', category: 'quick', icon: '🗑️' },
-  { id: 'count-occurrences', name: 'Count Occurrences', description: 'Count item occurrences', category: 'quick', icon: '🔢' },
-  { id: 'alphabetize-list', name: 'Alphabetize List', description: 'Alphabetize lists', category: 'quick', icon: '🔤' },
-  { id: 'shuffle-list', name: 'Shuffle List', description: 'Randomize list order', category: 'quick', icon: '🔀' },
-  { id: 'list-utilities', name: 'List Utilities', description: 'Various list operations', category: 'quick', icon: '📋' },
-
-  // Date & Time
-  { id: 'unix-timestamp-converter', name: 'Unix Timestamp Converter & Epoch Tool', description: 'Convert Unix timestamps and epoch dates in real-time. Supports seconds, milliseconds, microseconds, nanoseconds, timeline scrubber sliders, time math offsets, Year 2038 overflow alerts, and raw log batch scanner extraction.', category: 'datetime', isPopular: true, isActive: true, href: '/tools/unix-timestamp-converter', icon: '⏱️' },
-  { id: 'date-formatter', name: 'Date Formatter', description: 'Format dates in various patterns', category: 'datetime', icon: '📅' },
-  { id: 'time-zone-converter', name: 'Time Zone Converter', description: 'Convert time between timezones', category: 'datetime', icon: '🌍' },
-  { id: 'date-calculator', name: 'Date Calculator', description: 'Add/subtract dates and calculate differences', category: 'datetime', icon: '🧮' },
-  { id: 'relative-time-generator', name: 'Relative Time Generator', description: 'Generate relative time strings', category: 'datetime', icon: '⏰' },
-  { id: 'cron-expression-generator', name: 'Cron Expression Generator', description: 'Generate, parse, and test cron expressions in real-time. Features interactive visual builder, next execution time list, and dynamic human-readable description.', category: 'datetime', isPopular: true, isActive: true, href: '/tools/cron-expression-generator', icon: '⏲️' },
-  { id: 'date-range-generator', name: 'Date Range Generator', description: 'Generate date ranges for testing', category: 'datetime', icon: '📆' },
-  { id: 'iso-8601-parser', name: 'ISO 8601 Parser', description: 'Parse and validate ISO 8601 dates', category: 'datetime', icon: '🔍' },
-  { id: 'duration-calculator', name: 'Duration Calculator', description: 'Calculate time durations', category: 'datetime', icon: '⏳' },
-  { id: 'world-clock', name: 'World Clock', description: 'Display time in multiple timezones', category: 'datetime', icon: '🕐' }
+  { id: 'random-string', name: 'Random String', description: 'Generate random strings', category: 'generators', icon: '🎲' },
+  { id: 'image-resize', name: 'Image Resize', description: 'Resize images in browser', category: 'generators', icon: '🖼️' },
+  { id: 'image-compress', name: 'Image Compress', description: 'Compress images', category: 'generators', icon: '🗜️' },
+  { id: 'image-converter', name: 'Image Converter', description: 'Convert image formats', category: 'generators', icon: '🔄' },
+  { id: 'exif-viewer', name: 'EXIF Viewer', description: 'View image EXIF data', category: 'generators', icon: '📷' },
+  { id: 'api-request-builder', name: 'API Request Builder', description: 'Build API requests', category: 'generators', icon: '🔌' },
+  { id: 'http-status-codes', name: 'HTTP Status Codes', description: 'HTTP status code reference', category: 'generators', icon: '📡' },
+  { id: 'mime-types', name: 'MIME Types', description: 'MIME type lookup', category: 'generators', icon: '📄' },
+  { id: 'unix-timestamp-converter', name: 'Unix Timestamp Converter & Epoch Tool', description: 'Convert Unix timestamps and epoch dates in real-time. Supports seconds, milliseconds, microseconds, nanoseconds, timeline scrubber sliders, time math offsets, Year 2038 overflow alerts, and raw log batch scanner extraction.', category: 'generators', isPopular: true, isActive: true, href: '/tools/unix-timestamp-converter', icon: '⏱️' },
+  { id: 'date-formatter', name: 'Date Formatter', description: 'Format dates in various patterns', category: 'generators', icon: '📅' },
+  { id: 'time-zone-converter', name: 'Time Zone Converter', description: 'Convert time between timezones', category: 'generators', icon: '🌍' },
+  { id: 'date-calculator', name: 'Date Calculator', description: 'Add/subtract dates and calculate differences', category: 'generators', icon: '🧮' },
+  { id: 'relative-time-generator', name: 'Relative Time Generator', description: 'Generate relative time strings', category: 'generators', icon: '⏰' },
+  { id: 'cron-expression-generator', name: 'Cron Expression Generator', description: 'Generate, parse, and test cron expressions in real-time. Features interactive visual builder, next execution time list, and dynamic human-readable description.', category: 'generators', isPopular: true, isActive: true, href: '/tools/cron-expression-generator', icon: '⏲️' },
+  { id: 'date-range-generator', name: 'Date Range Generator', description: 'Generate date ranges for testing', category: 'generators', icon: '📆' },
+  { id: 'iso-8601-parser', name: 'ISO 8601 Parser', description: 'Parse and validate ISO 8601 dates', category: 'generators', icon: '🔍' },
+  { id: 'duration-calculator', name: 'Duration Calculator', description: 'Calculate time durations', category: 'generators', icon: '⏳' },
+  { id: 'world-clock', name: 'World Clock', description: 'Display time in multiple timezones', category: 'generators', icon: '🕐' },
+  { id: 'number-base-converter', name: 'Number Base Converter', description: 'Convert between number bases', category: 'generators', icon: '🔢' },
+  { id: 'epoch-converter', name: 'Epoch Converter', description: 'Convert Unix epoch time', category: 'generators', icon: '⏰' },
+  { id: 'timestamp-converter', name: 'Timestamp Converter', description: 'Convert timestamps and dates', category: 'generators', icon: '🕐' }
 ];
 
 export default function ToolsList() {
@@ -216,24 +191,27 @@ export default function ToolsList() {
     }
   }, []);
 
-  // Filter tools dynamically based on search query
-  const filteredTools = useMemo(() => {
+  // Filter tools matching search query and active tab (ignoring category filter)
+  const searchedTools = useMemo(() => {
     return ALL_TOOLS.filter(tool => {
       const matchesSearch = 
         tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         tool.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
         tool.category.toLowerCase().includes(searchQuery.toLowerCase());
       
-      const matchesCategory = selectedCategory === 'all' || tool.category === selectedCategory;
-      
       const matchesTab = 
         activeTab === 'all' ||
         (activeTab === 'active' && tool.isActive) ||
         (activeTab === 'coming-soon' && !tool.isActive);
 
-      return matchesSearch && matchesCategory && matchesTab;
+      return matchesSearch && matchesTab;
     });
-  }, [searchQuery, selectedCategory, activeTab]);
+  }, [searchQuery, activeTab]);
+
+  // Filter tools dynamically based on selected category
+  const filteredTools = useMemo(() => {
+    return searchedTools.filter(tool => selectedCategory === 'all' || tool.category === selectedCategory);
+  }, [searchedTools, selectedCategory]);
 
   // Group filtered tools by category
   const groupedTools = useMemo(() => {
@@ -248,11 +226,6 @@ export default function ToolsList() {
     filteredTools.forEach(tool => {
       if (groups[tool.category]) {
         groups[tool.category].push(tool);
-      }
-      
-      // Also add to featured if marked as isPopular
-      if (tool.isPopular && groups['featured']) {
-        groups['featured'].push(tool);
       }
     });
 
@@ -456,20 +429,13 @@ export default function ToolsList() {
                 <span>All Categories</span>
               </span>
               <span className="text-xs font-mono text-zinc-500 bg-zinc-900 border border-border-hairline/40 px-1.5 py-0.5 rounded">
-                {filteredTools.length}
+                {searchedTools.length}
               </span>
             </button>
 
             {CATEGORIES.map(category => {
-              const count = ALL_TOOLS.filter(t => {
-                if (category.id === 'featured') return t.isPopular;
-                return t.category === category.id;
-              }).length;
-
-              const filteredCount = filteredTools.filter(t => {
-                if (category.id === 'featured') return t.isPopular;
-                return t.category === category.id;
-              }).length;
+              const count = ALL_TOOLS.filter(t => t.category === category.id).length;
+              const filteredCount = searchedTools.filter(t => t.category === category.id).length;
 
               // Hide category from list if we are searching and there are no matches
               if (searchQuery && filteredCount === 0) return null;

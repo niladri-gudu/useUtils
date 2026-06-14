@@ -1,0 +1,160 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { HashGenerator } from '../../components/HashGenerator';
+
+const faqs = [
+  {
+    question: "What is a cryptographic hash function?",
+    answer: "A cryptographic hash function is a mathematical algorithm that maps an arbitrary size of data (input) to a fixed-size bit string (output), typically represented as a hexadecimal string. A cryptographically secure hash is a one-way function—computationally impossible to reverse—and deterministic, meaning it will always return the exact same output for a given input."
+  },
+  {
+    question: "What is the difference between hashing and encryption?",
+    answer: "Hashing is a one-way function. Its primary purpose is to verify data integrity and authenticity; once data is hashed, it cannot be decrypted or converted back to its original plain text. Encryption is a two-way function designed to protect data confidentiality. Encrypted data (ciphertext) can be decrypted back into its original form using the correct decryption key."
+  },
+  {
+    question: "How does HMAC differ from a regular cryptographic hash?",
+    answer: "A standard cryptographic hash (like SHA-256) only verifies data integrity—checking if the data was altered. An HMAC (Hash-based Message Authentication Code) combines the hashing algorithm with a secret cryptographic key. It verifies both <strong>data integrity</strong> and <strong>authenticity</strong>, proving that the sender who created the hash possesses the secret key."
+  },
+  {
+    question: "Is MD5 secure for password hashing?",
+    answer: "No, MD5 is cryptographically broken and should never be used for password storage or security-sensitive applications. It is highly susceptible to collision attacks (where two different inputs yield the identical hash) and is computationally too fast, making it vulnerable to brute-force dictionary attacks. For passwords, use modern key-stretching functions like Argon2, bcrypt, or PBKDF2."
+  },
+  {
+    question: "Why is SHA-256 widely used, and is it secure?",
+    answer: "SHA-256 (part of the SHA-2 family) is a 256-bit cryptographic hash function designed by the NSA. It is currently the industry standard for digital certificates, SSL/TLS connections, secure APIs, and blockchain transactions (such as Bitcoin). There are no known practical collision attacks against SHA-256, and it remains cryptographically secure."
+  },
+  {
+    question: "Can a cryptographic hash be decrypted or reversed?",
+    answer: "No, hashes cannot be decrypted. Hashing maps infinite possible input datasets to a finite set of outputs (e.g., 2^256 states for SHA-256), meaning data is discarded mathematically. However, poorly chosen strings or passwords can be cracked using precomputed lookup tables (known as rainbow tables) or dictionary brute-force attacks."
+  },
+  {
+    question: "What is a hash collision, and why is it dangerous?",
+    answer: "A hash collision occurs when two completely different inputs produce the exact same hash output. In security contexts, collisions are highly dangerous because they allow attackers to substitute benign files, configurations, or certificates with malicious versions that share the same hash, tricking verifiers into accepting them."
+  },
+  {
+    question: "How do I verify a downloaded file using a checksum?",
+    answer: "To verify a file, calculate its hash locally (using our File Checksum tab or CLI tools like <code>sha256sum file.zip</code> in Linux or <code>certutil -hashfile file.zip SHA256</code> in Windows). Compare your calculated checksum against the official hash provided on the software download page. If they match, your file is authentic and hasn't been corrupted or altered."
+  },
+  {
+    question: "Does this online Hash Generator store my keys or file contents?",
+    answer: "No, 100% local. Like all tools on useUtils, this generator operates completely inside your web browser sandbox using JavaScript and the native Web Crypto API. Your text inputs, HMAC secret keys, and uploaded files are processed in local memory and are never transmitted to any external server."
+  },
+  {
+    question: "What is a salt in hashing, and why is it used?",
+    answer: "A salt is a random sequence of bytes added to an input (typically a password) before hashing. Salting ensures that identical inputs produce unique, different hashes. This prevents attackers from matching hashes across users and negates the effectiveness of precomputed rainbow table databases."
+  },
+  {
+    question: "How do I compute an HMAC SHA-256 signature in JavaScript (Node.js)?",
+    answer: "In Node.js, you can compute HMAC signatures using the native <code>crypto</code> module: <br /><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto whitespace-pre\">const crypto = require('crypto');\nconst hmac = crypto.createHmac('sha256', 'my-secret-key');\nhmac.update('my-message');\nconst signature = hmac.digest('hex');\nconsole.log(signature);</code>"
+  }
+];
+---
+
+<ToolPageLayout
+  title="Hash & HMAC Generator Online: Secure SHA-256, MD5, SHA-512 Checksums"
+  description="Generate secure MD5, SHA-1, SHA-256, SHA-384, SHA-512, and HMAC hashes locally in your browser. Validate download checksums, compare files, or batch compute strings safely."
+  keywords="hash generator, hmac generator, sha256 online, md5 hash generator, file checksum checker, sha512 hash, local hash generator, verify checksum"
+  toolTitle="Hash & HMAC Generator"
+  toolDescription="Compute secure cryptographic hashes or HMAC signatures locally in your web browser. Drag-and-drop file inputs to verify SHA-256/MD5 download checksums, perform batch string hashing, or compare checksums side-by-side."
+  faqs={faqs}
+>
+  <HashGenerator client:load />
+
+  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the Hash & HMAC Generator
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our client-side utility supports multiple input ingestion formats, making it easy to run security checks on different payloads:
+      </p>
+      <ul class="list-disc pl-5 space-y-2 mb-4 leading-relaxed">
+        <li><strong class="text-zinc-200">Single Text Mode:</strong> Paste standard plain text, JSON configurations, or token payloads to calculate their hash instantly as you type.</li>
+        <li><strong class="text-zinc-200">Bulk Lines Mode:</strong> Useful for batch testing. Paste a list of strings separated by newlines, and retrieve a full list of corresponding hashes. Copy or export the results directly in CSV or JSON.</li>
+        <li><strong class="text-zinc-200">File Checksum Mode:</strong> Drag-and-drop any local file (images, zip files, installers, binaries) to compute its checksum. Large files are processed directly in browser memory without server uploads.</li>
+      </ul>
+      <p class="leading-relaxed">
+        To use HMAC signature verification, tick the <strong class="text-zinc-200">Enable HMAC Signatures</strong> checkbox, choose your secret key, and watch the output dynamically change. Select from lowercase Hex, uppercase Hex, Base64, Base64URL, or Decimal Byte Arrays representation based on your backend environment.
+      </p>
+    </div>
+
+    <!-- Section: Comparison of Cryptographic Algorithms -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Cryptographic Hash Algorithm Specifications
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Choosing the right algorithm depends on the requirements of your application, compatibility constraints, and performance parameters:
+      </p>
+      
+      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
+              <th class="p-3">Algorithm</th>
+              <th class="p-3">Output size (Bits)</th>
+              <th class="p-3">Output size (Bytes)</th>
+              <th class="p-3">Security Level</th>
+              <th class="p-3">Primary Use Cases</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
+            <tr>
+              <td class="p-3 text-zinc-200">MD5</td>
+              <td class="p-3">128 bits</td>
+              <td class="p-3">16 bytes</td>
+              <td class="p-3 text-red-500 font-semibold">Broken (Low)</td>
+              <td class="p-3">Non-secure legacy checksums, duplicate detection, legacy file verification</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">SHA-1</td>
+              <td class="p-3">160 bits</td>
+              <td class="p-3">20 bytes</td>
+              <td class="p-3 text-amber-500 font-semibold">Weak (Medium)</td>
+              <td class="p-3">Git commit checksums, legacy network protocols</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">SHA-256</td>
+              <td class="p-3">256 bits</td>
+              <td class="p-3">32 bytes</td>
+              <td class="p-3 text-emerald-400 font-semibold">Secure (High)</td>
+              <td class="p-3">SSL/TLS certificates, API payload signing, Bitcoin blockchain, package verification</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">SHA-384</td>
+              <td class="p-3">384 bits</td>
+              <td class="p-3">48 bytes</td>
+              <td class="p-3 text-emerald-400 font-semibold">Secure (High)</td>
+              <td class="p-3">High-security signatures, military-grade systems</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">SHA-512</td>
+              <td class="p-3">512 bits</td>
+              <td class="p-3">64 bytes</td>
+              <td class="p-3 text-emerald-400 font-semibold">Secure (High)</td>
+              <td class="p-3">Key generation, file checksums, systems requiring maximum bit depth</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section: Hashing vs HMAC -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Understanding Hash vs HMAC
+      </h2>
+      <p class="leading-relaxed mb-4">
+        A regular hash verifies that data has not changed in transit. However, it does not prevent an attacker from modifying the data and generating a new hash value to match. To solve this, developers use <strong class="text-zinc-200">HMAC (Hash-based Message Authentication Code)</strong>.
+      </p>
+      <p class="leading-relaxed">
+        HMAC injects a secret key into the hash computation. Because the key is known only to the sender and recipient, an attacker cannot generate a valid hash for tampered data. This process provides authentication and integrity, which is why it is used in APIs (like AWS Signature V4 or webhooks) to secure endpoints.
+      </p>
+    </div>
+  </div>
+</ToolPageLayout>

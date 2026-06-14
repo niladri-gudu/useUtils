@@ -84,6 +84,7 @@ const ALL_TOOLS: Tool[] = [
   { id: 'html-encoder', name: 'HTML Encoder', description: 'Encode/decode HTML entities', category: 'encoding', icon: '🏷️' },
   { id: 'jwt-decoder', name: 'JWT Decoder', description: 'Decode JSON Web Tokens instantly with live expiration countdown clocks and payload highlighting.', category: 'encoding', isPopular: true, isActive: true, href: '/tools/jwt-decoder', icon: '🎫' },
   { id: 'jwt-encoder', name: 'JWT Encoder', description: 'Construct and sign JSON Web Tokens locally. Customize headers, payloads, and signatures.', category: 'encoding', isActive: true, href: '/tools/jwt-encoder', icon: '🎫' },
+  { id: 'hash-generator', name: 'Hash & HMAC Generator', description: 'Generate cryptographically secure MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes or HMAC signatures locally. Features checksum validation, drag-and-drop file support, and bulk string hashing.', category: 'encoding', isPopular: true, isActive: true, href: '/tools/hash-generator', icon: '🔐' },
   { id: 'unicode-encoder', name: 'Unicode Encoder', description: 'Encode/decode Unicode', category: 'encoding', icon: '🌐' },
   { id: 'ascii-converter', name: 'ASCII Converter', description: 'Convert text to ASCII codes', category: 'encoding', icon: '🔢' },
   { id: 'binary-converter', name: 'Binary Converter', description: 'Convert text to binary', category: 'encoding', icon: '01' },

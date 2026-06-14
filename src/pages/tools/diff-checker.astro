@@ -1,0 +1,169 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { DiffChecker as DiffCheckerComponent } from '../../components/DiffChecker';
+
+const tabs = [
+  { label: 'Diff Checker', href: '/tools/diff-checker', active: true }
+];
+
+const faqs = [
+  {
+    question: "What is an online diff checker and how does it work?",
+    answer: "A diff checker is a utility that compares two text inputs, code snippets, or files to highlight their structural and lexical differences. Our tool splits both inputs into line-by-line arrays and uses a highly optimized Myers Diff algorithm to calculate what lines have been added, deleted, or modified."
+  },
+  {
+    question: "Is it safe to paste private code, proprietary configurations, or API tokens here?",
+    answer: "Yes, 100% safe. Unlike traditional diff tools that upload your text to a server, all comparison calculations, text merges, and file parses are executed entirely inside your local web browser sandbox using client-side JavaScript. Zero bytes of your text are sent over the network."
+  },
+  {
+    question: "What is Eugene Myers' Diff Algorithm?",
+    answer: "The Myers Diff algorithm is an O(ND) time and space complexity algorithm created by Eugene Myers. It finds the Shortest Edit Script (SES) to transform string A into string B. It is the core algorithm powering <code>git diff</code> and is exceptionally fast for files with typical localized modifications."
+  },
+  {
+    question: "What is the difference between a Split View and a Unified View?",
+    answer: "A <strong>Split View</strong> displays the original (left) and modified (right) versions side-by-side, aligning matching lines horizontally and filling missing segments with aligned spacing. A <strong>Unified View</strong> displays both inputs in a single inline stream, ordering deletions (red) immediately before additions (green)."
+  },
+  {
+    question: "How does semantic JSON diffing differ from standard text diffing?",
+    answer: "Standard diff tools compare JSON text literally, resulting in numerous false-positive matches due to different key orderings, spaces, or formatting styles. Our Semantic JSON mode parses the JSON strings into abstract syntax trees, recursively sorts all object keys alphabetically, formats them with standardized indentation, and then compares them."
+  },
+  {
+    question: "What unique features does this Diff Checker offer?",
+    answer: "In addition to real-time split and unified comparison, our tool features: (1) An <strong>Interactive Merger</strong> allowing you to selectively apply or restore individual changes to construct a custom merged file; (2) **Keyboard Navigation** using standard <code>J</code> and <code>K</code> key bindings; (3) A compressed **Share URL generator** that embeds data in the URL hash; and (4) Offline local file upload selectors."
+  },
+  {
+    question: "How do I ignore whitespace or capitalization differences?",
+    answer: "Under the comparison area, you can toggle options like **Case Insensitive** (which compares lowercased text), **Ignore Whitespace** (which trims lines and collapses multiple spacing tokens into a single space), and **Ignore Empty Lines** (which skips empty rows)."
+  },
+  {
+    question: "Does the tool highlight specific word changes on a line?",
+    answer: "Yes. When a line is modified, the engine automatically runs a secondary, character/word-level tokenized diff. This pinpoints the exact word additions (darker green underline) and deletions (darker red strike-through) within the line."
+  },
+  {
+    question: "How do I navigate differences using keyboard shortcuts?",
+    answer: "Press <kbd class=\"font-mono bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-[10px]\">J</kbd> to jump forward to the next change block and <kbd class=\"font-mono bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-[10px]\">K</kbd> to jump backward to the previous change block. The diff viewer will automatically scroll the active hunk into view."
+  },
+  {
+    question: "Can I upload local text or code files directly?",
+    answer: "Yes. Under the **File Upload** tab, you can select two files from your operating system. The files are parsed locally using the browser's HTML5 <code>FileReader</code> API. No server upload occurs, preserving your privacy."
+  },
+  {
+    question: "What languages can I compare using this utility?",
+    answer: "You can compare any plain text files or programming code snippets. The tool is language-agnostic and works perfectly for JavaScript, TypeScript, Python, HTML, CSS, YAML, JSON, Markdown, XML, CSV, and SQL."
+  },
+  {
+    question: "What is the similarity score and how is it computed?",
+    answer: "The similarity score is a percentage indicator of how identical the two texts are. It is calculated using the Dice Coefficient. It divides the total length of common matching sequences by the combined total length of both inputs, adjusting for partial line modifications."
+  }
+];
+---
+
+<ToolPageLayout
+  title="Diff Checker Online: Compare Text, JSON & Files Side-by-Side"
+  description="Compare text, code snippets, JSON objects, and files in real-time. Features split/unified views, word-level highlights, interactive merge actions, keyboard navigation, and 100% offline security."
+  keywords="diff checker, text compare, online text diff, compare text files, compare code, json diff, side by side comparison, line diff tool, local diff checker"
+  toolTitle="Diff Checker & Text Compare"
+  toolDescription="Compare two texts, code snippets, or files locally in real-time. Features split & unified views, word-level highlights, similarity metrics, diff navigation, and an interactive merge engine."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <DiffCheckerComponent client:load />
+
+  <!-- Detailed educational SEO section -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    
+    {/* Section 1: Intro */}
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the Online Diff Checker
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our local-first Diff Checker provides a high-fidelity environment for reviewing, aligning, and merging source code, JSON configurations, or documentation. To get started, paste your original text in the <strong>Original Text (A)</strong> box and your modified version in the <strong>Modified Text (B)</strong> box. 
+      </p>
+      <p class="leading-relaxed mb-4">
+        The tool processes changes in real-time. If you are comparing raw structured configurations, switch to the <strong>Semantic JSON</strong> tab. This parses the files, sorts the object keys alphabetically, and reformats them, preventing key order variance from skewing your comparison results.
+      </p>
+    </div>
+
+    {/* Section 2: Split vs Unified */}
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Choosing the Right View: Split vs Unified
+      </h2>
+      <p class="leading-relaxed mb-4">
+        The viewer supports two representation modes to match different debugging workflows:
+      </p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+        <div class="bg-zinc-900/40 border border-border-hairline rounded-xl p-4 flex flex-col gap-2">
+          <span class="font-mono text-zinc-200 font-semibold text-xs flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 bg-accent-emerald rounded-full"></span> Split View (Side-by-Side)
+          </span>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            Aligns the original and modified documents side-by-side. Deleted lines are padded on the right and added lines are padded on the left, keeping matching lines horizontally locked. Excellent for reviewing complex structural modifications and side-by-side refactoring.
+          </p>
+        </div>
+        
+        <div class="bg-zinc-900/40 border border-border-hairline rounded-xl p-4 flex flex-col gap-2">
+          <span class="font-mono text-zinc-200 font-semibold text-xs flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 bg-accent-emerald rounded-full"></span> Unified View (Inline)
+          </span>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            Consolidates the file into a single sequential layout. Deletions are shown with a red background and additions with a green background. Preferred for rapid scanning of simple documents, copy editing, or viewing diffs on narrower tablet and mobile screens.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {/* Section 3: Myers Algorithm */}
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Understanding the Myers Diff Algorithm
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our comparison engine runs on a custom, zero-dependency implementation of Eugene Myers' O(ND) difference algorithm. The algorithm treats the edit process as finding the shortest path on a grid search space, where:
+      </p>
+      
+      <ul class="list-disc pl-6 leading-relaxed mb-4 flex flex-col gap-1.5">
+        <li><strong>Horizontal movements</strong> represent deletions (deleting an element from sequence A).</li>
+        <li><strong>Vertical movements</strong> represent additions (adding an element to sequence B).</li>
+        <li><strong>Diagonal movements</strong> represent matches (both lines are identical).</li>
+      </ul>
+      
+      <p class="leading-relaxed mb-4">
+        By seeking the path with the fewest horizontal and vertical steps, the algorithm mathematically guarantees that it has found the <em>Shortest Edit Script (SES)</em>. To optimize browser performance for extremely large files, we pre-hash each line to unique integers, mapping string operations to high-speed numerical array indexes.
+      </p>
+    </div>
+
+    {/* Section 4: Privacy & Merge */}
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Interactive Merging and Absolute Sandbox Privacy
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Unlike other developer portals, we prioritize your data security:
+      </p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-zinc-900/40 border border-border-hairline rounded-xl p-4 flex flex-col gap-2">
+          <span class="font-mono text-zinc-200 font-semibold text-xs">🔒 100% Client-Side Encryption</span>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            All text processing, word analysis, and rendering occur inside your browser using the local JavaScript engine. Your source codes, passwords, database dumps, and key configurations are never uploaded to our servers or processed by third-party APIs.
+          </p>
+        </div>
+
+        <div class="bg-zinc-900/40 border border-border-hairline rounded-xl p-4 flex flex-col gap-2">
+          <span class="font-mono text-zinc-200 font-semibold text-xs">🛠️ Interactive Hunk Merge System</span>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            Toggle the <strong>Merge Tool</strong> overlay to reveal action controls next to each change block. Selectively pick whether to apply the modified line (B) or keep the original (A), assembling a customized, refactored output in the output panel which you can copy in a single click.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</ToolPageLayout>

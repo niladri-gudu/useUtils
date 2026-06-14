@@ -902,16 +902,7 @@ export const UnixTimestampConverter: React.FC = () => {
         </div>
       )}
 
-      {/* Security Privacy Assurance Bottom bar */}
-      <div className="w-full bg-zinc-950/40 border border-border-hairline rounded-lg p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <div className="flex flex-col gap-0.5">
-          <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wide">Privacy sandbox standard</span>
-          <span className="text-xs text-zinc-300 font-sans font-medium">Processed locally in browser. Zero server transmission.</span>
-        </div>
-        <div className="text-[9px] text-zinc-500 uppercase tracking-widest font-mono select-none">
-          100% Offline execution
-        </div>
-      </div>
+      {/* End of content */}
 
     </div>
   );

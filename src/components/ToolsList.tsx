@@ -44,7 +44,6 @@ const ALL_TOOLS: Tool[] = [
   { id: 'json-to-csv', name: 'JSON to CSV', description: 'Convert JSON to CSV', category: 'json', icon: '→' },
   { id: 'json-to-xml', name: 'JSON to XML', description: 'Convert JSON to XML', category: 'json', icon: '→' },
   { id: 'json-to-yaml', name: 'JSON to YAML', description: 'Convert JSON to YAML', category: 'json', icon: '→' },
-  { id: 'json-diff', name: 'JSON Diff', description: 'Compare two JSON objects', category: 'json', icon: '⚖️' },
   { id: 'json-path-tester', name: 'JSON Path Tester', description: 'Test JSON path queries', category: 'json', icon: '🔍' },
   { id: 'json-sorter', name: 'JSON Sorter', description: 'Sort JSON keys', category: 'json', icon: '↕️' },
   { id: 'json-escape', name: 'JSON Escape', description: 'Escape/unescape JSON strings', category: 'json', icon: '\\' },
@@ -53,6 +52,7 @@ const ALL_TOOLS: Tool[] = [
 
   // Text Tools
   { id: 'case-converter', name: 'Case Converter', description: 'Convert text between camelCase, PascalCase, snake_case, kebab-case, UPPERCASE, lowercase, and more. Features smart layout, auto-casing detection, and line-by-line conversion.', category: 'text', isPopular: true, isActive: true, href: '/tools/case-converter', icon: 'Aa' },
+  { id: 'diff-checker', name: 'Diff Checker & Text Compare', description: 'Compare two texts, code snippets, JSON objects, or files in real-time. Features split & unified views, word-level highlights, semantic JSON key sorting, and interactive merging.', category: 'text', isPopular: true, isActive: true, href: '/tools/diff-checker', icon: '⚖️' },
   { id: 'word-counter', name: 'Word Counter', description: 'Count words and characters', category: 'text', icon: '🔢' },
   { id: 'line-sorter', name: 'Line Sorter', description: 'Sort lines alphabetically', category: 'text', icon: '↕️' },
   { id: 'remove-duplicates', name: 'Remove Duplicates', description: 'Remove duplicate lines', category: 'text', icon: '🗑️' },
@@ -133,7 +133,6 @@ const ALL_TOOLS: Tool[] = [
   { id: 'image-compress', name: 'Image Compress', description: 'Compress images', category: 'file', icon: '🗜️' },
   { id: 'image-converter', name: 'Image Converter', description: 'Convert image formats', category: 'file', icon: '🔄' },
   { id: 'exif-viewer', name: 'EXIF Viewer', description: 'View image EXIF data', category: 'file', icon: '📷' },
-  { id: 'text-diff', name: 'Text Diff', description: 'Compare two text files', category: 'file', icon: '⚖️' },
   { id: 'csv-viewer', name: 'CSV Viewer', description: 'View and edit CSV files', category: 'file', icon: '📊' },
 
   // HTML Tools
@@ -149,7 +148,6 @@ const ALL_TOOLS: Tool[] = [
   // Quick Tools
   { id: 'remove-duplicates-quick', name: 'Remove Duplicates', description: 'Remove duplicates from list', category: 'quick', icon: '🗑️' },
   { id: 'count-occurrences', name: 'Count Occurrences', description: 'Count item occurrences', category: 'quick', icon: '🔢' },
-  { id: 'compare-texts', name: 'Compare Texts', description: 'Quick text comparison', category: 'quick', icon: '⚖️' },
   { id: 'alphabetize-list', name: 'Alphabetize List', description: 'Alphabetize lists', category: 'quick', icon: '🔤' },
   { id: 'shuffle-list', name: 'Shuffle List', description: 'Randomize list order', category: 'quick', icon: '🔀' },
   { id: 'list-utilities', name: 'List Utilities', description: 'Various list operations', category: 'quick', icon: '📋' },

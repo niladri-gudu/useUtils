@@ -1,0 +1,176 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { WordCounter } from '../../components/WordCounter';
+
+const faqs = [
+  {
+    question: "How is word count calculated in this text analyzer?",
+    answer: "The word count is calculated using a robust regular expression: <code>\\b[a-zA-Z0-9]+(?:'[a-zA-Z0-9]+)?(?:-[a-zA-Z0-9]+)?\\b</code>. This matches standard letters and numbers while treating contractions (like <i>don't</i>) and hyphenated expressions (like <i>offline-first</i>) as single cohesive words. Standalone punctuation, symbols, and operators are excluded from the total count."
+  },
+  {
+    question: "Does this character counter include spaces?",
+    answer: "Our tool calculates both metrics simultaneously. In the statistics grid, you will see the <b>total character count</b> (which includes spaces, tabs, and line breaks) and the <b>character count excluding whitespace</b>. This helps you comply with different platforms' publishing rules, as some count spaces and others do not."
+  },
+  {
+    question: "What is the difference between reading time and speaking time?",
+    answer: "<b>Reading time</b> measures silent reading speed. It is computed based on a default speed of 200 words per minute (WPM), which is standard for average adults. <b>Speaking time</b> measures spoken presentation speed, defaulted at 130 WPM (conversational speaking rate). Both metrics are fully adjustable in real-time using the interactive sliders to match your audience's pace."
+  },
+  {
+    question: "What is the Flesch Reading Ease score?",
+    answer: "The Flesch Reading Ease score evaluates text readability on a scale of 0 to 100. It is calculated using the formula: <code>206.835 - 1.015 * (totalWords / totalSentences) - 84.6 * (totalSyllables / totalWords)</code>. Higher scores (90-100) indicate simple, conversational text (5th-grade level), while lower scores (0-30) denote highly academic, complex literature (college graduate level)."
+  },
+  {
+    question: "How is the Automated Readability Index (ARI) calculated?",
+    answer: "The ARI approximates the US school grade level required to understand the text. The formula is: <code>4.71 * (charactersWithoutSpaces / words) + 0.5 * (words / sentences) - 21.43</code>. A score of 8 indicates 8th-grade level (approx. 13-14 years old), whereas a score of 14 denotes college student level."
+  },
+  {
+    question: "What is a complex word according to the Gunning Fog Index?",
+    answer: "For the Gunning Fog Index calculation, a <b>complex word</b> is defined as any word containing three or more syllables. The Gunning Fog formula is: <code>0.4 * ((words / sentences) + 100 * (complexWords / words))</code>. Higher ratios of long words and long sentences lead to a higher Fog score, indicating more dense and difficult reading."
+  },
+  {
+    question: "Can I filter out stop words (common words) from the word density analysis?",
+    answer: "Yes. By default, the 'Ignore Common Words' toggle is active. This filters out standard grammatical particles (like <i>the, a, and, or, at, for, of, with</i>) from the density map. This ensures you see your actual topic keywords rather than functional grammatical conjunctions, which is critical for search engine optimization (SEO) writing."
+  },
+  {
+    question: "Is my pasted text safe and private?",
+    answer: "Absolutely. All processing, analysis, pattern extraction, and formatting occur 100% on the client side in your web browser. No data is sent to external servers or cloud services. This makes the tool perfectly secure for analyzing sensitive data, API keys, database logs, and proprietary code."
+  },
+  {
+    question: "How does the regex pattern extractor scan text?",
+    answer: "The regex extractor scans the text in real-time for specific structural formats. It uses strict Regular Expressions to parse and list unique instances of email addresses, URLs (protocols, domains, parameters), IPv4 addresses, and standalone numeric strings, allowing you to copy individual items or extract them in bulk."
+  },
+  {
+    question: "Can I export my word density statistics?",
+    answer: "Yes. You can download the complete word frequency table by clicking the <b>CSV</b> or <b>JSON</b> export buttons in the Word Density tab. The CSV file includes Word, Count, and Density columns, making it easy to open in Microsoft Excel, Google Sheets, or feed into custom data analytics pipelines."
+  },
+  {
+    question: "What are the quick text cleaners and how do they work?",
+    answer: "Below the text input pane, the tool provides one-click clean utilities: <b>Trim Lines</b> removes leading/trailing spaces; <b>Flat Spaces</b> collapses multiple spaces/tabs; <b>Strip Empty Rows</b> deletes empty lines; <b>Deduplicate Lines</b> retains only unique lines; <b>Strip HTML Tags</b> removes HTML elements; and <b>Strip Special Chars</b> filters symbols while keeping letters, numbers, and spaces."
+  }
+];
+---
+
+<ToolPageLayout
+  title="Word Counter & Text Analyzer: Real-Time Readability & Keyword Density Tool"
+  description="Analyze text counts, characters, sentences, paragraphs, and reading times locally. Calculate Flesch Ease, Automated Readability Index (ARI), Gunning Fog scores, and map keyword densities instantly."
+  keywords="word counter, character counter, readability checker, flesch ease score, sentence counter, reading time estimator, word density analyzer, regex extractor, text cleaner, ARI calculator, gunning fog index"
+  toolTitle="Word Counter & Text Analyzer"
+  toolDescription="Analyze your content, articles, or logs in real-time. Calculate precise counts, readability indices, character metrics, reading rates, word density frequencies with stop-word filters, and extract patterns locally."
+  faqs={faqs}
+>
+  <WordCounter client:load />
+
+  <!-- SEO Content Slot -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Professional Content Auditing & Text Metrics
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Writing content that ranks well on search engines and engages audiences requires balancing length, readability, and keyword distributions. Our <strong class="text-zinc-200">Word Counter & Text Analyzer</strong> runs locally to provide instant analytical diagnostics of any written passage, essay, article, or console log.
+      </p>
+      <p class="leading-relaxed">
+        Pasting text into the editor triggers synchronous calculations: counts are displayed in panels, readability indexes map onto gauges, keyword frequencies sort into tables, and extraction utilities parse emails or links from raw data.
+      </p>
+    </div>
+
+    <!-- Section: Comparison of Readability Indexes -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Understanding Readability Formula Scales
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Readability scores evaluate text complexity using linguistic variables like sentence length (ratio of words to sentences) and word difficulty (syllables per word). Below is a comparison table of standard scores and their corresponding target audiences:
+      </p>
+      
+      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-[#2c2c2e] bg-zinc-950 font-mono text-zinc-300">
+              <th class="p-3">Flesch Ease Score</th>
+              <th class="p-3">ARI Score</th>
+              <th class="p-3">Grade Level Equivalent</th>
+              <th class="p-3">Audience Readability Description</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#2c2c2e]/60 text-zinc-400 font-mono">
+            <tr>
+              <td class="p-3 text-[#34d399] font-bold">90 – 100</td>
+              <td class="p-3">1 – 4</td>
+              <td class="p-3">5th to 6th Grade</td>
+              <td class="p-3 text-zinc-350">Very easy to read. Conversational language suitable for 11-year-olds.</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-[#34d399]/85 font-bold">80 – 89</td>
+              <td class="p-3">5 – 6</td>
+              <td class="p-3">6th to 7th Grade</td>
+              <td class="p-3 text-zinc-350">Easy to read. Standard conversational copy.</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">60 – 69</td>
+              <td class="p-3">8 – 9</td>
+              <td class="p-3">8th to 9th Grade</td>
+              <td class="p-3 text-zinc-350">Standard readability level. Easily understood by the general public.</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-amber-400/80 font-bold">50 – 59</td>
+              <td class="p-3">10 – 12</td>
+              <td class="p-3">10th to 12th Grade</td>
+              <td class="p-3 text-zinc-350">Fairly difficult. Appropriate for high school level readers.</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-rose-500 font-bold">0 – 29</td>
+              <td class="p-3">&gt;14</td>
+              <td class="p-3">College Graduate</td>
+              <td class="p-3 text-zinc-350">Very difficult to read. Targeted at academic, scientific, or legal professionals.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section: Core Advantages -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Advanced Text Analyzer Key Features
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Interactive WPM Time Sliders</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Customize estimated reading and speaking speeds in WPM to tailor time durations for speeches, YouTube scripts, or audio narrations.
+          </p>
+        </div>
+
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Stop Word Density Filtering</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Exclude common English particles with one click. Filter out words like 'the', 'a', 'and' to analyze structural content keywords, optimizing pages for organic SEO targets.
+          </p>
+        </div>
+
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Quick Clean utilities</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Format inputs instantly. Strip HTML markup, remove duplicate rows, flatten excessive whitespace, and filter out symbols without leaving the sandbox interface.
+          </p>
+        </div>
+
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Real-Time Regex Extractor</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Isolate technical tokens from logs. Identify and pull all email addresses, URLs, IP addresses, or number streams directly into a clean copying tray.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</ToolPageLayout>

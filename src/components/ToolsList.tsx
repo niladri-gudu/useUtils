@@ -52,7 +52,7 @@ const ALL_TOOLS: Tool[] = [
   // Text Utilities
   { id: 'case-converter', name: 'Case Converter', description: 'Convert text between camelCase, PascalCase, snake_case, kebab-case, UPPERCASE, lowercase, and more. Features smart layout, auto-casing detection, and line-by-line conversion.', category: 'text', isPopular: true, isActive: true, href: '/tools/case-converter', icon: 'Aa' },
   { id: 'diff-checker', name: 'Diff Checker & Text Compare', description: 'Compare two texts, code snippets, JSON objects, or files in real-time. Features split & unified views, word-level highlights, semantic JSON key sorting, and interactive merging.', category: 'text', isPopular: true, isActive: true, href: '/tools/diff-checker', icon: '⚖️' },
-  { id: 'word-counter', name: 'Word Counter', description: 'Count words and characters', category: 'text', icon: '🔢' },
+  { id: 'word-counter', name: 'Word Counter & Text Analyzer', description: 'Analyze text stats, character counts, lines, paragraphs, and adjust reading/speaking speeds. Calculates Flesch ease, Automated Readability Index (ARI), Gunning Fog indices, and keyword density mapping locally.', category: 'text', isPopular: true, isActive: true, href: '/tools/word-counter', icon: '🔢' },
   { id: 'line-sorter', name: 'Line Sorter', description: 'Sort lines alphabetically', category: 'text', icon: '↕️' },
   { id: 'remove-duplicates', name: 'Remove Duplicates', description: 'Remove duplicate lines', category: 'text', icon: '🗑️' },
   { id: 'reverse-text', name: 'Reverse Text', description: 'Reverse text or lines', category: 'text', icon: '↩️' },

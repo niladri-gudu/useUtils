@@ -1,0 +1,164 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { BinaryConverter } from '../../components/BinaryConverter';
+
+const tabs = [
+  { label: 'Binary Converter', href: '/tools/binary-converter', active: true },
+  { label: 'Base64 Encoder', href: '/tools/base64-encoder' },
+  { label: 'Base64 Decoder', href: '/tools/base64-decoder' }
+];
+
+const faqs = [
+  {
+    question: "What is a binary converter?",
+    answer: "A binary converter is a developer utility that translates alphanumeric text characters, words, sentences, or files into their binary representation (composed entirely of 0s and 1s, representing bits) and vice versa. It facilitates debugging and inspecting data formats, protocol frames, and raw binary values."
+  },
+  {
+    question: "How does text-to-binary conversion work?",
+    answer: "Text is first divided into individual characters. Each character corresponds to a numeric code point under a specific encoding system (like ASCII or UTF-8). These decimal codes are then converted to binary numbers (base 2). For example, the uppercase letter 'H' has an ASCII decimal value of 72, which parses directly to the 8-bit binary byte <code>01001000</code>."
+  },
+  {
+    question: "What is the difference between ASCII and UTF-8 encoding?",
+    answer: "ASCII (American Standard Code for Information Interchange) is a 7-bit character set supporting 128 characters, covering standard English letters, numbers, and basic symbols. UTF-8 (Unicode Transformation Format) is a backward-compatible variable-width encoding that represents characters using 1 to 4 bytes. UTF-8 can represent over a million code points, covering emojis, math notations, and characters from almost every language."
+  },
+  {
+    question: "How do I translate binary code back to readable text?",
+    answer: "To decode binary back to text: <ol class='list-decimal pl-4 mt-1 gap-1 flex flex-col text-zinc-400'><li>Group the continuous bit stream into chunks of 8 bits (representing 1 byte).</li><li>Convert each 8-bit block from base-2 (binary) to base-10 (decimal). For example, <code>01100001</code> translates to 97.</li><li>Map each decimal code point back to its character using the character encoding set (such as ASCII/UTF-8 where 97 represents the lowercase letter 'a').</li></ol>"
+  },
+  {
+    question: "Why do binary and hex representation values require space separators or delimiters?",
+    answer: "Since a raw binary sequence is a continuous stream of bits (e.g. <code>0100100001100101</code>), it can be difficult for human developers to scan and spot character boundaries. Using delimiters like spaces, commas, or colons (e.g. <code>01001000 01100101</code>) splits the sequence into readable bytes, facilitating inspection and comparison."
+  },
+  {
+    question: "What is a Hex Dump, and what is it used for?",
+    answer: "A hex dump is a hexadecimal representation of raw data, typically representing file contents or memory sectors. It is organized as a table with three columns: the memory address offset (in hex), the hex byte values (usually in 16-byte lines separated by a spacer), and their printable ASCII character equivalents (using periods for non-printable control characters). Hex dumps are critical for reverse engineering, binary file debugging, and network packet parsing."
+  },
+  {
+    question: "What is a Bit Sandbox (Bit Flipper) and how does it work?",
+    answer: "A bit sandbox is an interactive educational and debugging tool that visualizes character bytes as a series of individual bit grids. Users can toggle (flip) any of the 8 bits in a byte card (changing 0 to 1 or 1 to 0). Flipping a bit updates the byte's numeric value and instantly recalculates text outputs and representations across other numeric bases, showcasing binary math in action."
+  },
+  {
+    question: "Why do standard Javascript converters lose precision with large numbers?",
+    answer: "Standard JavaScript numbers are double-precision floats following IEEE 754 standards, which safely store integers only up to <code>9,007,199,254,740,991</code> (<code>Number.MAX_SAFE_INTEGER</code>). Any calculations or base conversions above this threshold result in rounding errors. Using native <code>BigInt</code> allows developers to input and convert numbers of arbitrary length with 100% precision."
+  },
+  {
+    question: "How do I write a basic text-to-binary converter in Javascript?",
+    answer: "You can use the native <code>TextEncoder</code> API in modern browsers to convert text to a byte array, then convert each byte to base-2 binary:<br /><code class='font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-350 rounded px-2.5 py-1.5 block mt-2 overflow-x-auto whitespace-pre'>const text = \"Hello\";\nconst bytes = new TextEncoder().encode(text);\nconst binary = Array.from(bytes)\n  .map(b => b.toString(2).padStart(8, '0'))\n  .join(' ');\nconsole.log(binary); // \"01001000 01100101...\"</code>"
+  },
+  {
+    question: "How do I convert binary back to text using Javascript?",
+    answer: "Split the binary string by space delimiters, parse each token to an integer code point, build a <code>Uint8Array</code>, and decode it:<br /><code class='font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-350 rounded px-2.5 py-1.5 block mt-2 overflow-x-auto whitespace-pre'>const binaryStr = \"01001000 01100101\";\nconst bytes = Uint8Array.from(\n  binaryStr.split(' ').map(bin => parseInt(bin, 2))\n);\nconst text = new TextDecoder().decode(bytes);\nconsole.log(text); // \"He\"</code>"
+  },
+  {
+    question: "Is my data secure when using this binary converter utility?",
+    answer: "Absolutely. Like all developer utilities on useUtils, the binary converter operates entirely in client-side memory inside your web browser sandbox. No input payloads, typed strings, or uploaded files are ever sent to external servers or tracking databases, guaranteeing complete data privacy."
+  }
+];
+---
+
+<ToolPageLayout
+  title="Binary Converter: Text to Binary, Hex, ASCII Translator & Bit Sandbox"
+  description="Convert plain text to binary, hex, decimal, octal, and base64. Features a visual character bitwise sandbox editor, file hex dump explorer, and BigInt base calculator."
+  keywords="binary converter, text to binary, hex to binary, binary to text translator, bitwise editor, hex dump viewer, online binary tool"
+  toolTitle="Binary Converter & Bit Sandbox"
+  toolDescription="Translate characters, text, and files to binary, hex, decimal, or octal code representation instantly in your browser. Flip individual bits visually in our Bit Sandbox, generate memory address hex dumps, or convert huge integers using our BigInt calculator."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <BinaryConverter client:load />
+
+  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the Binary Converter
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our multi-base converter provides a complete local playground for translating data types. Type or paste characters in the <strong class="text-zinc-200">Plain Text</strong> field, and watch all other fields (Binary, Hex, Decimal, Octal, and Base64) update simultaneously as you type. Alternatively, paste raw code sequences in any of the base format boxes to decode them back into human-readable text.
+      </p>
+      <p class="leading-relaxed">
+        Use the top settings panel to configure character delimiters (Spaces, Commas, Colons, or None), swap character encoding standard (UTF-8 vs ASCII), or change Hex casing. Use the clipboard buttons to copy results instantly.
+      </p>
+    </div>
+
+    <!-- Section: Character Representation Grid -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Character Base Mapping Standards
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Understanding the relationship between standard text codes and numeric bases is key to working with binary layouts:
+      </p>
+      
+      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
+              <th class="p-3">Character</th>
+              <th class="p-3">Decimal (ASCII)</th>
+              <th class="p-3">Hexadecimal</th>
+              <th class="p-3">Octal</th>
+              <th class="p-3">Binary (Byte representation)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
+            <tr>
+              <td class="p-3 text-zinc-200">A</td>
+              <td class="p-3"><code>65</code></td>
+              <td class="p-3"><code>41</code></td>
+              <td class="p-3"><code>101</code></td>
+              <td class="p-3"><code>01000001</code></td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">B</td>
+              <td class="p-3"><code>66</code></td>
+              <td class="p-3"><code>42</code></td>
+              <td class="p-3"><code>102</code></td>
+              <td class="p-3"><code>01000010</code></td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">a</td>
+              <td class="p-3"><code>97</code></td>
+              <td class="p-3"><code>61</code></td>
+              <td class="p-3"><code>141</code></td>
+              <td class="p-3"><code>01100001</code></td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">0</td>
+              <td class="p-3"><code>48</code></td>
+              <td class="p-3"><code>30</code></td>
+              <td class="p-3"><code>060</code></td>
+              <td class="p-3"><code>00110000</code></td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">!</td>
+              <td class="p-3"><code>33</code></td>
+              <td class="p-3"><code>21</code></td>
+              <td class="p-3"><code>041</code></td>
+              <td class="p-3"><code>00100001</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section: Educational Bit Sandbox -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Exploring Binary via the Bit Sandbox
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our exclusive **Bit Sandbox** tab bridges the gap between binary representations and interactive memory bytes. In computer systems, characters are stored as bits (0 or 1). There are exactly 8 bits in one byte, capable of representing values from 0 to 255 (2<sup>8</sup> combinations).
+      </p>
+      <p class="leading-relaxed">
+        By clicking individual bit boxes, you directly trigger a bit-flipping operation (XOR gate). For instance, clicking the least significant bit (LSB, 2<sup>0</sup>) of character <code>A</code> (binary <code>01000001</code>, decimal 65) turns it to 0, which immediately alters the decimal code to 64, changing the text character output to <code>@</code>. This provides a direct, hands-on tool to comprehend binary conversions, bit masks, and low-level computer science architecture.
+      </p>
+    </div>
+
+  </div>
+</ToolPageLayout>

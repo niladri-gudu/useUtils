@@ -87,7 +87,7 @@ const ALL_TOOLS: Tool[] = [
   { id: 'hash-generator', name: 'Hash & HMAC Generator', description: 'Generate cryptographically secure MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes or HMAC signatures locally. Features checksum validation, drag-and-drop file support, and bulk string hashing.', category: 'encoding', isPopular: true, isActive: true, href: '/tools/hash-generator', icon: '🔐' },
   { id: 'unicode-encoder', name: 'Unicode Encoder', description: 'Encode/decode Unicode', category: 'encoding', icon: '🌐' },
   { id: 'ascii-converter', name: 'ASCII Converter', description: 'Convert text to ASCII codes', category: 'encoding', icon: '🔢' },
-  { id: 'binary-converter', name: 'Binary Converter', description: 'Convert text to binary', category: 'encoding', icon: '01' },
+  { id: 'binary-converter', name: 'Binary Converter & Bit Sandbox', description: 'Convert plain text to binary, hex, octal, ASCII, and decimal code in real-time. Features an interactive bitwise sandboxed flitter, a scrollable file-drop hex dump viewer, and an arbitrary BigInt base converter.', category: 'encoding', isPopular: true, isActive: true, href: '/tools/binary-converter', icon: '01' },
   { id: 'hex-converter', name: 'Hex Converter', description: 'Convert text to hexadecimal', category: 'encoding', icon: '🔢' },
   { id: 'rot13-encoder', name: 'ROT13 Encoder', description: 'ROT13 cipher encoder', category: 'encoding', icon: '🔄' },
   { id: 'email-validator', name: 'Email Validator', description: 'Validate email addresses', category: 'encoding', icon: '📧' },

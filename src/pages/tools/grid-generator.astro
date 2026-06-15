@@ -1,0 +1,120 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { GridGenerator } from '../../components/GridGenerator';
+
+const faqs = [
+  {
+    question: "What is CSS Grid and how does it work?",
+    answer: "CSS Grid Layout is a two-dimensional grid-based layout system that revolutionized user interface design on the web. Unlike traditional layout methods (like floats or inline-block), CSS Grid lets you align elements in both rows and columns simultaneously. You define grid tracks on a container element using properties like <code>grid-template-columns</code> and <code>grid-template-rows</code>, and then place child elements into specific cells or areas."
+  },
+  {
+    question: "When should I use CSS Grid instead of Flexbox?",
+    answer: "Use CSS Grid when you need a <strong>two-dimensional layout</strong> (aligning items both horizontally and vertically, like a grid of cards or a webpage template layout). Use CSS Flexbox when you need a <strong>one-dimensional layout</strong> (aligning items along a single axis, either as a row or a column, like navigation bars, buttons, or linear form inputs). A good rule of thumb is: Grid is layout-first (external structure), Flexbox is content-first (adjusts size based on inner content)."
+  },
+  {
+    question: "What does the 'fr' unit mean in CSS Grid?",
+    answer: "The <code>fr</code> unit stands for 'fractional unit'. It represents a fraction of the free space available in the grid container after all static tracks (like those defined in pixels or rems) and gaps have been allocated. For example, <code>grid-template-columns: 1fr 2fr 1fr;</code> divides the remaining space into 4 equal parts, giving 1 part to the first and third columns, and 2 parts to the middle column."
+  },
+  {
+    question: "How do I define columns and rows in CSS Grid?",
+    answer: "You define columns and rows on the grid container. For example: <br /><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto whitespace-pre\">.grid-container {\n  display: grid;\n  grid-template-columns: 200px 1fr 1fr;\n  grid-template-rows: 80px auto 100px;\n}</code> This sets up a 3x3 grid layout with columns of 200px, and two columns sharing the remaining space equally, and rows of 80px, auto-height based on content, and a 100px footer row."
+  },
+  {
+    question: "What is the difference between grid-template-areas and line-based positioning?",
+    answer: "<strong>Line-based positioning</strong> uses line numbers (1-indexed grid lines) to place items, such as <code>grid-column: 1 / 3;</code> (spans from line 1 to line 3). <strong>Grid template areas</strong> lets you name sections of your grid visually on the container (e.g., <code>grid-template-areas: 'header header' 'sidebar main'</code>), and then place items by reference: <code>grid-area: main;</code>. Areas are highly readable and easy to rearrange, while line-positioning is better for dynamic layouts."
+  },
+  {
+    question: "How do I make a CSS Grid layout responsive?",
+    answer: "You can make CSS Grid responsive using media queries to change the columns or track definitions. For example, you can define a single column on mobile, and expand to 3 columns on larger displays: <br /><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto whitespace-pre\">.grid {\n  display: grid;\n  grid-template-columns: 1fr;\n  gap: 16px;\n}\n@media (min-width: 768px) {\n  .grid {\n    grid-template-columns: repeat(3, 1fr);\n  }\n}</code> Alternatively, you can use responsive CSS frameworks like Tailwind CSS, applying classes like <code>grid grid-cols-1 md:grid-cols-3 gap-4</code>."
+  },
+  {
+    question: "What is the difference between 'auto-fill' and 'auto-fit' in repeats?",
+    answer: "Both keywords automatically fit as many tracks as possible into the container. However, when there is extra space left over: <code>auto-fill</code> will keep creating empty tracks (even if they have no items), keeping the sizing defined. <code>auto-fit</code> will collapse any empty tracks to 0px, stretching the occupied tracks to fill the entire container width. <code>auto-fit</code> is usually preferred for responsive card grids."
+  },
+  {
+    question: "How do I center an item inside a grid cell?",
+    answer: "To center an item both vertically and horizontally inside its grid cell, you can apply flexbox or grid properties on the grid item itself, or use <code>place-items: center;</code> on the container to center all items. For a single item, use: <br /><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto\">.grid-item {\n  align-self: center; /* vertical alignment */\n  justify-self: center; /* horizontal alignment */\n}</code> Or simply <code>place-self: center;</code>."
+  },
+  {
+    question: "Can grid items overlap in CSS Grid?",
+    answer: "Yes. Unlike other layouts, CSS Grid allows items to occupy the same cells. You can position multiple items at the same column and row indexes. You can control their overlap stack using the standard CSS <code>z-index</code> property. This is highly useful for overlay banners, hero image headers, or text over picture containers."
+  },
+  {
+    question: "Is CSS Grid supported by all modern browsers?",
+    answer: "Yes, CSS Grid is universally supported by all modern browsers including Google Chrome, Apple Safari, Mozilla Firefox, Microsoft Edge, and mobile browsers. It has been standard since 2017. If you need to support ancient browsers like Internet Explorer, you should use fallback styling or simple flexbox rules."
+  }
+];
+---
+
+<ToolPageLayout
+  title="CSS Grid Generator Online: Visual Layout Builder & Studio"
+  description="Design CSS grid layouts visually with our interactive builder. Configure columns, rows, gaps, choose presets, and click-and-drag over cells to draw grid blocks. Export pure CSS, Tailwind v3/v4 utility classes, React JSX, and HTML code."
+  keywords="css grid generator, css grid builder, responsive grid layout generator, tailwind css grid builder, visual css grid design tool, grid-template-areas generator"
+  toolTitle="CSS Grid Generator"
+  toolDescription="Design complex grid layouts visually. Adjust rows, columns, gaps, select layout templates, and drag to draw grid cells. Instant local-first code outputs for CSS, Tailwind v3/v4, React, and HTML prototypes."
+  faqs={faqs}
+>
+  <GridGenerator client:load />
+
+  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the CSS Grid Visual Generator
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our CSS Grid Generator lets you design modern layouts visually without writing tedious code. Start by setting the number of rows and columns using the sliders in the left-hand panel, then customize gaps and track sizes. You can drag and drop across grid cells in the visual studio canvas to merge cells and build custom-named grid items.
+      </p>
+      <p class="leading-relaxed">
+        The tool generates production-ready layouts in real-time, including mobile and tablet responsive layouts using inline css/media queries and Tailwind grid configurations. Use the top viewport slider to simulate mobile and tablet screen widths to verify that your layouts adapt correctly.
+      </p>
+    </div>
+
+    <!-- Section: Table comparison Grid vs Flexbox -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        CSS Grid vs. CSS Flexbox Layout Systems
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Understanding when to use CSS Grid versus Flexbox is a crucial skillset for modern frontend engineers. Here is a quick reference comparison:
+      </p>
+      
+      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
+              <th class="p-3">Feature</th>
+              <th class="p-3">CSS Grid Layout</th>
+              <th class="p-3">CSS Flexbox Layout</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-hairline text-zinc-400 font-sans">
+            <tr>
+              <td class="p-3 font-semibold text-zinc-200">Dimensions</td>
+              <td class="p-3">Two-dimensional (rows and columns)</td>
+              <td class="p-3">One-dimensional (rows OR columns)</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold text-zinc-200">Approach</td>
+              <td class="p-3">Layout-first (design structure first, place content in it)</td>
+              <td class="p-3">Content-first (flow adjusts dynamically based on children sizing)</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold text-zinc-200">Item Overlap</td>
+              <td class="p-3">Allowed and supported natively using row/column overlaps</td>
+              <td class="p-3">Difficult to achieve (requires absolute positioning hacks)</td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold text-zinc-200">Ideal Use Case</td>
+              <td class="p-3">Main app templates, card grids, dashboard grids, portfolio showcases</td>
+              <td class="p-3">Navbar headers, button groups, linear forms, centring singular items</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ToolPageLayout>

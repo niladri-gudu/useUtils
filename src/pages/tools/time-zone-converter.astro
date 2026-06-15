@@ -1,0 +1,180 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { TimeZoneConverter } from '../../components/TimeZoneConverter';
+
+const faqs = [
+  {
+    question: "What is the difference between UTC and GMT?",
+    answer: "Coordinated Universal Time (UTC) is a high-precision atomic time standard, while Greenwich Mean Time (GMT) is a historical solar time zone centered on the Royal Observatory in Greenwich, London. In practice, UTC and GMT share the exact same time values (no offset), but UTC is used as the standard reference for scientific and digital synchronization, whereas GMT is officially classified as a timezone."
+  },
+  {
+    question: "How does Daylight Saving Time (DST) affect timezone offsets?",
+    answer: "Daylight Saving Time (DST) is the practice of advancing clocks by one hour during warmer months so that darkness falls later. When DST is active, a timezone shifts its offset relative to UTC (e.g., London moves from GMT/UTC+0 in winter to BST/UTC+1 in summer, and New York shifts from EST/UTC-5 to EDT/UTC-4). offsets change dynamically twice a year, which can lead to calculation bugs if not handled via standard timezone rules."
+  },
+  {
+    question: "Are Unix timestamps affected by timezone conversions?",
+    answer: "No, Unix timestamps are completely timezone-independent. By definition, a Unix timestamp represents the number of seconds that have elapsed since January 1, 1970 00:00:00 UTC, regardless of the user's geographic location. Timezones are only applied as a presentation layer when converting a raw epoch number into a formatted date-time string in a specific region."
+  },
+  {
+    question: "What is an IANA timezone identifier and why is it preferred over abbreviations?",
+    answer: "IANA (Internet Assigned Numbers Authority) timezone identifiers follow the <code>Area/Location</code> format (e.g., <code>America/New_York</code> or <code>Europe/London</code>). They are preferred because they represent a location's complete historical record of timezone offsets and DST rule changes. Generic abbreviations like 'EST' or 'CST' are ambiguous—for example, 'CST' can stand for Central Standard Time (USA), China Standard Time, or Cuba Standard Time."
+  },
+  {
+    question: "How do I schedule a meeting across multiple global timezones?",
+    answer: "To schedule a meeting across timezones, you must identify a common overlap window where all participants are awake and within their working hours. Using our visual timeline scrubber, you can add multiple target locations (such as London, Tokyo, and New York) and find hours highlighted in green or yellow. The built-in optimizer ranks the best times and compiles instant Google Calendar invite links."
+  },
+  {
+    question: "Why do servers log timestamp events in Coordinated Universal Time (UTC)?",
+    answer: "Logging in UTC is a standard industry best practice. When servers are distributed globally across multiple cloud regions, having them log in local time makes merging logs and diagnosing trace events extremely difficult. Standardizing all logs in UTC provides a uniform chronological timeline that simplifies log sorting, aggregation, and distributed tracing."
+  },
+  {
+    question: "How can I convert server logs into my local timezone?",
+    answer: "You can convert server logs locally using our Log Timestamp Relocator tab. Paste your raw log dump into the text field, select your target timezone, and click convert. The engine parses the text, extracts all ISO 8601 or Apache Common Log timestamps, converts them in-place, and displays a side-by-side match list."
+  },
+  {
+    question: "How does the browser determine my current timezone?",
+    answer: "Modern web browsers determine your timezone using the underlying operating system's settings. JavaScript accesses this information through the internationalization API: <code>Intl.DateTimeFormat().resolvedOptions().timeZone</code>. This returns the official IANA identifier (e.g., <code>Asia/Kolkata</code>) corresponding to your system's clock configuration."
+  },
+  {
+    question: "Can timezone offsets change dynamically over time?",
+    answer: "Yes. Governments frequently modify DST transition rules, adjust offsets, or create new timezones. The IANA Time Zone Database (tz database) is regularly updated to reflect these changes. Modern OS and browser platforms dynamically pull tz updates to ensure native date conversions remain accurate."
+  },
+  {
+    question: "What is the best way to handle timezone mathematics in JavaScript?",
+    answer: "To avoid DST offset errors, avoid manually adding or subtracting hours (like multiplying by 3,600,000 ms). Instead, use the native <code>Intl.DateTimeFormat</code> API with the <code>timeZone</code> parameter, or rely on robust libraries like <code>Temporal</code> (the upcoming ECMAScript proposal) or date-fns-tz. These APIs handle transition boundaries automatically."
+  },
+  {
+    question: "What is standard time versus daylight time?",
+    answer: "Standard time is the local time zone when DST is not active (typically during winter). Daylight time is the adjusted offset when DST is active (typically during summer). For example, New York uses Eastern Standard Time (EST) from November to March, and Eastern Daylight Time (EDT) from March to November."
+  }
+];
+---
+
+<ToolPageLayout
+  title="Time Zone Converter & Meeting Planner: World Clock Studio"
+  description="Convert global times and plan meetings across multiple timezones. Features an interactive timeline scrubber, overlapping working hours optimizer, calendar event exporter, and local log timestamp converter."
+  keywords="time zone converter, timezone converter, meeting planner, timezone meeting planner, world clock, utc to est, gmt converter, timezone log converter, dst offsets, browser local time"
+  toolTitle="Time Zone Converter & Meeting Planner Studio"
+  toolDescription="Add international locations, scrub through a 24-hour visual slider to sync times, optimize meeting overlaps, export calendar links, and batch-relocate timestamp logs locally."
+  faqs={faqs}
+>
+  <TimeZoneConverter client:load />
+
+  <!-- Detailed SEO articles for crawlers and developer lookup -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    
+    {/* Section 1: Guide */}
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the Time Zone Converter & Meeting Planner
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our timezone studio is designed to streamline remote collaboration and log analysis. To organize a team meeting, add your team members' locations in the left panel. The tool will generate interactive cards displaying local time, date, DST state, and hourly offsets relative to your base timezone.
+      </p>
+      <p class="leading-relaxed">
+        Use the <strong class="text-zinc-200">24-Hour Scrubber Slider</strong> to adjust the hour index. All cards update their clock readouts in real-time, showing who is working (core hours), who is in shoulder hours (waking/winding down), and who is asleep. The <strong class="text-zinc-200">Meeting Overlap Optimizer</strong> automatically grades slot windows to recommend times where overlap score is maximized.
+      </p>
+    </div>
+
+    {/* Section 2: Table of common abbreviations */}
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Global Time Zone Abbreviations & Standard Offsets
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Below is a reference of common global timezone abbreviations and their standard relative offsets to UTC:
+      </p>
+
+      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
+              <th class="p-3">Abbreviation</th>
+              <th class="p-3">Full Time Zone Name</th>
+              <th class="p-3">Standard Offset</th>
+              <th class="p-3">Major Representative Cities</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
+            <tr>
+              <td class="p-3 text-zinc-200">UTC / GMT</td>
+              <td class="p-3">Coordinated Universal Time / Greenwich Mean Time</td>
+              <td class="p-3">UTC +00:00</td>
+              <td class="p-3 text-zinc-350">London, Dublin, Reykjavik</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">EST / EDT</td>
+              <td class="p-3">Eastern Standard Time / Eastern Daylight Time</td>
+              <td class="p-3">UTC -05:00 / -04:00</td>
+              <td class="p-3 text-zinc-350">New York, Toronto, Miami</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">CST / CDT</td>
+              <td class="p-3">Central Standard Time / Central Daylight Time</td>
+              <td class="p-3">UTC -06:00 / -05:00</td>
+              <td class="p-3 text-zinc-350">Chicago, Dallas, Mexico City</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">PST / PDT</td>
+              <td class="p-3">Pacific Standard Time / Pacific Daylight Time</td>
+              <td class="p-3">UTC -08:00 / -07:00</td>
+              <td class="p-3 text-zinc-350">Los Angeles, Seattle, Vancouver</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">CET / CEST</td>
+              <td class="p-3">Central European Time / Central European Summer Time</td>
+              <td class="p-3">UTC +01:00 / +02:00</td>
+              <td class="p-3 text-zinc-350">Paris, Berlin, Rome, Madrid</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">IST</td>
+              <td class="p-3">Indian Standard Time</td>
+              <td class="p-3">UTC +05:30</td>
+              <td class="p-3 text-zinc-350">New Delhi, Mumbai, Bengaluru</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">JST</td>
+              <td class="p-3">Japan Standard Time</td>
+              <td class="p-3">UTC +09:00</td>
+              <td class="p-3 text-zinc-350">Tokyo, Kyoto</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200">AEST / AEDT</td>
+              <td class="p-3">Australian Eastern Standard / Daylight Time</td>
+              <td class="p-3">UTC +10:00 / +11:00</td>
+              <td class="p-3 text-zinc-350">Sydney, Melbourne, Brisbane</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {/* Section 3: Developer logs explanation */}
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Timezone Conversion for Server Log Audits
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Developers frequently encounter log traces stamped in UTC while investigating system crashes or API response errors. Manually translating these timestamps into your local timeframe can be tedious and prone to mental math mistakes.
+      </p>
+      <p class="leading-relaxed">
+        Our built-in Log Timestamp Relocator simplifies this debugging process. Rather than copying individual entries, paste whole logs directly into the text editor. The converter uses an optimized regular expression parser to locate standard ISO 8601 dates and Apache/Nginx format strings, calculates their relative conversions, and prints a converted log file.
+      </p>
+    </div>
+
+    {/* Section 4: Privacy & local sandbox */}
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Privacy Model & Secure Local Conversions
+      </h2>
+      <p class="leading-relaxed">
+        Because timezone conversion tools are frequently used to analyze internal business scheduling or sensitive server logs, security is critical. useUtils implements a zero server transmission guarantee. No dates, log traces, or meetings details are ever uploaded to a backend. The entire codebase executes within the browser's thread, keeping your corporate data private.
+      </p>
+    </div>
+
+  </div>
+</ToolPageLayout>

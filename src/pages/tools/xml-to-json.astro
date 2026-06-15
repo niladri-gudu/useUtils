@@ -1,0 +1,128 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { XmlJsonConverter } from '../../components/XmlJsonConverter';
+
+const faqs = [
+  {
+    question: "What is the difference between XML and JSON formats?",
+    answer: "XML (Extensible Markup Language) is a tag-based, hierarchical markup language that supports namespaces, attributes on tags, and detailed metadata. It is highly structured but verbose. JSON (JavaScript Object Notation) is a lightweight, key-value data-interchange format designed to be easy for humans to read and write, and easy for machines to parse. JSON only supports objects, arrays, strings, numbers, booleans, and nulls, without inline tag attributes or namespaces."
+  },
+  {
+    question: "How does this XML to JSON converter protect my privacy?",
+    answer: "Security and privacy are central to our design. Like all utilities on useUtils.com, this tool runs <strong>100% locally in your browser sandbox</strong>. All XML parsing, JSON serialization, and code generation happen in your local device's memory. No data, payloads, or files are ever sent to our servers. You can safely pass sensitive XML configuration files or API keys without security risks."
+  },
+  {
+    question: "What is a malformed XML error and how do I fix it?",
+    answer: "XML requires extremely strict syntax rules compared to HTML. A single unclosed tag, mismatched casing (e.g. <code>&lt;Item&gt;&lt;/item&gt;</code>), or unquoted attribute will cause XML validation to fail. If your input is malformed, our real-time validator will display the exact line and column number of the error. We also provide a <strong>'Auto-close unclosed tags'</strong> helper that scans your payload and automatically heals unclosed trailing tags to restore validity."
+  },
+  {
+    question: "How are XML attributes converted into JSON properties?",
+    answer: "Since JSON doesn't support attributes on values, attributes must be translated into keys. By default, our converter prepends an <code>@</code> prefix to attribute keys (e.g. <code>&lt;user id=\"1\"&gt;</code> becomes <code>\"user\": { \"@id\": \"1\" }</code>). You can customize this prefix to <code>_</code> or omit it entirely in the options panel, or check the <strong>'Ignore Attributes'</strong> option to discard them completely during translation."
+  },
+  {
+    question: "How does the converter handle XML namespaces (xmlns)?",
+    answer: "XML namespaces (like <code>soapenv:Envelope</code> or <code>xmlns:web</code>) prevent tag collisions but add verbosity to JSON schemas. Our tool allows you to toggle <strong>'Strip XML Namespaces'</strong>. When enabled, namespaces prefixes are stripped out completely, converting <code>&lt;ns:user&gt;</code> into a clean, simple JSON key <code>\"user\"</code>, which is ideal for cleaner API modeling."
+  },
+  {
+    question: "Why does a single XML element parse as an object, but multiple elements parse as an array?",
+    answer: "XML permits multiple sibling elements with the same tag name, whereas JSON object keys must be unique. When our parser encounters multiple elements (e.g., three <code>&lt;book&gt;</code> elements), it groups them into a JSON array. However, a single element remains a scalar object or string. To prevent schema drift in your application, you can add tag names to the <strong>'Force Array Keys'</strong> input to ensure they always render as arrays, even if there is only one element present."
+  },
+  {
+    question: "Can I convert JSON back to XML using this tool?",
+    answer: "Yes, this tool is fully bidirectional. By toggling the conversion pathway to <strong>JSON → XML</strong>, you can paste any valid JSON payload. Because XML requires a single root element tag, you can specify a custom <strong>XML Root Element Tag</strong> (defaulting to <code>&lt;root&gt;</code>) in the options panel to wrap flat objects or arrays correctly."
+  },
+  {
+    question: "How does the converter translate mixed text and elements in XML?",
+    answer: "When an XML element contains both child tags and raw text content (e.g., <code>&lt;description&gt;Hello &lt;b&gt;world&lt;/b&gt;&lt;/description&gt;</code>), our parser extracts the raw text and places it under a dedicated text key, defaulting to <code>#text</code>. You can customize this key (e.g., to <code>value</code> or <code>_text</code>) in the configuration panel to match your backend schemas."
+  },
+  {
+    question: "How do I parse and read XML in client-side JavaScript?",
+    answer: "You can parse an XML string into a queryable DOM Document using the browser's native <code>DOMParser</code> class. Here is a simple example:<br/><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2.5 py-1.5 block mt-2 overflow-x-auto whitespace-pre\">const parser = new DOMParser();\nconst xmlDoc = parser.parseFromString(xmlText, 'application/xml');\nconst title = xmlDoc.getElementsByTagName('title')[0].textContent;\nconsole.log(title);</code>"
+  },
+  {
+    question: "How do I parse XML in Python programmatically?",
+    answer: "In Python, you can parse XML using the standard library's <code>xml.etree.ElementTree</code> module:<br/><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2.5 py-1.5 block mt-2 overflow-x-auto whitespace-pre\">import xml.etree.ElementTree as ET\n\nroot = ET.fromstring(xml_string)\nfor book in root.findall('book'):\n    title = book.find('title').text\n    print(title)</code>"
+  },
+  {
+    question: "How does the XML beautifier and minifier operate?",
+    answer: "For XML inputs, the <strong>Beautify</strong> action formats the raw tags with clear, line-by-line nested indentations to maximize readability. The <strong>Minify</strong> action strips all indentation spacing, empty rows, and carriage return characters between tags, resulting in a single-line string that reduces file size for API transmissions."
+  },
+  {
+    question: "Is there a limit on the file size I can convert with this offline tool?",
+    answer: "Because all calculations and translations occur entirely inside your browser's memory, the limit is determined by your system's RAM and CPU. The tool is highly optimized and easily processes XML payloads up to 30MB (approximately 300,000 lines) within a couple of seconds. For larger files, we recommend parsing in chunks to prevent the browser tab from freezing."
+  }
+];
+---
+
+<ToolPageLayout
+  title="XML ⇄ JSON Converter & Validator Online - 100% Offline"
+  description="Convert XML to JSON and JSON to XML online. Formatter, syntax validator, XPath selector copy, and code generators. Secure browser sandbox, custom namespace stripping, and attribute mapping."
+  keywords="xml to json, json to xml, xml converter, json converter, xml validator, format xml, minify xml, xml parsing, xpath generator, go struct from xml"
+  toolTitle="XML ⇄ JSON Converter & Validator"
+  toolDescription="Convert data structures bidirectionally between XML and JSON in real-time. Fine-tune your conversion pathway with custom attribute prefixes, namespace stripping, type coercion, and auto-generated parsing code for Go, Python, and Java."
+  faqs={faqs}
+>
+  <XmlJsonConverter client:load />
+
+  <!-- SEO Content Section -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full animate-pulse"></span>
+        The Challenges of XML and JSON Conversions
+      </h2>
+      <p class="leading-relaxed mb-4">
+        XML and JSON are the two most dominant data formats on the web today, but they represent information using entirely different paradigms. While JSON is straightforwardly mapped to standard arrays and key-value dictionaries, XML incorporates tag attributes, order-specific elements, namespaces, mixed-content nodes, and text wrappers.
+      </p>
+      <p class="leading-relaxed mb-4">
+        Simple converters often strip out crucial metadata like tag attributes, or fail when translating single vs. multiple list items. Our converter resolves these architectural challenges:
+      </p>
+      <ul class="list-disc pl-5 space-y-2 mb-4 leading-relaxed">
+        <li><strong class="text-zinc-200">Element Array Coercion:</strong> In XML, multiple child nodes with the same tag are arrays. Single child nodes are objects. This variance breaks JSON schemas. By specifying <code>Force Array Keys</code>, you ensure consistent schema mapping.</li>
+        <li><strong class="text-zinc-200">Attribute Preservation:</strong> Easily map XML tag attributes into JSON fields with custom prefixes (such as <code>@</code> or <code>_</code>), preserving nested data trees.</li>
+        <li><strong class="text-zinc-200">Namespace Stripping:</strong> SOAP payloads and enterprise configurations often contain cluttered namespaces (e.g., <code>xmlns:soap</code>). Our one-click stripper cleans names for easy parsing.</li>
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the Interactive Converter Studio
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our suite goes beyond a generic converter, offering full validation, code generation, and interactive inspection tools:
+      </p>
+      <ol class="list-decimal pl-5 space-y-2 mb-4 leading-relaxed">
+        <li><strong class="text-zinc-200">Paste or Load Presets:</strong> Paste your source code or use the sample buttons to quickly inspect demo XML structures, RSS feeds, or JSON bodies.</li>
+        <li><strong class="text-zinc-200">Real-time Syntax Feedback:</strong> The system validates your data. If you have unclosed tags, a line-by-line breakdown points to the mismatch. Click the auto-close button to quickly heal errors.</li>
+        <li><strong class="text-zinc-200">Interactive Object Explorer:</strong> Swap to the <em>Tree View</em> tab to browse keys, collapse deep folders, and copy specific key paths or computed XPaths instantly.</li>
+        <li><strong class="text-zinc-200">Export Parsed Structures:</strong> Click <em>Copy</em>, <em>Download</em>, or convert your parsed schema to typed model structures in Go, Python, and Java.</li>
+      </ol>
+    </div>
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        XML ⇄ JSON Schema Translation Standards
+      </h2>
+      <p class="leading-relaxed mb-4">
+        There are several academic standards for mapping XML nodes to JSON models. Our converter implements options inspired by the two most common standard specifications:
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div class="bg-zinc-900/40 border border-[#2c2c2e] p-4 rounded-lg flex flex-col gap-2">
+          <h3 class="text-zinc-200 font-semibold text-xs font-mono">BadgerFish Convention</h3>
+          <p class="text-[11px] leading-relaxed">
+            Uses a strict translation mapping where tag attributes are prefixed with <code>@</code>, nested text values are wrapped under a <code>#text</code> key, and namespaces are mapped explicitly. Best for full schema round-trips without losing structure.
+          </p>
+        </div>
+        <div class="bg-zinc-900/40 border border-[#2c2c2e] p-4 rounded-lg flex flex-col gap-2">
+          <h3 class="text-zinc-200 font-semibold text-xs font-mono">Parker Rule</h3>
+          <p class="text-[11px] leading-relaxed">
+            A simpler translation convention that discards all attributes, discards namespaces, and simply turns element names into keys, and text nodes into direct string value values. Ideal for translating simple web responses.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ToolPageLayout>

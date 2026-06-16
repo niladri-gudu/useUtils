@@ -57,7 +57,7 @@ const ALL_TOOLS: Tool[] = [
   { id: 'remove-duplicates', name: 'Remove Duplicates', description: 'Remove duplicate lines', category: 'text', icon: '🗑️' },
   { id: 'reverse-text', name: 'Reverse Text', description: 'Reverse text or lines', category: 'text', icon: '↩️' },
   { id: 'find-replace', name: 'Find & Replace', description: 'Find and replace text', category: 'text', icon: '🔄' },
-  { id: 'slug-generator', name: 'Slug Generator', description: 'Generate URL slugs', category: 'text', icon: '🔗' },
+  { id: 'slug-generator', name: 'URL Slug Generator & Sanitizer', description: 'Convert text, article headings, or lists of strings into clean, SEO-friendly, and URL-safe slugs instantly. Features multilingual transliteration, stop-word removal, and bulk options.', category: 'text', isPopular: true, isActive: true, href: '/tools/slug-generator', icon: '🔗' },
   { id: 'text-trimmer', name: 'Text Trimmer', description: 'Trim whitespace from text', category: 'text', icon: '✂️' },
   { id: 'text-splitter', name: 'Text Splitter', description: 'Split and join text', category: 'text', icon: '✂️' },
   { id: 'remove-special-characters', name: 'Remove Special Characters', description: 'Remove special characters', category: 'text', icon: '🧹' },

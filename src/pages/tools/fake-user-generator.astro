@@ -48,20 +48,6 @@ const faqs = [
     answer: "The tool automatically outputs valid, prettified JSON arrays with correct syntax, double-quoted keys, and structured indentation. You can copy the code or save it directly as a <code>.json</code> file for immediate use in Mock APIs or local testing files."
   }
 ];
-
-// Structured data FAQ schema for SEO search engines
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": faqs.map(faq => ({
-    "@type": "Question",
-    "name": faq.question,
-    "acceptedAnswer": {
-      "@type": "Answer",
-      "text": faq.answer.replace(/<[^>]*>/g, '') // Strip HTML tags for clean schema JSON
-    }
-  }))
-};
 ---
 
 <ToolPageLayout
@@ -72,9 +58,6 @@ const faqSchema = {
   toolDescription="Design custom database schemas visually. Set parameters for numeric data, location coords, contact strings, and custom lists. Export generated mock entries to JSON, CSV, YAML, SQL, and TypeScript interfaces instantly."
   faqs={faqs}
 >
-  <!-- Inject FAQ Schema into HTML head -->
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(faqSchema)} />
-
   <FakeUserGenerator client:load />
 
   <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->

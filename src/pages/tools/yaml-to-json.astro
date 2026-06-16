@@ -1,0 +1,110 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { YamlJsonConverter } from '../../components/YamlJsonConverter';
+
+const faqs = [
+  {
+    question: "What is the primary difference between YAML and JSON formats?",
+    answer: "YAML (YAML Ain't Markup Language) is a human-friendly data serialization standard that uses indentation to structure data, making it highly readable for configuration files (like Kubernetes, Docker, and GitHub Actions). JSON (JavaScript Object Notation) is a lightweight, tag-free key-value format designed for data exchange. While YAML supports advanced features like comments, block scalars, anchors, and aliases, JSON is strict, requiring quotes around all keys and strings and permitting no comments."
+  },
+  {
+    question: "How does this YAML ⇄ JSON converter guarantee my data privacy?",
+    answer: "Data security is our highest priority. Like all tools on useUtils.com, this converter runs <strong>100% locally in your browser sandbox</strong>. All translations, validation, schema generation, and code generation happen within your browser's local memory. No payloads, logs, or files are ever sent to our servers. You can safely paste production secrets, database credentials, or API keys without security concerns."
+  },
+  {
+    question: "What causes the 'Tab characters are not allowed for indentation' error in YAML?",
+    answer: "YAML specifications strictly forbid tab characters (<code>\\t</code>) for structural alignment. You must use space characters (typically 2 or 4 spaces) for indentation. If you paste YAML containing tabs, our validator will immediately flag the exact line and column, helping you replace the tabs with standard spaces."
+  },
+  {
+    question: "How can I parse a YAML file containing multiple documents separated by '---'?",
+    answer: "YAML allows multiple documents in a single file, separated by three dashes (<code>---</code>). When you toggle the <strong>'Support multi-document parsing'</strong> option, our converter parses each section independently and compiles them into a single, clean JSON array of objects. This is extremely useful when converting complex Kubernetes deployment configuration bundles."
+  },
+  {
+    question: "What are YAML Anchors (&) and Aliases (*), and how are they converted to JSON?",
+    answer: "Anchors (<code>&</code>) allow you to mark a data block for reuse, and aliases (<code>*</code>) let you reference that block elsewhere in the document. This eliminates duplication. Since JSON does not natively support referencing other parts of the payload, our converter automatically expands (dereferences) aliases during conversion, injecting the cloned properties directly into the JSON keys where they are referenced."
+  },
+  {
+    question: "What is a block scalar in YAML and how does it translate to JSON?",
+    answer: "Block scalars allow you to write multiline strings cleanly in YAML. The literal block scalar (<code>|</code>) preserves all newline characters and indentation structure, which is ideal for scripts or private keys. The folded block scalar (<code>&gt;</code>) converts newlines into spaces, forming a single continuous paragraph. In JSON, both translate to standard strings with inline <code>\\n</code> newline characters."
+  },
+  {
+    question: "How do I parse YAML configurations programmatically in JavaScript or TypeScript?",
+    answer: "Because JavaScript engines do not natively support YAML parsing, you must use a client-side library like <code>js-yaml</code>. Here is a simple example:<br/><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-350 rounded px-2.5 py-1.5 block mt-2 overflow-x-auto whitespace-pre\">import yaml from 'js-yaml';\nconst config = yaml.load(yamlString);\nconsole.log(config.app.name);</code>"
+  },
+  {
+    question: "How do I parse YAML structures in Python?",
+    answer: "In Python, you can load and query YAML documents using the popular <code>PyYAML</code> library. It is best practice to use <code>safe_load</code> to prevent code execution vulnerability hazards:<br/><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-350 rounded px-2.5 py-1.5 block mt-2 overflow-x-auto whitespace-pre\">import yaml\n\nwith open('config.yaml', 'r') as file:\n    config = yaml.safe_load(file)\n    print(config['app']['version'])</code>"
+  },
+  {
+    question: "How do I unmarshal and map YAML data to structs in Go (Golang)?",
+    answer: "In Go, you can map YAML strings directly to custom typed structures using the standard package <code>gopkg.in/yaml.v3</code>:<br/><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-350 rounded px-2.5 py-1.5 block mt-2 overflow-x-auto whitespace-pre\">type AppConfig struct {\n    Name    string \`yaml:\"name\" json:\"name\"\`\n    Active  bool   \`yaml:\"active\" json:\"active\"\`\n}\n\nvar config AppConfig\nerr := yaml.Unmarshal(yamlData, &config)</code>"
+  },
+  {
+    question: "How can I automatically generate a JSON Schema from my YAML or JSON config?",
+    answer: "JSON Schema is ideal for validating configurations in CI/CD pipelines. Our tool features a dedicated <strong>JSON Schema</strong> tab that scans the structure of your converted object and automatically outputs a validated Draft-07 JSON Schema (complete with required fields, types, and nested property mappings) that you can export instantly."
+  },
+  {
+    question: "Can I convert JSON back to YAML with alphabetical key sorting?",
+    answer: "Yes. By choosing the <strong>JSON ⇄ YAML</strong> pathway, you can paste a JSON payload and convert it to clean YAML. You can enable the <strong>'Sort keys alphabetically'</strong> option in the parameters panel, which is highly useful when preparing configs for diff comparisons or version control updates."
+  }
+];
+---
+
+<ToolPageLayout
+  title="YAML ⇄ JSON Converter & Validator Online - 100% Offline"
+  description="Convert YAML to JSON and JSON to YAML online in real-time. Native browser parser, syntax validator, anchor/alias expansion, multi-document splitter, and JSON Schema exporter."
+  keywords="yaml to json, json to yaml, yaml converter, json converter, yaml validator, yaml parser, format yaml, validate yaml, kubernetes yaml parser, yaml anchor resolver"
+  toolTitle="YAML ⇄ JSON Converter & Validator"
+  toolDescription="Convert and validate configuration schemas between YAML and JSON in real-time. Clean, format, resolve anchors, parse multi-document clusters, generate JSON Schema drafts, and output typed templates for Go, Python, and TypeScript."
+  faqs={faqs}
+>
+  <YamlJsonConverter client:load />
+
+  <!-- SEO Content Section -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    
+    <div>
+      <h2 class="text-xl font-semibold text-[#34d399] tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-[#34d399] rounded-full"></span>
+        Deep Dive: The YAML and JSON Specifications
+      </h2>
+      <p class="leading-relaxed mb-4">
+        YAML and JSON are both highly popular serialization formats, but they are built to optimize different aspects of developer productivity. JSON's simplicity lies in its strict formatting rules, which make parser implementation extremely simple and computational overhead negligible. Because JSON maps directly to core memory structures in almost all modern programming languages, it has become the standard for APIs and web services.
+      </p>
+      <p class="leading-relaxed mb-4">
+        However, JSON is notoriously difficult to write and maintain manually. The lack of support for comments, the requirement of trailing-comma exclusion, and the mandatory wrapping of keys in double quotes make it error-prone for configuration scripts. YAML solves this by adopting whitespace-based indentation. It supports comments, multiple documents in a single payload, anchors for self-referencing nodes, and syntax conveniences like block scalars for multiline strings.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-[#34d399] rounded-full"></span>
+        Key Features of Our Converter Studio
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Unlike basic converter sites that simply run standard conversions and compromise your privacy by uploading your data, our tool offers a complete development sandbox that executes 100% locally in your browser:
+      </p>
+      <ul class="list-disc pl-5 space-y-2 mb-4 leading-relaxed">
+        <li><strong class="text-zinc-200">Interactive Object Explorer:</strong> The <em>Interactive Tree</em> tab parses the results into an expandable structure, letting you search keys, inspect nested levels, and copy specific key paths instantly.</li>
+        <li><strong class="text-zinc-200">Draft-07 JSON Schema Generator:</strong> Feed in any YAML or JSON payload, and the tool will automatically profile it to export a structured schema mapping out all required properties and types.</li>
+        <li><strong class="text-zinc-250">Anchor & Alias Resolvers:</strong> Write cleaner, drier configurations using standard YAML node indicators, and watch them resolve cleanly into compliant JSON structures during translation.</li>
+        <li><strong class="text-zinc-200">Multi-Language Code Compilation:</strong> Skip writing data parsing structures manually. Our parser models tab generates production-ready TypeScript interfaces, Go structs, and Python boilerplate loaders instantly.</li>
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-[#34d399] rounded-full"></span>
+        Formatting Options and Customization
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Customize your formatting to align with your team's style guides:
+      </p>
+      <ol class="list-decimal pl-5 space-y-2 mb-4 leading-relaxed font-sans">
+        <li><strong class="text-zinc-200">Indentation Spacing:</strong> Configure your outputs to use either 2-space or 4-space alignments.</li>
+        <li><strong class="text-zinc-200">Key Sorting:</strong> Alphabetize object keys to ensure consistent updates for diff checkers and version control systems.</li>
+        <li><strong class="text-zinc-200">Block Scalar Thresholds:</strong> For multiline strings, choose whether to preserve newlines using the standard YAML literal pipe operator, maintaining readability.</li>
+      </ol>
+    </div>
+  </div>
+</ToolPageLayout>

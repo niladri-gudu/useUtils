@@ -100,7 +100,7 @@ const ALL_TOOLS: Tool[] = [
   { id: 'css-formatter', name: 'CSS Formatter', description: 'Format and beautify CSS', category: 'css', icon: '✨' },
   { id: 'color-picker', name: 'Color Picker', description: 'Pick and preview colors', category: 'css', icon: '🎨' },
   { id: 'color-converter', name: 'Color Converter', description: 'Convert colors between HEX, RGB, and HSL formats instantly with live accessibility checks.', category: 'css', isActive: true, href: '/tools/color-converter', icon: '🌈' },
-  { id: 'gradient-generator', name: 'Gradient Generator', description: 'Create CSS gradients', category: 'css', icon: '🌅' },
+  { id: 'gradient-generator', name: 'CSS Gradient Generator & Palette Extractor', description: 'Design complex linear, radial, or conic gradients, extract palettes from images, and generate CSS, Tailwind, SVG or Canvas code.', category: 'css', isPopular: true, isActive: true, href: '/tools/gradient-generator', icon: '🌅' },
   { id: 'box-shadow', name: 'Box Shadow Generator', description: 'Design high-fidelity, multi-layered CSS box shadows visually with interactive sliders.', category: 'css', isPopular: true, isActive: true, href: '/tools/box-shadow', icon: '📦' },
   { id: 'border-radius-generator', name: 'Border Radius Generator', description: 'Generate border radius', category: 'css', icon: '⭕' },
   { id: 'flexbox-playground', name: 'Flexbox Playground', description: 'Visual flexbox editor', category: 'css', icon: '📐' },

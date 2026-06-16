@@ -1,0 +1,104 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { GradientGenerator } from '../../components/GradientGenerator';
+
+const faqs = [
+  {
+    question: "How do I make a linear gradient in CSS?",
+    answer: "You use the <code>background</code> or <code>background-image</code> property with the <code>linear-gradient()</code> function. The syntax requires specifying a direction (angle in degrees or keywords like <code>to right</code>) followed by comma-separated color stops. For example: <code>background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);</code>."
+  },
+  {
+    question: "What is the difference between linear, radial, and conic gradients?",
+    answer: "<strong>Linear gradients</strong> transition colors along a straight line (at a specified angle). <strong>Radial gradients</strong> radiate outward from a central point (either a circle or an ellipse). <strong>Conic gradients</strong> wrap color transitions around a central origin point, similar to a radar sweep or color wheel, starting from a 360-degree angle."
+  },
+  {
+    question: "Can I apply a CSS gradient to text directly?",
+    answer: "Yes, you can apply gradients to text by combining three CSS rules. Set the background to your gradient, apply <code>-webkit-background-clip: text;</code> to clip the background to the text boundary, and set <code>-webkit-text-fill-color: transparent;</code> (or color: transparent) to make the text color transparent, letting the background show through. This is fully interactive in our preview pane."
+  },
+  {
+    question: "How do I copy gradients as Tailwind CSS arbitrary values?",
+    answer: "Since Tailwind v3/v4 supports arbitrary syntax inside square brackets, you can apply custom gradients directly in your classes using the <code>bg-[gradient-declaration]</code> syntax. Be sure to strip any space characters and replace them with underscores (<code>_</code>) inside the brackets. For example: <code class='break-all'>bg-[linear-gradient(135deg,#10b981_0%,#3b82f6_100%)]</code>."
+  },
+  {
+    question: "Which browsers support conic-gradient in CSS?",
+    answer: "CSS conic gradients are widely supported by all modern evergreen browsers, including Chrome, Safari, Firefox, Edge, Opera, and mobile platforms (iOS Safari, Android Chrome). Standard support was finalized around 2020, meaning legacy Internet Explorer browsers are the main exceptions."
+  },
+  {
+    question: "How do I create a glassmorphism gradient in CSS?",
+    answer: "Glassmorphic gradients are built by overlaying a semi-transparent gradient on a blurred backdrop. Use semi-transparent white stops (like <code>rgba(255, 255, 255, 0.15)</code> to <code>rgba(255, 255, 255, 0.02)</code>) for the card surface, combined with a thin border and <code>backdrop-filter: blur(12px);</code>."
+  },
+  {
+    question: "How do I write an SVG linear gradient manually?",
+    answer: "In SVG, gradients are defined inside the <code>&lt;defs&gt;</code> tag using the <code>&lt;linearGradient&gt;</code> element, defining <code>x1, y1, x2, y2</code> coordinates to control direction, followed by nested <code>&lt;stop&gt;</code> tags. For example:<br/><code>&lt;linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'&gt;<br/>&nbsp;&nbsp;&lt;stop offset='0%' stop-color='#ff007f'/&gt;<br/>&nbsp;&nbsp;&lt;stop offset='100%' stop-color='#7f00ff'/&gt;<br/>&lt;/linearGradient&gt;</code>"
+  },
+  {
+    question: "How do I draw a gradient on HTML5 Canvas?",
+    answer: "First, create a gradient object on the canvas 2D context using <code>const grad = ctx.createLinearGradient(x1, y1, x2, y2)</code> or <code>createRadialGradient()</code>. Then add color stops using <code>grad.addColorStop(offset, color)</code> where offset is a number between 0.0 and 1.0. Finally, set <code>ctx.fillStyle = grad;</code> and call a drawing method like <code>ctx.fillRect()</code>."
+  },
+  {
+    question: "Why does my gradient look grey or muddy in the middle?",
+    answer: "This is a common issue known as the 'grey dead zone'. It occurs when transitioning between two contrasting colors (like blue and orange) in standard RGB space. The mathematical midpoint passes through a low-saturation grey area. To fix this, add intermediate stops (e.g. adding purple between blue and orange) to keep the gradient vibrant and saturated."
+  },
+  {
+    question: "Does using CSS gradients affect website load speed or SEO?",
+    answer: "No, CSS gradients are computed directly by the browser's rendering engine. Unlike heavy PNG/JPG image assets, CSS gradients require only a single line of text code, making them load instantly and saving bandwidth, which indirectly boosts mobile performance and SEO page speed scores."
+  },
+  {
+    question: "How do I extract a gradient from a photo or image?",
+    answer: "Our tool features an interactive Image Palette Extractor. Drag and drop any image into the local sandbox. The script renders the photo onto a hidden canvas, samples the pixels in sequence, clusters similar shades, sorts them by Hue to avoid chaotic transitions, and maps them directly to your gradient stops. Everything runs 100% offline."
+  }
+];
+---
+
+<ToolPageLayout
+  title="CSS Gradient Generator & Palette Extractor: Linear, Radial, Conic Designer"
+  description="Generate beautiful linear, radial, or conic CSS gradients visually. Drag and drop images to extract dominant color palettes, test text gradient combinations, select premium presets, and copy CSS, Tailwind, SVG or Canvas codes. 100% local processing."
+  keywords="css gradient generator, gradient generator, css linear gradient, radial gradient css, conic gradient css, image color palette extractor, tailwind gradient generator, svg gradient code, developer web design tools"
+  toolTitle="CSS Gradient Generator"
+  toolDescription="Design multi-stop linear, radial, or conic gradients. Extract dominant color scales from photos, test text gradient clipping, select premium presets, and export production-ready styles instantly."
+  faqs={faqs}
+>
+  <GradientGenerator client:load />
+
+  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Deep Dive: CSS Gradient Mechanics
+      </h2>
+      <p class="leading-relaxed mb-4">
+        CSS gradients are special image types generated dynamically by the browser's paint engine. Unlike static image files like JPEGs or PNGs, gradients scale infinitely without pixelation and consume zero download bandwidth. This makes them ideal for building fast, responsive, and visually striking modern web interfaces.
+      </p>
+      <p class="leading-relaxed">
+        Our CSS Gradient Generator simplifies visual construction by wrapping linear, radial, and conic functions into an intuitive multi-stop timeline sandbox. Developers can drag, add, and remove stops in real-time, instantly copying standard CSS rules or Tailwind classes.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Translating to Tailwind CSS v4 & v3 Frameworks
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Tailwind CSS provides built-in utilities for simple two-stop linear gradients using classes like <code>bg-gradient-to-r from-emerald-400 to-blue-500</code>. However, when you need custom angles (e.g. 135deg), more than three stops, or radial/conic configurations, standard utility classes fall short.
+      </p>
+      <p class="leading-relaxed">
+        To address this, Tailwind features an arbitrary value syntax where custom declarations are placed inside square brackets. Our generator outputs optimized Tailwind strings, such as <code class="break-all">bg-[linear-gradient(135deg,#10b981_0%,#3b82f6_100%)]</code>, replacing spaces with underscores so Tailwind's utility class engine parses the color stops accurately.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Zero-Transmission Image Color Extraction
+      </h2>
+      <p class="leading-relaxed mb-4">
+        A unique feature of this utility is the Image Palette Extractor. Designers often find gradient inspiration in real-world photography, but manually sampling colors and plotting coordinates is tedious.
+      </p>
+      <p class="leading-relaxed">
+        By dropping a photo into our sandbox, the browser renders the image onto a hidden canvas element. The local JS engine samples the pixels, clusters them by visual similarity, filters out redundant grays, and automatically arranges the dominant colors by Hue on the timeline. Crucially, because this uses the native HTML5 Canvas API, no files are uploaded to any backend server, ensuring 100% privacy for sensitive assets or screenshots.
+      </p>
+    </div>
+  </div>
+</ToolPageLayout>

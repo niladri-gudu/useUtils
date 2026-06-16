@@ -1,0 +1,121 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { FakeUserGenerator } from '../../components/FakeUserGenerator';
+
+const faqs = [
+  {
+    question: "What is a mock data generator and why is it used?",
+    answer: "A mock data generator is a development utility that fabricates realistic-looking datasets (such as user accounts, pricing lists, or sensor telemetry) that share the structure of real production databases. Developers and designers use it to build prototypes, seed staging databases, verify API integrations, and write automated tests without relying on or exposing sensitive real-world user data."
+  },
+  {
+    question: "How does this tool generate fake user data without a backend server?",
+    answer: "Our Fake User Generator runs 100% locally in your browser using native client-side JavaScript. When you adjust the fields or click regenerate, the data is generated instantaneously using random seed mathematics and built-in dictionaries. Because there are no backend API requests, the tool functions fully offline and guarantees complete data privacy."
+  },
+  {
+    question: "Is the generated mock data safe to use in public environments?",
+    answer: "Yes, the generated data is entirely fabricated and randomized. It contains no real Personally Identifiable Information (PII) or authentic user credentials. It is 100% safe to use in demo videos, public git repositories, QA testing platforms, staging environments, and client mockups."
+  },
+  {
+    question: "How do I download my custom mock data in CSV format?",
+    answer: "First, design your schema by adding and naming fields. Then, select the <strong>CSV</strong> tab on the output window. You will see a live preview of the comma-separated output. Click the <strong>Download</strong> button, and your browser will compile the table locally into a <code>.csv</code> file and save it to your downloads folder immediately."
+  },
+  {
+    question: "Can I generate custom numeric ranges, decimals, or custom lists?",
+    answer: "Yes. By selecting the <strong>Random Integer</strong> or <strong>Random Decimal</strong> types, you can define custom minimum and maximum ranges. Choosing the <strong>Custom List Picker</strong> opens a text field where you can input comma-separated values (e.g. <code>Admin, User, Editor</code>). The engine will pick one random item from your list for each record."
+  },
+  {
+    question: "How do I convert my mock schema into TypeScript interfaces?",
+    answer: "Our designer automates type creation. Toggle the <strong>TypeScript</strong> tab in the format toolbar. The engine parses the schema structure, maps numeric properties (like latitudes, coordinates, and integers) to the TypeScript <code>number</code> type, booleans to <code>boolean</code>, and text strings to <code>string</code>. It exports a copyable, type-safe interface declaration instantly."
+  },
+  {
+    question: "Can I seed my SQL database directly using this mock data generator?",
+    answer: "Yes, you can generate raw SQL inserts. Select the <strong>SQL</strong> tab and enter your database table name in the configuration input. The utility converts each generated record into an <code>INSERT INTO `table`</code> statement, escaping text quotes correctly. Copy the code block and execute it directly in your database terminal or client."
+  },
+  {
+    question: "How does the local geometric SVG avatar generator work?",
+    answer: "Instead of querying third-party gravatar networks which can fail offline or track requests, our utility implements a local vector generator. It hashes each username string to select a background gradient and overlays randomized geometric paths (circles, polygons, rectangles) with varying opacities. The SVG is then converted to a base64 Data URI, allowing offline image loads."
+  },
+  {
+    question: "What is the maximum limit of rows I can generate locally?",
+    answer: "The quantity slider is optimized for up to 200 records. Since all string parsing, formatting, and syntax rendering occur on the browser's single main thread, keeping generation under 200 records ensures sub-millisecond execution and prevents UI freezing, while providing ample data for mockups."
+  },
+  {
+    question: "Is this Fake User Generator free to use?",
+    answer: "Yes, useUtils.com provides all developer tools completely free with no subscriptions, advertisements, paywalls, watermarks, or account logins. All operations compile locally, keeping your workspace fast and lightweight."
+  },
+  {
+    question: "How do I format generated fields as valid JSON?",
+    answer: "The tool automatically outputs valid, prettified JSON arrays with correct syntax, double-quoted keys, and structured indentation. You can copy the code or save it directly as a <code>.json</code> file for immediate use in Mock APIs or local testing files."
+  }
+];
+
+// Structured data FAQ schema for SEO search engines
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer.replace(/<[^>]*>/g, '') // Strip HTML tags for clean schema JSON
+    }
+  }))
+};
+---
+
+<ToolPageLayout
+  title="Fake User & Mock Data Generator: Schema Builder (JSON, CSV, SQL, YAML)"
+  description="Generate fake user profiles, database mock rows, IoT telemetry, and customize schemas in real-time. Design fields, set constraints, and export to JSON, CSV, YAML, SQL, and TypeScript interfaces. 100% offline and secure local processing."
+  keywords="fake user generator, mock data generator, random user generator, test data generator, json generator, csv generator, sql insert generator, typescript interface generator, local developer tools"
+  toolTitle="Fake User & Mock Data Generator"
+  toolDescription="Design custom database schemas visually. Set parameters for numeric data, location coords, contact strings, and custom lists. Export generated mock entries to JSON, CSV, YAML, SQL, and TypeScript interfaces instantly."
+  faqs={faqs}
+>
+  <!-- Inject FAQ Schema into HTML head -->
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(faqSchema)} />
+
+  <FakeUserGenerator client:load />
+
+  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        The Importance of Mock Data in Modern Software Testing
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Developing database schemas, REST APIs, or frontend interfaces requires high-quality placeholder data. Manually writing dummy records is time-consuming, while reusing real customer database rows carries immense security risks. Storing authentic personal data (PII) in staging environments violates compliance laws like GDPR and HIPAA.
+      </p>
+      <p class="leading-relaxed">
+        A schema-based mock data generator bridges this gap. It constructs realistic values (such as email addresses, coordinates, and UUIDs) that follow standard protocols, allowing developers to test search algorithms, validate form parsing, and optimize database indexing under lifelike loads.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Zero Server Transmission: A Privacy-First Engineering Choice
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Many online generators require users to submit parameters to a backend server which then compiles the JSON or CSV file. This workflow introduces unnecessary delays and poses a potential leakage point if you are configuring specific key naming configurations or testing proprietary structures.
+      </p>
+      <p class="leading-relaxed">
+        By utilizing client-side Web APIs, this utility generates all mock rows instantly on your local device. The data is created directly in the browser's thread, meaning zero bytes of your custom schema are transmitted over the internet. This aligns with our 100% offline sandbox guarantee, giving developers peace of mind when working on secure projects.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Seamless Integrations: Formats for Every Stack
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our Fake User Generator supports 5 distinct export styles to fit any engineering pipeline. The **JSON** format is perfect for seeding document stores (MongoDB) or writing REST API mock endpoints. The **CSV** layout easily imports into spreadsheet software like Microsoft Excel or Google Sheets. The **YAML** option integrates with configuration tools, and the **SQL** format outputs pure SQL insertions to seed relational engines like PostgreSQL or MySQL.
+      </p>
+      <p class="leading-relaxed">
+        Finally, the **TypeScript** generator compiles a type-safe structural definition matching your custom schema. This ensures your frontend models match your API payload type interfaces precisely, eliminating runtime issues and typo bugs.
+      </p>
+    </div>
+  </div>
+</ToolPageLayout>

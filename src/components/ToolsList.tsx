@@ -113,7 +113,7 @@ const ALL_TOOLS: Tool[] = [
   { id: 'uuid-generator', name: 'UUID & Token Generator', description: 'Generate cryptographically secure UUIDs (v4 & v7), NanoIDs, passwords, and random byte sequences locally. Features a built-in UUID v7 timestamp parser and entropy analysis.', category: 'generators', isPopular: true, isActive: true, href: '/tools/uuid-generator', icon: '🆔' },
   { id: 'lorem-ipsum', name: 'Lorem Ipsum', description: 'Generate placeholder text', category: 'generators', icon: '📝' },
   { id: 'random-number', name: 'Random Number', description: 'Generate random numbers', category: 'generators', icon: '🎲' },
-  { id: 'fake-user-generator', name: 'Fake User Generator', description: 'Generate fake user data', category: 'generators', icon: '👤' },
+  { id: 'fake-user-generator', name: 'Fake User & Mock Data Generator', description: 'Generate fake user profiles, database mock rows, IoT telemetry, and customize schemas in real-time. Exports to JSON, CSV, YAML, SQL, and TypeScript interfaces.', category: 'generators', isPopular: true, isActive: true, href: '/tools/fake-user-generator', icon: '👤' },
   { id: 'qr-code-generator', name: 'QR Code Generator', description: 'Generate QR codes', category: 'generators', icon: '▦' },
   { id: 'barcode-generator', name: 'Barcode Generator', description: 'Generate barcodes', category: 'generators', icon: '▬' },
   { id: 'random-string', name: 'Random String', description: 'Generate random strings', category: 'generators', icon: '🎲' },

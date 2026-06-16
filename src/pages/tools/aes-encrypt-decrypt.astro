@@ -1,0 +1,108 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { AesEncryptDecrypt } from '../../components/AesEncryptDecrypt';
+
+const faqs = [
+  {
+    question: "What is AES encryption and how does it work?",
+    answer: "AES (Advanced Encryption Standard) is a symmetric-key block cipher established by the U.S. National Institute of Standards and Technology (NIST) in 2001. Symmetric-key means the same key is used for both encrypting and decrypting the data. AES operates on fixed-size blocks of 128 bits using mathematical operations (substitution-permutation networks) over multiple rounds (10, 12, or 14 rounds depending on the key length) to scramble data into unreadable ciphertext."
+  },
+  {
+    question: "What is the difference between AES-128, AES-192, and AES-256?",
+    answer: "The primary difference is the length of the cryptographic key used to encrypt the data: 128, 192, or 256 bits. A longer key size provides a higher level of security, rendering brute-force attacks computationally impossible. For example, AES-256 requires 14 execution rounds and offers 2^256 possible combinations, which is considered quantum-resistant and is used by governments and financial institutions worldwide for top-secret classification data."
+  },
+  {
+    question: "What is the difference between AES-GCM and AES-CBC block modes?",
+    answer: "AES-CBC (Cipher Block Chaining) is a legacy mode that chains cipher blocks together. It requires an Initialization Vector (IV) and padding to fit block size criteria. However, CBC does not detect tampering unless combined with a MAC (Message Authentication Code). AES-GCM (Galois/Counter Mode) is a modern, authenticated encryption mode (AEAD) that provides both confidentiality and integrity check validation. GCM calculates an authentication tag during encryption. If the ciphertext or IV is tampered with by even one bit, decryption will fail immediately. GCM is highly recommended for modern applications."
+  },
+  {
+    question: "Is it safe to encrypt and decrypt sensitive database passwords or API keys online using this tool?",
+    answer: "Yes, it is 100% safe. Unlike generic websites that upload your inputs to their servers, this utility runs **entirely in your browser's local sandbox**. It uses the native Web Crypto API (`window.crypto.subtle`) built into your browser. Your plain text data, derived keys, passphrases, and files are never sent over the network or stored on any server. You can safely disconnect your internet connection and verify that the tool still functions completely offline."
+  },
+  {
+    question: "How is a key derived from a password/passphrase in AES?",
+    answer: "Because passwords are low-entropy and easy to guess, they cannot be used directly as AES keys. We use PBKDF2 (Password-Based Key Derivation Function 2) to derive a strong key. PBKDF2 takes your passphrase, mixes it with a random 128-bit Salt, and repeatedly hashes it using HMAC-SHA-256 for a user-specified number of iterations (e.g. 100,000 rounds). This process slows down brute-force and dictionary attacks, making them computationally prohibitive."
+  },
+  {
+    question: "What is an Initialization Vector (IV) and why is it needed?",
+    answer: "An Initialization Vector (IV) is a random block of bytes used as a starting point for block cipher operations. Its purpose is to ensure that encrypting the same plaintext twice with the exact same key produces completely different ciphertext. If an IV is reused (especially in GCM mode), it creates cryptographic vulnerabilities that allow attackers to deduce patterns or even decrypt messages. For GCM mode, the IV is recommended to be 12 bytes; for CBC mode, it must be 16 bytes."
+  },
+  {
+    question: "What is a Salt in cryptography and why is it important?",
+    answer: "A Salt is a sequence of random bytes mixed with a password before running it through a key derivation function (like PBKDF2). The salt ensures that identical passwords derive completely different cryptographic keys. This prevents attackers from using pre-computed tables (like rainbow tables) to crack passwords en masse, as they would have to recompute the table for every unique salt value."
+  },
+  {
+    question: "Why does encrypting the same text with the exact same password produce different ciphertext every time?",
+    answer: "This is a security feature, not a bug! By default, this tool generates a new, cryptographically secure random Initialization Vector (IV) and a random Salt every time you click encrypt. Because the inputs to the encryption algorithm change (even though your text and password stay the same), the output ciphertext changes. This prevents side-channel analysis and frequency attacks."
+  },
+  {
+    question: "How do I decrypt a payload encrypted here in a custom script (Node.js or Python)?",
+    answer: "By default, our tool outputs a **Secure Concatenated Payload** (Base64 or Hex). The first byte contains the Salt length, the second byte contains the IV length. Following that are the Salt bytes (if passphrase mode), IV bytes, and finally the Ciphertext bytes. You can parse this binary structure in Node.js or Python, extract the components, run PBKDF2 key derivation, and invoke the standard decrypt functions of the language's crypto module."
+  },
+  {
+    question: "Does this tool support file encryption and how is the original filename preserved?",
+    answer: "Yes. Our tool supports local encryption for files up to 5MB. When encrypting a file, we pack a metadata header containing the salt length, IV length, and the original filename length. The filename is appended as UTF-8 bytes right before the ciphertext. When you load the `.enc` file under Decrypt, the tool parses the header, extracts the original filename, decrypts the binary data, and initiates a local download with the correct filename and extension."
+  },
+  {
+    question: "How can I perform AES-GCM decryption programmatically in Node.js?",
+    answer: "Here is a simple example of how to decrypt an AES-GCM ciphertext using Node.js's built-in `crypto` module:<br/><code class='font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-350 rounded px-2.5 py-1.5 block mt-2 overflow-x-auto whitespace-pre'>const crypto = require('crypto');\n\nfunction decrypt(ciphertextBase64, rawKeyHex, ivHex) {\n  const key = Buffer.from(rawKeyHex, 'hex');\n  const iv = Buffer.from(ivHex, 'hex');\n  const encrypted = Buffer.from(ciphertextBase64, 'base64');\n\n  // Extract tag from the end (AES-GCM puts tag at the end of ciphertext in Web Crypto)\n  const tag = encrypted.subarray(encrypted.length - 16);\n  const data = encrypted.subarray(0, encrypted.length - 16);\n\n  const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);\n  decipher.setAuthTag(tag);\n  \n  let decrypted = decipher.update(data, 'binary', 'utf8');\n  decrypted += decipher.final('utf8');\n  return decrypted;\n}</code>"
+  }
+];
+---
+
+<ToolPageLayout
+  title="AES Symmetric Encryption & Decryption Online - 100% Offline"
+  description="Encrypt and decrypt text or files locally using AES-GCM and AES-CBC symmetric ciphers. PBKDF2 key derivation, secure password generators, and secure shareable configurations."
+  keywords="aes encryption online, aes decryption, aes gcm online, aes cbc tool, encrypt files online, client side encryption, secure password generator, pbkdf2 key derivation"
+  toolTitle="AES Encryption & Decryption Studio"
+  toolDescription="Encrypt and decrypt sensitive logs, JSON objects, passwords, or small files locally in your browser. Configure AES-GCM or AES-CBC modes, customize PBKDF2 key derivation iterations, generate secure passwords, and share configs safely."
+  faqs={faqs}
+>
+  <AesEncryptDecrypt client:load />
+
+  <!-- SEO Content Section -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    
+    <div>
+      <h2 class="text-xl font-semibold text-[#34d399] tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-[#34d399] rounded-full"></span>
+        Symmetric Cryptography: The Core of Data Security
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Symmetric encryption is the cornerstone of modern security systems, securing everything from Wi-Fi traffic (WPA3) to TLS connections and database storage. The Advanced Encryption Standard (AES) is the most widely adopted symmetric algorithm globally. Because symmetric encryption relies on a single key shared between the sender and receiver, it is exceptionally fast and efficient, making it suitable for encrypting large amounts of data, streaming files, or securing API traffic.
+      </p>
+      <p class="leading-relaxed mb-4">
+        Unlike public-key cryptography (asymmetric algorithms like RSA or ECC), which use a keypair for identity verification and small data wrapping, symmetric ciphers swap data quickly. However, the security of symmetric encryption depends entirely on keeping the key secure. If a key is leaked or derived from a weak password, the entire protection system collapses.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-[#34d399] rounded-full"></span>
+        Why Local Browser-Based Encryption is Necessary
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Many online developers need to quickly encrypt configurations or decrypt log files during troubleshooting. Unfortunately, standard online web tools require you to paste your database keys, passwords, or proprietary logs into their text boxes and submit them to a remote server. This exposes your keys to logging, server compromise, or transmission interception.
+      </p>
+      <p class="leading-relaxed mb-4">
+        Our AES Encryption Studio resolves this by running **100% on the client side**. Your data is processed inside the local memory space of your browser using Web Crypto APIs. There are no API requests, server endpoints, or analytics scripts capturing your keys.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-[#34d399] rounded-full"></span>
+        Understanding the Crypto Blueprint
+      </h2>
+      <p class="leading-relaxed mb-4">
+        To help developers understand the cryptographic pipeline, our tool displays an interactive blueprint of the execution workflow:
+      </p>
+      <ul class="list-disc pl-5 space-y-2 mb-4 leading-relaxed">
+        <li><strong class="text-zinc-200">Key Derivation (PBKDF2):</strong> If you use a password, the system generates a random salt and runs PBKDF2 with SHA-256 for 100,000 rounds to derive a cryptographically sound key.</li>
+        <li><strong class="text-zinc-200">IV Vector Selection:</strong> The system selects a unique, cryptographically random initialization vector (IV) to randomize the block structure of the cipher.</li>
+        <li><strong class="text-zinc-200">AES Execution:</strong> The selected block mode (AES-GCM or AES-CBC) executes the encryption or decryption using the derived key.</li>
+        <li><strong class="text-zinc-200">Concatenated Serialization:</strong> To keep payloads easy to copy, we pack the salt size, IV size, actual salt, actual IV, and ciphertext into a single Base64 or Hex block.</li>
+      </ul>
+    </div>
+  </div>
+</ToolPageLayout>

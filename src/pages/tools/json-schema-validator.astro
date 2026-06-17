@@ -1,0 +1,110 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { JsonSchemaValidator } from '../../components/JsonSchemaValidator';
+
+const faqs = [
+  {
+    question: "What is JSON Schema and why is it used?",
+    answer: "JSON Schema is a declarative vocabulary that allows you to annotate and validate JSON documents. It provides a contract for the JSON data required by a given application, specifying types, required fields, value ranges, string pattern formats, and logical constraints. This ensures consistency in communication between backend APIs, client interfaces, database storages, and external microservices."
+  },
+  {
+    question: "How does real-time JSON Schema validation work in the browser?",
+    answer: "The validation engine takes your JSON instance data and compares it against the JSON Schema constraints entirely client-side. The tool walks through the properties recursively, checking types, min/max values, required keys, string lengths, and regex pattern compliance. Any discrepancies are captured and reported immediately, showing the exact JSON path (e.g., <code>$.address.zipCode</code>) where the violation occurred."
+  },
+  {
+    question: "What are the differences between Draft-04, Draft-07, and Draft 2019-09?",
+    answer: "Each Draft represents an iteration of the JSON Schema specification. <strong>Draft-04</strong> is an older legacy format that uses <code>id</code> for schema identifiers and combines Boolean logic slightly differently. <strong>Draft-07</strong> is highly popular and stable, supporting <code>$id</code>, <code>const</code>, and format assertions. <strong>Draft 2019-09</strong> (formerly Draft 8) introduces modular architectures, vocabulary specifications, and updates to keywords like <code>unevaluatedProperties</code> and recursive anchoring."
+  },
+  {
+    question: "How do I generate a JSON Schema from a sample JSON payload?",
+    answer: "By pasting a valid JSON sample into the Schema Generator tab, our tool automatically infers the data types. It detects string values matching patterns (like email, UUIDs, dates, and URIs) and labels them with specific format fields. It sets properties as required, inserts documentation boilerplate, and groups nested objects or consolidates similar items inside lists to produce a valid, comprehensive draft-07 JSON Schema."
+  },
+  {
+    question: "Is pasting sensitive JSON data into this validator secure?",
+    answer: "Yes, 100% secure. Like all tools on useUtils, the entire parsing, generation, validation, and layout compilation process runs locally inside your browser using JavaScript. No information is transmitted to our servers, logged in backend database stores, or cached in cloud networks. This guarantees complete data privacy, allowing you to validate secret config credentials, raw database records, or private token payloads securely."
+  },
+  {
+    question: "How do I specify required fields in a JSON Schema?",
+    answer: "Required properties are declared inside the object definition block using a <code>required</code> keyword containing an array of property name strings. For example: <code>{ \"type\": \"object\", \"properties\": { \"name\": { \"type\": \"string\" } }, \"required\": [\"name\"] }</code>. Any JSON instance lacking a <code>name</code> key will fail schema validation."
+  },
+  {
+    question: "What is the difference between anyOf, allOf, and oneOf in JSON Schema?",
+    answer: "These are logical combinator keywords: <strong>allOf</strong> requires the JSON instance to validate successfully against all listed sub-schemas (acting like an AND operator). <strong>anyOf</strong> requires the instance to pass at least one of the listed sub-schemas (acting like an OR operator). <strong>oneOf</strong> requires the instance to validate successfully against exactly one of the listed sub-schemas, failing if it matches multiple."
+  },
+  {
+    question: "Which string formats are automatically detected by the generator?",
+    answer: "The generator checks string properties using regex assertions to detect common data formats: <code>email</code> (standard email addresses), <code>date-time</code> (ISO-8601 timestamps), <code>date</code> (YYYY-MM-DD formats), <code>uuid</code> (universally unique identifiers), <code>ipv4</code> / <code>ipv6</code> (IP addresses), and <code>uri</code> (absolute website URLs). When detected, it appends the matching <code>format</code> keyword to the string schema."
+  },
+  {
+    question: "How does the tool merge array item schemas during generation?",
+    answer: "When an array contains multiple items (such as a list of objects), the generator can consolidate them. If 'Merge similar objects' is active, it gathers all unique properties from every item in the list and recursively combines their schemas. Required properties are determined by finding the intersection (properties that appear in every single object in the sample list)."
+  },
+  {
+    question: "Why should I use JSON Schema validation over writing custom validation code?",
+    answer: "JSON Schema separates your validation logic from your application code, creating an standard declarative contract. It reduces boilerplate, ensures consistency across multiple programming languages (as parser packages exist for Go, Python, Java, JS, etc.), handles complex nested structure checks out of the box, and provides standardized error reporting that is highly readable for APIs and client systems."
+  }
+];
+---
+
+<ToolPageLayout
+  title="JSON Schema Validator & Generator Online: Validate and Build Schemas"
+  description="Validate JSON payloads against Draft-04/07/2019-09 JSON Schemas or generate schemas from JSON samples locally in real-time. Features interactive tree previews, syntax indicators, format checking, and required field triggers."
+  keywords="json schema validator, json schema generator, draft-07 json schema, validate json, schema builder, json schema checker, infer json schema, json validator online"
+  toolTitle="JSON Schema Validator & Generator"
+  toolDescription="Validate JSON payloads against schema specifications or generate draft schemas from sample datasets instantly. Features real-time error pointing, format detection, interactive collapsible trees, and 100% browser-based processing."
+  faqs={faqs}
+>
+  <JsonSchemaValidator client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Getting Started with JSON Schema Validator & Generator
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our JSON Schema Validator &amp; Generator offers an intuitive, two-in-one workspace designed to streamline data structure contracts. Toggle between the <strong class="text-zinc-200">Schema Generator</strong> to construct validation schemas from raw sample payloads, and the <strong class="text-zinc-200">Schema Validator</strong> to cross-examine database results or API JSON packets against schema definitions.
+      </p>
+      <p class="leading-relaxed">
+        Everything operates instantly in real-time. By keeping the compiling processes client-side, developers can debug sensitive configurations, system logs, or user credentials without worrying about data leakage or server transmissions.
+      </p>
+    </div>
+
+    <!-- How to Generate Schema -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Auto-Generate a JSON Schema
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Constructing a JSON Schema from scratch can be tedious and prone to formatting errors. To build one instantly:
+      </p>
+      <ol class="list-decimal pl-5 flex flex-col gap-2.5 mb-4 text-zinc-450">
+        <li>Select a pre-built data template (like <em>User Profile</em> or <em>IoT Telemetry</em>) or paste your custom JSON payload into the <strong class="text-zinc-200">Sample JSON Input</strong>.</li>
+        <li>Set the target JSON Schema Draft specification version (Draft-04, Draft-07, or Draft 2019-09) to fit your tooling.</li>
+        <li>Toggle configuration preferences: choose whether to require all properties, perform semantic format detection, auto-generate field descriptions, or merge repeating array elements.</li>
+        <li>Select the <strong class="text-zinc-200">Code Schema</strong> view to copy/download the raw JSON, or explore the <strong class="text-zinc-200">Visual Tree</strong> to examine nesting levels and copy specific schema object keypaths.</li>
+      </ol>
+    </div>
+
+    <!-- Validation and Debugging -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Validating JSON Payloads & Debugging Violations
+      </h2>
+      <p class="leading-relaxed mb-4">
+        If you are integrating new web hook payloads, validating database entries, or checking API requests, the <strong class="text-zinc-200">Schema Validator</strong> panel helps pinpoint schema deviations immediately:
+      </p>
+      <ul class="list-disc pl-5 flex flex-col gap-2.5 mb-4 text-zinc-450">
+        <li><strong>Load / Paste Schema:</strong> Input the schema rules either by pasting an existing document or clicking <em>"Use Generated Schema"</em> to load the schema generated in your current session.</li>
+        <li><strong>Load / Paste Instance Data:</strong> Paste the JSON payload you wish to check.</li>
+        <li><strong>Real-time Compliance Checks:</strong> The tool runs tests instantly. If your data complies, a success message appears. If violations occur, the tool reports the list of issues, pointing to the exact JSON path (e.g., <code>$.items[1].price</code>), the failing keyword (e.g., <code>type</code> or <code>required</code>), and a description explaining the violation.</li>
+      </ul>
+      <p class="leading-relaxed">
+        Clicking on any validation error instantly copies the keypath to your clipboard, allowing you to quickly search and edit the source document.
+      </p>
+    </div>
+  </div>
+</ToolPageLayout>

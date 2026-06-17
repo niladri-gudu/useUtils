@@ -87,7 +87,7 @@ const ALL_TOOLS: Tool[] = [
   { id: 'ascii-converter', name: 'ASCII Converter', description: 'Convert text to ASCII codes', category: 'encoding', icon: '🔢' },
   { id: 'binary-converter', name: 'Binary Converter & Bit Sandbox', description: 'Convert plain text to binary, hex, octal, ASCII, and decimal code in real-time. Features an interactive bitwise sandboxed flitter, a scrollable file-drop hex dump viewer, and an arbitrary BigInt base converter.', category: 'encoding', isPopular: true, isActive: true, href: '/tools/binary-converter', icon: '01' },
   { id: 'hex-converter', name: 'Hex Converter', description: 'Convert text to hexadecimal', category: 'encoding', icon: '🔢' },
-  { id: 'rot13-encoder', name: 'ROT13 Encoder', description: 'ROT13 cipher encoder', category: 'encoding', icon: '🔄' },
+  { id: 'rot13-encoder', name: 'ROT13 & Caesar Cipher Studio', description: 'Encode, decode, and analyze classical ciphers including ROT13, Caesar, Vigenère, Atbash, and ROT47. Features real-time letter frequency charts and automated brute-force Caesar decryption.', category: 'encoding', isPopular: true, isActive: true, href: '/tools/rot13-encoder', icon: '🔄' },
   { id: 'email-validator', name: 'Email Validator', description: 'Validate email addresses', category: 'encoding', icon: '📧' },
   { id: 'url-validator', name: 'URL Validator', description: 'Validate URLs', category: 'encoding', icon: '🔗' },
   { id: 'password-strength', name: 'Password Strength', description: 'Check password strength', category: 'encoding', icon: '🔒' },

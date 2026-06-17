@@ -1,0 +1,118 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { Rot13Encoder } from '../../components/Rot13Encoder';
+
+const faqs = [
+  {
+    question: "What is the ROT13 cipher and how does it work?",
+    answer: "ROT13 (\"rotate by 13 places\") is a simple substitution cipher that replaces a letter with the letter 13 positions ahead of it in the alphabet. For instance, 'A' becomes 'N', 'B' becomes 'O', and 'Z' becomes 'M'. Because there are 26 letters in the English alphabet, applying ROT13 twice returns the original text, making it a symmetric (self-inverse) cipher."
+  },
+  {
+    question: "What are the differences between ROT13, ROT5, ROT18, and ROT47?",
+    answer: "<strong>ROT13</strong> rotates alphabetical letters (A-Z) by 13 positions. <strong>ROT5</strong> rotates numeric digits (0-9) by 5 positions. <strong>ROT18</strong> combines ROT13 and ROT5, providing alphanumeric rotation. <strong>ROT47</strong> rotates all printable ASCII characters (from code 33 '!' to 126 '~') by 47 positions, which scrambles letters, numbers, spaces, and punctuation marks under a single shift."
+  },
+  {
+    question: "How do you decrypt a Caesar cipher?",
+    answer: "To decrypt a Caesar cipher, you rotate each letter in the opposite direction of the encryption shift. For instance, if a message was encrypted with a shift of 3, you decrypt it by shifting back 3 positions (or shifting forward by 23, since 26 - 3 = 23). If the shift value is unknown, you can brute-force the cipher by trying all 25 possible shift offsets until readable text is revealed."
+  },
+  {
+    question: "How does the Vigenère cipher work and why is it polyalphabetic?",
+    answer: "The Vigenère cipher is a polyalphabetic substitution cipher, meaning it uses multiple Caesar ciphers in sequence. It encrypts letters using shifts determined by a keyword. For example, if the keyword is \"KEY\" (shifts 10, 4, 24), the first letter is shifted by 10, the second by 4, the third by 24, and the pattern repeats. This hides single-letter frequencies, making it much harder to crack than Caesar."
+  },
+  {
+    question: "What is the Atbash cipher, and is it a symmetric cipher?",
+    answer: "Yes. The Atbash cipher is a specific type of monoalphabetic substitution cipher that reverses the alphabet: 'A' becomes 'Z', 'B' becomes 'Y', and 'Z' becomes 'A'. Because it mirrors the alphabet, Atbash is self-reciprocal (symmetric), meaning the exact same algorithm is used to encrypt and decrypt."
+  },
+  {
+    question: "Can ciphers like ROT13 or Caesar be used to secure sensitive passwords or data?",
+    answer: "<strong>No.</strong> Classical ciphers like ROT13, Caesar, and Vigenère provide absolutely no modern cryptographic security. They can be cracked in milliseconds using brute-force, letter frequency analysis, or dictionary checks. They should only be used for educational purposes, puzzles, simple spoiler hiding, or legacy formatting tests, never for passwords or confidential information."
+  },
+  {
+    question: "How does letter frequency analysis help in cracking classical ciphers?",
+    answer: "In any language, certain letters appear more frequently than others. In English, 'E' is the most common (approx. 12.7%), followed by 'T', 'A', and 'O'. Monoalphabetic ciphers like Caesar shift the alphabet but preserve these frequency ratios. By analyzing letter distribution in the ciphertext and aligning the tallest peaks with 'E' and 'T', a codebreaker can instantly deduce the key."
+  },
+  {
+    question: "What is a brute-force attack on a Caesar cipher?",
+    answer: "A brute-force attack involves systematically testing every possible decryption key. For a Caesar cipher, there are only 25 unique shift keys. A computer can decrypt the ciphertext using all 25 shifts and score the results based on standard English letter frequencies and dictionary matches, identifying the correct shift in microseconds."
+  },
+  {
+    question: "Is ROT13 its own inverse?",
+    answer: "Yes, ROT13 is its own inverse (a self-reciprocal function). Rotating a letter 13 places twice results in a 26-place shift. Since there are 26 letters in the Latin alphabet, this returns the letter to its starting position. Therefore, <code>rot13(rot13(text)) === text</code>."
+  },
+  {
+    question: "Is my text data sent to a server when using this encoder/decoder?",
+    answer: "No. All conversions, encodings, decodings, letter frequency calculations, and brute-force simulations are performed completely locally within your browser using JavaScript. No text, key, or file contents are sent to our servers. This ensures 100% privacy and security for your inputs."
+  },
+  {
+    question: "Why is the Vigenère cipher historically called 'le chiffre indéchiffrable'?",
+    answer: "Historically, Vigenère was called the \"indecipherable cipher\" because polyalphabetic ciphers resist simple letter frequency analysis. By shifting the same letter differently depending on its position relative to the keyword, the standard frequency peaks are flattened. It was considered unbreakable for over 300 years until systematic cracking methods like the Kasiski examination were developed in the 19th century."
+  }
+];
+---
+
+<ToolPageLayout
+  title="ROT13 & Caesar Cipher Studio Online: Encode, Decode & Crack Ciphers"
+  description="Encode, decode, and analyze classical ciphers including ROT13, Caesar, Vigenère, Atbash, and ROT47. Features real-time letter frequency analysis charts and automated brute-force Caesar decryption."
+  keywords="rot13 encoder, caesar cipher decoder, vigenere cipher online, atbash cipher, rot13 decoder, classical ciphers, brute force caesar cipher, letter frequency analysis"
+  toolTitle="ROT13 & Caesar Cipher Studio"
+  toolDescription="Analyze, encrypt, and decrypt classical substitution ciphers in real-time. Explore letter frequency distributions, run brute-force cracking simulations, and process plaintext inputs locally."
+  faqs={faqs}
+>
+  <Rot13Encoder client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Introduction -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Getting Started with the Classical Cipher Studio
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our ROT13 &amp; Caesar Cipher Studio is an interactive, local-first cryptanalysis sandbox designed for developers, students, and cryptography enthusiasts. It supports a comprehensive range of historical ciphers under a unified interface:
+      </p>
+      <ul class="list-disc pl-5 flex flex-col gap-2 mb-4 text-zinc-450">
+        <li><strong class="text-zinc-200">ROT13, ROT5, and ROT18:</strong> Standard alphabetic, numeric, and alphanumeric rotation ciphers widely used for spoiler obfuscation.</li>
+        <li><strong class="text-zinc-200">Caesar Cipher:</strong> Monolithic alphabet shift cipher with custom key sliders (0-25).</li>
+        <li><strong class="text-zinc-200">ROT47:</strong> Full ASCII symbol translation covering letters, numbers, spaces, and punctuation.</li>
+        <li><strong class="text-zinc-200">Vigenère Cipher:</strong> Polyalphabetic substitution cipher leveraging customizable secret keywords to cycle shifts.</li>
+        <li><strong class="text-zinc-200">Atbash Cipher:</strong> Reflective monoalphabetic cipher that mirrors letters from A to Z.</li>
+      </ul>
+      <p class="leading-relaxed">
+        Everything runs completely offline inside your browser. This offline validation guarantees that secret keys, configurations, or logs are never transmitted outside your computer.
+      </p>
+    </div>
+
+    <!-- Letter Frequency Analysis Section -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Understanding Letter Frequency Analysis
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Unlike modern symmetric and asymmetric algorithms (like AES or RSA), classical substitution ciphers do not hide the statistical properties of the language. In English, certain letters (like 'E', 'T', 'A', and 'O') appear much more frequently than others (like 'Q', 'X', and 'Z').
+      </p>
+      <p class="leading-relaxed mb-4">
+        When using a monoalphabetic substitution cipher like Caesar or Atbash, this frequency distribution is simply shifted or mirrored. By checking the <strong class="text-zinc-200">Frequency Analysis</strong> tab, you can visually inspect how:
+      </p>
+      <ul class="list-disc pl-5 flex flex-col gap-2 mb-4 text-zinc-450">
+        <li>A Caesar cipher shifts the entire frequency graph horizontally. The relative heights of the peaks and valleys remain identical, enabling instant decryption.</li>
+        <li>An Atbash cipher mirrors the distribution graph from left to right.</li>
+        <li>A polyalphabetic Vigenère cipher flattens the frequency distribution. Because a single letter in the ciphertext represents multiple different plaintext letters, the peaks diffuse, illustrating why polyalphabetic encryption resisted cryptanalysis for centuries.</li>
+      </ul>
+    </div>
+
+    <!-- Brute Force Decryption Section -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Automated Caesar Cipher Cracking (Brute Force)
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Since a Caesar cipher only has 25 possible shifts, decrypting a message without knowing the key is trivial. The <strong class="text-zinc-200">Caesar Brute Force</strong> tab simulates all 25 shift variants simultaneously.
+      </p>
+      <p class="leading-relaxed">
+        For each shift, the engine calculates a "likeness score" based on the chi-squared distribution of letters compared to typical English language texts, boosted by matches against common English dictionary words. The result is sorted dynamically so that the most readable, coherent English text is instantly loaded at the top. Simply click the row to apply the shift and load it into the main converter.
+      </p>
+    </div>
+  </div>
+</ToolPageLayout>

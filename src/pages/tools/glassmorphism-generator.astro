@@ -1,0 +1,124 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { GlassmorphismGenerator } from '../../components/GlassmorphismGenerator';
+
+const faqs = [
+  {
+    question: "What is CSS Glassmorphism?",
+    answer: "Glassmorphism is a popular user interface design trend that mimics the appearance of frosted glass. It is characterized by a translucent background (using alpha transparency), backdrop blurring, thin borders that simulate light reflections, and drop shadows to establish visual depth."
+  },
+  {
+    question: "How do I create a glassmorphism card in CSS?",
+    answer: "You can create a frosted glass card by combining a semi-transparent background color (e.g., <code>background: rgba(255, 255, 255, 0.1);</code>), a background blur filter (e.g., <code>backdrop-filter: blur(12px);</code>), a subtle borders color (e.g., <code>border: 1px solid rgba(255, 255, 255, 0.2);</code>), and a soft box shadow (e.g., <code>box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);</code>)."
+  },
+  {
+    question: "What is CSS backdrop-filter: blur()?",
+    answer: "The CSS <code>backdrop-filter</code> property applies graphical changes (like blur, saturation, or contrast) to the elements located <em>behind</em> the styled element. Unlike the standard <code>filter: blur()</code> property, which blurs the entire element along with its text and children, <code>backdrop-filter</code> blurs only the background visible through the element, keeping content crisp."
+  },
+  {
+    question: "Why is CSS backdrop-filter not working in Safari?",
+    answer: "Safari requires the vendor-prefixed version: <code>-webkit-backdrop-filter: blur(...);</code>. You must declare both properties in your CSS rules. Additionally, ensure that your element's background color is semi-transparent; if it is fully opaque, you will not see the blur effect."
+  },
+  {
+    question: "How do I apply backdrop blur in Tailwind CSS?",
+    answer: "In Tailwind CSS, use the <code>backdrop-blur</code> utility classes such as <code>backdrop-blur-sm</code>, <code>backdrop-blur-md</code>, or <code>backdrop-blur-lg</code>. For arbitrary custom blur values, you can use the bracket syntax: <code>backdrop-blur-[12px]</code>."
+  },
+  {
+    question: "Does backdrop-filter affect web page performance?",
+    answer: "Yes, dynamically blurring pixels on the fly is a GPU-intensive operation, particularly during scroll animations or viewport scaling. To optimize performance, avoid using too many large backdrop filters on a single page, and trigger hardware acceleration using <code>will-change: backdrop-filter;</code> or <code>transform: translateZ(0);</code>."
+  },
+  {
+    question: "How do I add border gradients to glassmorphism?",
+    answer: "To add a gradient border to a glassmorphism card, use the <code>border-image</code> property with a gradient generator, or layer an absolute positioned pseudo-element (like <code>::before</code>) with a gradient background behind your content, matching the card border-radius."
+  },
+  {
+    question: "Is CSS Glassmorphism supported on mobile browsers?",
+    answer: "Yes, modern iOS Safari, Google Chrome, and Android mobile browsers have solid support for <code>backdrop-filter</code>. However, older devices or low-spec Android systems may toggle off filters for battery efficiency or render them with latency during page scrolls."
+  },
+  {
+    question: "What is the difference between filter: blur() and backdrop-filter: blur()?",
+    answer: "<code>filter: blur()</code> blurs the element itself and all of its content (text, images, and child DOM nodes). <code>backdrop-filter: blur()</code> blurs the layers underneath the element, preserving the sharp legibility of the element's text and child elements."
+  },
+  {
+    question: "How do I ensure WCAG accessibility compliance with glassmorphism?",
+    answer: "Glassmorphism layouts can easily cause contrast issues if the text color clashes with background shapes showing through the blur. To ensure accessibility, use a higher tint opacity (e.g. <code>background: rgba(0, 0, 0, 0.45);</code> in dark mode), check color contrast ratios (aiming for WCAG AA minimum 4.5:1), and consider providing solid background fallbacks for high contrast user preferences."
+  },
+  {
+    question: "How do I fallback gracefully if a browser does not support backdrop-filter?",
+    answer: "You can write fallback rules using CSS feature queries: <code>@supports not (backdrop-filter: blur(1px)) { ... }</code>. Inside this query, set a higher background opacity or a solid color so the content remains readable in legacy browsers."
+  }
+];
+---
+
+<ToolPageLayout
+  title="CSS Glassmorphism Generator: Interactive Backdrop-Filter Builder"
+  description="Design premium, frosted glass CSS effects visually. Customize blur, background color, opacities, border reflections, and soft drop shadows with live mockup widgets and copy standard CSS or Tailwind classes."
+  keywords="css glassmorphism generator, glassmorphism generator, backdrop-filter blur, css backdrop-filter, tailwind glassmorphism, css glass effect, UI design tools"
+  toolTitle="CSS Glassmorphism Generator"
+  toolDescription="Create stunning, high-fidelity frosted glass effects for modern user interfaces. Fine-tune backdrop blur, surface color, opacities, borders, and ambient drop shadows. Test presets, preview on dynamic mockup widgets (credit cards, music players), and copy clean CSS or Tailwind CSS utility strings."
+  faqs={faqs}
+>
+  <GlassmorphismGenerator client:load />
+
+  <!-- Rich On-Page SEO Landing Page Content -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Designing with CSS Glassmorphism
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Glassmorphism represents one of the most prominent aesthetic developments in modern user interface design, popularized by macOS Big Sur and Microsoft Fluent design languages. Rather than using flat opaque panels, glassmorphism uses translucency and backdrop blurring to place elements in a three-dimensional visual stack. This retains connection to background context while focusing user attention on overlay dialogs, cards, or notifications.
+      </p>
+      <p class="leading-relaxed">
+        Designing glassmorphism that feels professional—rather than messy—requires careful calibration. If the backdrop blur is too low, background graphics will interfere with text legibility. If the border opacity is too high, the card feels flat and loses its glass-like fragility. Our generator simplifies this calculation, allowing you to instantly tweak values and test them against animated layouts or your own uploaded images.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Crucial CSS Properties Explained
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Constructing the glass effect relies on three pillars of CSS:
+      </p>
+      <ul class="list-disc pl-5 space-y-2 mb-4">
+        <li><strong class="text-zinc-200">rgba() Translucency:</strong> A standard HEX background color is completely opaque. To let background details show through, we define backgrounds using RGBA or HSLA with an alpha transparency value (typically between <code>0.05</code> and <code>0.25</code>).</li>
+        <li><strong class="text-zinc-200">backdrop-filter:</strong> The engine of glassmorphism. By setting <code>backdrop-filter: blur(16px);</code>, the browser applies a real-time gaussian blur to pixels directly beneath the card boundaries, creating a frosted ice glass look.</li>
+        <li><strong class="text-zinc-200">Translucent Borders:</strong> To separate the glass card from similar colors behind it, a thin 1px border styled with a low alpha white opacity (e.g. <code>rgba(255, 255, 255, 0.2)</code>) mimics the edge reflection of natural glass.</li>
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Integrating Glassmorphism with Tailwind CSS v4
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Tailwind CSS handles standard backdrop filters via the <code>backdrop-blur-[size]</code> utility. When you need arbitrary, fine-tuned controls to match custom brand specs, Tailwind's arbitrary bracket syntax is the best choice.
+      </p>
+      <p class="leading-relaxed">
+        The output compiled by this tool converts color selections, blur levels, and borders into clean utility classes. For example, a frosted preset will output: <code>bg-[rgba(255,255,255,0.1)] backdrop-blur-xl border border-[rgba(255,255,255,0.2)] rounded-2xl shadow-lg</code>. You can copy and drop this directly into your React, Vue, Svelte, or Astro templates.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Accessibility and Contrast Guidelines (WCAG)
+      </h2>
+      <p class="leading-relaxed mb-4">
+        While glassmorphism is visually appealing, it presents a significant accessibility challenge. If a white text overlay sits on top of a light glass card, and that card passes over a light white image area during scrolls, the text contrast ratio will drop below the WCAG recommended 4.5:1 limit.
+      </p>
+      <p class="leading-relaxed">
+        To address this:
+      </p>
+      <ul class="list-disc pl-5 space-y-2">
+        <li>Increase the opacity of the glass tint on pages that feature highly vibrant, busy, or unpredictable background patterns.</li>
+        <li>Use dark-tinted glass (e.g. black with 0.45 opacity) for dark modes with white text, or light-tinted glass for dark text layouts.</li>
+        <li>Always supply standard fallback styles (e.g., solid gray backgrounds) using feature query overrides to keep the website functional for visually impaired users.</li>
+      </ul>
+    </div>
+  </div>
+</ToolPageLayout>

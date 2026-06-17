@@ -1,6 +1,6 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
-import { ListUtilities } from '../../components/ListUtilities';
+import { ListUtilities as ListUtilitiesComponent } from '../../components/ListUtilities';
 
 const faqs = [
   {
@@ -58,7 +58,7 @@ const faqs = [
   toolDescription="Format, sort, deduplicate, filter, and clean text lists in real-time. Features a visual sandbox editor with drag-and-drop reordering, inline editing, a duplicate frequency analyzer, and custom split/join parameters. Processed 100% locally."
   faqs={faqs}
 >
-  <ListUtilities client:load />
+  <ListUtilitiesComponent client:load />
 
   <!-- Explanatory content slots for layout standard conformity -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">

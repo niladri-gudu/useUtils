@@ -1,0 +1,160 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { DateCalculator } from '../../components/DateCalculator';
+
+const faqs = [
+  {
+    question: "How do I calculate the exact number of days between two dates?",
+    answer: "You can calculate the exact days between two dates by entering Date A (Start) and Date B (End) into our Date Difference calculator. The engine computes the absolute millisecond delta and converts it to total days. You can choose whether to exclude weekends or make the calculation inclusive of the final day."
+  },
+  {
+    question: "What are business days and how are they counted?",
+    answer: "Business days (or working days) are standard days of the week dedicated to business operations, typically Monday through Friday. Our calculator counts business days by iterating through the calendar span between your start and end dates and skipping Saturdays and Sundays. This is useful for project managers tracking milestones and calculating business lead times."
+  },
+  {
+    question: "How do I add or subtract days, weeks, months, or years from a date?",
+    answer: "Under the <strong>Date Adjuster</strong> tab, specify your base start date, enter the numerical adjustment value, and select the target unit (Days, Weeks, Months, Years, Hours, or Minutes). Choose the operator (Add or Subtract) and the calculator will output the exact target date, including weekday names and ISO 8601 formatting."
+  },
+  {
+    question: "How do I calculate total hours and minutes for my timesheet?",
+    answer: "Select the <strong>Timesheet Accumulator</strong> tab. You can add multiple shifts either by entering clock time ranges (e.g., <code>09:00</code> to <code>17:00</code>) or typing raw durations (e.g., <code>3.5h</code> or <code>1h 15m</code>). The accumulator automatically sums these times, displays the total duration in a clean <code>Xh Ym</code> format, and computes total earnings based on your hourly rate."
+  },
+  {
+    question: "Does the date calculator account for leap years?",
+    answer: "Yes, 100%. The date calculator runs on the JavaScript native <code>Date</code> engine which automatically handles leap years (adding February 29th for years divisible by 4, except for century years not divisible by 400). Adding 1 year or 365 days across a leap boundary will yield accurate calendar dates."
+  },
+  {
+    question: "What does it mean to make date calculations inclusive?",
+    answer: "Standard date subtraction calculates the elapsed time between two points, meaning the end date itself is not fully counted. Enabling the <strong>Include final day in count</strong> option appends 1 full day to the output, which is standard practice in contract negotiations or holiday calculations where both the start and end days are counted as full working days."
+  },
+  {
+    question: "Do timezones affect date difference calculations?",
+    answer: "Our Date Calculator executes computations using the local browser timezone. This ensures that date changes align with your physical location. For timezone-independent storage, the tool provides the corresponding Coordinated Universal Time (UTC) and ISO 8601 string outputs."
+  },
+  {
+    question: "What is the difference between calendar days and working days?",
+    answer: "Calendar days represent every consecutive day on the calendar, including weekends and public holidays. Working days or business days represent weekdays only (Monday through Friday), excluding Saturdays and Sundays. Our tool provides a toggle to display both values side-by-side."
+  },
+  {
+    question: "Is my timesheet or financial billing data secure and private?",
+    answer: "Yes, absolutely. Like all tools on useUtils, the Date & Time Duration Calculator runs entirely on the client side in your web browser. No dates, notes, hourly rates, or timesheets are ever sent to a server. You can use this tool fully offline with zero privacy risks."
+  },
+  {
+    question: "How can I add up raw durations with decimals (e.g., 2.5 hours)?",
+    answer: "In the Timesheet Accumulator, select 'Raw Hours' and enter decimal strings like <code>2.5h</code> or <code>2.5 hours</code>. The parser translates <code>2.5h</code> into 2 hours and 30 minutes, adding it accurately to your overall timesheet total."
+  },
+  {
+    question: "How does the tool handle overnight timesheet shifts?",
+    answer: "The time range parser handles overnight clock boundaries automatically. If the end time is chronologically earlier than the start time (for example, a night shift from <code>22:00</code> to <code>06:00</code>), the engine assumes the shift spans across midnight and correctly adds 8 hours of duration to your timesheet."
+  }
+];
+---
+
+<ToolPageLayout
+  title="Date Calculator: Date Difference, Business Days & Timesheet Accumulator"
+  description="Calculate days between dates, business/working days, and add or subtract time offsets. Features an interactive timesheet duration accumulator and billing calculator locally in your browser."
+  keywords="date calculator, date difference calculator, days between dates, business days calculator, working days calculator, add days to date, date subtract, timesheet calculator, hours accumulator, timesheet builder, epoch date math"
+  toolTitle="Date & Time Duration Calculator"
+  toolDescription="Find the exact calendar difference between two dates, add or subtract time offsets, and calculate cumulative timesheet shifts with local project billing estimation. Processed 100% locally."
+  faqs={faqs}
+>
+  <DateCalculator client:load />
+
+  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    
+    {/* Section 1: Intro */}
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the Date & Time Duration Calculator
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our Date & Time Duration Calculator provides a robust developer workspace to track milestones, adjust schedule offsets, and audit client timesheets. In the left panel, toggle between the three workspaces: <strong class="text-zinc-200">Date Difference</strong>, <strong class="text-zinc-200">Date Adjuster</strong>, and the <strong class="text-zinc-200">Timesheet Accumulator</strong>.
+      </p>
+      <p class="leading-relaxed">
+        The tool instantly updates parsed outputs in the right pane as you edit. You can copy individual date blocks, download the timesheet summaries, or press <kbd class="font-mono bg-zinc-900 border border-zinc-800 px-1 py-0.5 rounded text-[10px] text-zinc-500">⌘ C</kbd> on your keyboard to instantly capture a text summary of your active calculations.
+      </p>
+    </div>
+
+    {/* Section 2: Date Math Reference Table */}
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Overview of Calendar & Workday Math
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Calculating timelines for software projects, financial contracts, or payroll cycles involves different day count standards:
+      </p>
+      
+      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
+              <th class="p-3">Calculation Type</th>
+              <th class="p-3">Methodology</th>
+              <th class="p-3">Inclusions</th>
+              <th class="p-3">Common Application</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
+            <tr>
+              <td class="p-3 text-zinc-200 font-semibold">Calendar Days Difference</td>
+              <td class="p-3">Subtracts start timestamp from end timestamp</td>
+              <td class="p-3 text-zinc-350">Every consecutive day (Mon-Sun)</td>
+              <td class="p-3 text-zinc-350">Subscription periods, interest calculations, hosting terms</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200 font-semibold">Business Days Count</td>
+              <td class="p-3">Iterates days, skipping Saturday & Sunday</td>
+              <td class="p-3 text-accent-emerald font-semibold">Weekdays only (Mon-Fri)</td>
+              <td class="p-3 text-zinc-350">Project deadlines, shipping delivery times, SLA windows</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200 font-semibold">Inclusive Date Span</td>
+              <td class="p-3">Adds 1 day to the final difference result</td>
+              <td class="p-3 text-zinc-350">Both Start and End days counted</td>
+              <td class="p-3 text-zinc-350">Employment contracts, rental agreements, event durations</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200 font-semibold">Shift Accumulation</td>
+              <td class="p-3">Sums time ranges or raw hours into total hours</td>
+              <td class="p-3 text-zinc-350">Supports overnight midnight boundaries</td>
+              <td class="p-3 text-zinc-350">Freelance billing, contractor payroll, software sprint logs</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {/* Section 3: Time Formats */}
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Supported Duration Input Formats
+      </h2>
+      <p class="leading-relaxed mb-4">
+        The Timesheet Accumulator parses a wide range of common developer time formats:
+      </p>
+      <ul class="list-disc list-inside space-y-2 pl-2 text-zinc-400">
+        <li><strong class="text-zinc-200">Colon Formats</strong>: <code>1:30</code> represents 1 hour and 30 minutes.</li>
+        <li><strong class="text-zinc-200">Hours Only</strong>: <code>3.5h</code>, <code>3.5 hours</code>, or <code>3.5 hr</code> represents 3 hours and 30 minutes.</li>
+        <li><strong class="text-zinc-200">Minutes Only</strong>: <code>45m</code>, <code>45 min</code>, or <code>45 minutes</code> represents 45 minutes.</li>
+        <li><strong class="text-zinc-200">Mixed Segments</strong>: <code>2h 15m</code>, <code>1 hour 45 mins</code>, or <code>8h30m</code> are parsed accurately into combined minutes.</li>
+        <li><strong class="text-zinc-200">Raw Integers</strong>: Entering a single number like <code>90</code> defaults to 90 minutes.</li>
+      </ul>
+    </div>
+
+    {/* Section 4: Privacy-First client processing */}
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Zero Server Transmission Security Model
+      </h2>
+      <p class="leading-relaxed">
+        Many online timesheet trackers or date calculators capture calendar inputs, holiday selections, and hourly pricing parameters to log on remote databases, presenting security risks for private freelancers or corporate development. useUtils guarantees complete sandbox privacy. All date delta math, weekend filtering, shift parsers, and financial estimates compile locally within your browser thread using native JavaScript. No credentials, dates, or calculations are ever uploaded, keeping your data entirely secure.
+      </p>
+    </div>
+
+  </div>
+</ToolPageLayout>

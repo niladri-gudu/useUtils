@@ -1,6 +1,6 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
-import { JsonSchemaValidator } from '../../components/JsonSchemaValidator';
+import { JsonSchemaValidator as JsonSchemaValidatorComponent } from '../../components/JsonSchemaValidator';
 
 const faqs = [
   {
@@ -54,7 +54,7 @@ const faqs = [
   toolDescription="Validate JSON payloads against schema specifications or generate draft schemas from sample datasets instantly. Features real-time error pointing, format detection, interactive collapsible trees, and 100% browser-based processing."
   faqs={faqs}
 >
-  <JsonSchemaValidator client:load />
+  <JsonSchemaValidatorComponent client:load />
 
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
     <!-- Intro -->

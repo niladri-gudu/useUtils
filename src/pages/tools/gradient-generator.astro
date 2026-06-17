@@ -1,6 +1,6 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
-import { GradientGenerator } from '../../components/GradientGenerator';
+import { GradientGenerator as GradientGeneratorComponent } from '../../components/GradientGenerator';
 
 const faqs = [
   {
@@ -58,7 +58,7 @@ const faqs = [
   toolDescription="Design multi-stop linear, radial, or conic gradients. Extract dominant color scales from photos, test text gradient clipping, select premium presets, and export production-ready styles instantly."
   faqs={faqs}
 >
-  <GradientGenerator client:load />
+  <GradientGeneratorComponent client:load />
 
   <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">

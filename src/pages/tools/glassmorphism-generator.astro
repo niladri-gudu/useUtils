@@ -1,6 +1,6 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
-import { GlassmorphismGenerator } from '../../components/GlassmorphismGenerator';
+import { GlassmorphismGenerator as GlassmorphismGeneratorComponent } from '../../components/GlassmorphismGenerator';
 
 const faqs = [
   {
@@ -58,7 +58,7 @@ const faqs = [
   toolDescription="Create stunning, high-fidelity frosted glass effects for modern user interfaces. Fine-tune backdrop blur, surface color, opacities, borders, and ambient drop shadows. Test presets, preview on dynamic mockup widgets (credit cards, music players), and copy clean CSS or Tailwind CSS utility strings."
   faqs={faqs}
 >
-  <GlassmorphismGenerator client:load />
+  <GlassmorphismGeneratorComponent client:load />
 
   <!-- Rich On-Page SEO Landing Page Content -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">

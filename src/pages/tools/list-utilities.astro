@@ -1,0 +1,175 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { ListUtilities } from '../../components/ListUtilities';
+
+const faqs = [
+  {
+    question: "How do I remove duplicate lines from a text list online?",
+    answer: "You can remove duplicate lines instantly by pasting your text into our list utilities tool and enabling the <strong>Deduplicate</strong> mode. It filters out matching rows locally in your browser. You can configure it to keep the first occurrence, the last occurrence, or delete all duplicates entirely."
+  },
+  {
+    question: "How do I sort a list alphabetically or by length?",
+    answer: "Pasting your list into the tool allows you to select the <strong>Sort</strong> tab. Choose <em>Alphabetical (A-Z/Z-A)</em>, <em>Length-based</em> (to sort from shortest to longest string), <em>Natural</em> (correctly ordering numbers like 2 before 10), or <em>Reverse</em>. You can also toggle case sensitivity."
+  },
+  {
+    question: "Can I add prefix, suffix, or line numbers to each list item in bulk?",
+    answer: "Yes. In the <strong>Add Prefix/Suffix</strong> tab, you can define text to prepend or append to every item. You can also toggle line numbering with several format variations (e.g. <code>1. </code>, <code>01. </code>, <code>[1] </code>, or <code>Line 1: </code>) and set a custom start index."
+  },
+  {
+    question: "How do I filter list items containing specific words or matching regular expressions?",
+    answer: "Select the <strong>Filter</strong> tab. You can remove empty lines, keep or remove items containing a specific substring, or keep/remove items that match a <strong>Regular Expression (Regex)</strong> (such as <code>^\\d+$</code> to keep only numeric items). You can also filter items by their character length."
+  },
+  {
+    question: "How do I split a comma-separated list into individual lines, or join lines with commas?",
+    answer: "Under the <strong>Split & Join</strong> configuration, you can choose how your input is parsed. You can split by commas, tabs, spaces, or custom characters/regexes. For output, you can join the processed list with commas, pipes, spaces, or export it as a formatted <strong>JSON string array</strong>."
+  },
+  {
+    question: "How do I change the casing of a list in bulk?",
+    answer: "In the <strong>Clean & Case</strong> tab, select a target format from the <em>Case Converter</em> dropdown. This supports all programming casings (like <code>camelCase</code>, <code>snake_case</code>, <code>kebab-case</code>, and <code>CONSTANT_CASE</code>) and normal text layouts (like <code>UPPERCASE</code>, <code>lowercase</code>, and <code>Title Case</code>)."
+  },
+  {
+    question: "What is the difference between Alphabetical and Natural sorting?",
+    answer: "Standard alphabetical sorting compares strings character by character based on Unicode values, which places '10' before '2' (since '1' comes before '2'). <strong>Natural sorting</strong> detects multi-digit numbers within the text and sorts them numerically, placing '2' before '10' as humans expect."
+  },
+  {
+    question: "What is the Visual List Sandbox and how does it work?",
+    answer: "The <strong>Visual List Sandbox</strong> is an interactive board that displays your list items as draggable cards. It allows you to drag-and-drop to reorder rows, double-click any card to edit its text in real-time, delete cards individually, or uncheck them to temporarily disable them from the final output without deleting them."
+  },
+  {
+    question: "How do I detect and analyze duplicate values in a list?",
+    answer: "Switch the right-side preview tab to <strong>Dups Table</strong>. The tool will scan your list and show a frequency analysis table detailing exactly which rows are repeated and how many times they appear. It also features a quick 'Resolve' button to keep only one instance."
+  },
+  {
+    question: "Is my text data safe and secure when using this tool?",
+    answer: "Yes, 100%. Like all tools on useUtils, the List Utilities and Text Cleaner runs entirely on the client side in your web browser. No data, files, keys, or logs are ever uploaded, transmitted, or stored on a server. Your data remains completely private."
+  },
+  {
+    question: "Does this list utility support large lists?",
+    answer: "Yes. Since the engine is built on optimized native JavaScript string and array APIs, it can easily process lists of thousands of lines (such as IP logs, CSV fields, or email addresses) in real-time directly inside your browser."
+  }
+];
+---
+
+<ToolPageLayout
+  title="List Utilities & Text Cleaner: Online Sorting, Deduplication, and Formatting"
+  description="Sort lists alphabetically or by length, remove duplicate lines, filter items with regex, add prefixes, suffixes or line numbers, and clean whitespace in real-time. Features an interactive visual sandbox editor."
+  keywords="list utilities, list alphabetizer, remove duplicate lines, add prefix suffix, regex list filter, online text cleaner, line sorter, list builder, bulk case converter, json array generator"
+  toolTitle="List Utilities & Text Cleaner"
+  toolDescription="Format, sort, deduplicate, filter, and clean text lists in real-time. Features a visual sandbox editor with drag-and-drop reordering, inline editing, a duplicate frequency analyzer, and custom split/join parameters. Processed 100% locally."
+  faqs={faqs}
+>
+  <ListUtilities client:load />
+
+  <!-- Explanatory content slots for layout standard conformity -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Use the List Utilities & Text Cleaner
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Our list utilities workspace provides a comprehensive suite of tools to manipulate text arrays, logs, and database variables. Simply paste your raw text into the <strong class="text-zinc-200">raw list ingestion</strong> panel, select your desired operations in the configuration tabs, and see the transformed results in the <strong class="text-zinc-200">output preview</strong> instantly.
+      </p>
+      <p class="leading-relaxed">
+        You can also toggle the <strong class="text-zinc-200">Visual Sandbox</strong> to reorder elements using native drag-and-drop, double-click items to edit their text inline, or view duplicate frequencies in the <strong class="text-zinc-200">Duplicates Table</strong>. All configurations are applied sequentially in real-time.
+      </p>
+    </div>
+
+    <!-- Section: List Operations Comparison Table -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Overview of List Transformations
+      </h2>
+      <p class="leading-relaxed mb-4">
+        This tool supports several operations to standardize and sanitize raw strings for databases, configurations, or code codebases. Here is how different operations modify your lists:
+      </p>
+      
+      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
+              <th class="p-3">Operation</th>
+              <th class="p-3">Input Example</th>
+              <th class="p-3">Configuration Options</th>
+              <th class="p-3">Output Result</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
+            <tr>
+              <td class="p-3 text-zinc-200 font-semibold">Deduplication</td>
+              <td class="p-3">apple<br/>orange<br/>apple</td>
+              <td class="p-3">Keep First / Keep Last / Remove All</td>
+              <td class="p-3 text-accent-emerald">apple<br/>orange</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200 font-semibold">Natural Sort</td>
+              <td class="p-3">item_10<br/>item_2</td>
+              <td class="p-3">Numeric-aware comparison (A-Z/Z-A)</td>
+              <td class="p-3 text-accent-emerald">item_2<br/>item_10</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200 font-semibold">Length Sort</td>
+              <td class="p-3">banana<br/>pear<br/>kiwi</td>
+              <td class="p-3">Ascending / Descending length</td>
+              <td class="p-3 text-accent-emerald">pear<br/>kiwi<br/>banana</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200 font-semibold">Line Numbering</td>
+              <td class="p-3">debug<br/>error</td>
+              <td class="p-3">Formats: 1., 01., [1], Line 1:</td>
+              <td class="p-3 text-accent-emerald">01. debug<br/>02. error</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200 font-semibold">Regex Filtering</td>
+              <td class="p-3">api/v1/users<br/>web/home<br/>api/v1/auth</td>
+              <td class="p-3">Keep matching: <code>^api/</code></td>
+              <td class="p-3 text-accent-emerald">api/v1/users<br/>api/v1/auth</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-200 font-semibold">Case Conversion</td>
+              <td class="p-3">USER_ID<br/>auth_token</td>
+              <td class="p-3">camelCase, snake_case, Title Case, etc.</td>
+              <td class="p-3 text-accent-emerald">userId<br/>authToken</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section: Developer Use Cases -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Common Developer Workflows & Use Cases
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Sanitizing Server Logs & IPs</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Paste large server logs or IP addresses, filter out empty rows, sort them naturally, and remove duplicates. Switch to the Duplicates Table to identify high-traffic endpoints or warning repeat triggers.
+          </p>
+        </div>
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">SQL & JSON Schema Ingestion</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Convert arrays of SQL database columns into camelCase or snake_case, add custom prefixes or suffixes, and join them with commas to build quick insert statements or TypeScript interface payloads in seconds.
+          </p>
+        </div>
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Visualizing & Ordering Sitemap URLs</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Ingest routes or sitemaps, remove trailing/leading spaces, sort them alphabetically, or toggle the Visual Sandbox to drag-and-drop your hierarchy into the desired order before exporting.
+          </p>
+        </div>
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">HTML Tag & Markdown Stripping</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Clean up copy, comments, or crawled text by removing HTML markup and markdown indicators in bulk. Trim extra indentation or white spaces to extract only raw, clean string tokens.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ToolPageLayout>

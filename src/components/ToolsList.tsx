@@ -71,7 +71,7 @@ const ALL_TOOLS: Tool[] = [
   { id: 'count-occurrences', name: 'Count Occurrences', description: 'Count item occurrences', category: 'text', icon: '🔢' },
   { id: 'alphabetize-list', name: 'Alphabetize List', description: 'Alphabetize lists', category: 'text', icon: '🔤' },
   { id: 'shuffle-list', name: 'Shuffle List', description: 'Randomize list order', category: 'text', icon: '🔀' },
-  { id: 'list-utilities', name: 'List Utilities', description: 'Various list operations', category: 'text', icon: '📋' },
+  { id: 'list-utilities', name: 'List Utilities & Text Cleaner', description: 'Format, sort, deduplicate, filter, and clean text lists in real-time. Features a visual sandbox editor with drag-and-drop reordering, inline editing, and a duplicate frequency analyzer.', category: 'text', isPopular: true, isActive: true, href: '/tools/list-utilities', icon: '📋' },
 
   // Cryptography & Encoding
   { id: 'base64-encoder', name: 'Base64 Encoder', description: 'Encode plain text or binary files into Base64 format locally. Supports Data URIs, CSS background-image rules, and HTML tags.', category: 'encoding', isPopular: true, isActive: true, href: '/tools/base64-encoder', icon: '🔐' },

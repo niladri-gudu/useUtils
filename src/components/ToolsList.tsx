@@ -60,7 +60,7 @@ const ALL_TOOLS: Tool[] = [
   { id: 'remove-special-characters', name: 'Remove Special Characters', description: 'Remove special characters', category: 'text', icon: '🧹' },
   { id: 'extract-emails', name: 'Extract Emails', description: 'Extract emails from text', category: 'text', icon: '📧' },
   { id: 'extract-urls', name: 'Extract URLs', description: 'Extract URLs from text', category: 'text', icon: '🔗' },
-  { id: 'character-counter', name: 'Character Counter', description: 'Count characters with details', category: 'text', icon: '📊' },
+  { id: 'text-inspector', name: 'Text Inspector & Unicode Explorer', description: 'Analyze text character-by-character, inspect Unicode code points, detect zero-width spaces or control codes, calculate UTF-8/16 byte sizes, and convert normalization forms NFC/NFD locally.', category: 'text', isPopular: true, isActive: true, href: '/tools/text-inspector', icon: '🔍' },
   { id: 'variable-case-converter', name: 'Variable Case Converter', description: 'Convert variable naming cases', category: 'text', icon: '📝' },
   { id: 'regex-tester', name: 'Regex Tester', description: 'Test regular expressions in real-time with live match highlighting, detailed capture groups breakdown, flag configuration, replacement testing, and common regex presets.', category: 'text', isPopular: true, isActive: true, href: '/tools/regex-tester', icon: '🔍' },
   { id: 'regex-cheatsheet', name: 'Regex Cheatsheet', description: 'Regular expressions reference', category: 'text', icon: '📖' },

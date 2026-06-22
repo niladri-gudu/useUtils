@@ -1,0 +1,173 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { TextInspector } from '../../components/TextInspector';
+
+const faqs = [
+  {
+    question: "What is a Unicode character inspector and how does it work?",
+    answer: "A <b>Unicode character inspector</b> is a developer utility that analyzes text at the byte and code point level rather than just displaying it as rendered text. It iterates through the string character-by-character, identifying each character's decimal code, hexadecimal Unicode code point (e.g., U+0041 for 'A'), UTF-8/UTF-16 byte streams, binary bits, and standard Unicode Block names (e.g., Basic Latin, Emoticons). This helps isolate hidden bugs, surrogate pairs, and combined characters."
+  },
+  {
+    question: "What are zero-width spaces (ZWSP) and why do they cause coding errors?",
+    answer: "A <b>Zero-Width Space (ZWSP, code point U+200B)</b> is an invisible character used in typography to indicate a potential word break. When pasted accidentally into source code, configurations, or databases (often copied from Slack, PDFs, or formatted blogs), it remains completely invisible to the eye but is read as a character by parsers. This leads to confusing syntax errors like 'Invalid character', JSON parsing crashes, or failed database query searches where strings look visually identical but are different."
+  },
+  {
+    question: "How can I detect and remove invisible characters in my text?",
+    answer: "Our Text Inspector automatically scans your input string for zero-width characters, null bytes, and directional format indicators. Under the <b>Warnings</b> tab, you will see a list of every invisible character detected, along with its character position and description. You can remove them instantly by selecting the 'Remove Zero-Width & Hidden' checkbox under the Sanitize drawer and clicking <b>Execute Cleaning Operations</b>, or clicking <b>Strip All</b> in the warnings panel."
+  },
+  {
+    question: "What is Unicode normalization (NFC, NFD, NFKC, NFKD)?",
+    answer: "Unicode allows some characters to be represented in multiple ways. For example, the accented letter <i>é</i> can be represented as a single character (<b>NFC</b>: Canonical Composition, U+00E9) or as two characters: a standard letter <i>e</i> followed by a combining acute accent marker (<b>NFD</b>: Canonical Decomposition, U+0065 + U+0301). <b>NFKC</b> and <b>NFKD</b> are compatibility equivalents that normalize formatting distinctions like superscripts or ligatures. Normalizing ensures text matches consistently during comparisons."
+  },
+  {
+    question: "Why do two strings look identical but fail string comparison in JavaScript?",
+    answer: "If two strings look identical but return <code>false</code> on comparison (e.g., <code>str1 === str2</code>), it is usually due to one of two reasons: either one string contains a hidden zero-width character (like a zero-width space or byte order mark), or they use different Unicode representation forms (NFC vs. NFD composition). You can paste both strings into the inspector, check their code point counts, or normalize them to NFC to resolve the mismatch."
+  },
+  {
+    question: "How does this tool calculate the byte size of my text?",
+    answer: "Byte size depends on character encoding. Our tool calculates both <b>UTF-8</b> and <b>UTF-16</b> byte sizes. UTF-8 is a variable-width encoding: ASCII characters take 1 byte, accented characters take 2 bytes, symbols/oriental ideographs take 3 bytes, and emojis/surrogate pairs take 4 bytes. UTF-16 represents most characters as 2 bytes (16 bits), with supplementary plane characters (like emojis) taking 4 bytes. You can view the raw hex dump of the UTF-8 bytes in the <b>UTF-8 Hex</b> tab."
+  },
+  {
+    question: "What are control characters and how are they identified?",
+    answer: "Control characters (C0 and C1 control codes, ranging from code point U+0000 to U+001F, and U+007F to U+009F) are non-printable characters used by hardware or system protocols to guide screen formatting or command flow. Examples include tab (<code>\\t</code>), newline (<code>\\n</code>), carriage return (<code>\\r</code>), backspace, and the null terminator (<code>\\0</code>). The Text Inspector flags these as 'Control Codes' and displays their system abbreviations (like NUL or HT) in the grid."
+  },
+  {
+    question: "What is a surrogate pair and how does JavaScript count them?",
+    answer: "JavaScript strings are historically encoded in UTF-16. Characters in the Unicode Basic Multilingual Plane (code points <= U+FFFF) are represented by one 16-bit code unit. However, characters in supplementary planes (code points > U+FFFF, like 😄 or 𠜎) require two 16-bit code units, known as a <b>surrogate pair</b>. JavaScript's standard <code>string.length</code> counts the code units (returning 2 for emojis), whereas counting via code point iterators (e.g. <code>[...string].length</code>) returns the correct character count of 1."
+  },
+  {
+    question: "Is my sensitive data or API keys sent to any server when using this tool?",
+    answer: "No. In accordance with our offline-first security directive, all processing, Unicode decomposition, character inspections, and regex sanitizations occur <b>100% locally in your web browser</b>. No data is transmitted to external servers or remote API endpoints. This guarantees complete confidentiality, making it safe to inspect sensitive tokens, SQL snippets, keys, and system database logs."
+  },
+  {
+    question: "How do zero-width joiners (ZWJ) combine emojis?",
+    answer: "A <b>Zero-Width Joiner (ZWJ, U+200D)</b> is an invisible character used to join multiple emojis into a single compound emoji. For example, the family emoji '👨‍👩‍👧‍👦' is actually a sequence of four separate emojis (Man, Woman, Girl, Boy) glued together by three invisible ZWJ characters. The Text Inspector's grid will break down compound emojis into their constituent glyphs and ZWJ connectors, showing you exactly how they are structured."
+  },
+  {
+    question: "How can I convert tabs to spaces or collapse excess spaces?",
+    answer: "You can convert tab characters to spaces by checking the 'Tabs to Spaces' option in the cleaning panel and selecting your preferred indentation size (2, 4, or 8 spaces). Additionally, check 'Flatten Spaces & Trim' to collapse multiple consecutive spaces into a single space and remove leading/trailing line whitespace, then click <b>Execute Cleaning Operations</b>."
+  }
+];
+---
+
+<ToolPageLayout
+  title="Text Inspector & Unicode Explorer: Zero-Width Space Detector & Byte Analyzer"
+  description="Inspect text at the byte and code point level. Detect zero-width spaces, hidden control codes, and surrogate pairs. Convert Unicode normalization forms (NFC/NFD) and view raw UTF-8 hex dumps locally."
+  keywords="unicode inspector, character explorer, zero-width space detector, hidden character finder, utf8 byte viewer, hex dump online, unicode normalization NFC NFD, surrogate pairs javascript, text encoder bytes, inspect string online, string debugger"
+  toolTitle="Text Inspector & Unicode Explorer"
+  toolDescription="Inspect and debug character strings in real-time. Identify invisible zero-width characters, trace surrogate pairs (emojis), analyze UTF-8/16 byte structures, explore unicode blocks, and normalize text compositions locally."
+  faqs={faqs}
+>
+  <TextInspector client:load />
+
+  <!-- Rich SEO Article Content Slot -->
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Why Unicode Inspections Are Critical for Modern Development
+      </h2>
+      <p class="leading-relaxed mb-4">
+        As applications become increasingly globalized, developers deal with multilingual text inputs, complex emojis, and copy-pasted characters from diverse sources. Standard text editors display text as rendered output, masking the underlying byte structure. This can introduce critical errors: databases might fail to index strings, compilers might crash over invisible zero-width spaces, or authentication tokens might mismatch due to different normalization compositions.
+      </p>
+      <p class="leading-relaxed">
+        Our <strong class="text-zinc-200">Text Inspector & Unicode Explorer</strong> gives developers a microscopic look at strings. Paste any payload, logs, or keys to dissect characters, locate problematic codes, analyze UTF-8 bytes, and normalize text formats—all processed entirely inside the browser to maintain absolute security.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Unicode Normalization Form Comparison (NFC vs NFD)
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Linguistic symbols can often be represented by different code point structures. Below is a structural comparison showing how composite and decomposed characters are registered by Unicode standards:
+      </p>
+      
+      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-4">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-[#2c2c2e] bg-zinc-950 font-mono text-zinc-350">
+              <th class="p-3">Character</th>
+              <th class="p-3">NFC (Composition)</th>
+              <th class="p-3">NFD (Decomposition)</th>
+              <th class="p-3">Length (NFC vs NFD)</th>
+              <th class="p-3">Linguistic Explanation</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#2c2c2e]/60 text-zinc-400 font-mono">
+            <tr>
+              <td class="p-3 text-zinc-100 font-bold">é</td>
+              <td class="p-3 text-[#34d399]">U+00E9</td>
+              <td class="p-3">U+0065 + U+0301</td>
+              <td class="p-3">1 vs 2 code points</td>
+              <td class="p-3 text-zinc-350">NFC uses a precomposed accented letter; NFD decomposes it into standard 'e' and a combining mark.</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-100 font-bold">ü</td>
+              <td class="p-3 text-[#34d399]">U+00FC</td>
+              <td class="p-3">U+0075 + U+0308</td>
+              <td class="p-3">1 vs 2 code points</td>
+              <td class="p-3 text-zinc-350">NFC represents 'u' with umlaut as one character; NFD splits it into 'u' + combining diaeresis.</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-100 font-bold">ñ</td>
+              <td class="p-3 text-[#34d399]">U+00F1</td>
+              <td class="p-3">U+006E + U+0303</td>
+              <td class="p-3">1 vs 2 code points</td>
+              <td class="p-3 text-zinc-350">NFC combines 'n' + tilde; NFD separates them. Common cause of filesystem mismatch bugs.</td>
+            </tr>
+            <tr>
+              <td class="p-3 text-zinc-100 font-bold">Ω</td>
+              <td class="p-3 text-[#34d399]">U+03A9</td>
+              <td class="p-3">U+03A9</td>
+              <td class="p-3">1 vs 1 code point</td>
+              <td class="p-3 text-zinc-350">Greek Omega. NFKC/NFKD converts ohms symbol (U+2126) to standard Greek Omega (U+03A9) for search normalization.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Core Components of the Unicode Explorer Panel
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Interactive Character Flow Matrix</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            A modular map representing each character. Colored badges call out standard text, emojis, whitespace, and hidden anomalies, offering deep inspection details on click.
+          </p>
+        </div>
+
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Zero-Width & Hidden Scanner Warnings</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            A dedicated system health check that isolates zero-width spaces, word joiners, and system control codes, explaining their impact and providing one-click strip capabilities.
+          </p>
+        </div>
+
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">UTF-8 Hex Core Dump Viewer</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            An interactive hex dump displaying offset columns, hex bytes, and printable ASCII representation of UTF-8 text, simulating standard UNIX console outputs.
+          </p>
+        </div>
+
+        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
+          <strong class="text-zinc-200 block mb-1">Unicode Normalization Composition</strong>
+          <p class="text-xs leading-relaxed text-zinc-400">
+            Convert strings between NFC, NFD, NFKC, and NFKD representations in one click. Flat space spacing, convert tabs, and strip problematic control signals instantly.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</ToolPageLayout>

@@ -277,9 +277,15 @@ const JsonNodeViewer: React.FC<JsonNodeViewerProps> = ({
 // ============================================================================
 // Main YAML ⇄ JSON Converter Component
 // ============================================================================
-export const YamlJsonConverter: React.FC = () => {
+interface YamlJsonConverterProps {
+  defaultMode?: 'yamlToJson' | 'jsonToYaml';
+}
+
+export const YamlJsonConverter: React.FC<YamlJsonConverterProps> = ({
+  defaultMode = 'yamlToJson'
+}) => {
   const [input, setInput] = useState<string>('');
-  const [mode, setMode] = useState<'yamlToJson' | 'jsonToYaml'>('yamlToJson');
+  const [mode, setMode] = useState<'yamlToJson' | 'jsonToYaml'>(defaultMode);
   const [indent, setIndent] = useState<'2' | '4'>('2');
   const [sortKeys, setSortKeys] = useState<boolean>(false);
   const [resolveAnchors, setResolveAnchors] = useState<boolean>(true);
@@ -302,8 +308,12 @@ export const YamlJsonConverter: React.FC = () => {
     const storedInput = localStorage.getItem('useutils_yaml_raw_input');
     const storedMode = localStorage.getItem('useutils_yaml_converter_mode') as 'yamlToJson' | 'jsonToYaml';
     if (storedInput) setInput(storedInput);
-    if (storedMode) setMode(storedMode);
-  }, []);
+    if (storedMode) {
+      setMode(storedMode);
+    } else {
+      setMode(defaultMode);
+    }
+  }, [defaultMode]);
 
   const handleInputChange = (val: string) => {
     setInput(val);

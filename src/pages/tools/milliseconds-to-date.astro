@@ -1,0 +1,204 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { UnixTimestampConverter } from '../../components/UnixTimestampConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "How do I convert milliseconds to a date?",
+    answer: "Enter your 13-digit millisecond timestamp into our converter, select the millisecond (ms) resolution option, and the engine will instantly output the formatted calendar date in local time, UTC, and standard ISO formats."
+  },
+  {
+    question: "Why does JavaScript use milliseconds instead of seconds for timestamps?",
+    answer: "JavaScript was designed to support high-precision timer scripts and animation offsets. Millisecond resolution allows browser engines to measure frame durations and execution times with sub-second accuracy."
+  },
+  {
+    question: "What is the difference between a 10-digit and a 13-digit timestamp?",
+    answer: "A 10-digit timestamp represents Unix time in seconds. A 13-digit timestamp represents Unix time in milliseconds (1 second = 1,000 milliseconds)."
+  },
+  {
+    question: "How do I convert milliseconds to a date in JavaScript?",
+    answer: "Pass the 13-digit integer directly to the Date constructor: <code>const date = new Date(1718365200000); console.log(date.toUTCString());</code>."
+  },
+  {
+    question: "How do I convert milliseconds to a date in Python?",
+    answer: "In Python, divide the milliseconds by 1000 to convert to seconds, then use the datetime library: <code>from datetime import datetime; dt = datetime.fromtimestamp(ms_val / 1000.0); print(dt)</code>."
+  },
+  {
+    question: "Are millisecond timestamps timezone-independent?",
+    answer: "Yes. Millisecond timestamps count elapsed milliseconds since the Unix Epoch (January 1, 1970 00:00:00 UTC) in UTC. Timezone offsets are only applied on final date output."
+  },
+  {
+    question: "Is my millisecond timestamp processed securely?",
+    answer: "Yes, 100%. All parses and offset adjustments run locally on your device in JavaScript, keeping your logs private."
+  },
+  {
+    question: "How do I convert millisecond timestamps in Java?",
+    answer: "In Java, use the Instant API: <code>java.time.Instant.ofEpochMilli(timestampMs)</code>."
+  },
+  {
+    question: "What is the Year 2038 bug, and does it affect milliseconds?",
+    answer: "The Year 2038 bug affects 32-bit signed integers tracking seconds. Because milliseconds are much larger, Java, JavaScript, and modern databases use 64-bit float/integer formats (which support dates up to 292 million years in the future)."
+  },
+  {
+    question: "How do I convert millisecond timestamps to date in SQL?",
+    answer: "In PostgreSQL, use <code>to_timestamp(millisecond_column / 1000.0)</code>. In MySQL, divide by 1000 and use <code>FROM_UNIXTIME</code>."
+  },
+  {
+    question: "What is a 16-digit timestamp?",
+    answer: "A 16-digit timestamp represents time in microseconds, commonly used in database transaction logs (like PostgreSQL or Go's time package)."
+  },
+  {
+    question: "What is a 19-digit timestamp?",
+    answer: "A 19-digit timestamp represents time in nanoseconds, which is the default high-precision scale in Go, Rust, and C++ metrics libraries."
+  },
+  {
+    question: "Does this millisecond converter adjust for leap seconds?",
+    answer: "No, standard Unix epoch structures ignore leap seconds, assuming exactly 86,400,000 milliseconds in a day."
+  },
+  {
+    question: "Can I run this millisecond converter offline?",
+    answer: "Yes. Once the page is loaded, all scripts execute locally in your browser sandbox."
+  },
+  {
+    question: "What is the ISO 8601 representation?",
+    answer: "ISO 8601 formats datetime strings as <code>YYYY-MM-DDTHH:mm:ss.sssZ</code>."
+  },
+  {
+    question: "What is GPS epoch time?",
+    answer: "GPS time counts seconds since January 6, 1980, without accounting for leap seconds, making it drift from UTC."
+  },
+  {
+    question: "Is this converter completely free?",
+    answer: "Yes, useUtils provides all developer tools free without ad banners or account logins."
+  },
+  {
+    question: "How do I convert milliseconds to date in PHP?",
+    answer: "In PHP, divide by 1000 and parse using <code>date('Y-m-d H:i:s', $ms / 1000)</code>."
+  },
+  {
+    question: "Why does my date parse into 1970 when converting milliseconds?",
+    answer: "If you pass a 10-digit seconds timestamp into a milliseconds-based constructor, the engine interprets the value as fewer milliseconds, resetting the date close to the 1970 epoch."
+  },
+  {
+    question: "How do I format milliseconds to RFC 3339 in Go?",
+    answer: "In Go, convert the milliseconds: <code>time.UnixMilli(ms).Format(time.RFC3339)</code>."
+  },
+  {
+    question: "What is the Julian Date?",
+    answer: "A Julian Date counts days continuously since January 1, 4713 BC."
+  }
+];
+
+const headers = ["Unit Scale", "Digits Count", "Example Value", "Common Ecosystems"];
+const rows = [
+  {
+    label: "Milliseconds (ms)",
+    values: ["13 digits", "<code>1718365200000</code>", "JavaScript, Java, MongoDB, Node.js"]
+  },
+  {
+    label: "Microseconds (us)",
+    values: ["16 digits", "<code>1718365200000000</code>", "PostgreSQL, Python datetimes"]
+  },
+  {
+    label: "Nanoseconds (ns)",
+    values: ["19 digits", "<code>1718365200000000000</code>", "Go, Rust, high-throughput systems"]
+  }
+];
+
+const practices = [
+  {
+    title: "Always Store Milliseconds as 64-bit Integers",
+    description: "Store millisecond timestamps in database columns defined as BIGINT to prevent overflow issues."
+  },
+  {
+    title: "Document Timestamp Resolutions",
+    description: "Always name variables or database columns clearly (e.g. <code>created_at_ms</code>) to indicate resolution to other developers."
+  }
+];
+
+const mistakes = [
+  {
+    title: "Passing milliseconds directly to seconds-based functions",
+    description: "Passing 13 digits to functions expecting seconds (like Python's <code>datetime.fromtimestamp()</code>) will cause out-of-range overflow errors.",
+    fix: "Divide the millisecond value by 1000.0 before parsing."
+  }
+];
+
+const languages = [
+  {
+    lang: "JavaScript",
+    code: `
+const msTimestamp = 1718365200000;
+const date = new Date(msTimestamp);
+
+console.log("UTC Date:", date.toUTCString());
+console.log("Local Date:", date.toString());
+    `
+  },
+  {
+    lang: "Python",
+    code: `
+from datetime import datetime
+
+ms_timestamp = 1718365200000
+date_obj = datetime.fromtimestamp(ms_timestamp / 1000.0)
+
+print("Date:", date_obj.isoformat())
+    `
+  }
+];
+
+const references = [
+  { title: "MDN Web Docs on JavaScript Date", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" }
+];
+---
+
+<ToolPageLayout
+  title="Milliseconds to Date Converter: Parse 13-digit Epoch - useUtils"
+  description="Convert 13-digit millisecond epoch timestamps into standard calendar dates and UTC formats instantly. Free offline-ready parsing tool."
+  keywords="milliseconds to date, convert milliseconds to date, 13 digit epoch converter, javascript timestamp decoder, millisecond date parser"
+  toolTitle="Milliseconds to Date Converter"
+  toolDescription="Parse 13-digit millisecond timestamps into local and UTC dates instantly. Runs 100% locally in your browser sandbox."
+  faqs={faqs}
+>
+  <UnixTimestampConverter client:load defaultActiveTab="single" defaultInputUnit="ms" defaultIsTicking={false} />
+
+  <div slot="seo-content" class="flex flex-col gap-12 mt-10 max-w-4xl mx-auto w-full">
+    <PrivacyBadge />
+
+    <ComparisonTable 
+      headers={headers} 
+      rows={rows} 
+      title="High-Resolution Epoch Scales" 
+      description="Compare representation lengths across high-resolution epoch resolutions:"
+    />
+
+    <BestPractices 
+      practices={practices} 
+      title="Millisecond Conversion Best Practices" 
+    />
+
+    <CommonMistakes 
+      mistakes={mistakes} 
+      title="Common Millisecond Pitfalls" 
+    />
+
+    <LanguageSupport 
+      languages={languages} 
+      title="Programmatic Millisecond Conversions" 
+    />
+
+    <OfficialReferences 
+      references={references} 
+    />
+
+    <RelatedTools />
+  </div>
+</ToolPageLayout>

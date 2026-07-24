@@ -1,0 +1,190 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { TimeZoneConverter } from '../../components/TimeZoneConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "What is a log timezone converter?",
+    answer: "A log timezone converter is a specialized debugging utility that parses server log files, extracts standard date-time patterns, and converts them into a target timezone in-place."
+  },
+  {
+    question: "How do I relocate log timestamps?",
+    answer: "Paste your raw logs into the text input, select the target timezone (e.g. your local browser timezone or UTC), and click 'Convert Logs'. The tool outputs the updated log stream with highlighted matches."
+  },
+  {
+    question: "Is my log data sent to a backend server?",
+    answer: "No, 100% of the conversion runs locally inside your browser thread. The tool is fully private and works completely offline."
+  },
+  {
+    question: "What log date formats are recognized?",
+    answer: "The regex engine recognizes ISO 8601 strings, UTC/GMT dates, Apache/Nginx formats, and common terminal logging structures."
+  },
+  {
+    question: "How does this tool help during system diagnostics?",
+    answer: "When servers are deployed in UTC and database errors are reported in local time, this tool lets you align log timestamps to local clocks to match user transaction reports."
+  },
+  {
+    question: "Can I run this converter offline?",
+    answer: "Yes. All scripts run in your local browser sandbox, requiring no internet connectivity once the page is loaded."
+  },
+  {
+    question: "Why do servers record logs in UTC?",
+    answer: "Standardizing server logs in UTC prevents chronological alignment errors when merging logs from multiple distributed cloud zones."
+  },
+  {
+    question: "How are timezone offsets calculated?",
+    answer: "Offsets are calculated dynamically using the browser's native Date APIs combined with the IANA database timezone rules."
+  },
+  {
+    question: "What is Daylight Saving Time (DST) drift?",
+    answer: "DST shifts offsets twice a year. The converter queries the exact date of each log entry to apply the correct DST offset rules."
+  },
+  {
+    question: "Why should I avoid manual offset subtraction?",
+    answer: "Manual subtraction (like doing minus 5 hours) fails to account for regional daylight saving schedules."
+  },
+  {
+    question: "What is an IANA timezone identifier?",
+    answer: "IANA timezone identifiers follow the <code>Area/Location</code> format (e.g., <code>Europe/Paris</code>) to represent regions."
+  },
+  {
+    question: "How is a log timestamp converter written in Python?",
+    answer: "In Python, use regex to parse log dates and the <code>datetime</code> module to astimezone-adjust them."
+  },
+  {
+    question: "How is a log timestamp converter written in Go?",
+    answer: "In Go, parse timestamps using time layouts (like <code>time.RFC3339</code>) and convert them using <code>In(location)</code>."
+  },
+  {
+    question: "Is there a size limit to the logs I can paste?",
+    answer: "The tool is optimized to process up to 50KB of log files locally to maintain high rendering speeds."
+  },
+  {
+    question: "What is the difference between UTC and GMT?",
+    answer: "UTC is a scientific atomic time standard. GMT is a solar timezone. Practically, they share the same time values."
+  },
+  {
+    question: "Can I copy the converted log output?",
+    answer: "Yes, click the 'Copy Converted Logs' button to copy the entire updated text block to your clipboard."
+  },
+  {
+    question: "Is this tool completely free?",
+    answer: "Yes, useUtils provides all developer tools free with no signup requirements."
+  },
+  {
+    question: "What is NTP clock synchronization?",
+    answer: "NTP synchronizes computer system clocks over packet networks to prevent log drift."
+  },
+  {
+    question: "What is ISO 8601?",
+    answer: "ISO 8601 is the international standard for representing date and time values."
+  },
+  {
+    question: "What are fractional timezones?",
+    answer: "Some timezones have offsets that are not whole hours, such as India (UTC+5:30) or Nepal (UTC+5:45)."
+  },
+  {
+    question: "Can I save my target timezone settings?",
+    answer: "Yes. Click 'Share Configuration' to copy a URL query string that pre-loads your target timezone on mount."
+  }
+];
+
+const headers = ["Standard Format", "Pattern Regex", "Best Target Application"];
+const rows = [
+  {
+    label: "ISO 8601",
+    values: ["<code>\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}</code>", "Standard API logging, cloud container traces"]
+  },
+  {
+    label: "Nginx / Apache",
+    values: ["<code>\\d{2}/[A-Za-z]{3}/\\d{4}:\\d{2}:\\d{2}:\\d{2}</code>", "Web server access logs, load balancer dumps"]
+  }
+];
+
+const practices = [
+  {
+    title: "Convert Server Logs Locally",
+    description: "Perform log conversions in client-side sandboxes rather than uploading server error logs containing production data to public portals."
+  },
+  {
+    title: "Verify Log Year Bounds",
+    description: "Ensure the log scanner reads full year digits to prevent date parsing issues in year-end rollouts."
+  }
+];
+
+const mistakes = [
+  {
+    title: "Uploading raw logs to server-based converters",
+    description: "Uploading logs containing customer emails or transaction hashes to online portals exposes private data.",
+    fix: "Use local browser-based sandboxes for log conversion."
+  }
+];
+
+const languages = [
+  {
+    lang: "JavaScript",
+    code: `
+const logRegex = /\\b(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z)\\b/g;
+const rawLog = "ERROR 2026-06-14T12:00:00Z - Timeout";
+const converted = rawLog.replace(logRegex, (match) => {
+  return new Date(match).toLocaleString('en-US', { timeZone: 'America/New_York' });
+});
+console.log(converted);
+    `
+  }
+];
+
+const references = [
+  { title: "IANA Time Zones", url: "https://www.iana.org/time-zones" }
+];
+---
+
+<ToolPageLayout
+  title="Log Time Zone Converter: Shift Log Timestamps Online"
+  description="Convert date timestamps in server log files to a target timezone locally. Client-side parser with batch replacements and zero server logging."
+  keywords="log timezone converter, shift log timestamp, convert log timezone, server log date parser, relocate log dates"
+  toolTitle="Log Time Zone Relocator"
+  toolDescription="Paste raw terminal prints or server log outputs. The relocator extracts, parses, and converts all dates in-place to your selected target timezone locally."
+  faqs={faqs}
+>
+  <TimeZoneConverter client:load defaultActiveTab="logs" />
+
+  <div slot="seo-content" class="flex flex-col gap-12 mt-10 max-w-4xl mx-auto w-full">
+    <PrivacyBadge />
+
+    <ComparisonTable 
+      headers={headers} 
+      rows={rows} 
+      title="Common Log Formats" 
+      description="Compare formatting representations scanned by the relocator:"
+    />
+
+    <BestPractices 
+      practices={practices} 
+      title="Log Timezone Conversion Best Practices" 
+    />
+
+    <CommonMistakes 
+      mistakes={mistakes} 
+      title="Common Log Relocation Pitfalls" 
+    />
+
+    <LanguageSupport 
+      languages={languages} 
+      title="Programmatic Log Conversion" 
+    />
+
+    <OfficialReferences 
+      references={references} 
+    />
+
+    <RelatedTools />
+  </div>
+</ToolPageLayout>

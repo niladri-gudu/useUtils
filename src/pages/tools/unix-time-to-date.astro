@@ -1,0 +1,200 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { UnixTimestampConverter } from '../../components/UnixTimestampConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "How do I convert a Unix time to a standard date?",
+    answer: "Enter your numeric Unix timestamp in seconds or milliseconds into our converter. The engine will instantly decode the elapsed time since the epoch and display it in UTC, your local timezone, and standard ISO 8601 calendar layouts."
+  },
+  {
+    question: "What is Unix time?",
+    answer: "Unix time is a system for tracking time represented as the total number of seconds that have elapsed since the Unix Epoch (00:00:00 UTC on January 1, 1970). It does not count leap seconds."
+  },
+  {
+    question: "Why does Unix time represent the date in UTC?",
+    answer: "Storing time as UTC (Coordinated Universal Time) provides a universal baseline. It makes storing, indexing, and calculating time deltas across servers globally consistent, without worrying about regional timezone offsets or Daylight Saving Time shifts."
+  },
+  {
+    question: "Is Unix time measured in seconds or milliseconds?",
+    answer: "In standard UNIX/POSIX definitions, Unix time is measured in seconds (a 10-digit integer). However, many modern programming environments (like JavaScript or Java) represent epoch time in milliseconds (a 13-digit integer) for sub-second precision."
+  },
+  {
+    question: "What is the Year 2038 bug?",
+    answer: "The Year 2038 bug (Y2038) is a scheduling overflow issue. Legacy 32-bit signed integer systems store Unix time up to a maximum value of 2,147,483,647 seconds. On January 19, 2038, these clocks will wrap around to negative numbers, resetting dates to December 13, 1901. Upgrading systems to 64-bit integers resolves this constraint."
+  },
+  {
+    question: "How do I convert Unix time to a local date in JavaScript?",
+    answer: "Pass your timestamp (multiplied by 1000 to convert to milliseconds) into the Date constructor: <code>const date = new Date(unixTime * 1000); console.log(date.toString());</code>."
+  },
+  {
+    question: "How do I convert Unix time to a datetime object in Python?",
+    answer: "In Python, use the standard library datetime module: <code>from datetime import datetime; dt = datetime.fromtimestamp(unix_time); print(dt)</code>."
+  },
+  {
+    question: "Does Unix time account for Daylight Saving Time (DST)?",
+    answer: "No, Unix time is offset-free and zone-free, representing elapsed seconds since the epoch in UTC. DST rules are only applied externally when formatting or translating the timestamp into a specific regional timezone."
+  },
+  {
+    question: "Can Unix time be negative?",
+    answer: "Yes. Negative Unix timestamps represent dates prior to the January 1, 1970 epoch. For example, a timestamp of <code>-315360000</code> represents exactly January 1, 1960."
+  },
+  {
+    question: "What is the difference between GMT and UTC?",
+    answer: "GMT (Greenwich Mean Time) is a solar-based timezone. UTC (Coordinated Universal Time) is a high-precision atomic time standard. In software development, GMT and UTC are practically identical and share the same offset values."
+  },
+  {
+    question: "Is my pasted Unix time sent to a server?",
+    answer: "No, all decoding and timezone mapping calculations occur 100% client-side inside your browser sandbox. Your data never leaves your device."
+  },
+  {
+    question: "How do I convert Unix time to a date in SQL?",
+    answer: "In PostgreSQL, use <code>to_timestamp(unix_time)</code>. In MySQL, use the <code>FROM_UNIXTIME(unix_time)</code> function to yield standard datetime records."
+  },
+  {
+    question: "What is a 13-digit Unix timestamp?",
+    answer: "A 13-digit timestamp represents Unix time in milliseconds. If you feed a 13-digit number into a seconds-based parser, it will return a date in the distant future (or fail), so ensure you toggle millisecond mode."
+  },
+  {
+    question: "How do I extract milliseconds from a Unix seconds timestamp?",
+    answer: "Standard Unix seconds do not contain sub-second details. You need to capture system time using millisecond resolution libraries to preserve fractions of a second."
+  },
+  {
+    question: "Does the Unix time format change in leap years?",
+    answer: "No. Unix time simply adds 86,400 seconds for every calendar day. Leap years (which include February 29th) are handled by calendar calculations when converting the timestamp back to human dates."
+  },
+  {
+    question: "Can I run this Unix time to Date tool offline?",
+    answer: "Yes. Once the page is loaded, the conversion script runs in your browser thread, requiring no active internet connection."
+  },
+  {
+    question: "What is the ISO 8601 representation of a date?",
+    answer: "ISO 8601 is an international standard for formatting dates and times (e.g. <code>YYYY-MM-DDTHH:mm:ss.sssZ</code>), which simplifies sorting and parsing across systems."
+  },
+  {
+    question: "What is GPS epoch time?",
+    answer: "GPS time counts seconds since January 6, 1980. Unlike Unix time, GPS time is not adjusted for leap seconds, so it drifts ahead of UTC."
+  },
+  {
+    question: "Why do programmers prefer Unix timestamps over string dates in APIs?",
+    answer: "Integer numbers are faster to parse, use less bandwidth, and are free from timezone translation ambiguities in JSON payloads."
+  },
+  {
+    question: "Is this converter completely free?",
+    answer: "Yes, useUtils provides all developer tools free without ad banners or account logins."
+  },
+  {
+    question: "How do I format Unix time to RFC 3339 in Go?",
+    answer: "In Go, convert the timestamp: <code>time.Unix(sec, 0).Format(time.RFC3339)</code>."
+  }
+];
+
+const headers = ["Unit Resolution", "String Length", "Example Timestamp", "Best Targets"];
+const rows = [
+  {
+    label: "Seconds (s)",
+    values: ["10 digits", "<code>1718365200</code>", "Unix, Bash, Python, PHP, MySQL"]
+  },
+  {
+    label: "Milliseconds (ms)",
+    values: ["13 digits", "<code>1718365200000</code>", "JavaScript, Java, MongoDB"]
+  }
+];
+
+const practices = [
+  {
+    title: "Verify Integer Bit Depth",
+    description: "Ensure databases store epoch columns as BIGINT (64-bit) instead of standard INTEGER (32-bit) to future-proof against Year 2038 bugs."
+  },
+  {
+    title: "Always Standardize in UTC",
+    description: "Store Unix timestamps in UTC. Apply timezone offsets only when presenting dates to final users."
+  }
+];
+
+const mistakes = [
+  {
+    title: "Passing Unix seconds into millisecond constructors",
+    description: "Passing 10 digits to JS <code>new Date()</code> constructor yields a date in 1970 because JS expects milliseconds.",
+    fix: "Multiply the seconds value by 1000 before passing, e.g. <code>new Date(seconds * 1000)</code>."
+  }
+];
+
+const languages = [
+  {
+    lang: "JavaScript",
+    code: `
+const unixSeconds = 1718365200;
+const date = new Date(unixSeconds * 1000);
+
+console.log("UTC Date:", date.toUTCString());
+console.log("Local Date:", date.toString());
+    `
+  },
+  {
+    lang: "Python",
+    code: `
+from datetime import datetime
+
+unix_seconds = 1718365200
+date_obj = datetime.fromtimestamp(unix_seconds)
+
+print("Date:", date_obj.strftime("%Y-%m-%d %H:%M:%S"))
+    `
+  }
+];
+
+const references = [
+  { title: "POSIX.1 Date & Time Specifications", url: "https://pubs.opengroup.org/" }
+];
+---
+
+<ToolPageLayout
+  title="Unix Time to Date Converter: Convert Unix Epoch to Human Dates"
+  description="Convert raw numeric Unix time into readable calendar dates and UTC/local timeframes instantly. Supports seconds and milliseconds decoding."
+  keywords="unix time to date, convert unix time, unix timestamp to date, convert epoch to datetime, unix epoch decoder"
+  toolTitle="Unix Time to Date Converter"
+  toolDescription="Decode numeric Unix timestamps into readable local and UTC dates instantly. Formatted in standard calendar layouts locally."
+  faqs={faqs}
+>
+  <UnixTimestampConverter client:load defaultActiveTab="single" defaultIsTicking={false} />
+
+  <div slot="seo-content" class="flex flex-col gap-12 mt-10 max-w-4xl mx-auto w-full">
+    <PrivacyBadge />
+
+    <ComparisonTable 
+      headers={headers} 
+      rows={rows} 
+      title="Epoch Value Resolutions" 
+      description="Compare representation lengths across epoch scales:"
+    />
+
+    <BestPractices 
+      practices={practices} 
+      title="Unix Time Conversion Best Practices" 
+    />
+
+    <CommonMistakes 
+      mistakes={mistakes} 
+      title="Common Epoch to Date Pitfalls" 
+    />
+
+    <LanguageSupport 
+      languages={languages} 
+      title="Programmatic Unix Time Conversions" 
+    />
+
+    <OfficialReferences 
+      references={references} 
+    />
+
+    <RelatedTools />
+  </div>
+</ToolPageLayout>

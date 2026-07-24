@@ -1,0 +1,216 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { JsonToTsConverter } from '../../components/JsonToTsConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'JSON to TypeScript', href: '/tools/json-to-typescript' },
+  { label: 'JSON to Zod Schema', href: '/tools/json-to-zod', active: true }
+];
+
+const faqs = [
+  {
+    question: "What is Zod and why should I use it?",
+    answer: "Zod is a TypeScript-first schema declaration and validation library. Unlike build-time TypeScript interfaces, Zod performs runtime validation, ensuring that dynamic data (like API responses or user forms) matches your expected types."
+  },
+  {
+    question: "How do I generate a Zod schema from JSON online?",
+    answer: "Paste your valid JSON payload into the input editor. The generation engine parses the keys and types in real-time, outputting clean Zod validator code (e.g. <code>z.object</code>, <code>z.array</code>)."
+  },
+  {
+    question: "Does the generator support TypeScript integration?",
+    answer: "Yes. Once you define a Zod schema, you can infer the matching TypeScript static types automatically using Zod's <code>z.infer&lt;typeof schema&gt;</code> helper."
+  },
+  {
+    question: "Is this JSON to Zod converter private?",
+    answer: "Yes, 100%. Like all tools on useUtils, the entire parsing and schema generation occurs locally inside your web browser. No data is sent to external servers."
+  },
+  {
+    question: "How are nested objects parsed?",
+    answer: "The engine recursively crawls your JSON tree. When it encounters nested objects, it extracts them and generates individual Zod schemas (e.g. <code>z.object</code>) referencing them in the parent schema."
+  },
+  {
+    question: "Can the tool infer date formats?",
+    answer: "Yes. When 'Detect ISO-8601 DateTime strings' is enabled, string timestamps (e.g. <code>2026-06-13T08:11:41.000Z</code>) are typed as <code>z.coerce.date()</code>, converting them to native JS Date objects on parse."
+  },
+  {
+    question: "How are optional properties handled?",
+    answer: "If you enable 'Force all properties to be optional', every key in the schema is appended with <code>.optional()</code>."
+  },
+  {
+    question: "How does the tool handle null values?",
+    answer: "Null properties in JSON map to <code>z.null()</code> (or are appended with <code>.nullable()</code> depending on structure options)."
+  },
+  {
+    question: "Can I download the generated Zod schema?",
+    answer: "Yes. Click the 'Download (.ts)' button above the output editor to save your code locally."
+  },
+  {
+    question: "How do I validate API responses with the schema?",
+    answer: "Import Zod in your project and run: <br/><code>mySchema.parse(apiResponse)</code>. This will throw an error if the payload fails validation."
+  },
+  {
+    question: "What is the difference between parse() and safeParse()?",
+    answer: "<code>parse()</code> throws a ZodError if validation fails. <code>safeParse()</code> returns a status object: <code>{ success: true, data: ... }</code> or <code>{ success: false, error: ... }</code>."
+  },
+  {
+    question: "How are empty arrays handled?",
+    answer: "If an array in the sample JSON is empty, the generator defaults the items validator to <code>z.any()</code> since no data types can be inferred."
+  },
+  {
+    question: "Can I customize the root schema identifier?",
+    answer: "Yes, type your custom identifier in the 'Root Object Name' field; the generator sanitizes it and outputs it as the schema name."
+  },
+  {
+    question: "How are mixed arrays resolved in Zod schemas?",
+    answer: "If an array has mixed elements (e.g. strings and numbers), the converter blends them into a Zod union schema: <code>z.union([z.string(), z.number()])</code>."
+  },
+  {
+    question: "Does the tool support pre-generated export keywords?",
+    answer: "Yes. The generator prepends the <code>export</code> keyword to all generated schemas by default, or you can disable it in the configuration."
+  },
+  {
+    question: "How does the tool handle integers vs floats?",
+    answer: "All numeric values in JSON map to <code>z.number()</code>, as JavaScript treats all numbers as double-precision floats at runtime."
+  },
+  {
+    question: "Can I prettify my source JSON inside this tool?",
+    answer: "Yes, use the 'Prettify' button above the input panel to format and validate your raw JSON payload."
+  },
+  {
+    question: "Why should I use Zod instead of standard TypeScript types?",
+    answer: "TypeScript types only exist during build-time compilation. Once compiled to JS, type checks disappear. Zod ensures type safety at runtime for dynamic database or API data."
+  },
+  {
+    question: "What is coerce validation in Zod?",
+    answer: "Coercion allows Zod to cast values before validating them (e.g., converting a query parameter string <code>\"123\"</code> to a number <code>123</code> using <code>z.coerce.number()</code>)."
+  },
+  {
+    question: "Can I generate a Zod schema from a terminal command?",
+    answer: "Yes, CLI tools like <code>ts-to-zod</code> can process TypeScript declarations and generate corresponding Zod schema files."
+  }
+];
+
+const references = [
+  { title: "Zod Official Documentation & Schema Reference", url: "https://zod.dev/", source: "Zod Dev Portal" },
+  { title: "TypeScript-first Schema Validation with Zod", url: "https://github.com/colinhacks/zod", source: "GitHub Repository" }
+];
+
+const languageCodes = [
+  {
+    lang: "TypeScript (Validation)",
+    code: `import { z } from "zod";
+
+const UserSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  email: z.string().email()
+});
+
+// Infer TypeScript static type
+type User = z.infer<typeof UserSchema>;
+
+const response = { id: 101, name: "Alex", email: "alex@mail.com" };
+
+// Validates and returns typed object
+const user: User = UserSchema.parse(response);
+console.log(user.name); // "Alex"`,
+    note: "z.infer extracts TypeScript types automatically from the schema contract."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Using parse() in REST Endpoint Handlers without Try-Catch",
+    description: "Calling <code>schema.parse()</code> directly on API inputs throws raw ZodErrors, causing unhandled node process crashes.",
+    fix: "Use <code>safeParse()</code> inside your controllers or wrap validation checks in try-catch middleware blocks."
+  },
+  {
+    title: "Treating Build-time Types as Runtime Guards",
+    description: "Relying on TypeScript type assertions (e.g., <code>as User</code>) when fetching dynamic API data can lead to runtime crashes if keys are missing.",
+    fix: "Validate dynamic payloads with Zod schemas to ensure structural integrity."
+  }
+];
+---
+
+<ToolPageLayout
+  title="JSON to Zod Schema Converter: Generate Zod Models"
+  description="Convert JSON payloads into Zod validation schemas in real-time. Supports recursive schema parsing, ISO date coercion, optional keys, and local compilation. 100% private."
+  keywords="json to zod, zod schema from json, zod schema generator, json to zod converter online, compile zod"
+  toolTitle="JSON to Zod Schema Converter"
+  toolDescription="Convert JSON datasets into robust Zod validation schemas. Parse arrays recursively, coerce ISO datetimes, customize export configurations, and compile TypeScript types locally."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <JsonToTsConverter client:load defaultOutputFormat="zod" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Runtime Type Safety with Zod Validation
+      </h2>
+      <p class="leading-relaxed mb-4">
+        TypeScript provides excellent compile-time safety, but it cannot guard against unexpected data shapes at runtime (like corrupted API payloads or unvalidated forms). If an API response lacks key properties, your application can crash.
+      </p>
+      <p class="leading-relaxed">
+        Our **JSON to Zod Schema Converter** automates the creation of runtime validation schemas. The engine parses sample JSON responses, infers types, handles optional/nullable attributes, generates Zod validator schemas, and enables static type inference.
+      </p>
+    </div>
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="TS Interfaces vs Zod Schemas"
+      headers={["Capability", "TypeScript Interfaces", "Zod Validation Schema"]}
+      rows={[
+        { label: "Execution Layer", values: ["Build-time compilation only (erased in output JS)", "Runtime validation execution"] },
+        { label: "Data Coercion", values: ["No support (requires manual parsing code)", "Supports automatic casting (e.g., date strings to Date)"] },
+        { label: "Custom Error Messaging", values: ["No support", "Highly customizable field errors"] },
+        { label: "Input Sanitization", values: ["No support", "Strips out unrecognized properties automatically"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Zod Schema Generation"
+      description="Compare JSON inputs with the compiled Zod output:"
+      examples={[
+        { label: "User Record Ingestion", input: '{\n  "id": 42,\n  "verified": true\n}', output: "export const RootObjectSchema = z.object({\n  id: z.number(),\n  verified: z.boolean()\n});", badge: "Zod Schema" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Validating Dynamic Payloads"
+      description="Run schema validation on dynamic payloads inside your TypeScript applications:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Runtime Validation Pitfalls"
+      description="Avoid these validation errors to maintain application reliability:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Zod Schema Design Best Practices"
+      practices={[
+        { title: "Leverage Type Inference", description: "Use z.infer to avoid duplicating static type definitions for your validated interfaces." },
+        { title: "Adopt safeParse", description: "Prefer safeParse in API handlers to return client-friendly error structures instead of crashing requests." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

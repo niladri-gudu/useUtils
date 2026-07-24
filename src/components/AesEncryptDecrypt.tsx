@@ -54,9 +54,15 @@ const copyToClipboard = (text: string): boolean => {
 
 const FILE_SIZE_LIMIT = 5 * 1024 * 1024; // 5 MB
 
-export const AesEncryptDecrypt: React.FC = () => {
+interface AesEncryptDecryptProps {
+  defaultActiveTab?: 'encrypt' | 'decrypt';
+}
+
+export const AesEncryptDecrypt: React.FC<AesEncryptDecryptProps> = ({
+  defaultActiveTab = 'encrypt'
+}) => {
   // Tabs and general state
-  const [activeTab, setActiveTab] = useState<'encrypt' | 'decrypt'>('encrypt');
+  const [activeTab, setActiveTab] = useState<'encrypt' | 'decrypt'>(defaultActiveTab);
   const [inputType, setInputType] = useState<'text' | 'file'>('text');
   
   // Inputs

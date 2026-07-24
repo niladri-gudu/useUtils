@@ -1,0 +1,221 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { TailwindPicker } from '../../components/TailwindPicker';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "What is a Tailwind Color Picker?",
+    answer: "A Tailwind Color Picker is a visual design tool that maps hex or rgb colors to their nearest Tailwind CSS palette equivalents, showing the corresponding utility class."
+  },
+  {
+    question: "How do I find the closest Tailwind color match?",
+    answer: "Enter your color value in the reverse matcher input, and the tool will calculate the Euclidean distance in RGB color space to return the closest Tailwind shade."
+  },
+  {
+    question: "How do I adjust shade opacity in Tailwind?",
+    answer: "You can apply transparency modifiers to color classes (e.g. `bg-emerald-500/50` for 50% opacity in Tailwind v3/v4)."
+  },
+  {
+    question: "What color families are included in the Tailwind palette?",
+    answer: "The default Tailwind color palette includes families like slate, gray, zinc, neutral, stone, red, orange, amber, yellow, lime, green, emerald, teal, cyan, sky, blue, indigo, violet, purple, fuchsia, pink, and rose."
+  },
+  {
+    question: "Does Tailwind CSS support dark mode colors?",
+    answer: "Yes. Apply the `dark:` prefix to your color class names: `bg-white dark:bg-zinc-950`."
+  },
+  {
+    question: "Are custom colors supported in Tailwind v4?",
+    answer: "Yes, Tailwind v4 fully supports arbitrary color variables and theme properties."
+  },
+  {
+    question: "How do I define custom colors in my Tailwind configuration?",
+    answer: "Extend colors in your configuration: `theme: { extend: { colors: { 'brand-green': '#34d399' } } }`."
+  },
+  {
+    question: "What is the Euclidean color distance formula?",
+    answer: "The color difference distance is calculated as: `sqrt((R1-R2)^2 + (G1-G2)^2 + (B1-B2)^2)`. A lower distance value indicates a closer visual match."
+  },
+  {
+    question: "Does this color picker run locally?",
+    answer: "Yes. All color matching calculations run client-side in your web browser, ensuring complete privacy."
+  },
+  {
+    question: "How do I copy values in the color picker?",
+    answer: "Click the copy buttons next to the color names, or use keyboard shortcuts like `C` for class name, `X` for HEX code, and `R` for RGBA values."
+  },
+  {
+    question: "What are the keyboard shortcuts for navigation?",
+    answer: "Use arrow keys (or H, J, K, L) to navigate color families and shade scales, and press `/` to focus the search input."
+  },
+  {
+    question: "Does the color picker support WCAG contrast checks?",
+    answer: "Yes, it calculates contrast ratios against white and black backgrounds in real-time, displaying accessibility ratings (Pass/Fail) for AA and AAA compliance."
+  },
+  {
+    question: "How does screen resolution affect color display?",
+    answer: "Physical display profiles (like OLED vs IPS screens) vary, which can cause colors to appear slightly different on mobile vs desktop monitor screens."
+  },
+  {
+    question: "What is sRGB color gamut?",
+    answer: "sRGB is the standard color range used on the web. It has a narrower range than newer gamuts like Display P3 or Rec. 2020."
+  },
+  {
+    question: "Can I use arbitrary colors in Tailwind?",
+    answer: "Yes, use square brackets: `bg-[#34d399]` to render custom hex colors without registering them in your config."
+  },
+  {
+    question: "How do I style focus states with Tailwind colors?",
+    answer: "Apply focus prefixes: `focus:ring-2 focus:ring-emerald-500`."
+  },
+  {
+    question: "What are complementary colors?",
+    answer: "Complementary colors sit opposite each other on the color wheel. In HSL space, they are found by shifting the Hue 180°."
+  },
+  {
+    question: "What are analogous colors?",
+    answer: "Analogous colors sit next to each other on the color wheel, typically spaced +/- 30° apart."
+  },
+  {
+    question: "Does this page feature an interactive preview canvas?",
+    answer: "Yes. Click elements in the sandbox panel to paint them with your active color selection."
+  },
+  {
+    question: "Why do colors look different in print?",
+    answer: "Screens emit RGB light, whereas print ink absorbs CMYK light. This difference in color models results in varying color ranges."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "HTML & Tailwind",
+    code: `
+<!-- Colored Accent Badge -->
+<span class="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-mono font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+  Active
+</span>
+    `,
+    note: "Tailwind color class utilities."
+  },
+  {
+    lang: "Tailwind v4 Config",
+    code: `
+@theme {
+  --color-brand-green: #34d399;
+}
+    `,
+    note: "CSS theme variable configuration format."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Wrong Class Prefixes",
+    description: "Using color names directly (e.g. `emerald-500`) without applying a utility prefix (like `bg-`, `text-`, or `border-`), which prevents classes from compiling."
+  },
+  {
+    title: "Missing Opacity Slop Markers",
+    description: "Declaring background transparency (e.g. `bg-emerald-500-50`) using dashes instead of the slash protocol (`bg-emerald-500/50`)."
+  },
+  {
+    title: "Forgetting Contrast Standards",
+    description: "Applying light text on light color shades (like yellow-400 or green-300), which fails accessibility contrast tests."
+  }
+];
+
+const references = [
+  {
+    title: "Tailwind CSS Official Colors Guide",
+    url: "https://tailwindcss.com/docs/customizing-colors"
+  },
+  {
+    title: "WCAG 2.1 Color Standards",
+    url: "https://www.w3.org/TR/WCAG21/#contrast-minimum"
+  }
+];
+---
+
+<ToolPageLayout
+  title="Tailwind Color Picker & Matcher | Real-time Palette Reference"
+  description="Search and explore default Tailwind CSS colors. Match custom HEX, RGB, or HSL color values to their nearest Tailwind equivalents and check WCAG contrast compliance."
+  keywords="tailwind color picker, tailwind color palette, nearest tailwind color match, custom colors tailwind, color palette helper"
+  toolTitle="Tailwind Color Picker"
+  toolDescription="Explore the default Tailwind CSS color palette. Search colors, match custom values to their nearest Tailwind equivalents, and verify contrast ratio."
+  faqs={faqs}
+>
+  <TailwindPicker client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <PrivacyBadge />
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Exploring Tailwind CSS Colors
+      </h2>
+      <p class="leading-relaxed mb-3">
+        Tailwind CSS features a curated color palette divided into numeric shades from 50 to 950.
+      </p>
+      <p class="leading-relaxed">
+        Our Tailwind Color Picker lets you browse the default palette, match custom values to their nearest equivalents, and test accessibility contrast compliance in real-time.
+      </p>
+    </div>
+
+    <ComparisonTable
+      title="Tailwind Utility Color Classes"
+      description="Compare class utility outputs:"
+      headers={["Class Category", "Class Name Example", "Compiled CSS Output", "Visual Application"]}
+      rows={[
+        { label: "Background", values: ["bg-emerald-500", "background-color: rgb(16, 185, 129)", "Card surface or button backgrounds"] },
+        { label: "Text Color", values: ["text-emerald-500", "color: rgb(16, 185, 129)", "Headings, links, and body copy text"] },
+        { label: "Border Color", values: ["border-emerald-500", "border-color: rgb(16, 185, 129)", "Outlines, borders, and input boundaries"] }
+      ]}
+    />
+
+    <ExampleCard
+      title="Popular Tailwind Color Matches"
+      description="Frequently matched palette colors:"
+      examples={[
+        { label: "Emerald 400", input: "#34d399", output: "bg-emerald-400", badge: "Tailwind" },
+        { label: "Blue 500", input: "#3b82f6", output: "bg-blue-500", badge: "Tailwind" },
+        { label: "Red 500", input: "#ef4444", output: "bg-red-500", badge: "Tailwind" }
+      ]}
+    />
+
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Integration Snippets"
+      description="Apply these styles in your markup code:"
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Tailwind Color Pitfalls"
+    />
+
+    <BestPractices
+      title="Tailwind Color Best Practices"
+      practices={[
+        { title: "Define a Theme Property", description: "Save repeating custom colors as theme variables in your config to maintain stylesheet consistency." },
+        { title: "Preserve Contrast Compliance", description: "Ensure background color values have adequate contrast against text overlays." }
+      ]}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+
+    <RelatedTools
+      currentToolUrl="/tools/tailwind-color-picker"
+      category="css"
+    />
+  </div>
+</ToolPageLayout>

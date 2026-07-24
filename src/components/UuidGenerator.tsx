@@ -57,12 +57,20 @@ const ALPHABET_PRESETS = [
   { id: 'binary', name: 'Binary (Bits)', value: '01' }
 ];
 
-export const UuidGenerator: React.FC = () => {
+export interface UuidGeneratorProps {
+  defaultGenType?: 'uuid4' | 'uuid7' | 'nanoid' | 'password' | 'bytes';
+  defaultActiveTab?: 'generate' | 'parse';
+}
+
+export const UuidGenerator: React.FC<UuidGeneratorProps> = ({
+  defaultGenType = 'uuid4',
+  defaultActiveTab = 'generate'
+}) => {
   // Navigation: Generate vs Parse
-  const [activeTab, setActiveTab] = useState<'generate' | 'parse'>('generate');
+  const [activeTab, setActiveTab] = useState<'generate' | 'parse'>(defaultActiveTab);
 
   // Generator Config States
-  const [genType, setGenType] = useState<'uuid4' | 'uuid7' | 'nanoid' | 'password' | 'bytes'>('uuid4');
+  const [genType, setGenType] = useState<'uuid4' | 'uuid7' | 'nanoid' | 'password' | 'bytes'>(defaultGenType);
   const [quantity, setQuantity] = useState<number>(10);
   
   // Delimiter Separator ('newline' | 'comma' | 'semicolon' | 'space' | 'custom')

@@ -52,7 +52,12 @@ const copyToClipboard = (text: string): boolean => {
 // ==========================================
 // Main Color Converter Component
 // ==========================================
-export const ColorConverter: React.FC = () => {
+interface ColorConverterProps {
+  defaultColor?: string;
+  defaultInputMode?: 'hex' | 'rgb' | 'hsl' | 'contrast';
+}
+
+export const ColorConverter: React.FC<ColorConverterProps> = ({ defaultColor, defaultInputMode }) => {
   // Main State
   const [r, setR] = useState<number>(52);
   const [g, setG] = useState<number>(211);
@@ -67,6 +72,42 @@ export const ColorConverter: React.FC = () => {
   const [hexInput, setHexInput] = useState<string>('#34D399');
   const [rgbInput, setRgbInput] = useState<string>('rgb(52, 211, 153)');
   const [hslInput, setHslInput] = useState<string>('hsl(158, 64%, 52%)');
+
+  useEffect(() => {
+    if (defaultColor) {
+      const parsed = parseColorString(defaultColor);
+      if (parsed) {
+        const [newH, newS, newL] = rgbToHsl(parsed.r, parsed.g, parsed.b);
+        setR(parsed.r);
+        setG(parsed.g);
+        setB(parsed.b);
+        setH(newH);
+        setS(newS);
+        setL(newL);
+        setA(parsed.a);
+        
+        const formattedHex = rgbToHex(parsed.r, parsed.g, parsed.b, parsed.a);
+        const formattedRgb = parsed.a < 1 
+          ? `rgba(${parsed.r}, ${parsed.g}, ${parsed.b}, ${parsed.a})` 
+          : `rgb(${parsed.r}, ${parsed.g}, ${parsed.b})`;
+        const formattedHsl = parsed.a < 1 
+          ? `hsla(${newH}, ${newS}%, ${newL}%, ${parsed.a})` 
+          : `hsl(${newH}, ${newS}%, ${newL}%)`;
+
+        setHexInput(formattedHex);
+        setRgbInput(formattedRgb);
+        setHslInput(formattedHsl);
+        
+        if (defaultInputMode === 'hex') {
+          setSmartInput(formattedHex);
+        } else if (defaultInputMode === 'hsl') {
+          setSmartInput(formattedHsl);
+        } else {
+          setSmartInput(formattedRgb);
+        }
+      }
+    }
+  }, [defaultColor, defaultInputMode]);
 
   // Parse Errors
   const [smartError, setSmartError] = useState<boolean>(false);

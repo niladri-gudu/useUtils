@@ -1,15 +1,23 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { BoxShadowGenerator } from '../../components/BoxShadowGenerator';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
 
 const faqs = [
   {
     question: "How do I make a box shadow in CSS?",
-    answer: "You use the <code>box-shadow</code> property in CSS to cast a shadow from an element. The basic syntax is <code>box-shadow: offset-x offset-y blur-radius spread-radius color;</code>. For example: <code>box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);</code>."
+    answer: "You use the `box-shadow` property in CSS to cast a shadow from an element. The basic syntax is `box-shadow: offset-x offset-y blur-radius spread-radius color;`. For example: `box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);`."
   },
   {
     question: "What does the inset keyword do in box-shadow?",
-    answer: "The <code>inset</code> keyword changes the shadow from an outer shadow (which makes the element look elevated) to an inner shadow (which makes the element look sunken or pressed into the background). It is placed at either the beginning or the end of the shadow declaration."
+    answer: "The `inset` keyword changes the shadow from an outer shadow (which makes the element look elevated) to an inner shadow (which makes the element look sunken or pressed into the background). It is placed at either the beginning or the end of the shadow declaration."
   },
   {
     question: "What is the difference between blur radius and spread radius in CSS?",
@@ -17,15 +25,15 @@ const faqs = [
   },
   {
     question: "How do I layer multiple box shadows in CSS?",
-    answer: "You specify multiple box shadows by separating each declaration with a comma. The browser draws them in order from first to last, meaning the first shadow listed is drawn on top of subsequent ones. For example: <code>box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);</code>."
+    answer: "You specify multiple box shadows by separating each declaration with a comma. The browser draws them in order from first to last, meaning the first shadow listed is drawn on top of subsequent ones. For example: `box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);`."
   },
   {
     question: "How do I convert standard CSS box-shadow to Tailwind CSS?",
-    answer: "In Tailwind CSS, you can apply custom shadows using arbitrary value brackets: <code>shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)]</code>. You must replace spaces with underscores (<code>_</code>) inside the square brackets so Tailwind can parse the class correctly."
+    answer: "In Tailwind CSS, you can apply custom shadows using arbitrary value brackets: `shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)]`. You must replace spaces with underscores (`_`) inside the square brackets so Tailwind can parse the class correctly."
   },
   {
     question: "Can I apply a box-shadow to elements with border-radius?",
-    answer: "Yes. The CSS <code>box-shadow</code> property automatically respects the <code>border-radius</code> of the element it is applied to. If the element has <code>border-radius: 12px;</code>, the cast shadow will also feature matching rounded corners."
+    answer: "Yes. The CSS `box-shadow` property automatically respects the `border-radius` of the element it is applied to. If the element has `border-radius: 12px;`, the cast shadow will also feature matching rounded corners."
   },
   {
     question: "Does box-shadow affect the layout of other elements?",
@@ -33,15 +41,104 @@ const faqs = [
   },
   {
     question: "How do I create a drop-shadow on transparent PNG images?",
-    answer: "<code>box-shadow</code> only targets the rectangular bounding box of an element. To cast a shadow that respects the transparency of PNG images or SVG paths, you should use the CSS filter property instead: <code>filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.2));</code>."
+    answer: "`box-shadow` only targets the rectangular bounding box of an element. To cast a shadow that respects the transparency of PNG images or SVG paths, you should use the CSS filter property instead: `filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.2));`."
   },
   {
     question: "How do I make a neon glowing shadow effect?",
-    answer: "To create a neon glow, set the X and Y offsets to <code>0px</code>, use a vibrant color, and specify a large blur radius with a positive spread. Layering multiple shadows (one with small blur and high opacity, one with large blur and lower opacity) makes the glow look much brighter and realistic."
+    answer: "To create a neon glow, set the X and Y offsets to `0px`, use a vibrant color, and specify a large blur radius with a positive spread. Layering multiple shadows (one with small blur and high opacity, one with large blur and lower opacity) makes the glow look much brighter and realistic."
   },
   {
     question: "Why should I use multiple shadow layers instead of one?",
     answer: "Real-world shadows are created by light sources with physical dimensions, causing the shadow to have a soft, feathered falloff. A single CSS shadow looks flat and artificial. By layering 2 or 3 shadows with different offsets, blurs, and opacities, you can construct realistic, high-fidelity ambient shadows."
+  },
+  {
+    question: "Can I animate box-shadow in CSS?",
+    answer: "Yes, you can animate box-shadow using CSS transitions or animations. Modern browsers can smoothly interpolate changes in offset, blur, spread, and color."
+  },
+  {
+    question: "What is the performance impact of box-shadow?",
+    answer: "Heavy box-shadows, especially those with large blur values, can cause performance issues and lag on older devices, as they require significant rendering power during scroll or layout recalculations."
+  },
+  {
+    question: "How do I create a glassmorphism effect using box-shadow?",
+    answer: "Apply a semi-transparent background color (e.g. `rgba(255, 255, 255, 0.1)`), a thin border, backdrop-filter blur, and a subtle soft box-shadow: `box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);`."
+  },
+  {
+    question: "What is the difference between box-shadow and text-shadow?",
+    answer: "`box-shadow` applies to the element's box container, whereas `text-shadow` casts a shadow from the text glyphs inside the element."
+  },
+  {
+    question: "How do I set the shadow color with HSL values?",
+    answer: "Specify HSL or HSLA coordinates as the color parameter: `box-shadow: 0 4px 6px hsla(158, 64%, 52%, 0.15);`."
+  },
+  {
+    question: "How do I offset a shadow to the top instead of bottom?",
+    answer: "Use negative values for the vertical (Y) offset, such as `box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);`."
+  },
+  {
+    question: "Can I use negative spread values?",
+    answer: "Yes. Negative spread values shrink the shadow boundaries smaller than the parent element, which is useful for creating soft shadows underneath cards without leaking from the sides."
+  },
+  {
+    question: "Are CSS shadows supported in print styles?",
+    answer: "Many printers ignore box shadows by default to save ink. You can force them using `@media print { * { -webkit-print-color-adjust: exact; } }`."
+  },
+  {
+    question: "Does this shadow generator run locally?",
+    answer: "Yes, all shadow computations and rendering operations execute purely client-side, ensuring complete privacy."
+  },
+  {
+    question: "How do I copy shadows as Tailwind v4 variables?",
+    answer: "Our tool provides a Tailwind v4 theme export tab for easy configuration."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "CSS",
+    code: `
+/* Soft Layered Shadow */
+.card-shadow {
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.05),
+    0 1px 3px rgba(0, 0, 0, 0.1);
+}
+    `,
+    note: "Modern CSS declarations using standard box-shadow properties."
+  },
+  {
+    lang: "Tailwind CSS",
+    code: `
+<!-- Soft Layered Shadow -->
+<div class="shadow-[0_4px_6px_rgba(0,0,0,0.05),_0_1px_3px_rgba(0,0,0,0.1)] h-32 w-full rounded-xl bg-zinc-800"></div>
+    `,
+    note: "Tailwind arbitrary bracket utility syntax."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Wrong Param Order",
+    description: "Declaring color values first. Although some browsers tolerate it, the standard spec dictates declaring offsets, blur, and spread before the color parameter."
+  },
+  {
+    title: "Leaving Spaces in Arbitrary Values",
+    description: "Using standard spaces inside square brackets (e.g. `shadow-[0 4px 6px rgba(0, 0, 0, 0.1)]`). Use underscores instead of spaces: `shadow-[0_4px_6px_rgba(0,0,0,0.1)]`."
+  },
+  {
+    title: "Over-Saturating Colored Shadows",
+    description: "Using fully opaque color values for shadows, which creates harsh, unrealistic edges."
+  }
+];
+
+const references = [
+  {
+    title: "W3C CSS Backgrounds and Borders Module Level 3",
+    url: "https://www.w3.org/TR/css-backgrounds-3/#box-shadow"
+  },
+  {
+    title: "MDN Web Docs: box-shadow property",
+    url: "https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow"
   }
 ];
 ---
@@ -56,8 +153,9 @@ const faqs = [
 >
   <BoxShadowGenerator client:load />
 
-  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <PrivacyBadge />
+
     <div>
       <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
         <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
@@ -71,34 +169,52 @@ const faqs = [
       </p>
     </div>
     
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Understanding CSS Box-Shadow Parameters
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Each shadow layer consists of several fundamental properties:
-      </p>
-      <ul class="list-disc pl-5 space-y-2 mb-4">
-        <li><strong class="text-zinc-200">X-Offset:</strong> Moves the shadow horizontally. Positive values shift it right, negative values shift it left.</li>
-        <li><strong class="text-zinc-200">Y-Offset:</strong> Moves the shadow vertically. Positive values push it down (indicating a light source from above), negative values push it up.</li>
-        <li><strong class="text-zinc-200">Blur Radius:</strong> Controls the feathering of the shadow. A blur of 0px creates a hard, crisp edge, while higher values create softer, wider gradients.</li>
-        <li><strong class="text-zinc-200">Spread Radius:</strong> Expands or contracts the shadow source shape. Positive values make the shadow larger than the element, whereas negative values shrink it (extremely useful for preventing shadows from leaking out of the sides of cards).</li>
-        <li><strong class="text-zinc-200">Inset vs Outset:</strong> Inset shifts the shadow to the inside of the frame, rendering a sunken or pocket-like depth. Outset casts the shadow outwards, giving the appearance of floating.</li>
-      </ul>
-    </div>
+    <ComparisonTable
+      title="Shadow Offsets and Types"
+      description="Compare styling parameters and offsets:"
+      headers={["Shadow Type", "CSS Declaration Example", "Visual Effect", "Standard UI Role"]}
+      rows={[
+        { label: "Outset Shadow", values: ["box-shadow: 0 4px 6px rgba(0,0,0,0.1)", "Elevated / raised", "App cards and modal overlays"] },
+        { label: "Inset Shadow", values: ["box-shadow: inset 0 2px 4px rgba(0,0,0,0.1)", "Recessed / sunken", "Active buttons and input fields"] }
+      ]}
+    />
 
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Translating Custom CSS Shadows into Tailwind CSS Arbitrary Utilities
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Tailwind CSS handles standard utility-based shadows with classes like <code>shadow-sm</code>, <code>shadow-md</code>, and <code>shadow-lg</code>. However, when designing customized UI elements that require a specific branding feel or layered soft shadows, Tailwind's arbitrary value system is preferred.
-      </p>
-      <p class="leading-relaxed">
-        To translate a multi-layered box shadow into Tailwind, separate the values with a comma inside square brackets, e.g. <code>shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-2px_rgba(0,0,0,0.05)]</code>. Be sure to replace spaces with underscores <code>_</code> so Tailwind's utility class parser compiles it correctly. The output block on the right-hand panel compiles this string automatically, letting you copy and paste the clean class instantly into your project components.
-      </p>
-    </div>
+    <ExampleCard
+      title="Popular CSS Box-Shadow Presets"
+      description="Frequently used design coordinates:"
+      examples={[
+        { label: "Standard Large", input: "box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1)", output: "Copied!", badge: "CSS" },
+        { label: "Emerald Ambient", input: "box-shadow: 0 10px 15px -3px rgba(52, 211, 153, 0.3)", output: "Copied!", badge: "CSS" },
+        { label: "Soft Layered", input: "box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1)", output: "Copied!", badge: "CSS" }
+      ]}
+    />
+
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Box-Shadow Integration"
+      description="Apply these styles in your markup code:"
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Box-Shadow Pitfalls"
+    />
+
+    <BestPractices
+      title="Box-Shadow Styling Best Practices"
+      practices={[
+        { title: "Define a Theme Property", description: "Save repeating custom shadows as theme variables in your config to maintain stylesheet consistency." },
+        { title: "Preserve Contrast Compliance", description: "Ensure background color values have adequate contrast against text overlays." }
+      ]}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+
+    <RelatedTools
+      currentToolUrl="/tools/box-shadow"
+      category="css"
+    />
   </div>
 </ToolPageLayout>

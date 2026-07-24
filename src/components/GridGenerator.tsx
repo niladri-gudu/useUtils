@@ -135,7 +135,11 @@ const PRESETS: Record<string, Preset> = {
   }
 };
 
-export const GridGenerator: React.FC = () => {
+interface GridGeneratorProps {
+  defaultPresetKey?: string;
+}
+
+export const GridGenerator: React.FC<GridGeneratorProps> = ({ defaultPresetKey }) => {
   // Grid Setup States (Initialized to Holy Grail Preset)
   const [columns, setColumns] = useState<number>(3);
   const [rows, setRows] = useState<number>(3);
@@ -301,6 +305,12 @@ export const GridGenerator: React.FC = () => {
     }));
     setItems(loadedItems);
   };
+
+  useEffect(() => {
+    if (defaultPresetKey) {
+      applyPreset(defaultPresetKey);
+    }
+  }, [defaultPresetKey]);
 
   // Keyboard shortcut listener (CMD+C or CTRL+C for current active code block)
   useEffect(() => {

@@ -86,9 +86,15 @@ const formatBigIntInBase = (val: bigint, base: number): string => {
   return result;
 };
 
-export const BinaryConverter: React.FC = () => {
+interface BinaryConverterProps {
+  defaultActiveTab?: 'converter' | 'sandbox' | 'hexdump' | 'basecalc';
+}
+
+export const BinaryConverter: React.FC<BinaryConverterProps> = ({
+  defaultActiveTab = 'converter'
+}) => {
   // Navigation tabs
-  const [activeTab, setActiveTab] = useState<'converter' | 'sandbox' | 'hexdump' | 'basecalc'>('converter');
+  const [activeTab, setActiveTab] = useState<'converter' | 'sandbox' | 'hexdump' | 'basecalc'>(defaultActiveTab);
 
   // Core configurations
   const [delimiter, setDelimiter] = useState<string>(' '); // ' ', ',', ':', 'none', 'array'

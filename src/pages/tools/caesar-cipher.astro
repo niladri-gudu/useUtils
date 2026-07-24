@@ -1,0 +1,229 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { Rot13Encoder } from '../../components/Rot13Encoder';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'ROT13 Encoder', href: '/tools/rot13-encoder' },
+  { label: 'Caesar Cipher', href: '/tools/caesar-cipher', active: true },
+  { label: 'Vigenere Cipher', href: '/tools/vigenere-cipher' }
+];
+
+const faqs = [
+  {
+    question: "What is a Caesar Cipher?",
+    answer: "The Caesar Cipher (or shift cipher) is one of the simplest and most famous classical encryption techniques. It is a substitution cipher where each letter in the plaintext is shifted a fixed number of positions down the alphabet."
+  },
+  {
+    question: "How does the Caesar Cipher work?",
+    answer: "Each letter is shifted by a key number (from 0 to 25). For example, with a shift key of 3, 'A' becomes 'D', 'B' becomes 'E', and 'Z' wraps around to 'C'."
+  },
+  {
+    question: "How do I encode or decode Caesar ciphers online?",
+    answer: "Enter your text in the input area above, adjust the Shift slider to choose your key (0-25), select the decrypt checkbox if you are decoding, and watch the output calculate in real-time."
+  },
+  {
+    question: "How do I crack or solve a Caesar cipher?",
+    answer: "Since there are only 25 possible shifts, you can brute force it. Switch to the 'Caesar Brute Force' tab in our output panel to scan all 25 shifts simultaneously. The tool ranks them based on English letter frequency scores."
+  },
+  {
+    question: "Is this Caesar cipher encoder secure?",
+    answer: "No. The Caesar cipher is a historical toy cipher and offers zero security. It can be cracked in milliseconds by any automated script."
+  },
+  {
+    question: "What is the shift modulo formula for Caesar ciphers?",
+    answer: "The mathematical formula is: <br/><code>E(x) = (x + k) mod 26</code> for encryption, and <code>D(x) = (x - k) mod 26</code> for decryption, where 'x' is the letter index (0-25) and 'k' is the shift key."
+  },
+  {
+    question: "What is ROT13?",
+    answer: "ROT13 is a specific instance of the Caesar cipher where the shift key is fixed at 13. Because 13 is half of the 26-letter alphabet, applying ROT13 twice restores the original text."
+  },
+  {
+    question: "How to program a Caesar cipher in JavaScript?",
+    answer: "Iterate through the characters, shift their ASCII values, and wrap around using modulo: <br/><code>((code - 65 + shift) % 26) + 65</code> for uppercase."
+  },
+  {
+    question: "How to program a Caesar cipher in Python?",
+    answer: "Shift the ordinal values and wrap using modulo arithmetic: <br/><code>''.join(chr((ord(char) - 65 + shift) % 26 + 65) if char.isupper() else char for char in text)</code>."
+  },
+  {
+    question: "Does the Caesar cipher shift numbers or special symbols?",
+    answer: "Traditionally, the Caesar cipher only shifts letters (A-Z and a-z), keeping spaces, punctuation, and digits unchanged. However, some variations (like ROT47) shift printable ASCII symbols."
+  },
+  {
+    question: "What is letter frequency analysis?",
+    answer: "Frequency analysis is the study of the frequency of letters in a ciphertext. In English, certain letters (like 'E', 'T', and 'A') appear more often. In a Caesar cipher, the entire distribution curve is simply shifted, making it easy to identify the key."
+  },
+  {
+    question: "What is the Atbash cipher?",
+    answer: "The Atbash cipher is a specific type of substitution cipher where the alphabet is reversed (A matches Z, B matches Y, etc.). It is symmetric, meaning encryption and decryption are identical."
+  },
+  {
+    question: "Why was the Caesar cipher named after Julius Caesar?",
+    answer: "Julius Caesar used this cipher with a shift key of 3 to protect military communications and state secrets, as most of his enemies were illiterate and could not read simple cipher codes."
+  },
+  {
+    question: "Can I run the Caesar cipher decoder offline?",
+    answer: "Yes. Once loaded, all encryption, decryption, frequency plotting, and brute force calculations run locally in your browser without internet connectivity."
+  },
+  {
+    question: "Does the tool support file inputs?",
+    answer: "Yes. Toggle the input mode to 'File Drop', upload any plaintext file (up to 5MB), and encode or decode it locally."
+  },
+  {
+    question: "What is the English frequency score heuristic?",
+    answer: "It is a mathematical score that calculates how closely a decrypted text matches standard English character distributions (e.g. comparing outputs to English frequencies where 'E' is ~12.7% and 'T' is ~9.1%)."
+  },
+  {
+    question: "What is the maximum shift key in Caesar ciphers?",
+    answer: "The standard alphabet has 26 letters, so shift keys range from 0 to 25. A shift of 26 is identical to a shift of 0 (no change)."
+  },
+  {
+    question: "How do I encode Caesar cipher in bulk?",
+    answer: "You can paste multiple lines of text in the input area, and they will all be shifted by the selected key in real-time."
+  },
+  {
+    question: "What is ROT47?",
+    answer: "ROT47 is a symmetric cipher similar to ROT13, but it shifts all printable ASCII characters (from decimal 33 to 126) by 47 positions, scrambling numbers and symbols."
+  },
+  {
+    question: "Does this tool store my inputs?",
+    answer: "No. All text is processed in-memory and is never saved to database caches or server logs."
+  }
+];
+
+const references = [
+  { title: "Julius Caesar and Historical Cryptography", url: "https://www.cryptomuseum.com/crypto/caesar/index.htm", source: "Crypto Museum Reference" },
+  { title: "Frequency Analysis and Substitution Ciphers Guide", url: "https://www.khanacademy.org/computing/computer-science/cryptography/crypt/v/caesar-cipher-exploration", source: "Khan Academy Cryptography" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `function caesarCipher(str, shift, decrypt = false) {
+  const s = decrypt ? (26 - shift) % 26 : shift;
+  return str.replace(/[a-zA-Z]/g, char => {
+    const code = char.charCodeAt(0);
+    const base = code >= 97 ? 97 : 65;
+    return String.fromCharCode(((code - base + s) % 26) + base);
+  });
+}
+
+console.log(caesarCipher("Hello World", 3)); // Output: Khoor Zruog`,
+    note: "Differentiates uppercase (base 65) and lowercase (base 97) offsets."
+  },
+  {
+    lang: "Python",
+    code: `def caesar_cipher(text, shift, decrypt=False):
+    s = (26 - shift) % 26 if decrypt else shift
+    result = []
+    for char in text:
+        if char.isalpha():
+            base = 97 if char.islower() else 65
+            result.append(chr((ord(char) - base + s) % 26 + base))
+        else:
+            result.append(char)
+    return "".join(result)
+
+print(caesar_cipher("Hello World", 3)) # Output: Khoor Zruog`,
+    note: "Maintains spaces, digits, and punctuation formatting."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Assuming Shift Ciphers are Secure",
+    description: "Believing that Caesar ciphers protect data from modern computing systems is a major security flaw. They can be solved instantly via brute force.",
+    fix: "Never use classical ciphers for commercial data protection. Always use standardized AES-256 ciphers."
+  },
+  {
+    title: "Mismatched Decryption Keys",
+    description: "Attempting to decode a shifted message using a key other than the shift value will result in scrambled outputs.",
+    fix: "Use our Caesar Auto-Crack scanner to run all shifts and visually pick the correct English layout."
+  }
+];
+---
+
+<ToolPageLayout
+  title="Caesar Cipher Online: Encoder, Decoder & Solver"
+  description="Encode, decode, and crack Caesar ciphers online. Features shift key adjustments, real-time letter frequency analysis, and automated brute force solving."
+  keywords="caesar cipher, caesar cipher decoder, caesar cipher solver, caesar encoder, shift cipher online, caesar brute force"
+  toolTitle="Caesar Cipher Studio"
+  toolDescription="Encode, decode, and brute-force crack Caesar ciphers. Tune shift keys, examine character frequency charts, and verify English matches locally."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <Rot13Encoder client:load defaultMode="caesar" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Julius Caesar's Shift Cipher Mechanics
+      </h2>
+      <p class="leading-relaxed mb-4">
+        As one of the earliest documented substitution ciphers, the **Caesar Cipher** shifts characters along the standard alphabet index. The mapping is symmetric: shifting forward encodes the string, while shifting backward by the same key value decodes it.
+      </p>
+      <p class="leading-relaxed">
+        Our **Caesar Cipher Studio** provides a visual learning sandbox. It includes real-time **letter frequency charts** comparing inputs/outputs to standard English distributions, and an auto-crack brute force grid that tests all possible shifts to find readable strings.
+      </p>
+    </div>
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Caesar vs ROT Ciphers"
+      headers={["Cipher Type", "Shift Key Value", "Alphabet Scope", "Symmetric", "Description"]}
+      rows={[
+        { label: "Caesar Cipher", values: ["Variable (0 to 25)", "A-Z and a-z", "Yes (via complementary shift)", "Standard customizable shift cipher"] },
+        { label: "ROT13", values: ["Fixed (13)", "A-Z and a-z", "Yes (inverse is identical)", "Self-reciprocal 13-shift cipher"] },
+        { label: "ROT5", values: ["Fixed (5)", "Digits (0-9)", "Yes (inverse is identical)", "Self-reciprocal digit cipher"] },
+        { label: "ROT18", values: ["Fixed (13/5)", "A-Z, a-z, 0-9", "Yes (inverse is identical)", "Combined ROT13 and ROT5 cipher"] },
+        { label: "ROT47", values: ["Fixed (47)", "ASCII (33-126)", "Yes (inverse is identical)", "Symmetric printable character scrambler"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Caesar Cipher Examples"
+      description="Inspect typical Caesar shifts:"
+      examples={[
+        { label: "Shift Key = 3 (Caesar's Choice)", input: "THE QUICK BROWN FOX", output: "WKH TXLFN EURZQ IRA", badge: "Shift +3" },
+        { label: "Shift Key = 1 (A ↔ B)", input: "useutils", output: "vtfvujmu", badge: "Shift +1" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Caesar Ciphers"
+      description="Implement Caesar shift logic in your code scripts using these blocks:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Caesar Cipher Pitfalls"
+      description="Keep these historical security limitations in mind when studying:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Caesar Cipher Best Practices"
+      practices={[
+        { title: "Use for Education", description: "Use Caesar ciphers exclusively for learning cryptographic history and letter frequency analysis." },
+        { title: "Run Brute Force Tests", description: "Test cipher text inputs with our scanner tab to study how dictionaries identify readable English automatically." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

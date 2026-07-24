@@ -1,6 +1,12 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { ListUtilities as ListUtilitiesComponent } from '../../components/ListUtilities';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
 
 const faqs = [
   {
@@ -46,6 +52,102 @@ const faqs = [
   {
     question: "Does this list utility support large lists?",
     answer: "Yes. Since the engine is built on optimized native JavaScript string and array APIs, it can easily process lists of thousands of lines (such as IP logs, CSV fields, or email addresses) in real-time directly inside your browser."
+  },
+  {
+    question: "How do I sort a list naturally in JavaScript?",
+    answer: "Use <code>Intl.Collator</code>: <code>list.sort(new Intl.Collator(undefined, {numeric: true}).compare)</code>. This correctly sorts multi-digit numbers within text strings."
+  },
+  {
+    question: "How do I remove duplicate lines programmatically in JavaScript?",
+    answer: "Use <code>Set</code>: <code>const unique = [...new Set(lines)]</code>. This retains only unique strings in an array."
+  },
+  {
+    question: "How to deduplicate a list in Python?",
+    answer: "Use dict keys to preserve order: <code>unique_lines = list(dict.fromkeys(lines))</code>. Standard sets also work but do not guarantee sequence order."
+  },
+  {
+    question: "What is a JSON array string and how is it generated from a list?",
+    answer: "A JSON array string wraps lines in brackets and quotes (e.g. <code>[\"item1\", \"item2\"]</code>). Choosing the 'JSON Array' output format converts the list into a valid JSON string array for copy-pasting into code."
+  },
+  {
+    question: "How can I remove empty lines from a list?",
+    answer: "Under the Filter tab, select 'Remove Empty Lines'. Programmatically, filter arrays by checking string truthiness: <code>lines.filter(line => line.trim() !== '')</code>."
+  },
+  {
+    question: "What is the difference between sorting alphabetically (case-sensitive vs case-insensitive)?",
+    answer: "Case-sensitive sorting places all uppercase characters before lowercase characters (e.g., 'Zebra' before 'apple' because U+005A is less than U+0061). Case-insensitive sorting ignores capitalization and compares characters alphabetically."
+  },
+  {
+    question: "Can I reverse the order of my list?",
+    answer: "Yes. Under the Sort configuration, select the 'Reverse' operation to flip the sequence of lines (the first line becomes the last)."
+  },
+  {
+    question: "How to append prefix and suffix formatting in Python?",
+    answer: "Use list comprehensions: <code>formatted = [f\"prefix_{line}_suffix\" for line in lines]</code>."
+  },
+  {
+    question: "Why is deduplication important for database seeding?",
+    answer: "Database schemas enforce primary keys and unique indexes. Importing lists containing duplicates causes constraint violations and seed failures. Deduplicating the raw CSV keys prevents these errors."
+  },
+  {
+    question: "Does the list utility support dragging to reorder lines?",
+    answer: "Yes. Clicking on the 'Visual Sandbox' tab renders lines as individual cards, allowing you to drag-and-drop rows to manually sequence them."
+  },
+  {
+    question: "Is there a limit to the file size I can import?",
+    answer: "Since calculations run in browser memory, files under 10MB (typically ~100,000 lines) are processed smoothly. Larger files might cause temporary browser UI lags."
+  }
+];
+
+const references = [
+  { title: "MDN Web Docs - Intl.Collator for Natural Sorting", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Collator", source: "Mozilla Documentation" },
+  { title: "Standard Algorithm for Array Deduplication in ECMAScript", url: "https://tc39.es/ecma262/multipage/keyed-collections.html#sec-set-objects", source: "TC39 Standards" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `// Array deduplication preserving order
+const deduplicate = list => [...new Set(list)];
+
+// Natural numerical sort
+const naturalSort = list => {
+  return list.sort(new Intl.Collator(undefined, { numeric: true }).compare);
+};
+
+const raw = ["item10", "item2", "item10"];
+console.log(deduplicate(raw)); // ["item10", "item2"]
+console.log(naturalSort(deduplicate(raw))); // ["item2", "item10"]`,
+    note: "Uses standard Set and Intl.Collator APIs natively supported in modern JS engines."
+  },
+  {
+    lang: "Python",
+    code: `import re
+
+# Deduplicate list preserving insertion order
+raw_list = ["item10", "item2", "item10"]
+unique_list = list(dict.fromkeys(raw_list))
+
+# Natural numerical sort
+def natural_sort_key(s):
+    return [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\\d+)', s)]
+
+unique_list.sort(key=natural_sort_key)
+print(unique_list) # ['item2', 'item10']`,
+    note: "Python dictionary keys preserve sequence starting in version 3.7+."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Unintentional Reordering of Items During Deduplication",
+    description: "Converting arrays directly to a Set and back to an array in programming languages that do not maintain insertion order in Set structures (or using Python's set()) shifts list item sequences randomly.",
+    fix: "Use dictionary keys (Python's dict.fromkeys) or filter functions that preserve raw indexing parameters."
+  },
+  {
+    title: "Standard Unicode Alphabetical Sort on Numbers",
+    description: "Standard string sorting sorts character codes literally, ordering ['10', '2', '1'] into ['1', '10', '2'], causing numerical layout errors.",
+    fix: "Utilize natural sorting algorithms (like JavaScript's <code>Intl.Collator</code>) which parse numerical sequences recursively."
   }
 ];
 ---
@@ -76,100 +178,71 @@ const faqs = [
       </p>
     </div>
 
-    <!-- Section: List Operations Comparison Table -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+    <!-- Sibling Cross Links -->
+    <div class="flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight flex items-center gap-2">
         <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Overview of List Transformations
+        Related Text List Utilities
       </h2>
-      <p class="leading-relaxed mb-4">
-        This tool supports several operations to standardize and sanitize raw strings for databases, configurations, or code codebases. Here is how different operations modify your lists:
-      </p>
-      
-      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
-              <th class="p-3">Operation</th>
-              <th class="p-3">Input Example</th>
-              <th class="p-3">Configuration Options</th>
-              <th class="p-3">Output Result</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
-            <tr>
-              <td class="p-3 text-zinc-200 font-semibold">Deduplication</td>
-              <td class="p-3">apple<br/>orange<br/>apple</td>
-              <td class="p-3">Keep First / Keep Last / Remove All</td>
-              <td class="p-3 text-accent-emerald">apple<br/>orange</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200 font-semibold">Natural Sort</td>
-              <td class="p-3">item_10<br/>item_2</td>
-              <td class="p-3">Numeric-aware comparison (A-Z/Z-A)</td>
-              <td class="p-3 text-accent-emerald">item_2<br/>item_10</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200 font-semibold">Length Sort</td>
-              <td class="p-3">banana<br/>pear<br/>kiwi</td>
-              <td class="p-3">Ascending / Descending length</td>
-              <td class="p-3 text-accent-emerald">pear<br/>kiwi<br/>banana</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200 font-semibold">Line Numbering</td>
-              <td class="p-3">debug<br/>error</td>
-              <td class="p-3">Formats: 1., 01., [1], Line 1:</td>
-              <td class="p-3 text-accent-emerald">01. debug<br/>02. error</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200 font-semibold">Regex Filtering</td>
-              <td class="p-3">api/v1/users<br/>web/home<br/>api/v1/auth</td>
-              <td class="p-3">Keep matching: <code>^api/</code></td>
-              <td class="p-3 text-accent-emerald">api/v1/users<br/>api/v1/auth</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200 font-semibold">Case Conversion</td>
-              <td class="p-3">USER_ID<br/>auth_token</td>
-              <td class="p-3">camelCase, snake_case, Title Case, etc.</td>
-              <td class="p-3 text-accent-emerald">userId<br/>authToken</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <a href="/tools/remove-duplicate-lines" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Remove Duplicate Lines</a>
+        <a href="/tools/word-counter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Word Counter & Text Analyzer</a>
+        <a href="/tools/text-inspector" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Text Inspector</a>
       </div>
     </div>
 
-    <!-- Section: Developer Use Cases -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Common Developer Workflows & Use Cases
-      </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Sanitizing Server Logs & IPs</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            Paste large server logs or IP addresses, filter out empty rows, sort them naturally, and remove duplicates. Switch to the Duplicates Table to identify high-traffic endpoints or warning repeat triggers.
-          </p>
-        </div>
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">SQL & JSON Schema Ingestion</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            Convert arrays of SQL database columns into camelCase or snake_case, add custom prefixes or suffixes, and join them with commas to build quick insert statements or TypeScript interface payloads in seconds.
-          </p>
-        </div>
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Visualizing & Ordering Sitemap URLs</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            Ingest routes or sitemaps, remove trailing/leading spaces, sort them alphabetically, or toggle the Visual Sandbox to drag-and-drop your hierarchy into the desired order before exporting.
-          </p>
-        </div>
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">HTML Tag & Markdown Stripping</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            Clean up copy, comments, or crawled text by removing HTML markup and markdown indicators in bulk. Trim extra indentation or white spaces to extract only raw, clean string tokens.
-          </p>
-        </div>
-      </div>
-    </div>
+    <!-- Section: List Operations Comparison Table -->
+    <ComparisonTable
+      title="Overview of List Transformations"
+      description="This tool supports several operations to standardize and sanitize raw strings for databases, configurations, or code codebases. Here is how different operations modify your lists:"
+      headers={["Operation", "Input Example", "Configuration Options", "Output Result"]}
+      rows={[
+        { label: "Deduplication", values: ["apple<br/>orange<br/>apple", "Keep First / Keep Last / Remove All", "apple<br/>orange"] },
+        { label: "Natural Sort", values: ["item_10<br/>item_2", "Numeric-aware comparison (A-Z/Z-A)", "item_2<br/>item_10"] },
+        { label: "Length Sort", values: ["banana<br/>pear<br/>kiwi", "Ascending / Descending length", "pear<br/>kiwi<br/>banana"] },
+        { label: "Line Numbering", values: ["debug<br/>error", "Formats: 1., 01., [1], Line 1:", "01. debug<br/>02. error"] },
+        { label: "Regex Filtering", values: ["api/v1/users<br/>web/home<br/>api/v1/auth", "Keep matching: <code>^api/</code>", "api/v1/users<br/>api/v1/auth"] },
+        { label: "Case Conversion", values: ["USER_ID<br/>auth_token", "camelCase, snake_case, Title Case, etc.", "userId<br/>authToken"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="List Formatting Examples"
+      description="Study typical input datasets and their processed outputs:"
+      examples={[
+        { label: "Deduplicated IP Address Log", input: "192.168.1.1\n10.0.0.1\n192.168.1.1", output: "192.168.1.1\n10.0.0.1 (Duplicates removed)", badge: "Deduplicate" },
+        { label: "Prefixed SQL DB Columns", input: "id\nusername\nemail", output: "user_id,\nuser_username,\nuser_email, (Prefix & Suffix applied)", badge: "Prefix/Suffix" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic List Operations Snippets"
+      description="Deduplicate and sort lists inside your custom applications:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common List Parsing Mistakes"
+      description="Avoid these common errors when processing large datasets and array lists:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="List Cleaning Best Practices"
+      practices={[
+        { title: "Deduplicate Prior to DB Imports", description: "Filter out redundant rows to prevent unique key constraint violations in database schemas." },
+        { title: "Use Natural Sort for Versioning", description: "Enforce numerical sorting when ordering build numbers, server configurations, or code patches." },
+        { title: "Leverage Visual Sandbox Reordering", description: "Switch to card displays to drag, re-order, or disable rows manually in the document flow." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
   </div>
 </ToolPageLayout>

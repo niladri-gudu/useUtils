@@ -1,6 +1,20 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { HashGenerator } from '../../components/HashGenerator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+
+const tabs = [
+  { label: 'Hash Generator', href: '/tools/hash-generator', active: true },
+  { label: 'MD5 Hash', href: '/tools/md5-generator' },
+  { label: 'SHA256 Hash', href: '/tools/sha256-generator' },
+  { label: 'SHA512 Hash', href: '/tools/sha512-generator' }
+];
 
 const faqs = [
   {
@@ -46,6 +60,91 @@ const faqs = [
   {
     question: "How do I compute an HMAC SHA-256 signature in JavaScript (Node.js)?",
     answer: "In Node.js, you can compute HMAC signatures using the native <code>crypto</code> module: <br /><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto whitespace-pre\">const crypto = require('crypto');\nconst hmac = crypto.createHmac('sha256', 'my-secret-key');\nhmac.update('my-message');\nconst signature = hmac.digest('hex');\nconsole.log(signature);</code>"
+  },
+  {
+    question: "What is the avalanche effect in cryptography?",
+    answer: "The avalanche effect describes how a minor change in input (like modifying a single bit or changing a character from lower to upper case) produces a major, completely unrelated change in the output hash, making the new hash look completely different from the old one."
+  },
+  {
+    question: "What is the SHA-3 hashing algorithm?",
+    answer: "SHA-3 (Secure Hash Algorithm 3) is the latest member of the Secure Hash Algorithm family. It uses the Keccak permutation-based sponge construction instead of the SHA-2 block algorithm structure, providing protection against length extension attacks."
+  },
+  {
+    question: "What is a length extension attack?",
+    answer: "A length extension attack is an exploit where an attacker can use the hash of a message <code>h(secret || message)</code> and the message length to calculate the hash of <code>h(secret || message || padding || extra_message)</code> without knowing the secret, highlighting vulnerabilities in older SHA-1 and SHA-256 structures (which can be avoided using HMAC)."
+  },
+  {
+    question: "What is the difference between SHA-256 and SHA-512?",
+    answer: "SHA-256 generates a 256-bit hash, while SHA-512 generates a 512-bit hash. Additionally, SHA-512 operates on 64-bit word blocks, making it faster to process on 64-bit systems than SHA-256."
+  },
+  {
+    question: "Is there a command line hash tool in Windows?",
+    answer: "Yes, you can run certutil: <br/><code>certutil -hashfile filename SHA256</code>."
+  },
+  {
+    question: "How do I create bulk hashes from lists?",
+    answer: "Toggle to the 'Bulk lines' tab in our tool, paste your entries line-by-line, and retrieve the hashes for all of them instantly. You can export results to a CSV file."
+  },
+  {
+    question: "Can I choose different output formats for the hash?",
+    answer: "Yes, the tool supports lowercase hexadecimal, uppercase hexadecimal, Base64, Base64URL, and decimal byte arrays."
+  },
+  {
+    question: "What is the hash size of SHA-384?",
+    answer: "SHA-384 produces a 384-bit (48-byte) hash string, represented as a 96-character hexadecimal string."
+  },
+  {
+    question: "Does renaming a file change its checksum?",
+    answer: "No. Checksums are calculated strictly from the binary file contents. Changing the name has no effect on the file's hash."
+  }
+];
+
+const references = [
+  { title: "NIST Cryptographic Hashing Policy Guide", url: "https://csrc.nist.gov/projects/hash-functions", source: "NIST Specifications" },
+  { title: "RFC 2104 - HMAC: Keyed-Hashing for Message Authentication", url: "https://datatracker.ietf.org/doc/html/rfc2104", source: "IETF Standards" }
+];
+
+const languageCodes = [
+  {
+    lang: "Node.js (HMAC SHA-256)",
+    code: `const crypto = require('crypto');
+
+const secret = 'my-secret-key-phrase';
+const message = 'The quick brown fox jumps over the lazy dog';
+
+// Generate HMAC signature using SHA-256
+const signature = crypto.createHmac('sha256', secret)
+                        .update(message)
+                        .digest('hex');
+
+console.log(signature);`,
+    note: "Uses Node's built-in crypto module."
+  },
+  {
+    lang: "Python (HMAC SHA-256)",
+    code: `import hmac
+import hashlib
+
+key = b'my-secret-key-phrase'
+msg = b'The quick brown fox jumps over the lazy dog'
+
+# Generate HMAC signature
+sig = hmac.new(key, msg, hashlib.sha256).hexdigest()
+print(sig)`,
+    note: "Requires passing inputs as byte strings (with b prefix) in Python 3."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Using Simple Hashing for Password Storage",
+    description: "Using standard hash algorithms (like MD5 or SHA-256) to store passwords makes them vulnerable to lookup attacks (rainbow tables) or GPU brute-forcing.",
+    fix: "Use key-stretching libraries like bcrypt or Argon2 to slow down hashing operations."
+  },
+  {
+    title: "Mismatched Keys in HMAC Verification",
+    description: "Providing incorrect secret key formatting (such as UTF-8 characters vs raw hexadecimal bytes) will yield different signature values, causing verification failures.",
+    fix: "Validate key encodings across both signer and verifier systems."
   }
 ];
 ---
@@ -56,105 +155,77 @@ const faqs = [
   keywords="hash generator, hmac generator, sha256 online, md5 hash generator, file checksum checker, sha512 hash, local hash generator, verify checksum"
   toolTitle="Hash & HMAC Generator"
   toolDescription="Compute secure cryptographic hashes or HMAC signatures locally in your web browser. Drag-and-drop file inputs to verify SHA-256/MD5 download checksums, perform batch string hashing, or compare checksums side-by-side."
+  tabs={tabs}
   faqs={faqs}
 >
   <HashGenerator client:load />
 
-  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
     <!-- Section: Intro -->
     <div>
       <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
         <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        How to Use the Hash & HMAC Generator
+        Cryptographic Hashing & Message Authentication
       </h2>
       <p class="leading-relaxed mb-4">
-        Our client-side utility supports multiple input ingestion formats, making it easy to run security checks on different payloads:
+        Cryptographic verification is essential for secure network operations. A **cryptographic hash function** maps files or messages to a fixed-size signature. It is a one-way operation: it is mathematically impossible to reverse the hash back into the original input.
       </p>
-      <ul class="list-disc pl-5 space-y-2 mb-4 leading-relaxed">
-        <li><strong class="text-zinc-200">Single Text Mode:</strong> Paste standard plain text, JSON configurations, or token payloads to calculate their hash instantly as you type.</li>
-        <li><strong class="text-zinc-200">Bulk Lines Mode:</strong> Useful for batch testing. Paste a list of strings separated by newlines, and retrieve a full list of corresponding hashes. Copy or export the results directly in CSV or JSON.</li>
-        <li><strong class="text-zinc-200">File Checksum Mode:</strong> Drag-and-drop any local file (images, zip files, installers, binaries) to compute its checksum. Large files are processed directly in browser memory without server uploads.</li>
-      </ul>
       <p class="leading-relaxed">
-        To use HMAC signature verification, tick the <strong class="text-zinc-200">Enable HMAC Signatures</strong> checkbox, choose your secret key, and watch the output dynamically change. Select from lowercase Hex, uppercase Hex, Base64, Base64URL, or Decimal Byte Arrays representation based on your backend environment.
+        Our **Hash & HMAC Generator** provides a secure local workspace. Drop installer packages to verify download checksums, paste query logs to batch compute hashes, or sign webhook payloads using HMAC cryptographic algorithms completely offline.
       </p>
     </div>
 
-    <!-- Section: Comparison of Cryptographic Algorithms -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Cryptographic Hash Algorithm Specifications
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Choosing the right algorithm depends on the requirements of your application, compatibility constraints, and performance parameters:
-      </p>
-      
-      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
-              <th class="p-3">Algorithm</th>
-              <th class="p-3">Output size (Bits)</th>
-              <th class="p-3">Output size (Bytes)</th>
-              <th class="p-3">Security Level</th>
-              <th class="p-3">Primary Use Cases</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
-            <tr>
-              <td class="p-3 text-zinc-200">MD5</td>
-              <td class="p-3">128 bits</td>
-              <td class="p-3">16 bytes</td>
-              <td class="p-3 text-red-500 font-semibold">Broken (Low)</td>
-              <td class="p-3">Non-secure legacy checksums, duplicate detection, legacy file verification</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">SHA-1</td>
-              <td class="p-3">160 bits</td>
-              <td class="p-3">20 bytes</td>
-              <td class="p-3 text-amber-500 font-semibold">Weak (Medium)</td>
-              <td class="p-3">Git commit checksums, legacy network protocols</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">SHA-256</td>
-              <td class="p-3">256 bits</td>
-              <td class="p-3">32 bytes</td>
-              <td class="p-3 text-emerald-400 font-semibold">Secure (High)</td>
-              <td class="p-3">SSL/TLS certificates, API payload signing, Bitcoin blockchain, package verification</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">SHA-384</td>
-              <td class="p-3">384 bits</td>
-              <td class="p-3">48 bytes</td>
-              <td class="p-3 text-emerald-400 font-semibold">Secure (High)</td>
-              <td class="p-3">High-security signatures, military-grade systems</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">SHA-512</td>
-              <td class="p-3">512 bits</td>
-              <td class="p-3">64 bytes</td>
-              <td class="p-3 text-emerald-400 font-semibold">Secure (High)</td>
-              <td class="p-3">Key generation, file checksums, systems requiring maximum bit depth</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <!-- Section: Privacy Badge -->
+    <PrivacyBadge />
 
-    <!-- Section: Hashing vs HMAC -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Understanding Hash vs HMAC
-      </h2>
-      <p class="leading-relaxed mb-4">
-        A regular hash verifies that data has not changed in transit. However, it does not prevent an attacker from modifying the data and generating a new hash value to match. To solve this, developers use <strong class="text-zinc-200">HMAC (Hash-based Message Authentication Code)</strong>.
-      </p>
-      <p class="leading-relaxed">
-        HMAC injects a secret key into the hash computation. Because the key is known only to the sender and recipient, an attacker cannot generate a valid hash for tampered data. This process provides authentication and integrity, which is why it is used in APIs (like AWS Signature V4 or webhooks) to secure endpoints.
-      </p>
-    </div>
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Hash Algorithms Properties"
+      headers={["Algorithm", "Output Size", "Processing Speed", "Security Level", "Common Usage"]}
+      rows={[
+        { label: "MD5", values: ["128 bits", "Very Fast", "Broken", "Duplicate database index markers, legacy file checks"] },
+        { label: "SHA-1", values: ["160 bits", "Fast", "Weak", "Legacy Git index tracking, older SSH handshakes"] },
+        { label: "SHA-256", values: ["256 bits", "Medium", "Secure", "SSL certificates, blockchain, HTTPS integrity"] },
+        { label: "SHA-512", values: ["512 bits", "Medium-Fast", "Secure", "Server credentials storage, Unix password databases"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Avalanche Effect Demo"
+      description="Inspect how tiny changes yield completely different hashes:"
+      examples={[
+        { label: "Hash of 'hello'", input: "hello", output: "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824", badge: "SHA-256" },
+        { label: "Hash of 'hello!' (Added symbol)", input: "hello!", output: "334d016f755cd6dc58c53a86e183882f8ec14f52fb05345887c8a5edd42c87b7", badge: "Avalanche Effect" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic HMAC Hashing"
+      description="Generate HMAC signatures in your backend logic using these templates:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Cryptographic Hashing Pitfalls"
+      description="Avoid these common errors when integrating hashing algorithms in your code:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Cryptographic Hashing Best Practices"
+      practices={[
+        { title: "Salt All String Inputs", description: "Always append a random unique salt to inputs before hashing to block rainbow table lookups." },
+        { title: "Use Local Web Cryptography", description: "Compute checksums locally in your browser memory to keep files and data private." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
   </div>
 </ToolPageLayout>

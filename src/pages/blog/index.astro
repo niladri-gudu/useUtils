@@ -1,0 +1,94 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+const posts = [
+  {
+    title: "camelCase vs snake_case: Choosing the Right Code Naming Convention",
+    slug: "camelcase-vs-snake-case",
+    description: "Deep dive into camelCase and snake_case: what they are, where they are standard, and how to choose the right convention for JavaScript, Python, and SQL.",
+    date: "July 23, 2026",
+    category: "Naming Conventions",
+    readTime: "5 min read",
+    icon: "📝"
+  },
+  {
+    title: "JavaScript & TypeScript Naming Conventions: The Definitive Guide",
+    slug: "naming-conventions-javascript",
+    description: "Understand the industry standards for naming variables, classes, interfaces, constants, and files in the JS/TS ecosystem with PEP-like clarity.",
+    date: "July 22, 2026",
+    category: "JavaScript & TS",
+    readTime: "6 min read",
+    icon: "⚡"
+  },
+  {
+    title: "Why is snake_case standard in Python? PEP 8 Naming Conventions Explained",
+    slug: "snake-case-python",
+    description: "An editorial exploration of Python's official PEP 8 style guide, the readability arguments, and why snake_case is the preferred variable casing convention.",
+    date: "July 20, 2026",
+    category: "Python Development",
+    readTime: "4 min read",
+    icon: "🐍"
+  }
+];
+---
+
+<Layout 
+  title="useUtils Blog - Developer Guides, Naming Standards & Tutorials" 
+  description="Read high-density developer articles covering naming conventions, code guidelines, best practices in JS/TS/Python, and browser security mechanics."
+  keywords="developer naming conventions, pep 8 naming, camelcase vs snakecase, javascript style guide, coding best practices"
+>
+  <Header />
+
+  <main class="flex-grow w-full max-w-4xl mx-auto px-4 py-12 flex flex-col gap-10">
+    <div class="flex flex-col gap-2 pt-2 pb-6 border-b border-border-hairline/60">
+      <nav class="flex items-center gap-2 text-[10px] md:text-[11px] font-mono text-zinc-500 select-none mb-3" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-accent-emerald transition-colors">home</a>
+        <span class="text-zinc-700">/</span>
+        <span class="text-accent-emerald font-medium">blog</span>
+      </nav>
+      <h1 class="text-3xl font-semibold tracking-tight text-zinc-50 font-sans">
+        useUtils Blog
+      </h1>
+      <p class="text-zinc-400 text-sm leading-relaxed font-sans">
+        High-density developer articles on code naming standards, performance optimization, and local-first architecture.
+      </p>
+    </div>
+
+    <!-- Articles Grid -->
+    <div class="flex flex-col gap-6">
+      {posts.map(post => (
+        <a 
+          href={`/blog/${post.slug}`}
+          class="flex flex-col md:flex-row gap-5 bg-panel border border-border-hairline hover:border-accent-emerald/30 hover:bg-zinc-900/30 rounded-xl p-6 transition-all duration-200 group"
+        >
+          <span class="w-12 h-12 rounded-xl bg-zinc-900 border border-border-hairline flex items-center justify-center text-xl shrink-0 group-hover:border-accent-emerald/20 transition-colors">
+            {post.icon}
+          </span>
+          <div class="flex flex-col gap-2 w-full">
+            <div class="flex items-center justify-between gap-4">
+              <span class="text-[10px] font-mono uppercase tracking-wider text-accent-emerald bg-accent-emerald/10 border border-accent-emerald/10 px-2 py-0.5 rounded">
+                {post.category}
+              </span>
+              <span class="text-[10px] font-mono text-zinc-500">
+                {post.date} • {post.readTime}
+              </span>
+            </div>
+            <h2 class="text-lg font-bold text-zinc-50 group-hover:text-accent-emerald transition-colors font-sans mt-1">
+              {post.title}
+            </h2>
+            <p class="text-xs text-zinc-400 leading-relaxed font-sans">
+              {post.description}
+            </p>
+            <span class="text-[11px] font-mono text-accent-emerald mt-2 group-hover:underline flex items-center gap-1">
+              Read article <span>→</span>
+            </span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </main>
+
+  <Footer />
+</Layout>

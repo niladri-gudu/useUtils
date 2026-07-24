@@ -4,6 +4,11 @@ interface Props {
 }
 
 const { version = "v1.0.0" } = Astro.props;
+const pathname = Astro.url.pathname;
+
+const isLinkActive = (path: string) => {
+  return pathname === path || pathname.startsWith(path + '/');
+};
 ---
 
 <header class="w-full bg-canvas border-b border-border-hairline h-14 sticky top-0 z-50">
@@ -30,6 +35,40 @@ const { version = "v1.0.0" } = Astro.props;
         useUtils
       </span>
     </a>
+
+    <!-- Navigation Links -->
+    <nav class="hidden md:flex items-center gap-6 text-xs font-mono" aria-label="Main Navigation">
+      <a 
+        href="/tools" 
+        class={`transition-colors duration-150 ${isLinkActive('/tools') ? 'text-accent-emerald font-semibold' : 'text-zinc-400 hover:text-zinc-50'}`}
+      >
+        Tools
+      </a>
+      <a 
+        href="/playground" 
+        class={`transition-colors duration-150 ${isLinkActive('/playground') ? 'text-accent-emerald font-semibold' : 'text-zinc-500 hover:text-zinc-50'}`}
+      >
+        Playground
+      </a>
+      <a 
+        href="/cheatsheets" 
+        class={`transition-colors duration-150 ${isLinkActive('/cheatsheets') ? 'text-accent-emerald font-semibold' : 'text-zinc-500 hover:text-zinc-50'}`}
+      >
+        Cheatsheets
+      </a>
+      <a 
+        href="/labs" 
+        class={`transition-colors duration-150 ${isLinkActive('/labs') ? 'text-accent-emerald font-semibold' : 'text-zinc-500 hover:text-zinc-50'}`}
+      >
+        Labs
+      </a>
+      <a 
+        href="/configs" 
+        class={`transition-colors duration-150 ${isLinkActive('/configs') ? 'text-accent-emerald font-semibold' : 'text-zinc-500 hover:text-zinc-50'}`}
+      >
+        Configs
+      </a>
+    </nav>
 
     <!-- Actions & Stats -->
     <div class="flex items-center gap-3">

@@ -1,0 +1,229 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { JsonFormatter } from '../../components/JsonFormatter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'JSON Formatter', href: '/tools/json-formatter' },
+  { label: 'JSON Validator', href: '/tools/json-validator', active: true },
+  { label: 'JSON Minifier', href: '/tools/json-minifier' },
+  { label: 'JSON Viewer', href: '/tools/json-viewer' }
+];
+
+const faqs = [
+  {
+    question: "How do I validate a JSON string online?",
+    answer: "Paste your raw JSON string into the editor above. The syntax engine automatically runs validation checks in real-time as you type, highlighting any parsing errors with line and column coordinates instantly."
+  },
+  {
+    question: "Is this JSON validator private and secure?",
+    answer: "Yes, 100%. Like all tools on useUtils, validation runs completely client-side in your web browser. No data, API keys, or text blocks are uploaded, stored, or processed on any remote server."
+  },
+  {
+    question: "What are the most common JSON syntax errors?",
+    answer: "Common issues include: using single quotes (<code>'</code>) instead of double quotes (<code>\"</code>) for string values and keys, missing commas between properties, trailing commas after the last item, or missing brackets/braces."
+  },
+  {
+    question: "Does JSON allow comments?",
+    answer: "No, standard JSON (RFC 8259) does not support comments (like <code>//</code> or <code>/* */</code>). If you need comments, consider formats like JSON5, JSONC, or YAML."
+  },
+  {
+    question: "What is the difference between JSON and JSON5?",
+    answer: "JSON is highly strict (requires double quotes, no comments, no trailing commas). JSON5 is an extension that allows comments, single quotes, trailing commas, and hexadecimal numbers, making it more human-friendly for configurations."
+  },
+  {
+    question: "How do I validate JSON programmatically in Node.js?",
+    answer: "Use the built-in <code>JSON.parse()</code> method inside a try-catch block. For advanced schema validation, libraries like <code>Ajv</code> are recommended."
+  },
+  {
+    question: "Can I validate large JSON files locally?",
+    answer: "Yes, because the parser runs locally using optimized client-side JavaScript, it can quickly validate files up to 50MB directly in your browser without lag."
+  },
+  {
+    question: "What is a trailing comma error in JSON?",
+    answer: "Adding a comma after the final property in an object or element in an array is invalid under the strict JSON specification and will cause parsing errors."
+  },
+  {
+    question: "Why does JSON require double quotes?",
+    answer: "The ECMA-404 JSON standard specifies that keys and string values must be enclosed in double quotes (<code>\"</code>). Single quotes (<code>'</code>) are syntactically invalid."
+  },
+  {
+    question: "How does the validator detect the line number of an error?",
+    answer: "When <code>JSON.parse()</code> fails, our engine analyzes the syntax error character offset and maps it against line break feeds to pin down the exact row and column."
+  },
+  {
+    question: "Should JSON keys be camelCase or snake_case?",
+    answer: "The JSON specification does not mandate any naming casing. However, camelCase is the standard convention in JavaScript/TypeScript ecosystems, while snake_case is common in Python APIs."
+  },
+  {
+    question: "Can JSON values be undefined?",
+    answer: "No. JSON values can be strings, numbers, objects, arrays, booleans, or <code>null</code>. The <code>undefined</code> keyword is not a valid JSON type."
+  },
+  {
+    question: "What does the 'unquoted key' error mean?",
+    answer: "In JavaScript, object keys can sometimes omit quotes (e.g., <code>{name: 'John'}</code>). In strict JSON, all keys must be enclosed in double quotes (e.g., <code>{\"name\": \"John\"}</code>)."
+  },
+  {
+    question: "How to escape special characters in JSON strings?",
+    answer: "Special characters like backslashes, double quotes, and control chars must be escaped with a backslash (e.g., <code>\\\"</code>, <code>\\\\</code>, <code>\\n</code>, <code>\\t</code>)."
+  },
+  {
+    question: "What is the official RFC specification for JSON?",
+    answer: "The current standard is RFC 8259, which defines the JavaScript Object Notation (JSON) Data Interchange Format."
+  },
+  {
+    question: "How does this tool handle malformed nested structures?",
+    answer: "The validator performs a full recursive parse. If there is a missing closing bracket deep inside a nested structure, it reports the exact position of the discrepancy."
+  },
+  {
+    question: "Can I prettify JSON at the same time as validating?",
+    answer: "Yes. Once the input JSON is verified as valid, the 'Beautify' action will automatically format and indent it neatly."
+  },
+  {
+    question: "What is JSON validation schema?",
+    answer: "A JSON Schema is a declarative draft specification used to validate the structure, types, and constraints of a JSON payload (e.g., verifying if a field is an email)."
+  },
+  {
+    question: "Can JSON handle big integers?",
+    answer: "Standard JavaScript parses numbers as double-precision floats, which can cause precision loss for integers larger than <code>Number.MAX_SAFE_INTEGER</code>. For those, strings are recommended."
+  },
+  {
+    question: "Is there an offline app version of this validator?",
+    answer: "This web application works offline. Once loaded, you can disconnect from the internet and validate payloads indefinitely since all calculations are local."
+  }
+];
+
+const references = [
+  { title: "RFC 8259 - The JavaScript Object Notation (JSON) Data Format", url: "https://datatracker.ietf.org/doc/html/rfc8259", source: "IETF Standards" },
+  { title: "ECMA-404 JSON Text Format Specification", url: "https://www.ecma-international.org/publications-and-standards/standards/ecma-404/", source: "ECMA International" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `function isValidJson(jsonString) {
+  try {
+    JSON.parse(jsonString);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+console.log(isValidJson('{"name": "Alice"}')); // true
+console.log(isValidJson("{'name': 'Alice'}")); // false (single quotes)`,
+    note: "Catches syntax exceptions to verify format correctness."
+  },
+  {
+    lang: "Python",
+    code: `import json
+
+def is_valid_json(json_str):
+    try:
+        json.loads(json_str)
+        return True
+    except json.JSONDecodeError as e:
+        print(f"Error at line {e.lineno}, col {e.colno}: {e.msg}")
+        return False
+
+is_valid_json('{"key": "value"}')`,
+    note: "Python's json.loads throws a JSONDecodeError with line diagnostics."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Using Single Quotes",
+    description: "Enclosing keys or string values in single quotes is invalid JSON.",
+    fix: "Always wrap keys and string values in double quotes: <code>{\"key\": \"value\"}</code>."
+  },
+  {
+    title: "Trailing Commas",
+    description: "Adding commas at the end of object property lists or array items.",
+    fix: "Remove the final comma before closing braces or brackets."
+  }
+];
+---
+
+<ToolPageLayout
+  title="JSON Validator Online: Syntax Checker & Lint Tool"
+  description="Validate, debug, and lint JSON payloads in real-time. Instantly pinpoints syntax errors with line numbers. 100% private, client-side execution."
+  keywords="json validator, json syntax checker, lint json online, validate json, debug json"
+  toolTitle="JSON Validator & Syntax Checker"
+  toolDescription="Validate and debug your JSON data structures in real-time. Highlights syntax mismatches, locates error lines, and verifies compliance with strict ECMA-404/RFC-8259 specifications."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <JsonFormatter client:load defaultMode="format" defaultViewMode="text" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Why Real-Time JSON Validation is Crucial
+      </h2>
+      <p class="leading-relaxed mb-4">
+        JSON is the primary data exchange protocol for modern web applications. Even a minor syntax error—such as a forgotten comma or mismatched bracket—can halt downstream parsers, causing API failures, database ingestion crashes, or configuration load loops.
+      </p>
+      <p class="leading-relaxed">
+        Our **JSON Validator** lint engine executes a client-side parse on every keystroke. Instead of a simple pass/fail flag, the validator extracts the error coordinates to guide you directly to the offending line for immediate debugging.
+      </p>
+    </div>
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="JSON vs JSON5 Specifications"
+      headers={["Specification Feature", "Strict JSON (RFC 8259)", "JSON5 Extension"]}
+      rows={[
+        { label: "String Quotation", values: ["Strictly double quotes (\")", "Allows single (') and double (\") quotes"] },
+        { label: "Trailing Commas", values: ["Strictly forbidden", "Allowed at the end of lists and maps"] },
+        { label: "Comments Support", values: ["Not allowed", "Allows single-line (//) and multi-line (/* */) comments"] },
+        { label: "Keys Quotation", values: ["Must be double-quoted", "Can be unquoted if they are valid identifiers"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Common JSON Validation Examples"
+      description="Inspect how syntax errors are flagged and fixed:"
+      examples={[
+        { label: "Trailing Comma Mismatch (Invalid)", input: '{\n  "id": 101,\n  "role": "editor",\n}', output: "SyntaxError: Unexpected token } in JSON", badge: "Failed" },
+        { label: "Double Quoted Standard (Valid)", input: '{\n  "id": 101,\n  "role": "editor"\n}', output: "JSON Verified: Syntax Valid", badge: "Passed" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic JSON Validation Patterns"
+      description="Implement validation filters in your application codebase:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Frequent JSON Syntax Mismatches"
+      description="Avoid these common pitfalls to ensure valid JSON data structures:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="JSON Schema Formatting Best Practices"
+      practices={[
+        { title: "Avoid Comments", description: "Do not embed comments in JSON. Put structural metadata in description fields instead." },
+        { title: "Coerce Primitives Correctly", description: "Differentiate between numeric primitives (e.g., 42) and string representations (e.g., \"42\")." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

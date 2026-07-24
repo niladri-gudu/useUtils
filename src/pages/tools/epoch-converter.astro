@@ -1,0 +1,195 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { UnixTimestampConverter as Converter } from '../../components/UnixTimestampConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "What is an Epoch converter?",
+    answer: "An Epoch converter is a utility that translates between raw numeric Unix timestamps (seconds since January 1, 1970) and readable human calendar dates. It simplifies system administration, database queries, and log analysis."
+  },
+  {
+    question: "What is the Unix Epoch?",
+    answer: "The Unix Epoch is January 1, 1970, at 00:00:00 UTC. It serves as the arbitrary starting reference point for counting time in UNIX operating systems."
+  },
+  {
+    question: "Are epoch timestamps timezone-independent?",
+    answer: "Yes, standard Unix timestamps represent seconds since the epoch in Coordinated Universal Time (UTC) everywhere in the world. Timezone offsets are only applied locally when displaying the date."
+  },
+  {
+    question: "What is the difference between 10-digit and 13-digit epochs?",
+    answer: "A 10-digit epoch is in seconds (standard Unix time). A 13-digit epoch is in milliseconds, which is the default format used in JavaScript and Java."
+  },
+  {
+    question: "How do I get the current epoch time in JavaScript?",
+    answer: "You can retrieve the current epoch time in seconds using <code>Math.floor(Date.now() / 1000)</code>."
+  },
+  {
+    question: "What is the Year 2038 problem (Y2038 bug)?",
+    answer: "On January 19, 2038, signed 32-bit timestamp integers will reach their maximum value and overflow, resetting legacy system dates to 1901. Modern systems prevent this by adopting 64-bit integer values."
+  },
+  {
+    question: "Can I convert negative timestamps?",
+    answer: "Yes. Negative epoch integers represent dates prior to 1970. For example, a timestamp of <code>-315360000</code> represents January 1, 1960."
+  },
+  {
+    question: "How is epoch time parsed in Python?",
+    answer: "In Python, convert an epoch to a datetime object using <code>datetime.fromtimestamp(epoch)</code>."
+  },
+  {
+    question: "Does the epoch time account for leap seconds?",
+    answer: "No, Unix time does not count leap seconds. A day is assumed to have exactly 86,400 seconds, and minor adjustments are made dynamically by systems."
+  },
+  {
+    question: "How does this tool perform conversions?",
+    answer: "All conversions run client-side inside your browser sandbox. No parameters or timestamps are ever sent to a backend server, ensuring privacy."
+  },
+  {
+    question: "What is microsecond epoch precision?",
+    answer: "Microsecond epochs have 16 digits (e.g. <code>1718365200000000</code>), commonly used in database logs and Python timestamps."
+  },
+  {
+    question: "What is nanosecond epoch precision?",
+    answer: "Nanosecond epochs have 19 digits (e.g. <code>1718365200000000000</code>), commonly used in Go and Rust runtime metrics."
+  },
+  {
+    question: "How do I check if my epoch is in seconds or milliseconds?",
+    answer: "If the integer is 10 digits long, it is in seconds. If it is 13 digits long, it is in milliseconds."
+  },
+  {
+    question: "What timezone does UTC stand for?",
+    answer: "UTC stands for Coordinated Universal Time. It is the primary time standard by which the world regulates clocks."
+  },
+  {
+    question: "What is a Julian Date?",
+    answer: "A Julian Date is a continuous count of days since January 1, 4713 BC, primarily used in astronomy."
+  },
+  {
+    question: "Does this tool support timezone adjustments?",
+    answer: "Yes, you can select different target timezones from the dropdown to preview local equivalents instantly."
+  },
+  {
+    question: "Can I run this epoch converter offline?",
+    answer: "Yes. Once loaded, all date conversions and timeline scrubbers execute locally on your device."
+  },
+  {
+    question: "How do I represent epochs in PostgreSQL?",
+    answer: "You can convert epoch seconds to timestamps in PostgreSQL using <code>to_timestamp(epoch_seconds)</code>."
+  },
+  {
+    question: "What is GPS epoch time?",
+    answer: "GPS time counts seconds since January 6, 1980, without accounting for leap seconds, causing it to drift from UTC."
+  },
+  {
+    question: "Is this converter completely free?",
+    answer: "Yes, useUtils provides all developer tools free without ad banners or account logins."
+  },
+  {
+    question: "How do I format an epoch to ISO 8601 in Go?",
+    answer: "In Go, convert an epoch using <code>time.Unix(sec, 0).Format(time.RFC3339)</code>."
+  }
+];
+
+const headers = ["Resolution Level", "Digits", "Example Value", "Common Ecosystems"];
+const rows = [
+  {
+    label: "Seconds",
+    values: ["10 digits", "<code>1718365200</code>", "Unix, Bash, Python, PHP, MySQL"]
+  },
+  {
+    label: "Milliseconds",
+    values: ["13 digits", "<code>1718365200000</code>", "JavaScript, Java, MongoDB"]
+  }
+];
+
+const practices = [
+  {
+    title: "Always Standardize in UTC",
+    description: "Store epoch integers in databases in UTC. Apply local timezone conversions only in the final display layer."
+  },
+  {
+    title: "Prepare for 64-Bit Transitions",
+    description: "Verify that database schemas define epoch columns as BIGINT to prevent Year 2038 overflows."
+  }
+];
+
+const mistakes = [
+  {
+    title: "Passing seconds into millisecond Date libraries",
+    description: "Passing a 10-digit epoch into a JS constructor yields a date in 1970 because JS expects milliseconds.",
+    fix: "Multiply the epoch seconds by 1000 before parsing."
+  }
+];
+
+const languages = [
+  {
+    lang: "JavaScript",
+    code: `
+const epochSec = Math.floor(Date.now() / 1000);
+const date = new Date(epochSec * 1000);
+console.log(date.toUTCString());
+    `
+  },
+  {
+    lang: "Python",
+    code: `
+from datetime import datetime
+dt = datetime.fromtimestamp(1718365200)
+print(dt.isoformat())
+    `
+  }
+];
+
+const references = [
+  { title: "POSIX.1-2008 Epoch Specifications", url: "https://pubs.opengroup.org/" }
+];
+---
+
+<ToolPageLayout
+  title="Epoch Converter Online: Convert Unix Timestamps to Human Dates"
+  description="Convert Unix epoch timestamps to readable date formats locally. Real-time converter with ticking clocks and timezone selectors."
+  keywords="epoch converter, unix epoch converter, epoch time converter, convert epoch date, unix timestamp decoder"
+  toolTitle="Epoch Timestamp Converter"
+  toolDescription="Convert between Unix epoch numbers and standard dates in real-time. Processed 100% locally in your browser sandbox."
+  faqs={faqs}
+>
+  <Converter client:load defaultActiveTab="single" />
+
+  <div slot="seo-content" class="flex flex-col gap-12 mt-10 max-w-4xl mx-auto w-full">
+    <PrivacyBadge />
+
+    <ComparisonTable 
+      headers={headers} 
+      rows={rows} 
+      title="Epoch Resolutions" 
+      description="Compare representation lengths and ecosystems across epoch scales:"
+    />
+
+    <BestPractices 
+      practices={practices} 
+      title="Epoch Conversion Best Practices" 
+    />
+
+    <CommonMistakes 
+      mistakes={mistakes} 
+      title="Common Epoch Pitfalls" 
+    />
+
+    <LanguageSupport 
+      languages={languages} 
+      title="Programmatic Epoch Conversion" 
+    />
+
+    <OfficialReferences 
+      references={references} 
+    />
+
+    <RelatedTools />
+  </div>
+</ToolPageLayout>

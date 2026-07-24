@@ -1,9 +1,16 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { DiffChecker as DiffCheckerComponent } from '../../components/DiffChecker';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
 
 const tabs = [
-  { label: 'Diff Checker', href: '/tools/diff-checker', active: true }
+  { label: 'Diff Checker', href: '/tools/diff-checker', active: true },
+  { label: 'Semantic JSON Diff', href: '/tools/json-diff' }
 ];
 
 const faqs = [
@@ -54,6 +61,115 @@ const faqs = [
   {
     question: "What is the similarity score and how is it computed?",
     answer: "The similarity score is a percentage indicator of how identical the two texts are. It is calculated using the Dice Coefficient. It divides the total length of common matching sequences by the combined total length of both inputs, adjusting for partial line modifications."
+  },
+  {
+    question: "How does Git compute diffs compared to this browser tool?",
+    answer: "Git uses standard diff algorithms (defaulting to Myers, with options like Histogram or Minimal). Our tool uses a modified JavaScript implementation of the Myers Diff algorithm combined with character-level tokenization to present comparable results right in the browser."
+  },
+  {
+    question: "What is the Histogram diff algorithm and how does it differ from Myers?",
+    answer: "The Histogram algorithm is a modification of the Patience Diff algorithm. It solves some edge-case alignment issues in Myers diff, grouping closing brackets and minor lines more intuitively, though Myers remains standard for general text."
+  },
+  {
+    question: "Can I diff binary files like images or PDFs?",
+    answer: "Standard text diffing tools compare character sequences. Comparing binary files directly will result in unreadable raw bytes representation. To diff images, specialized visual overlays or structural metadata comparison tools are required."
+  },
+  {
+    question: "How does the interactive merge tool help in resolving Git merge conflicts?",
+    answer: "The merge system allows you to inspect conflicting blocks, select whether to adopt version A (e.g. current branch) or version B (e.g. incoming branch), and instantly generate the final conflict-free file for copy-pasting."
+  },
+  {
+    question: "What is the Dice Coefficient and why is it used for similarity scoring?",
+    answer: "The Dice Coefficient measures the similarity of two samples by dividing twice the number of common elements by the sum of elements in both samples. In text diffing, it offers an accurate metric of document similarity independent of size."
+  },
+  {
+    question: "How does the tool handle extremely large files?",
+    answer: "To prevent browser thread locking, the text is tokenized into line arrays and pre-hashed to integer keys. This shifts comparison logic from expensive string comparisons to high-speed integer array walks, enabling smooth operations on files up to several megabytes."
+  },
+  {
+    question: "Can I generate a shareable link of my compared texts?",
+    answer: "Yes. Clicking the share button compresses the compared documents using LZW compression and embeds them in the URL hash. Since hash values are not sent to servers, your shareable URL remains 100% private until shared."
+  },
+  {
+    question: "Does this tool support patch creation or diff output formats?",
+    answer: "Yes, standard output models match Git patch outputs (e.g. <code>@@ -1,4 +1,4 @@</code> headers), allowing you to copy raw patch lines directly to apply them via command line utilities."
+  },
+  {
+    question: "Why is semantic JSON sorting important for API testing?",
+    answer: "JSON properties are technically unordered. Two identical API payloads with different key orders (e.g. <code>{\"id\": 1, \"name\": \"John\"}</code> vs <code>{\"name\": \"John\", \"id\": 1}</code>) will fail a standard text comparison. Semantic JSON diffing sorts keys recursively before comparing them."
+  },
+  {
+    question: "How does whitespace trimming prevent false-positive changes?",
+    answer: "Differences in carriage returns (LF vs CRLF), tab styles (2 spaces vs 4 spaces), or trailing whitespaces can result in every line being flagged as modified. Enabling 'Ignore Whitespace' strips these superficial format bounds before diffing."
+  },
+  {
+    question: "Can I use this diff tool offline?",
+    answer: "Yes, the tool is compiled into a single static page using Astro and loads completely locally. You can open and compare files without internet connectivity, ensuring security in air-gapped environments."
+  }
+];
+
+const references = [
+  { title: "An O(ND) Difference Algorithm and Its Variations - Eugene Myers", url: "http://www.xmailserver.org/diff2.pdf", source: "Research Paper" },
+  { title: "Git Book - Customizing Git: Git Diff Algorithms", url: "https://git-scm.com/docs/git-diff", source: "Git Documentation" },
+  { title: "MDN Web Docs - HTML5 FileReader API", url: "https://developer.mozilla.org/en-US/docs/Web/API/FileReader", source: "Mozilla Documentation" }
+];
+
+const languageCodes = [
+  {
+    lang: "Bash / Git",
+    code: `# Compare files using Git's default Myers algorithm
+git diff --no-index file_a.txt file_b.txt
+
+# Compare files ignoring whitespace modifications
+git diff --no-index -w file_a.txt file_b.txt
+
+# Use the Histogram algorithm to compare changes
+git diff --no-index --diff-algorithm=histogram file_a.txt file_b.txt`,
+    note: "Uses standard Git CLI. '--no-index' enables comparing files outside repositories."
+  },
+  {
+    lang: "Python",
+    code: `import difflib
+
+text_a = "hello\\nworld\\n"
+text_b = "hello\\nthere\\nworld\\n"
+
+# Output standard diff formatting
+diff = difflib.unified_diff(
+    text_a.splitlines(),
+    text_b.splitlines(),
+    fromfile='file_a',
+    tofile='file_b',
+    lineterm=''
+)
+
+print('\\n'.join(list(diff)))`,
+    note: "Python standard library difflib provides clean comparison matrices."
+  },
+  {
+    lang: "JavaScript",
+    code: `// Simple character-level diff using basic Edit Distance
+function simpleDiff(a, b) {
+  const matrix = Array(a.length + 1).fill().map(() => Array(b.length + 1).fill(0));
+  for (let i = 0; i <= a.length; i++) matrix[i][0] = i;
+  for (let j = 0; j <= b.length; j++) matrix[0][j] = j;
+  // Matrix walks...
+  return matrix[a.length][b.length];
+}`,
+    note: "Basic Levenshtein approach. For large documents, standard Myers is much faster."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Comparing JSON Payloads as Plain Text",
+    description: "Standard line diffing reports multiple false mismatches due to minor indentation, spacing, or randomized object key ordering in JSON APIs.",
+    fix: "Use the <a href='/tools/json-diff' class='text-accent-emerald underline'>Semantic JSON Diff</a> tab to automatically parse, sort keys alphabetically, and format properties before comparison."
+  },
+  {
+    title: "CRLF vs LF Carriage Return Differences",
+    description: "Files edited in Windows (CRLF) and Linux (LF) environments contain hidden carriage returns. Standard diff engines flag every single line as modified even if the words match.",
+    fix: "Enable the 'Ignore Whitespace' toggle to strip Carriage Returns (\\r) prior to executing the difference engine."
   }
 ];
 ---
@@ -72,7 +188,7 @@ const faqs = [
   <!-- Detailed educational SEO section -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
     
-    {/* Section 1: Intro */}
+    <!-- Section 1: Intro -->
     <div>
       <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
         <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
@@ -82,88 +198,59 @@ const faqs = [
         Our local-first Diff Checker provides a high-fidelity environment for reviewing, aligning, and merging source code, JSON configurations, or documentation. To get started, paste your original text in the <strong>Original Text (A)</strong> box and your modified version in the <strong>Modified Text (B)</strong> box. 
       </p>
       <p class="leading-relaxed mb-4">
-        The tool processes changes in real-time. If you are comparing raw structured configurations, switch to the <strong>Semantic JSON</strong> tab. This parses the files, sorts the object keys alphabetically, and reformats them, preventing key order variance from skewing your comparison results.
+        The tool processes changes in real-time. If you are comparing raw structured configurations, switch to the <strong>Semantic JSON Diff</strong> tab. This parses the files, sorts the object keys alphabetically, and reformats them, preventing key order variance from skewing your comparison results.
       </p>
     </div>
 
-    {/* Section 2: Split vs Unified */}
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Choosing the Right View: Split vs Unified
-      </h2>
-      <p class="leading-relaxed mb-4">
-        The viewer supports two representation modes to match different debugging workflows:
-      </p>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
-        <div class="bg-zinc-900/40 border border-border-hairline rounded-xl p-4 flex flex-col gap-2">
-          <span class="font-mono text-zinc-200 font-semibold text-xs flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 bg-accent-emerald rounded-full"></span> Split View (Side-by-Side)
-          </span>
-          <p class="text-xs text-zinc-400 leading-relaxed">
-            Aligns the original and modified documents side-by-side. Deleted lines are padded on the right and added lines are padded on the left, keeping matching lines horizontally locked. Excellent for reviewing complex structural modifications and side-by-side refactoring.
-          </p>
-        </div>
-        
-        <div class="bg-zinc-900/40 border border-border-hairline rounded-xl p-4 flex flex-col gap-2">
-          <span class="font-mono text-zinc-200 font-semibold text-xs flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 bg-accent-emerald rounded-full"></span> Unified View (Inline)
-          </span>
-          <p class="text-xs text-zinc-400 leading-relaxed">
-            Consolidates the file into a single sequential layout. Deletions are shown with a red background and additions with a green background. Preferred for rapid scanning of simple documents, copy editing, or viewing diffs on narrower tablet and mobile screens.
-          </p>
-        </div>
-      </div>
-    </div>
+    <!-- Section 2: Split vs Unified -->
+    <ComparisonTable
+      title="Comparing Diff Viewers: Split vs Unified View"
+      description="Select the most appropriate visual rendering layout to inspect your file modifications:"
+      headers={["Layout Mode", "Visual Presentation", "Pros", "Best Used For"]}
+      rows={[
+        { label: "Split View", values: ["Side-by-side locked panels", "Horizontal alignment lock, visual structural comparison", "Complex refactoring, source code edits"] },
+        { label: "Unified View", values: ["Single inline scrolling stream", "Compact screen utilization, chronological reading flow", "Copy edits, Markdown reviews, mobile displays"] }
+      ]}
+    />
 
-    {/* Section 3: Myers Algorithm */}
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Understanding the Myers Diff Algorithm
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Our comparison engine runs on a custom, zero-dependency implementation of Eugene Myers' O(ND) difference algorithm. The algorithm treats the edit process as finding the shortest path on a grid search space, where:
-      </p>
-      
-      <ul class="list-disc pl-6 leading-relaxed mb-4 flex flex-col gap-1.5">
-        <li><strong>Horizontal movements</strong> represent deletions (deleting an element from sequence A).</li>
-        <li><strong>Vertical movements</strong> represent additions (adding an element to sequence B).</li>
-        <li><strong>Diagonal movements</strong> represent matches (both lines are identical).</li>
-      </ul>
-      
-      <p class="leading-relaxed mb-4">
-        By seeking the path with the fewest horizontal and vertical steps, the algorithm mathematically guarantees that it has found the <em>Shortest Edit Script (SES)</em>. To optimize browser performance for extremely large files, we pre-hash each line to unique integers, mapping string operations to high-speed numerical array indexes.
-      </p>
-    </div>
+    <!-- Section 3: Conversion Examples -->
+    <ExampleCard
+      title="Text Differences Example"
+      description="Inspect how additions and deletions are marked in the unified output stream:"
+      examples={[
+        { label: "Modified Variable Declaration", input: "const connectionTimeout = 5000;", output: "const connectionTimeoutMs = 10000;", badge: "Modified Line" },
+        { label: "Deleted Object Key", input: "\"port\": 8080,", output: "(Line removed)", badge: "Deleted Line" },
+        { label: "Inserted Setup Logic", input: "(Empty line)", output: "import { validateConfig } from './utils';", badge: "Inserted Line" }
+      ]}
+    />
 
-    {/* Section 4: Privacy & Merge */}
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Interactive Merging and Absolute Sandbox Privacy
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Unlike other developer portals, we prioritize your data security:
-      </p>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="bg-zinc-900/40 border border-border-hairline rounded-xl p-4 flex flex-col gap-2">
-          <span class="font-mono text-zinc-200 font-semibold text-xs">🔒 100% Client-Side Encryption</span>
-          <p class="text-xs text-zinc-400 leading-relaxed">
-            All text processing, word analysis, and rendering occur inside your browser using the local JavaScript engine. Your source codes, passwords, database dumps, and key configurations are never uploaded to our servers or processed by third-party APIs.
-          </p>
-        </div>
+    <!-- Section 4: Implementation Snippets -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Diffing Code Snippets"
+      description="Calculate differences programmatically using terminal CLI or native scripts:"
+    />
 
-        <div class="bg-zinc-900/40 border border-border-hairline rounded-xl p-4 flex flex-col gap-2">
-          <span class="font-mono text-zinc-200 font-semibold text-xs">🛠️ Interactive Hunk Merge System</span>
-          <p class="text-xs text-zinc-400 leading-relaxed">
-            Toggle the <strong>Merge Tool</strong> overlay to reveal action controls next to each change block. Selectively pick whether to apply the modified line (B) or keep the original (A), assembling a customized, refactored output in the output panel which you can copy in a single click.
-          </p>
-        </div>
-      </div>
-    </div>
+    <!-- Section 5: Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Comparison Pitfalls"
+      description="Avoid these false-positive triggers and visual comparison errors:"
+    />
 
+    <!-- Section 6: Features & Practices -->
+    <BestPractices
+      title="Diff Checker Best Practices"
+      practices={[
+        { title: "Utilize Keyboard Shortcuts", description: "Use J to navigate forward to the next hunk, and K to jump backward, allowing rapid keyboard navigation." },
+        { title: "Enable Whitespace Collapsing", description: "Trim line spacing and carriage returns when comparing files created on different OS systems." },
+        { title: "Interactive Merging", description: "Toggle the merge panel to selectively pull lines from A or B and build a customized unified patch." }
+      ]}
+    />
+
+    <!-- Section 7: Official References -->
+    <OfficialReferences
+      references={references}
+    />
   </div>
 </ToolPageLayout>

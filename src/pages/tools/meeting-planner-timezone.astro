@@ -1,0 +1,194 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { TimeZoneConverter } from '../../components/TimeZoneConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "What is a timezone meeting planner?",
+    answer: "A timezone meeting planner is a visual tool that maps business hours across different geographic locations, helping distributed remote teams identify the best time window to host calls."
+  },
+  {
+    question: "How do I schedule a call across international timezones?",
+    answer: "Add the timezones of your team members in the left configuration box. Scrub the 24-hour slider to shift times simultaneously across all added regions. The overlap scoring system highlights the best times in green."
+  },
+  {
+    question: "What are core business hours?",
+    answer: "Core business hours are typically 9:00 AM to 6:00 PM local time. The planner highlights these core working hours in green to represent optimal times for team availability."
+  },
+  {
+    question: "What are shoulder hours?",
+    answer: "Shoulder hours (highlighted in yellow) represent transition times (like early morning 7:00-9:00 AM or evening 6:00-8:00 PM) where team members are available but outside standard work hours."
+  },
+  {
+    question: "Can I download calendar invites for scheduled slots?",
+    answer: "Yes. Once you select a time slot, the calendar exporter compiles customized Google Calendar, Outlook Web, and offline <code>.ics</code> files for instant download."
+  },
+  {
+    question: "Are my timezone settings and team details kept private?",
+    answer: "Yes, 100%. All calculations, local offsets, and calendar exports execute client-side in your browser. No details are ever sent to external servers."
+  },
+  {
+    question: "How do I share the timezone configuration with my team?",
+    answer: "Click the <strong>Share Configuration</strong> button to copy a link containing URL query parameters. Anyone opening this link will see your exact locations and timeframes."
+  },
+  {
+    question: "What is the difference between UTC and GMT?",
+    answer: "UTC is an atomic time standard used for technical synchronization. GMT is a historical timezone. Practically, they share the exact same time values."
+  },
+  {
+    question: "How does Daylight Saving Time (DST) affect my scheduled call?",
+    answer: "DST shifts offsets twice a year. The planner checks the selected anchor date and automatically queries the IANA database to apply DST adjustments."
+  },
+  {
+    question: "What is an IANA timezone database?",
+    answer: "The IANA Time Zone Database contains the definitive historical records of timezone offset changes and DST transitions globally."
+  },
+  {
+    question: "How does the browser determine my home timezone?",
+    answer: "JavaScript detects your OS system clock settings using the Intl API: <code>Intl.DateTimeFormat().resolvedOptions().timeZone</code>."
+  },
+  {
+    question: "How does the overlap scoring system grade slots?",
+    answer: "The scoring engine grades each hour index based on participant sleep states. Working hours yield high scores, while night hours subtract points."
+  },
+  {
+    question: "Why should we avoid abbreviations like CST?",
+    answer: "Abbreviations are ambiguous. CST can represent Central Standard Time (US), China Standard Time, or Cuba Standard Time. Use full location names."
+  },
+  {
+    question: "How do I configure my default working hours?",
+    answer: "You can adjust the working hours dropdown selectors in the anchor panel to align with your organization's custom schedule."
+  },
+  {
+    question: "Does the planner handle fractional offsets (like India)?",
+    answer: "Yes, Indian Standard Time (UTC+5:30) and other fractional locations are fully supported by the converter engine."
+  },
+  {
+    question: "Can I run this planner offline?",
+    answer: "Yes, all calculation logic runs locally, allowing complete offline execution."
+  },
+  {
+    question: "What is military timezone naming?",
+    answer: "Military timezones identify zones using single letters, with UTC designated as Z (Zulu)."
+  },
+  {
+    question: "What is the International Date Line?",
+    answer: "The International Date Line marks the boundary where the calendar date shifts by one day when crossed."
+  },
+  {
+    question: "What database column is best for scheduling?",
+    answer: "Always store scheduled dates in <code>TIMESTAMP WITH TIME ZONE</code> columns to record UTC points safely."
+  },
+  {
+    question: "Is this meeting planner free?",
+    answer: "Yes, useUtils provides all developer tools free without ad banners or account logins."
+  },
+  {
+    question: "What is NTP synchronization?",
+    answer: "Network Time Protocol (NTP) synchronizes computer systems over networks to prevent clock drift."
+  }
+];
+
+const headers = ["Location", "Standard Offset", "Daylight Saving (DST)", "Representative Cities"];
+const rows = [
+  {
+    label: "America/New_York",
+    values: ["UTC -05:00", "Yes (EDT, UTC-4)", "New York, Boston, Miami"]
+  },
+  {
+    label: "Europe/London",
+    values: ["UTC +00:00", "Yes (BST, UTC+1)", "London, Manchester, Edinburgh"]
+  },
+  {
+    label: "Asia/Kolkata",
+    values: ["UTC +05:30", "No", "New Delhi, Mumbai, Bengaluru"]
+  }
+];
+
+const practices = [
+  {
+    title: "Prioritize Overlap Windows",
+    description: "Align schedules within core working hours (9:00 AM - 6:00 PM) to avoid booking calls during night hours."
+  },
+  {
+    title: "Use Shareable Workspace Links",
+    description: "Share timezone links when scheduling meetings to ensure all team members view the slot in their relative clocks."
+  }
+];
+
+const mistakes = [
+  {
+    title: "Ignoring DST transitions",
+    description: "Scheduling a recurring call without checking DST transitions causes calendar meetings to shift by 1 hour.",
+    fix: "Ensure calendar invites are created in UTC to automatically adjust local times."
+  }
+];
+
+const languages = [
+  {
+    lang: "JavaScript (Intl)",
+    code: `
+const date = new Date('2026-06-14T12:00:00Z');
+const formatter = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'Europe/London',
+  timeStyle: 'short'
+});
+console.log(formatter.format(date));
+    `
+  }
+];
+
+const references = [
+  { title: "IANA Time Zones", url: "https://www.iana.org/time-zones" }
+];
+---
+
+<ToolPageLayout
+  title="Time Zone Meeting Planner: Schedule Global Team Calls"
+  description="Compare global timezones and schedule international meetings. Visual 24-hour scrubber timeline with work hours optimizer and calendar exports."
+  keywords="timezone meeting planner, global meeting planner, schedule international call, timezone coordinator, world clock meeting"
+  toolTitle="Time Zone Meeting Planner"
+  toolDescription="Add international locations, scrub through visual timelines, optimize overlapping working hours, and export calendar links locally."
+  faqs={faqs}
+>
+  <TimeZoneConverter client:load defaultActiveTab="planner" />
+
+  <div slot="seo-content" class="flex flex-col gap-12 mt-10 max-w-4xl mx-auto w-full">
+    <PrivacyBadge />
+
+    <ComparisonTable 
+      headers={headers} 
+      rows={rows} 
+      title="Common Team Locations" 
+      description="Compare offsets and DST configurations across standard global office zones:"
+    />
+
+    <BestPractices 
+      practices={practices} 
+      title="Remote Meeting Scheduling Best Practices" 
+    />
+
+    <CommonMistakes 
+      mistakes={mistakes} 
+      title="Common Scheduling Pitfalls" 
+    />
+
+    <LanguageSupport 
+      languages={languages} 
+      title="Programmatic Timezone Conversions" 
+    />
+
+    <OfficialReferences 
+      references={references} 
+    />
+
+    <RelatedTools />
+  </div>
+</ToolPageLayout>

@@ -1,0 +1,197 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { UnixTimestampConverter as Converter } from '../../components/UnixTimestampConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "What is a log timestamp scanner?",
+    answer: "A log timestamp scanner is a developer tool that searches through text files (like server outputs or database logs) to identify and extract numeric Unix timestamps or formatted dates, translating them in-place."
+  },
+  {
+    question: "How do I extract timestamps from my server logs?",
+    answer: "Paste your raw log outputs into the text area on the left. The parser automatically scans the logs, extracts all matching integers or dates, lists them chronologically, and converts them to standard readable structures."
+  },
+  {
+    question: "Are my server logs secure when using this online scanner?",
+    answer: "Yes, 100% secure. Unlike online converters that upload logs to backend APIs, this tool executes all regex scans and timezone conversions inside your browser thread locally."
+  },
+  {
+    question: "What formats can the scanner identify?",
+    answer: "The scanner identifies standard 10-digit Unix timestamps (seconds), 13-digit Java/JavaScript timestamps (milliseconds), ISO 8601 strings, and Apache/Nginx log formats."
+  },
+  {
+    question: "Can I copy the parsed timestamps?",
+    answer: "Yes, the tool displays a table of extracted timestamps. You can click to copy individual values or copy the entire list."
+  },
+  {
+    question: "Can I run this scanner offline?",
+    answer: "Yes, all parsing routines are coded in local client-side JavaScript, allowing complete offline execution."
+  },
+  {
+    question: "Why do servers record logs in UTC?",
+    answer: "Standardizing server logs in UTC prevents confusion when merging log streams from servers distributed across different timezones."
+  },
+  {
+    question: "What is the Year 2038 problem (Y2038 bug)?",
+    answer: "Systems using signed 32-bit integers for seconds will overflow on January 19, 2038, causing system crashes if they are not upgraded to 64-bit."
+  },
+  {
+    question: "How does the timezone selection affect scanned logs?",
+    answer: "Selecting a timezone dynamically adjusts the displayed calendar dates for all extracted timestamps, making it easy to align log events to your timezone."
+  },
+  {
+    question: "Can I load sample logs to test the scanner?",
+    answer: "Yes, click the 'Load Sample Logs' button to populate the text area with realistic server prints and verify the converter."
+  },
+  {
+    question: "How are relative dates (like '3 days ago') parsed?",
+    answer: "The natural language parser evaluates relative expressions and translates them into absolute Unix timestamps."
+  },
+  {
+    question: "What is Julian Date?",
+    answer: "A Julian Date is a count of days since January 1, 4713 BC, primarily used in astronomy."
+  },
+  {
+    question: "How is a regex timestamp extractor written in Python?",
+    answer: "In Python, extract timestamps using regex: <code>re.findall(r'\\b\\d{10}\\b', log_text)</code>."
+  },
+  {
+    question: "How is a regex timestamp extractor written in Go?",
+    answer: "In Go, compile a regular expression matching 10 or 13 digits to extract timestamps from string buffers."
+  },
+  {
+    question: "Is there a size limit to the logs I can paste?",
+    answer: "The tool is optimized to process up to 50KB of log files locally to maintain high rendering speeds."
+  },
+  {
+    question: "What is microsecond precision?",
+    answer: "Microsecond timestamps are 16 digits long, commonly used in databases like PostgreSQL."
+  },
+  {
+    question: "What is nanosecond precision?",
+    answer: "Nanosecond timestamps are 19 digits long, commonly used in systems like Go or Rust."
+  },
+  {
+    question: "Why did my timestamp show a 1970 date?",
+    answer: "This is a digits mismatch error. Ensure you have selected the correct scale (seconds vs milliseconds)."
+  },
+  {
+    question: "Is this tool completely free?",
+    answer: "Yes, useUtils provides all developer tools free with no signup requirements."
+  },
+  {
+    question: "What is NTP clock drift?",
+    answer: "NTP clock drift is the slight difference in time that accumulates in server clocks without regular network synchronization."
+  },
+  {
+    question: "What is ISO 8601?",
+    answer: "ISO 8601 is the international standard for representing date and time values."
+  }
+];
+
+const headers = ["Log Format Type", "Pattern Example", "Detected Fields"];
+const rows = [
+  {
+    label: "UNIX Seconds",
+    values: ["<code>1718365200</code>", "10-digit integers, converted in-place"]
+  },
+  {
+    label: "UNIX Milliseconds",
+    values: ["<code>1718365200000</code>", "13-digit integers, converted in-place"]
+  },
+  {
+    label: "ISO 8601 String",
+    values: ["<code>2026-06-14T11:53:06Z</code>", "Formatted calendar dates, converted to local timezone"]
+  }
+];
+
+const practices = [
+  {
+    title: "Convert Logs Client-Side",
+    description: "Always convert debug logs client-side to prevent exposing private system metadata or credentials to external APIs."
+  },
+  {
+    title: "Verify Timestamp Resolutions",
+    description: "Check if your logs print timestamps in seconds or milliseconds before mapping them in databases."
+  }
+];
+
+const mistakes = [
+  {
+    title: "Uploading raw logs to server-based converters",
+    description: "Uploading logs containing customer emails or transaction hashes to online portals exposes private data.",
+    fix: "Use local browser-based sandboxes for log conversion."
+  }
+];
+
+const languages = [
+  {
+    lang: "Python (Regex)",
+    code: `
+import re
+from datetime import datetime
+
+log_data = "ERROR at epoch 1718365200. Connection timed out."
+timestamps = re.findall(r'\\b\\d{10}\\b', log_data)
+
+for ts in timestamps:
+    dt = datetime.fromtimestamp(int(ts))
+    print(ts, '->', dt.isoformat())
+    `
+  }
+];
+
+const references = [
+  { title: "Regex Cheat Sheet", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions" }
+];
+---
+
+<ToolPageLayout
+  title="Log Timestamp Scanner: Batch Extract & Convert Epoch Dates"
+  description="Scan server log files and extract Unix epoch timestamps or formatted dates. Local client-side parser with batch timezone adjustments."
+  keywords="log timestamp scanner, extract epoch from logs, batch timestamp converter, server log date parser, regex timestamp extractor"
+  toolTitle="Log Timestamp Scanner"
+  toolDescription="Paste raw terminal prints or server log outputs. The scanner extracts, validates, and translates all numeric epoch instances locally in real-time."
+  faqs={faqs}
+>
+  <Converter client:load defaultActiveTab="scanner" />
+
+  <div slot="seo-content" class="flex flex-col gap-12 mt-10 max-w-4xl mx-auto w-full">
+    <PrivacyBadge />
+
+    <ComparisonTable 
+      headers={headers} 
+      rows={rows} 
+      title="Recognized Log Formats" 
+      description="Compare recognized date layouts scanned by the parser:"
+    />
+
+    <BestPractices 
+      practices={practices} 
+      title="Log Scanning Best Practices" 
+    />
+
+    <CommonMistakes 
+      mistakes={mistakes} 
+      title="Common Log Analysis Pitfalls" 
+    />
+
+    <LanguageSupport 
+      languages={languages} 
+      title="Programmatic Log Timestamp Extractors" 
+    />
+
+    <OfficialReferences 
+      references={references} 
+    />
+
+    <RelatedTools />
+  </div>
+</ToolPageLayout>

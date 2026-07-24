@@ -1,0 +1,235 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { SlugGenerator } from '../../components/SlugGenerator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const faqs = [
+  {
+    question: "What is a URL slug?",
+    answer: "A URL slug is the specific part of a web address that identifies a particular page on a website in an easy-to-read format. It is typically the last section of the URL path (for example, in <code>https://useutils.com/tools/slug-generator</code>, the slug is <code>slug-generator</code>) and is generated directly from the page's title."
+  },
+  {
+    question: "Why are slugs preferred over query parameters (like ?id=123) for URLs?",
+    answer: "Slugs are human-readable, easier to remember, and contain keywords that search engines use to determine content relevance, whereas query parameters are opaque and carry no contextual semantic meaning."
+  },
+  {
+    question: "How does a URL slug generator help website owners?",
+    answer: "It automates the process of turning editorial titles (which contain spaces and special characters) into clean, lowercased, hyphenated routes that compile safely on web servers."
+  },
+  {
+    question: "Does Google crawl and index underscores in slugs?",
+    answer: "Google recommends hyphens (<code>-</code>) instead of underscores (<code>_</code>) in URLs. Hyphens are interpreted as word separators, while underscores join words into a single search token."
+  },
+  {
+    question: "What is the ideal length of a URL slug for SEO?",
+    answer: "For optimal CTR and crawl focus, aim for 3 to 5 words (under 60 characters). Shorter slugs are easier to scan in search results."
+  },
+  {
+    question: "What is the difference between a slug and a permalink?",
+    answer: "A slug is only the final path identifier (e.g., <code>my-post</code>). A permalink is the complete, permanent URL containing the domain, subfolders, and slug (e.g., <code>https://example.com/my-post</code>)."
+  },
+  {
+    question: "Should I remove conjunctions (like 'and', 'the') from my URL slugs?",
+    answer: "Yes. Removing these 'stop words' keeps the slug short, focused, and concentrates SEO keyword weights on the remaining descriptive terms."
+  },
+  {
+    question: "Is my data secure when generating URL slugs here?",
+    answer: "Yes, 100%. The generator runs entirely in client-side JavaScript within your browser. No strings, inputs, or generated slugs are transmitted to a server."
+  },
+  {
+    question: "How do I prevent slug collisions in a database?",
+    answer: "Check your database for existing slugs before inserting. If a collision is detected, append a suffix like <code>-1</code> or a short alphanumeric hash."
+  },
+  {
+    question: "What characters are illegal in URL paths according to RFC 3986?",
+    answer: "Control characters, spaces, and reserved symbols like <code>?</code>, <code>#</code>, <code>[</code>, <code>]</code>, <code>@</code>, <code>!</code>, <code>$</code>, <code>&amp;</code>, <code>'</code>, <code>(</code>, <code>)</code>, <code>*</code>, <code>+</code>, <code>,</code>, <code>;</code>, <code>=</code> are illegal or must be percent-encoded."
+  },
+  {
+    question: "Why is transliteration necessary for international characters in slugs?",
+    answer: "Non-Latin scripts (Cyrillic, Arabic, accents) get percent-encoded into long, unreadable strings (e.g. <code>%D0%B0%D0%B1</code>). Transliteration converts them to standard ASCII characters (e.g. <code>ab</code>)."
+  },
+  {
+    question: "How to generate a URL slug programmatically in JavaScript?",
+    answer: "You can convert text to slugs using a regular expression: <code>const slugify = str => str.toLowerCase().replace(/[^a-z0-9\\s-]/g, '').trim().replace(/\\s+/g, '-');</code>."
+  },
+  {
+    question: "How to convert titles to slugs in Python?",
+    answer: "In Python: <code>import re; slug = re.sub(r'[^a-z0-9\\s-]', '', text.lower()).strip().replace(' ', '-')</code>."
+  },
+  {
+    question: "Can slugs end with file extensions like .html or .php?",
+    answer: "Historically, yes. Modern web architectures prefer clean URLs without file extensions, routing requests dynamically to database-driven templates."
+  },
+  {
+    question: "What is the difference between WordPress slugs and custom database slugs?",
+    answer: "WordPress automatically sanitizes title strings, strips short common particles, and appends unique increments. Custom slug engines can be tailored for any specific application schema."
+  },
+  {
+    question: "How do I handle numbers in URL slugs?",
+    answer: "Numbers are safe and preserved. They are commonly used in paths like versioning (e.g., <code>api-v1-setup</code>) or dates (e.g. <code>2026-launch</code>)."
+  },
+  {
+    question: "What is a vanity URL?",
+    answer: "A vanity URL is a short, custom branded permalink (e.g., <code>amzn.to/post</code>) that redirects users to longer, fully-detailed product pages."
+  },
+  {
+    question: "Does casing matter in URL slugs?",
+    answer: "Yes. URLs are case-sensitive on Unix/Linux servers (where <code>page</code> and <code>Page</code> are different). Standardizing on lowercase prevents duplicate path errors."
+  },
+  {
+    question: "Can URL slugs be updated after an article is published?",
+    answer: "Yes, but you must configure a 301 permanent redirect from the old slug to the new slug to preserve search rankings and avoid 404 errors."
+  },
+  {
+    question: "Does this tool support bulk URL slug generation?",
+    answer: "Yes, toggle 'Bulk Mode' under settings to process hundreds of titles simultaneously."
+  }
+];
+
+const references = [
+  { title: "RFC 3986 - Uniform Resource Identifier (URI)", url: "https://datatracker.ietf.org/doc/html/rfc3986", source: "IETF Standards" },
+  { title: "Google Search Central - Keep URL Structures Simple", url: "https://developers.google.com/search/docs/crawling-indexing/url-structure", source: "Google SEO Guidelines" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `const slugify = text => {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\\s+/g, '-')
+    .replace(/[^\\w\\-]+/g, '')
+    .replace(/\\-\\-+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
+};
+
+console.log(slugify("Clean SEO URL Guide!")); // "clean-seo-url-guide"`,
+    note: "URL-compliant regex slugifier."
+  },
+  {
+    lang: "Python",
+    code: `import re
+import unicodedata
+
+def slugify(value):
+    # Normalize unicode accents
+    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('ascii')
+    value = re.sub(r'[^\\w\\s-]', '', value).strip().lower()
+    return re.sub(r'[-\\s]+', '-', value)
+
+print(slugify("Clean SEO URL Guide!")) # "clean-seo-url-guide"`,
+    note: "PEP 8 compliant, handles Unicode normalization."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Using Underscores instead of Hyphens",
+    description: "Search engines do not treat underscores as word separators. Utilizing my_article_slug prevents search crawlers from segmenting your keywords.",
+    fix: "Use hyphens as separators: <code>replace(/_/g, '-')</code>."
+  },
+  {
+    title: "Percent-Encoding Accented Characters in Slugs",
+    description: "Failing to transliterate non-Latin accents (like ö, é, or Cyrillic characters) turns slugs into unreadable code paths (e.g. %C3%B6).",
+    fix: "Apply Unicode normalization or transliterate characters into standard Latin equivalents before generating the slug."
+  }
+];
+---
+
+<ToolPageLayout
+  title="URL Slug Generator - Create Clean SEO URLs Online"
+  description="Free online URL slug generator. Convert titles and headers to clean, SEO-optimized, URL-safe path slugs instantly. 100% private client-side tool."
+  keywords="url slug generator, convert title to url slug, link slug creator"
+  toolTitle="URL Slug Generator"
+  toolDescription="Convert text headings into clean, SEO-friendly, and URL-safe slugs instantly. Supports stop-word filtering, bulk mode, and random suffix appending. Processed 100% locally."
+  faqs={faqs}
+>
+  <SlugGenerator client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Create Clean URL Slugs
+      </h2>
+      <p class="leading-relaxed mb-4">
+        A URL slug represents the exact path identifier at the end of a web page address. Clean URLs are critical for both human readability and search engine algorithms. In contrast to parameters containing query variables (e.g., <code>?post=9412</code>), slugs clearly explain what the page contains (e.g., <code>/slug-generator</code>).
+      </p>
+      <p class="leading-relaxed">
+        Our **URL Slug Generator** allows you to input raw titles, configure settings like stripping common conjunctions and converting to lowercase, and copy the sanitized slug output in one click.
+      </p>
+    </div>
+
+    <!-- Section: Cross Links -->
+    <div class="flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Other URL & String Utilities
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <a href="/tools/slug-generator" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Slug Generator & Sanitizer</a>
+        <a href="/tools/url-encoder" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">URL Encoder</a>
+        <a href="/tools/url-decoder" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">URL Decoder</a>
+      </div>
+    </div>
+
+    <!-- Section: URL Safe Reference -->
+    <ComparisonTable
+      title="Clean Slugs vs Query Parameters"
+      description="Compare how clean URLs match up against dynamic query strings in SEO and user experience:"
+      headers={["Metric", "Dynamic Query Strings", "SEO-Friendly Slugs"]}
+      rows={[
+        { label: "URL Syntax Example", values: ["<code>example.com/?id=4921&amp;category=3</code>", "<code>example.com/posts/seo-guide</code>"] },
+        { label: "Search Crawler Indexing", values: ["Medium (crawled, but carries no keyword weight)", "High (keywords in path boost relevance scoring)"] },
+        { label: "Human Readability", values: ["Low (looks like tracking parameters or spam)", "High (clear context before loading page)"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="URL Slug Mappings Examples"
+      description="Compare title inputs and their converted URL-safe slug formats:"
+      examples={[
+        { label: "Product Listing Header", input: "Classic Wireless Headphones - Red Model!", output: "classic-wireless-headphones-red-model", badge: "URL Slug" },
+        { label: "Documentation Section", input: "API Authentication Setup via OAuth2.0", output: "api-authentication-setup-via-oauth20", badge: "URL Slug" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Slug Generation Snippets"
+      description="Sanitize paths and titles dynamically inside your custom scripts:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common URL Slug Pitfalls"
+      description="Avoid these common errors when transforming variables and URL paths:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="URL Slug Guidelines"
+      practices={[
+        { title: "Enforce Lowercase Paths", description: "Standardize on lowercase characters to avoid duplicate content indexing penalties on case-sensitive servers." },
+        { title: "Avoid Stop Words", description: "Strip minor words ('and', 'the', 'for') to keep permalinks short and increase crawl focus." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

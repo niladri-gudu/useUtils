@@ -1,0 +1,260 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { ColorConverter } from '../../components/ColorConverter';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "What is HSL to RGB conversion?",
+    answer: "HSL to RGB conversion is the process of translating cylindrical-coordinate HSL values (Hue, Saturation, Lightness) back to standard additive RGB color space coordinates."
+  },
+  {
+    question: "How do you calculate RGB from HSL mathematically?",
+    answer: "First, compute the chroma (color intensity) using `C = (1 - |2L - 1|) * S`. Find a temporary point `X = C * (1 - |(H / 60) % 2 - 1|)`. Calculate matching brightness adjustment `m = L - C / 2`. Determine which color sector (from 0 to 5) the Hue sits in, map the raw values to R, G, B, add the adjustment factor `m`, and scale the final decimals by 255."
+  },
+  {
+    question: "Why convert HSL to RGB?",
+    answer: "While HSL is easy to edit, some legacy browser platforms, canvas rendering functions, and low-level graphics processors only support standard RGB or hex codes."
+  },
+  {
+    question: "Does HSL to RGB conversion support transparency?",
+    answer: "Yes, HSLA transparency (0.0 to 1.0) maps directly to the RGBA alpha channel without mathematical modification."
+  },
+  {
+    question: "What does HSL stand for?",
+    answer: "HSL stands for Hue, Saturation, and Lightness, which represents color values in a cylindrical coordinate system."
+  },
+  {
+    question: "What is the HSL equivalent for red?",
+    answer: "hsl(0, 100%, 50%), which corresponds to rgb(255, 0, 0)."
+  },
+  {
+    question: "What is the HSL equivalent for green?",
+    answer: "hsl(120, 100%, 50%), which corresponds to rgb(0, 255, 0)."
+  },
+  {
+    question: "What is the HSL equivalent for blue?",
+    answer: "hsl(240, 100%, 50%), which corresponds to rgb(0, 0, 255)."
+  },
+  {
+    question: "How do Hue angles match the color spectrum?",
+    answer: "Hue values map to a 360-degree color circle: 0° is red, 60° is yellow, 120° is green, 180° is cyan, 240° is blue, 300° is magenta, and 360° wraps back to red."
+  },
+  {
+    question: "Does Saturation influence color hue?",
+    answer: "No. However, as Saturation drops to 0%, the color fades to a shade of gray, making the Hue value visual noise."
+  },
+  {
+    question: "Does Lightness influence color saturation?",
+    answer: "Yes. At 0% Lightness, the color is pure black. At 100% Lightness, the color is pure white, regardless of Saturation."
+  },
+  {
+    question: "Is HSL supported by all browsers?",
+    answer: "Yes, all modern web browsers support HSL and HSLA color declarations."
+  },
+  {
+    question: "What is sRGB color gamut?",
+    answer: "sRGB is the standard color range used on the web. It has a narrower range than newer gamuts like Display P3 or Rec. 2020."
+  },
+  {
+    question: "How does relative luminance determine WCAG rating?",
+    answer: "Luminance calculations evaluate screen brightness levels. Comparing text luminance against background luminance gives the contrast ratio."
+  },
+  {
+    question: "Does this page feature an interactive contrast check?",
+    answer: "Yes. The page evaluates contrast ratios against white and black backgrounds in real-time."
+  },
+  {
+    question: "What is a triadic color palette?",
+    answer: "A triadic palette uses three colors spaced 120° apart on the HSL color wheel."
+  },
+  {
+    question: "What is an analogous color palette?",
+    answer: "An analogous palette uses three adjacent colors on the wheel, spaced +/- 30° apart."
+  },
+  {
+    question: "Does this converter store data on a server?",
+    answer: "No. All conversion computations run client-side in your web browser, ensuring complete privacy."
+  },
+  {
+    question: "Why do colors look different in print?",
+    answer: "Screens emit RGB light, whereas print ink absorbs CMYK light. This difference in color models results in varying color ranges."
+  },
+  {
+    question: "What is the CMYK model?",
+    answer: "CMYK stands for Cyan, Magenta, Yellow, and Key (Black). It is the standard color model used in color printing."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "TypeScript",
+    code: `
+function hslToRgb(h: number, s: number, l: number, a: number = 1.0): { r: number; g: number; b: number; a: number } {
+  h = h % 360;
+  const sPct = s / 100;
+  const lPct = l / 100;
+  
+  const c = (1 - Math.abs(2 * lPct - 1)) * sPct;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = lPct - c / 2;
+  
+  let r = 0, g = 0, b = 0;
+  if (h >= 0 && h < 60) { r = c; g = x; }
+  else if (h >= 60 && h < 120) { r = x; g = c; }
+  else if (h >= 120 && h < 180) { g = c; b = x; }
+  else if (h >= 180 && h < 240) { g = x; b = c; }
+  else if (h >= 240 && h < 300) { r = x; b = c; }
+  else if (h >= 300 && h < 360) { r = c; b = x; }
+  
+  return {
+    r: Math.round((r + m) * 255),
+    g: Math.round((g + m) * 255),
+    b: Math.round((b + m) * 255),
+    a
+  };
+}
+    `,
+    note: "Maps HSL components to standard decimal RGB ranges."
+  },
+  {
+    lang: "Python",
+    code: `
+def hsl_to_rgb(h, s, l, a=1.0):
+    h = h % 360
+    s_pct = s / 100.0
+    l_pct = l / 100.0
+    
+    c = (1.0 - abs(2.0 * l_pct - 1.0)) * s_pct
+    x = c * (1.0 - abs(((h / 60.0) % 2.0) - 1.0))
+    m = l_pct - c / 2.0
+    
+    r, g, b = 0.0, 0.0, 0.0
+    if 0 <= h < 60:
+        r, g = c, x
+    elif 60 <= h < 120:
+        r, g = x, c
+    elif 120 <= h < 180:
+        g, b = c, x
+    elif 180 <= h < 240:
+        g, b = x, c
+    elif 240 <= h < 300:
+        r, b = x, c
+    elif 300 <= h < 360:
+        r, b = c, x
+        
+    return int(round((r + m) * 255)), int(round((g + m) * 255)), int(round((b + m) * 255)), a
+    `,
+    note: "Returns integer channel values from float math calculations."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Wrong Range Calculations",
+    description: "Forgetting that Hue is measured in degrees (0-360) and Saturation/Lightness are percentages (0-100)."
+  },
+  {
+    title: "Missing Percentage Symbols",
+    description: "Declaring HSL styling without percentage markers, which causes CSS rendering issues."
+  },
+  {
+    title: "Confusing Lightness Boundaries",
+    description: "Expected full saturation values at 100% Lightness, which always outputs pure white."
+  }
+];
+
+const references = [
+  {
+    title: "W3C CSS Color Module Standard",
+    url: "https://www.w3.org/TR/css-color-4/"
+  },
+  {
+    title: "HSL Color Space Definition",
+    url: "https://en.wikipedia.org/wiki/HSL_and_HSV"
+  }
+];
+---
+
+<ToolPageLayout
+  title="HSL to RGB Color Converter | Real-time Color Code Translation"
+  description="Convert HSL and HSLA color values to RGB and RGBA formats instantly. Features a live color preview square, native color picker, and WCAG contrast check."
+  keywords="hsl to rgb, hsla to rgba, color converter, hsl color, rgb color, web design colors, rgb conversion"
+  toolTitle="HSL to RGB Converter"
+  toolDescription="Convert HSL (Hue, Saturation, Lightness) color values to decimal Red, Green, and Blue coordinates. Real-time updates and accessibility contrast analyzer."
+  faqs={faqs}
+>
+  <ColorConverter defaultColor="hsl(158, 64%, 52%)" defaultInputMode="hsl" client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <PrivacyBadge />
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Translating HSL Color Space to sRGB Coordinates
+      </h2>
+      <p class="leading-relaxed mb-3">
+        HSL color values are standard in CSS layouts. However, digital displays rely on sRGB subpixels, which requires translating values back to Red, Green, and Blue formats.
+      </p>
+      <p class="leading-relaxed">
+        Our conversion utility takes HSL coordinates, performs the necessary calculations, and maps them to sRGB values. Adjust any slider to see the changes sync across all fields in real-time.
+      </p>
+    </div>
+
+    <ComparisonTable
+      title="HSL and RGB Color Spaces"
+      description="Compare syntax representation styles:"
+      headers={["Coordinate Style", "Color Spec", "Transparency Support", "Render Compatibility"]}
+      rows={[
+        { label: "HSL Format", values: ["hsl(158, 64%, 52%)", "hsla(158, 64%, 52%, 0.5)", "High (CSS Stylesheets)"] },
+        { label: "RGB Format", values: ["rgb(52, 211, 153)", "rgba(52, 211, 153, 0.5)", "Very High (All graphics engines)"] }
+      ]}
+    />
+
+    <ExampleCard
+      title="HSL to RGB Conversion Examples"
+      description="Observe standard color mappings:"
+      examples={[
+        { label: "Emerald Green", input: "hsl(158, 64%, 52%)", output: "rgb(52, 211, 153)", badge: "HSL" },
+        { label: "Vibrant Purple", input: "hsl(270, 70%, 60%)", output: "rgb(159, 82, 224)", badge: "HSL" },
+        { label: "Pumpkin Orange", input: "hsl(24, 85%, 55%)", output: "rgb(238, 114, 42)", badge: "HSL" }
+      ]}
+    />
+
+    <LanguageSupport
+      languages={languageCodes}
+      title="HSL to RGB Programmatic Snippets"
+      description="Apply these language templates to convert HSL values:"
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Color Model Pitfalls"
+    />
+
+    <BestPractices
+      title="HSL to RGB Best Practices"
+      practices={[
+        { title: "Define Logical Color Variables", description: "Use HSL variables in CSS to quickly generate lighter and darker variations of a theme's base color." },
+        { title: "Avoid Extreme Lightness Values", description: "Keep Lightness between 15% and 85% to ensure colors remain visible and recognizable." }
+      ]}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+
+    <RelatedTools
+      currentToolUrl="/tools/hsl-to-rgb"
+      category="css"
+    />
+  </div>
+</ToolPageLayout>

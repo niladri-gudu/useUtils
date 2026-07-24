@@ -1,0 +1,229 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { CsvJsonConverter } from '../../components/CsvJsonConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'CSV to JSON', href: '/tools/csv-to-json' },
+  { label: 'JSON to CSV', href: '/tools/json-to-csv', active: true },
+  { label: 'CSV Viewer', href: '/tools/csv-viewer' }
+];
+
+const faqs = [
+  {
+    question: "How do I convert JSON to CSV?",
+    answer: "Paste your valid JSON array of objects into the editor. The tool parses the objects, maps keys to header columns, extracts the values row-by-row, and outputs standard CSV text instantly."
+  },
+  {
+    question: "Can I convert complex nested JSON objects to CSV?",
+    answer: "Yes, but flat structures are recommended. For nested objects, the converter flattens the hierarchy by joining keys with dot separators (e.g., <code>user.name</code>) or converts objects to text representations."
+  },
+  {
+    question: "Is this online JSON to CSV converter safe for business data?",
+    answer: "Absolutely. Like all tools on useUtils, the conversion engine runs entirely in your browser using local memory. No data is ever sent to external servers."
+  },
+  {
+    question: "How does the tool handle missing keys across JSON objects?",
+    answer: "If a specific object is missing a property key that exists in others, the converter outputs an empty cell (null state) for that row, ensuring column alignment."
+  },
+  {
+    question: "How are commas or double quotes in cells escaped in CSV?",
+    answer: "Following the RFC 4180 spec, the engine wraps any cell values containing commas, double quotes, or newlines in double quotes, escaping internal double quotes by doubling them."
+  },
+  {
+    question: "Can I choose delimiters other than commas?",
+    answer: "Yes. You can select custom delimiters, including semicolons (<code>;</code>), tabs (<code>\\t</code>), or pipes (<code>|</code>) in the settings panel."
+  },
+  {
+    question: "How do I convert a JSON file to CSV programmatically in Node.js?",
+    answer: "You can write a simple iteration script that gathers keys as headers, or use robust libraries like <code>json2csv</code>."
+  },
+  {
+    question: "How do I download the converted CSV file?",
+    answer: "Click the 'Download' button above the output area to save the result directly as a local <code>.csv</code> text file."
+  },
+  {
+    question: "What formats can I upload to the converter?",
+    answer: "You can upload <code>.json</code> or raw text files. The file reader will parse them locally in memory."
+  },
+  {
+    question: "Why does the tool show a JSON parse error?",
+    answer: "JSON input must be syntactically valid (i.e. double quotes, no trailing commas). Check the red syntax warning below the input editor for coordinates."
+  },
+  {
+    question: "Can I view the resulting data as a spreadsheet?",
+    answer: "Yes. You can toggle to the 'CSV Viewer' page or use the visual 'Grid' tab to view and edit the columns and rows like a spreadsheet."
+  },
+  {
+    question: "How does the converter handle JSON arrays of arrays?",
+    answer: "If the input is a 2D array (list of lists), the engine maps each sub-array directly to a CSV row, without requiring key-header mapping."
+  },
+  {
+    question: "How to convert JSON to CSV in Python?",
+    answer: "Use Python's built-in <code>csv</code> and <code>json</code> modules: <br/><code class='font-mono'>import csv, json</code> to iterate and write rows via a <code>DictWriter</code>."
+  },
+  {
+    question: "Is there a limit on the number of JSON rows I can convert?",
+    answer: "Because calculations happen in-browser, the browser can easily convert arrays of up to 100,000 objects (roughly 15MB) in a few seconds."
+  },
+  {
+    question: "Does the tool support TSV (Tab-Separated Values) format?",
+    answer: "Yes, select 'Tab' as the delimiter in the settings, and the output will be formatted as a standard TSV."
+  },
+  {
+    question: "How are boolean or null values converted?",
+    answer: "Booleans translate to literal text (<code>true</code> / <code>false</code>) and nulls render as empty cells in the output CSV."
+  },
+  {
+    question: "What is RFC 4180?",
+    answer: "RFC 4180 is the informational specification that standardizes the CSV format, defining rules for header lines, line breaks, delimiter usage, and escaping parameters."
+  },
+  {
+    question: "Can I load a sample dataset to test?",
+    answer: "Yes, click 'Sample Users' or 'Sample Sales' above the input box to instantly load a dummy JSON array."
+  },
+  {
+    question: "Why does my Excel import show corrupted characters?",
+    answer: "Excel sometimes struggles with UTF-8 encoding. Ensure your Excel import settings specify UTF-8 encoding when opening the downloaded CSV file."
+  },
+  {
+    question: "Is it possible to customize the CSV headers?",
+    answer: "By default, the converter uses the keys of the JSON objects. You can modify these keys in the input JSON or edit headers directly in the visual Grid editor."
+  }
+];
+
+const references = [
+  { title: "RFC 4180 - Common Format and MIME Type for CSV Files", url: "https://datatracker.ietf.org/doc/html/rfc4180", source: "IETF Standards" },
+  { title: "NPM json2csv Package Documentation", url: "https://www.npmjs.com/package/json2csv", source: "NPM Registry" }
+];
+
+const languageCodes = [
+  {
+    lang: "Node.js (json2csv)",
+    code: `const { Parser } = require("json2csv");
+
+const myData = [
+  { id: 1, name: "Alice", role: "Admin" },
+  { id: 2, name: "Bob", role: "User" }
+];
+
+try {
+  const parser = new Parser();
+  const csv = parser.parse(myData);
+  console.log(csv);
+} catch (err) {
+  console.error(err);
+}`,
+    note: "The Parser class automatically scans object keys to map headers."
+  },
+  {
+    lang: "Python (pandas)",
+    code: `import pandas as pd
+
+json_data = '[{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]'
+
+# Load JSON payload into a pandas DataFrame
+df = pd.read_json(json_data)
+
+# Export to CSV text or write directly to file
+csv_output = df.to_csv(index=False)
+print(csv_output)`,
+    note: "Pandas provides robust flattening and transposing operations."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Unescaped Double Quotes in Text Fields",
+    description: "Exporting text fields containing raw quotes without double-escaping them breaks column alignment in Excel.",
+    fix: "Use an RFC 4180-compliant serializer that doubles internal quotes: <code>\"\"</code>."
+  },
+  {
+    title: "Varying JSON Object Properties",
+    description: "Iterating only the first object's keys will skip headers for attributes that only exist in subsequent objects.",
+    fix: "Scan the entire array of objects to construct a complete master header key list."
+  }
+];
+---
+
+<ToolPageLayout
+  title="JSON to CSV Converter Online - 100% Offline"
+  description="Convert JSON arrays of objects to CSV spreadsheets in real-time. Supports custom delimiters, cell escaping, and grid editor modifications. 100% private."
+  keywords="json to csv, convert json to csv online, json to excel, json to tsv, serialize json to csv"
+  toolTitle="JSON to CSV Converter"
+  toolDescription="Convert JSON payloads into CSV spreadsheets. Map keys to headers, format array lists, configure delimiters, and download results locally with zero server transmission."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <CsvJsonConverter client:load defaultMode="json-to-csv" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full animate-pulse"></span>
+        Bridging Hierarchical JSON and Tabular CSV
+      </h2>
+      <p class="leading-relaxed mb-4">
+        JSON and CSV represent two different ways of structuring data. While JSON is nested, rich, and built for client-server communication, CSV is flat, compact, and optimized for data analysts, spreadsheets, and database imports.
+      </p>
+      <p class="leading-relaxed">
+        Our **JSON to CSV Converter** automates this structural transition. The conversion engine evaluates the keys across all objects, builds a unified header scheme, handles missing keys gracefully, and implements strict cell escaping rules to deliver clean, import-ready spreadsheets.
+      </p>
+    </div>
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="JSON Arrays vs CSV Records"
+      headers={["Metric", "JSON Array Format", "CSV Tabular Format"]}
+      rows={[
+        { label: "Data Structure", values: ["Hierarchical tree structure with nests", "Flat row-and-column grids"] },
+        { label: "Empty Field Values", values: ["Omits property or sets to null", "Leaves cell empty between commas (,,)"] },
+        { label: "File Size footprint", values: ["Verbose (keys duplicated on every row)", "Extremely compact (headers listed once)"] },
+        { label: "Downstream Ingestion", values: ["REST APIs, Node.js, MongoDB", "Excel, Postgres COPY, Salesforce"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Conversion Inferences"
+      description="Compare how objects translate to tabular CSV lines:"
+      examples={[
+        { label: "Array of Objects Ingestion", input: '[\n  {"name": "Alice", "role": "admin"},\n  {"name": "Bob", "role": "user"}\n]', output: "name,role\nAlice,admin\nBob,user", badge: "CSV Format" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="How to Convert JSON to CSV in Code"
+      description="Implement programmatic translation helpers inside your pipelines:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common CSV Export Pitfalls"
+      description="Avoid these data alignment errors during format translation:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="CSV Formatting Best Practices"
+      practices={[
+        { title: "Standardize Delimiters", description: "Use commas as default, but adopt tabs (TSV) if your text strings regularly contain commas." },
+        { title: "Normalize Object Schemas", description: "Flatten nested JSON trees prior to export to avoid empty or nested object representations in spreadsheet cells." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

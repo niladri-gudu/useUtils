@@ -6,15 +6,21 @@ interface Props {
 	description?: string;
 	keywords?: string;
 	noindex?: boolean;
+	ogImage?: string;
 }
 
 const { 
 	title, 
 	description = "Professional-grade, local-first developer utility tools designed with speed and 100% privacy in mind.",
 	keywords,
-	noindex = false
+	noindex = false,
+	ogImage = "/og-image.png"
 } = Astro.props;
-const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://useutils.com');
+
+// Enforce a consistent canonical URL format without trailing slashes (except root)
+const cleanPathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const canonicalURL = new URL(cleanPathname, Astro.site || 'https://useutils.com');
+const ogImageURL = new URL(ogImage, Astro.site || 'https://useutils.com');
 ---
 
 <!doctype html>
@@ -53,12 +59,14 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://useutils
 		<meta property="og:url" content={canonicalURL} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
+		<meta property="og:image" content={ogImageURL} />
 
 		<!-- Twitter -->
 		<meta property="twitter:card" content="summary_large_image" />
 		<meta property="twitter:url" content={canonicalURL} />
 		<meta property="twitter:title" content={title} />
 		<meta property="twitter:description" content={description} />
+		<meta property="twitter:image" content={ogImageURL} />
 
 		<script is:inline>
 			const getTheme = () => {

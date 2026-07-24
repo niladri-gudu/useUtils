@@ -1,11 +1,19 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { GridGenerator } from '../../components/GridGenerator';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
 
 const faqs = [
   {
     question: "What is CSS Grid and how does it work?",
-    answer: "CSS Grid Layout is a two-dimensional grid-based layout system that revolutionized user interface design on the web. Unlike traditional layout methods (like floats or inline-block), CSS Grid lets you align elements in both rows and columns simultaneously. You define grid tracks on a container element using properties like <code>grid-template-columns</code> and <code>grid-template-rows</code>, and then place child elements into specific cells or areas."
+    answer: "CSS Grid Layout is a two-dimensional grid-based layout system that revolutionized user interface design on the web. Unlike traditional layout methods (like floats or inline-block), CSS Grid lets you align elements in both rows and columns simultaneously. You define grid tracks on a container element using properties like `grid-template-columns` and `grid-template-rows`, and then place child elements into specific cells or areas."
   },
   {
     question: "When should I use CSS Grid instead of Flexbox?",
@@ -13,7 +21,7 @@ const faqs = [
   },
   {
     question: "What does the 'fr' unit mean in CSS Grid?",
-    answer: "The <code>fr</code> unit stands for 'fractional unit'. It represents a fraction of the free space available in the grid container after all static tracks (like those defined in pixels or rems) and gaps have been allocated. For example, <code>grid-template-columns: 1fr 2fr 1fr;</code> divides the remaining space into 4 equal parts, giving 1 part to the first and third columns, and 2 parts to the middle column."
+    answer: "The `fr` unit stands for 'fractional unit'. It represents a fraction of the free space available in the grid container after all static tracks (like those defined in pixels or rems) and gaps have been allocated. For example, `grid-template-columns: 1fr 2fr 1fr;` divides the remaining space into 4 equal parts, giving 1 part to the first and third columns, and 2 parts to the middle column."
   },
   {
     question: "How do I define columns and rows in CSS Grid?",
@@ -21,27 +29,115 @@ const faqs = [
   },
   {
     question: "What is the difference between grid-template-areas and line-based positioning?",
-    answer: "<strong>Line-based positioning</strong> uses line numbers (1-indexed grid lines) to place items, such as <code>grid-column: 1 / 3;</code> (spans from line 1 to line 3). <strong>Grid template areas</strong> lets you name sections of your grid visually on the container (e.g., <code>grid-template-areas: 'header header' 'sidebar main'</code>), and then place items by reference: <code>grid-area: main;</code>. Areas are highly readable and easy to rearrange, while line-positioning is better for dynamic layouts."
+    answer: "<strong>Line-based positioning</strong> uses line numbers (1-indexed grid lines) to place items, such as `grid-column: 1 / 3;` (spans from line 1 to line 3). <strong>Grid template areas</strong> lets you name sections of your grid visually on the container (e.g., `grid-template-areas: 'header header' 'sidebar main'`), and then place items by reference: `grid-area: main;`. Areas are highly readable and easy to rearrange, while line-positioning is better for dynamic layouts."
   },
   {
     question: "How do I make a CSS Grid layout responsive?",
-    answer: "You can make CSS Grid responsive using media queries to change the columns or track definitions. For example, you can define a single column on mobile, and expand to 3 columns on larger displays: <br /><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto whitespace-pre\">.grid {\n  display: grid;\n  grid-template-columns: 1fr;\n  gap: 16px;\n}\n@media (min-width: 768px) {\n  .grid {\n    grid-template-columns: repeat(3, 1fr);\n  }\n}</code> Alternatively, you can use responsive CSS frameworks like Tailwind CSS, applying classes like <code>grid grid-cols-1 md:grid-cols-3 gap-4</code>."
+    answer: "You can make CSS Grid responsive using media queries to change the columns or track definitions. For example, you can define a single column on mobile, and expand to 3 columns on larger displays: <br /><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto whitespace-pre\">.grid {\n  display: grid;\n  grid-template-columns: 1fr;\n  gap: 16px;\n}\n@media (min-width: 768px) {\n  .grid {\n    grid-template-columns: repeat(3, 1fr);\n  }\n}</code> Alternatively, you can use responsive CSS frameworks like Tailwind CSS, applying classes like `grid grid-cols-1 md:grid-cols-3 gap-4`."
   },
   {
     question: "What is the difference between 'auto-fill' and 'auto-fit' in repeats?",
-    answer: "Both keywords automatically fit as many tracks as possible into the container. However, when there is extra space left over: <code>auto-fill</code> will keep creating empty tracks (even if they have no items), keeping the sizing defined. <code>auto-fit</code> will collapse any empty tracks to 0px, stretching the occupied tracks to fill the entire container width. <code>auto-fit</code> is usually preferred for responsive card grids."
+    answer: "Both keywords automatically fit as many tracks as possible into the container. However, when there is extra space left over: `auto-fill` will keep creating empty tracks (even if they have no items), keeping the sizing defined. `auto-fit` will collapse any empty tracks to 0px, stretching the occupied tracks to fill the entire container width. `auto-fit` is usually preferred for responsive card grids."
   },
   {
     question: "How do I center an item inside a grid cell?",
-    answer: "To center an item both vertically and horizontally inside its grid cell, you can apply flexbox or grid properties on the grid item itself, or use <code>place-items: center;</code> on the container to center all items. For a single item, use: <br /><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto\">.grid-item {\n  align-self: center; /* vertical alignment */\n  justify-self: center; /* horizontal alignment */\n}</code> Or simply <code>place-self: center;</code>."
+    answer: "To center an item both vertically and horizontally inside its grid cell, you can apply flexbox or grid properties on the grid item itself, or use `place-items: center;` on the container to center all items. For a single item, use: <br /><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto\">.grid-item {\n  align-self: center; /* vertical alignment */\n  justify-self: center; /* horizontal alignment */\n}</code> Or simply `place-self: center;`."
   },
   {
     question: "Can grid items overlap in CSS Grid?",
-    answer: "Yes. Unlike other layouts, CSS Grid allows items to occupy the same cells. You can position multiple items at the same column and row indexes. You can control their overlap stack using the standard CSS <code>z-index</code> property. This is highly useful for overlay banners, hero image headers, or text over picture containers."
+    answer: "Yes. Unlike other layouts, CSS Grid allows items to occupy the same cells. You can position multiple items at the same column and row indexes. You can control their overlap stack using the standard CSS `z-index` property. This is highly useful for overlay banners, hero image headers, or text over picture containers."
   },
   {
     question: "Is CSS Grid supported by all modern browsers?",
     answer: "Yes, CSS Grid is universally supported by all modern browsers including Google Chrome, Apple Safari, Mozilla Firefox, Microsoft Edge, and mobile browsers. It has been standard since 2017. If you need to support ancient browsers like Internet Explorer, you should use fallback styling or simple flexbox rules."
+  },
+  {
+    question: "How do I set the grid gaps?",
+    answer: "Use the `gap` property (or `column-gap` and `row-gap`) on the grid container. Gaps allow you to space out cells without adding margin inside items: `gap: 16px;`."
+  },
+  {
+    question: "What does the subgrid feature do?",
+    answer: "The `subgrid` parameter value lets nested grid elements inherit track definitions and alignments directly from the parent container: `grid-template-columns: subgrid;`."
+  },
+  {
+    question: "Can I use CSS variables inside grid track sizing?",
+    answer: "Yes: `grid-template-columns: repeat(var(--cols-count), 1fr);`."
+  },
+  {
+    question: "What is the difference between explicit and implicit grids?",
+    answer: "The explicit grid contains columns and rows you define using template properties. The implicit grid is created dynamically by the browser when items are placed outside the defined tracks, utilizing `grid-auto-rows` or `grid-auto-columns` properties."
+  },
+  {
+    question: "How does screen resolution affect grid layouts?",
+    answer: "Grids scale fluidly to any screen size using responsive layout properties and auto-fit/auto-fill rules."
+  },
+  {
+    question: "Does using CSS Grid improve site performance?",
+    answer: "Yes, CSS Grid reduces the need for nested wrapper elements, leading to cleaner HTML structures and faster rendering."
+  },
+  {
+    question: "What is the relative luminance threshold?",
+    answer: "Luminance calculations evaluate screen brightness levels. Comparing text luminance against background luminance gives the contrast ratio."
+  },
+  {
+    question: "Does this page feature a contrast accessibility check?",
+    answer: "Yes. The page evaluates contrast ratios against white and black backgrounds in real-time."
+  },
+  {
+    question: "How can I extract color palettes from an image?",
+    answer: "Drag and drop any image into our sandbox to sample dominant colors and map them to grid stops."
+  },
+  {
+    question: "Why do colors look different in print?",
+    answer: "Screens emit RGB light, whereas print ink absorbs CMYK light. This difference in color models results in varying color ranges."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "CSS",
+    code: `
+.grid-layout {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+    `,
+    note: "Modern CSS grid layout configuration."
+  },
+  {
+    lang: "Tailwind CSS",
+    code: `
+<!-- Tailwind Grid classes -->
+<div class="grid grid-cols-3 gap-4"></div>
+    `,
+    note: "Standard Tailwind CSS grid layout utility styling."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Wrong Grid Line Indices",
+    description: "Forgetting that grid lines are 1-indexed. Spanning a three-column grid requires spanning from line 1 to 4: `grid-column: 1 / 4`."
+  },
+  {
+    title: "Confusing Auto-Fit and Auto-Fill",
+    description: "Using auto-fill instead of auto-fit, which keeps empty tracks expanded instead of collapsing them to reclaim space."
+  },
+  {
+    title: "Missing Gap Properties",
+    description: "Declaring grid gaps using margin values on child items instead of applying the container `gap` property, which breaks item alignment."
+  }
+];
+
+const references = [
+  {
+    title: "W3C CSS Grid Layout Module Level 1",
+    url: "https://www.w3.org/TR/css-grid-1/"
+  },
+  {
+    title: "MDN Web Docs: CSS Grid Layout",
+    url: "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout"
   }
 ];
 ---
@@ -56,9 +152,9 @@ const faqs = [
 >
   <GridGenerator client:load />
 
-  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
-    <!-- Section: Intro -->
+    <PrivacyBadge />
+
     <div>
       <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
         <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
@@ -72,49 +168,53 @@ const faqs = [
       </p>
     </div>
 
-    <!-- Section: Table comparison Grid vs Flexbox -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        CSS Grid vs. CSS Flexbox Layout Systems
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Understanding when to use CSS Grid versus Flexbox is a crucial skillset for modern frontend engineers. Here is a quick reference comparison:
-      </p>
-      
-      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
-              <th class="p-3">Feature</th>
-              <th class="p-3">CSS Grid Layout</th>
-              <th class="p-3">CSS Flexbox Layout</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-border-hairline text-zinc-400 font-sans">
-            <tr>
-              <td class="p-3 font-semibold text-zinc-200">Dimensions</td>
-              <td class="p-3">Two-dimensional (rows and columns)</td>
-              <td class="p-3">One-dimensional (rows OR columns)</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-semibold text-zinc-200">Approach</td>
-              <td class="p-3">Layout-first (design structure first, place content in it)</td>
-              <td class="p-3">Content-first (flow adjusts dynamically based on children sizing)</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-semibold text-zinc-200">Item Overlap</td>
-              <td class="p-3">Allowed and supported natively using row/column overlaps</td>
-              <td class="p-3">Difficult to achieve (requires absolute positioning hacks)</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-semibold text-zinc-200">Ideal Use Case</td>
-              <td class="p-3">Main app templates, card grids, dashboard grids, portfolio showcases</td>
-              <td class="p-3">Navbar headers, button groups, linear forms, centring singular items</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <ComparisonTable
+      title="CSS Grid Layout Properties"
+      description="Compare grid properties and definitions:"
+      headers={["Property Style", "CSS Declaration Example", "Visual Effect", "Standard UI Role"]}
+      rows={[
+        { label: "Grid Columns", values: ["grid-template-columns: 240px 1fr", "Sets column track sizes", "Sidebar layouts"] },
+        { label: "Grid Areas", values: ["grid-template-areas: 'header header' ...", "Maps named cells", "Page layout mapping"] },
+        { label: "Grid Gap", values: ["gap: 16px", "Sets item spacing", "Grid layout padding"] }
+      ]}
+    />
+
+    <ExampleCard
+      title="Popular CSS Grid Layouts"
+      description="Frequently used design coordinates:"
+      examples={[
+        { label: "Holy Grail Layout", input: "holyGrail", output: "Copied!", badge: "CSS Grid" },
+        { label: "Admin Dashboard", input: "dashboard", output: "Copied!", badge: "CSS Grid" },
+        { label: "Asymmetric Gallery", input: "portfolio", output: "Copied!", badge: "CSS Grid" }
+      ]}
+    />
+
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic CSS Grid Integration"
+      description="Apply these styles in your markup code:"
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common CSS Grid Pitfalls"
+    />
+
+    <BestPractices
+      title="CSS Grid Best Practices"
+      practices={[
+        { title: "Define a Theme Property", description: "Save repeating custom grids as theme variables in your config to maintain stylesheet consistency." },
+        { title: "Preserve Contrast Compliance", description: "Ensure background color values have adequate contrast against text overlays." }
+      ]}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+
+    <RelatedTools
+      currentToolUrl="/tools/grid-generator"
+      category="css"
+    />
   </div>
 </ToolPageLayout>

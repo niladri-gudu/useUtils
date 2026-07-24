@@ -1,0 +1,42 @@
+---
+interface Props {
+  mistakes: Array<{ title: string; description: string; fix?: string }>;
+  title?: string;
+  description?: string;
+}
+
+const { 
+  mistakes = [], 
+  title = "Common Mistakes & Pitfalls",
+  description = "Avoid these common errors and misconceptions when working with this utility:"
+} = Astro.props;
+---
+
+{mistakes.length > 0 && (
+  <div class="flex flex-col gap-4 w-full">
+    {title && (
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        {title}
+      </h2>
+    )}
+    {description && <p class="text-zinc-400 text-xs leading-relaxed font-sans">{description}</p>}
+    <div class="flex flex-col gap-3">
+      {mistakes.map((item) => (
+        <div class="p-4 bg-zinc-900/20 border border-border-hairline rounded-lg flex flex-col gap-2">
+          <div class="flex items-center gap-2 text-xs font-mono font-semibold text-red-400 uppercase tracking-wider">
+            <span>⚠️</span>
+            <span>{item.title}</span>
+          </div>
+          <p class="text-xs text-zinc-400 leading-relaxed font-sans">{item.description}</p>
+          {item.fix && (
+            <div class="mt-1 p-2.5 bg-zinc-950/40 border border-zinc-900/60 rounded text-xs font-sans text-zinc-300">
+              <strong class="text-accent-emerald text-[10px] font-mono uppercase tracking-wider block mb-0.5">Recommended Fix:</strong>
+              <span set:html={item.fix} />
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+)}

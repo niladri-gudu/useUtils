@@ -60,9 +60,17 @@ const PARAGRAPH_SAMPLE = `the quick brown fox jumps over the lazy dog.
 this is a sample paragraph with MULTIPLE lines of text.
 i hope this case converter is useful for your developer workflow!`;
 
-export const CaseConverter: React.FC = () => {
-  const [input, setInput] = useState<string>('');
-  const [selectedCaseId, setSelectedCaseId] = useState<string>('camel');
+export interface CaseConverterProps {
+  defaultCaseId?: string;
+  defaultInput?: string;
+}
+
+export const CaseConverter: React.FC<CaseConverterProps> = ({
+  defaultCaseId = 'camel',
+  defaultInput = ''
+}) => {
+  const [input, setInput] = useState<string>(defaultInput);
+  const [selectedCaseId, setSelectedCaseId] = useState<string>(defaultCaseId);
   const [lineByLine, setLineByLine] = useState<boolean>(true);
   const [stripPunctuation, setStripPunctuation] = useState<boolean>(true);
   const [trimWhitespace, setTrimWhitespace] = useState<boolean>(true);

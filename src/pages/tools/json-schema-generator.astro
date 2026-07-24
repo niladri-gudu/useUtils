@@ -1,0 +1,231 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { JsonSchemaValidator } from '../../components/JsonSchemaValidator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'JSON Schema Validator', href: '/tools/json-schema-validator' },
+  { label: 'JSON Schema Generator', href: '/tools/json-schema-generator', active: true }
+];
+
+const faqs = [
+  {
+    question: "What is a JSON Schema?",
+    answer: "A JSON Schema is a declarative JSON format specification used to define the structure, data types, required fields, and validation constraints of JSON documents, facilitating consistency in API integrations."
+  },
+  {
+    question: "How do I generate a JSON Schema from a JSON payload?",
+    answer: "Paste a valid sample JSON object into the input editor. The generation engine parses the structure, infers types (string, number, array, boolean, object), and builds a valid JSON Schema in real-time."
+  },
+  {
+    question: "Which JSON Schema drafts are supported?",
+    answer: "We support **Draft-04**, **Draft-07**, and **Draft-2019-09** specifications. You can toggle the draft version instantly using the config buttons."
+  },
+  {
+    question: "Is my sample JSON uploaded to any server during generation?",
+    answer: "No. The entire compilation runs client-side in your web browser. Your configuration schemas and sample payloads remain completely private."
+  },
+  {
+    question: "How are required properties determined?",
+    answer: "You can toggle the 'Mark all properties as required' setting. If active, the generator includes all root and nested keys in the schema's <code>required</code> arrays by default."
+  },
+  {
+    question: "Can the generator detect string formats automatically?",
+    answer: "Yes. When enabled, string values are matched against regex patterns to detect formats like <code>date-time</code>, <code>email</code>, <code>uri</code>, <code>ipv4</code>, <code>ipv6</code>, and <code>uuid</code>, and updates their constraints accordingly."
+  },
+  {
+    question: "What is array schema merging?",
+    answer: "If an array contains objects with varying fields, the 'Merge array schemas' option blends their keys together so the resulting schema validates all item variations in that list."
+  },
+  {
+    question: "How do I download the generated JSON Schema?",
+    answer: "Click the 'Download (.json)' button above the output pane to save the compiled schema as a local file."
+  },
+  {
+    question: "Can I validate schemas inside this tool?",
+    answer: "Yes, once you compile a schema, you can click the 'Load Generated Schema Into Validator' button and swap to the validation tab to test custom datasets against it."
+  },
+  {
+    question: "What is the difference between Draft-04 and Draft-07?",
+    answer: "Draft-07 introduces keywords like <code>if-then-else</code>, <code>readOnly</code>, <code>writeOnly</code>, and extends the <code>format</code> validation checks, while Draft-04 is older but remains widely used in legacy systems."
+  },
+  {
+    question: "How are null values handled in JSON Schema?",
+    answer: "If a value is null in the sample, the generator sets the type array to <code>\"type\": \"null\"</code> (or a union <code>[\"string\", \"null\"]</code> depending on draft version configurations)."
+  },
+  {
+    question: "How to generate a schema programmatically in Python?",
+    answer: "You can use libraries like <code>gendson</code> or <code>jsonschema</code> to inspect structures and compile matching schemas dynamically."
+  },
+  {
+    question: "Does the generator support nested arrays?",
+    answer: "Yes, it recursively evaluates deep nesting levels, generating nested schemas with <code>items</code> properties for every array layer."
+  },
+  {
+    question: "Why should I use JSON Schema for my REST API?",
+    answer: "It serves as a contract. Databases, gateways, and clients can validate incoming/outgoing requests against the schema to block malformed payloads before they reach application controllers."
+  },
+  {
+    question: "What does the 'additionalProperties' keyword do?",
+    answer: "By default, JSON Schema allows extra fields. If you want to restrict payloads strictly to the defined properties, you can append <code>\"additionalProperties\": false</code>."
+  },
+  {
+    question: "Can I inspect the schema structure visually?",
+    answer: "Yes, toggle to the 'Visual Tree' tab to inspect the generated schema hierarchy in an interactive folder-tree layout."
+  },
+  {
+    question: "How are numbers categorized?",
+    answer: "Integers without decimals are mapped to <code>\"type\": \"integer\"</code>, while floating-point values default to <code>\"type\": \"number\"</code>."
+  },
+  {
+    question: "What is the $schema keyword?",
+    answer: "The <code>$schema</code> keyword specifies the exact draft specification URL that defines the syntax rules of the current schema document."
+  },
+  {
+    question: "How does the tool handle empty arrays?",
+    answer: "For empty lists where types cannot be inferred, the generator defaults the items schema to a generic validation state matching any type."
+  },
+  {
+    question: "Is there a command-line tool to generate JSON schemas?",
+    answer: "Yes, NPM packages like <code>quicktype</code> or <code>json-schema-generator</code> can be run directly inside terminal directories."
+  }
+];
+
+const references = [
+  { title: "JSON Schema Official Specification & Draft Specs", url: "https://json-schema.org/", source: "JSON Schema Org" },
+  { title: "Understanding JSON Schema Draft-07 Guide", url: "https://json-schema.org/understanding-json-schema/reference/index.html", source: "Official Docs" }
+];
+
+const languageCodes = [
+  {
+    lang: "Node.js (Ajv)",
+    code: `const Ajv = require("ajv");
+const ajv = new Ajv(); // defaults to draft-07
+
+const schema = {
+  type: "object",
+  properties: {
+    username: { type: "string" }
+  },
+  required: ["username"]
+};
+
+const validate = ajv.compile(schema);
+const valid = validate({ username: "dev" });
+console.log(valid); // true`,
+    note: "Ajv is the industry-standard schema validator for JS/TS environments."
+  },
+  {
+    lang: "Python",
+    code: `from jsonschema import validate, ValidationError
+
+schema = {
+    "type": "object",
+    "properties": {
+        "id": {"type": "integer"}
+    }
+}
+
+try:
+    validate(instance={"id": 123}, schema=schema)
+    print("Instance is valid!")
+except ValidationError as e:
+    print(f"Validation failed: {e.message}")`,
+    note: "Leverages the jsonschema library to run validations programmatically."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Using Outdated Draft-04 with Modern Validation Libraries",
+    description: "Modern tools sometimes deprecate Draft-04 syntax, leading to configuration parsing exceptions.",
+    fix: "Export schemas in Draft-07 or newer draft variations to ensure wide compatibility with modern libraries."
+  },
+  {
+    title: "Ignoring Format Validation Controls",
+    description: "Accepting generic string formats (like unverified date strings) when specific formats are needed.",
+    fix: "Enable <code>Detect string formats</code> to enforce ISO-8601, email, and IP limits automatically."
+  }
+];
+---
+
+<ToolPageLayout
+  title="JSON Schema Generator: Generate Schema from JSON"
+  description="Generate Draft-04, Draft-07, and Draft-2019-09 JSON schemas from sample objects in real-time. Supports format detection and array merging. 100% private."
+  keywords="json schema generator, generate schema from json, json schema creator, json schema online, draft-07 schema"
+  toolTitle="JSON Schema Generator"
+  toolDescription="Build compliant JSON Schemas instantly from your sample payloads. Auto-detect field formats, toggle required properties, merge array lists, and inspect schema structures locally."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <JsonSchemaValidator client:load defaultTab="generate" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        The Role of JSON Schema in API Contracts
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Validating communication layers is critical to prevent code exceptions. In microservice architectures, writing formal validation models manually for dozens of endpoints is incredibly tedious.
+      </p>
+      <p class="leading-relaxed">
+        Our **JSON Schema Generator** accelerates this workflow. By parsing sample JSON response payloads, the tool extracts the structural skeleton, infers data types, detects format classes (like date-time or UUID), and outputs standard-compliant schemas.
+      </p>
+    </div>
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Draft Specifications Comparison"
+      headers={["Feature", "Draft-04", "Draft-07", "Draft 2019-09"]}
+      rows={[
+        { label: "Core Keyword ID", values: ["id", "$id", "$id / $anchor"] },
+        { label: "Conditional Val", values: ["No support", "if-then-else", "if-then-else"] },
+        { label: "Keyword Modularity", values: ["Requires strict definitions", "Allows inline description/examples", "Supports complex vocabulary bundles"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Schema Inferences"
+      description="Compare input structures with the inferred schema output:"
+      examples={[
+        { label: "Email Attribute Ingestion", input: '{"email": "dev@useutils.com"}', output: '"properties": {\n  "email": {\n    "type": "string",\n    "format": "email"\n  }\n}', badge: "Draft-07" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="How to Validate Schemas Programmatically"
+      description="Integrate JSON Schema checks into your software build layers:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Schema Generation Mistakes"
+      description="Avoid these validation pitfalls when generating schemas from sample JSON files:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="JSON Schema Design Best Practices"
+      practices={[
+        { title: "Define Required Fields", description: "Be explicit about required variables to prevent unexpected missing-property crashes in your API gateway." },
+        { title: "Restrict Additional Fields", description: "Set additionalProperties to false in production environments to reject undocumented payloads." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

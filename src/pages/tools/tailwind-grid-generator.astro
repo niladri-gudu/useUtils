@@ -1,0 +1,221 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { GridGenerator } from '../../components/GridGenerator';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "What is a Tailwind Grid Generator?",
+    answer: "A Tailwind Grid Generator is a visual utility designed to configure multi-stop grid layouts and output them as standard Tailwind CSS class utility configurations."
+  },
+  {
+    question: "How do I create a grid in Tailwind CSS v3?",
+    answer: "Use utility classes to declare the display style and columns, such as: `grid grid-cols-3 gap-4`."
+  },
+  {
+    question: "How do I create a grid in Tailwind CSS v4?",
+    answer: "Tailwind v4 retains standard grid utility classes while extending support for custom themes inside the `@theme` directive, letting you define custom grid variables easily."
+  },
+  {
+    question: "How do I use custom tracks in Tailwind Grid?",
+    answer: "Use Tailwind's arbitrary value syntax by placing the CSS declaration inside square brackets: `grid-cols-[200px_1fr_1fr]`. Make sure to replace any spaces with underscores (`_`)."
+  },
+  {
+    question: "How do I span items across multiple columns in Tailwind?",
+    answer: "Use column span utilities, such as `col-span-2` to span an item across two columns, or `col-start-1 col-end-3` to define exact line boundaries."
+  },
+  {
+    question: "How do I handle responsive grid columns in Tailwind?",
+    answer: "Apply responsive prefixes to the column utilities: `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4`."
+  },
+  {
+    question: "Does Tailwind CSS support subgrid?",
+    answer: "Yes. Apply the `grid-cols-subgrid` or `grid-rows-subgrid` utilities to align nested grid tracks directly to the parent grid layout."
+  },
+  {
+    question: "How do you define custom grid tracks in the Tailwind Config file?",
+    answer: "Extend the grid template columns in your config: `theme: { extend: { gridTemplateColumns: { 'brand-grid': '200px 1fr 1fr' } } }`."
+  },
+  {
+    question: "Why do I need to replace space characters with underscores inside arbitrary brackets?",
+    answer: "Tailwind's class scanner parses classes by splitting strings on whitespace. Replacing spaces with underscores ensures the arbitrary bracket arguments remain grouped as a single class."
+  },
+  {
+    question: "Does this grid generator run offline?",
+    answer: "Yes, all processing is performed client-side in your browser, keeping your design details secure."
+  },
+  {
+    question: "How does screen resolution affect Tailwind grids?",
+    answer: "Grids scale fluidly to any screen size using responsive layout properties and auto-fit/auto-fill rules."
+  },
+  {
+    question: "What is the Tailwind class for grid gaps?",
+    answer: "Use gap utilities (e.g. `gap-4` for a 1rem spacing, or specify custom offsets like `gap-[16px]` using arbitrary values)."
+  },
+  {
+    question: "Are custom grids supported in Tailwind v4?",
+    answer: "Yes, Tailwind v4 fully supports arbitrary color variables and theme properties."
+  },
+  {
+    question: "Is there a performance difference between standard utilities and arbitrary classes?",
+    answer: "No, both compiled outputs generate standard CSS rules on the page, resulting in identical rendering speeds."
+  },
+  {
+    question: "Can I animate grid layouts using Tailwind?",
+    answer: "You can transition item opacity or border values, but animating track sizes directly requires custom transition support using CSS variables."
+  },
+  {
+    question: "How can I extract color palettes from an image?",
+    answer: "Drag and drop any image into our sandbox to sample the dominant colors and map them to grid stops."
+  },
+  {
+    question: "Why do colors look different in print?",
+    answer: "Screens emit RGB light, whereas print ink absorbs CMYK light. This difference in color models results in varying color ranges."
+  },
+  {
+    question: "What is the relative luminance threshold?",
+    answer: "Luminance calculations evaluate screen brightness levels. Comparing text luminance against background luminance gives the contrast ratio."
+  },
+  {
+    question: "Does this page feature a contrast accessibility check?",
+    answer: "Yes. The page evaluates contrast ratios against white and black backgrounds in real-time."
+  },
+  {
+    question: "Are color conversions private on this page?",
+    answer: "Yes, all processing is performed client-side in your browser, keeping your design details secure."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "HTML & Tailwind",
+    code: `
+<!-- 3-Column Responsive Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <div class="bg-zinc-800 p-4 rounded-xl">Item 1</div>
+  <div class="bg-zinc-800 p-4 rounded-xl">Item 2</div>
+  <div class="bg-zinc-800 p-4 rounded-xl">Item 3</div>
+</div>
+    `,
+    note: "Modern CSS declarations using standard gradient functions."
+  },
+  {
+    lang: "Tailwind v4 Config",
+    code: `
+@theme {
+  --grid-template-columns-brand-grid: 200px 1fr 1fr;
+}
+    `,
+    note: "CSS theme variable configuration format."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Leaving Spaces in Arbitrary Values",
+    description: "Using standard spaces inside square brackets (e.g. `grid-cols-[200px 1fr]`). Use underscores instead of spaces: `grid-cols-[200px_1fr]`."
+  },
+  {
+    title: "Combining Conflicting Classes",
+    description: "Declaring conflicting grid columns (like combining `grid-cols-3` with arbitrary grid tracks), which breaks layout structure."
+  },
+  {
+    title: "Missing Gap Properties",
+    description: "Forgetting to add the `gap` utility class to the grid container, which leaves grid items touching without spacing."
+  }
+];
+
+const references = [
+  {
+    title: "Tailwind CSS v4 Documentation",
+    url: "https://tailwindcss.com/"
+  },
+  {
+    title: "Tailwind Grid Layout Guide",
+    url: "https://tailwindcss.com/docs/grid-template-columns"
+  }
+];
+---
+
+<ToolPageLayout
+  title="Tailwind Grid Generator | Visual Grid Layout Designer"
+  description="Generate custom Tailwind CSS grid layouts visually. Configure columns, rows, and responsive spacing, and copy clean class utilities."
+  keywords="tailwind grid generator, tailwind css grid, arbitrary value grid, responsive grid maker, grid class generator"
+  toolTitle="Tailwind Grid Generator"
+  toolDescription="Design custom grid layouts. Configure columns, rows, and responsive spacing, and copy Tailwind class utilities instantly."
+  faqs={faqs}
+>
+  <GridGenerator defaultPresetKey="holyGrail" client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <PrivacyBadge />
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Styling Grid Layouts with Tailwind CSS
+      </h2>
+      <p class="leading-relaxed mb-3">
+        Tailwind CSS provides built-in utilities for simple grids. However, when you need custom angles, more than three layers, or colored configurations, standard utility classes fall short.
+      </p>
+      <p class="leading-relaxed">
+        Our Tailwind Grid Generator provides an interactive timeline to adjust color coordinates, customize transparency levels, and copy responsive class utilities.
+      </p>
+    </div>
+
+    <ComparisonTable
+      title="Tailwind Grid Layout Comparison"
+      description="Compare standard utilities and arbitrary layouts:"
+      headers={["Style Category", "Tailwind Class Example", "Compiled CSS Output", "Flexibility"]}
+      rows={[
+        { label: "Standard Utility", values: ["grid-cols-3", "grid-template-columns: repeat(3, minmax(0, 1fr))", "Medium (limited to preset columns)"] },
+        { label: "Arbitrary Class", values: ["grid-cols-[200px_1fr_1fr]", "grid-template-columns: 200px 1fr 1fr", "High (supports custom track sizes)"] }
+      ]}
+    />
+
+    <ExampleCard
+      title="Popular Tailwind Grid Presets"
+      description="Frequently used design coordinates:"
+      examples={[
+        { label: "Standard 3-Column", input: "grid grid-cols-3 gap-4", output: "Copied!", badge: "Tailwind" },
+        { label: "Asymmetric Layout", input: "grid-cols-[240px_1fr]", output: "Copied!", badge: "Tailwind" },
+        { label: "Responsive Grid", input: "grid-cols-1 md:grid-cols-2 lg:grid-cols-4", output: "Copied!", badge: "Tailwind" }
+      ]}
+    />
+
+    <LanguageSupport
+      languages={languageCodes}
+      title="Tailwind Integration Snippets"
+      description="Apply these styles in your markup code:"
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Tailwind Grid Pitfalls"
+    />
+
+    <BestPractices
+      title="Tailwind Grid Best Practices"
+      practices={[
+        { title: "Define a Theme Property", description: "Save repeating custom grids as theme variables in your config to maintain stylesheet consistency." },
+        { title: "Preserve Contrast Compliance", description: "Ensure background color values have adequate contrast against text overlays." }
+      ]}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+
+    <RelatedTools
+      currentToolUrl="/tools/tailwind-grid-generator"
+      category="css"
+    />
+  </div>
+</ToolPageLayout>

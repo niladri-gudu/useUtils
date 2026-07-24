@@ -1,0 +1,199 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { DateCalculator } from '../../components/DateCalculator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "How do I subtract days from a date?",
+    answer: "Enter your starting date in the date adjuster, set the operation to 'Subtract', input the number of days, and the engine will instantly compute the historical target date."
+  },
+  {
+    question: "How does the engine handle month boundaries when subtracting?",
+    answer: "The date calculator adjusts dynamically when subtracting across boundaries (e.g. subtracting 5 days from March 3rd rolls back into February, correctly accounting for leap years)."
+  },
+  {
+    question: "Does the subtraction account for leap years?",
+    answer: "Yes, standard leap years (such as 2024 or 2028 containing 29 days in February) are fully integrated into all backward calendar offsets."
+  },
+  {
+    question: "Can I subtract weeks or months instead of days?",
+    answer: "Yes, you can toggle the unit selector to subtract days, weeks, months, or years in the date adjuster panel."
+  },
+  {
+    question: "Is my calendar data secure?",
+    answer: "Yes. All operations run locally inside your browser thread. No queries, offsets, or dates are uploaded to external servers."
+  },
+  {
+    question: "How do I subtract days from a date in JavaScript?",
+    answer: "Use the <code>setDate()</code> method: <code>const date = new Date('2026-06-15'); date.setDate(date.getDate() - 30); console.log(date);</code>."
+  },
+  {
+    question: "How do I subtract days from a date in Python?",
+    answer: "In Python, subtract days using <code>timedelta</code>: <code>from datetime import datetime, timedelta; new_date = datetime.now() - timedelta(days=30)</code>."
+  },
+  {
+    question: "What date was 90 days ago?",
+    answer: "You can find this instantly by loading our tool, setting the operation to 'Subtract', entering <code>90</code>, and reading the resulting historical date."
+  },
+  {
+    question: "Does daylight saving time affect subtracting days?",
+    answer: "Since the calculator rolls calendar days rather than raw milliseconds, it bypasses hourly DST offset shifts."
+  },
+  {
+    question: "How do I subtract days in SQL?",
+    answer: "In PostgreSQL, use <code>date_column - INTERVAL '30 days'</code>. In MySQL, use <code>DATE_SUB(date_column, INTERVAL 30 DAY)</code>."
+  },
+  {
+    question: "Can I exclude weekends to calculate business days?",
+    answer: "Yes, you can filter out Saturdays and Sundays to calculate business day offsets."
+  },
+  {
+    question: "What is the ISO 8601 representation?",
+    answer: "ISO 8601 represents calendar dates as <code>YYYY-MM-DD</code>."
+  },
+  {
+    question: "Can I run this Date Subtractor offline?",
+    answer: "Yes. The entire tool runs client-side, allowing complete offline execution."
+  },
+  {
+    question: "How do I calculate business days backward in Python?",
+    answer: "Use numpy's <code>busday_offset</code> with a negative parameter: <code>np.busday_offset(date, -30)</code>."
+  },
+  {
+    question: "What is a Julian Day?",
+    answer: "A Julian Day counts days continuously since January 1, 4713 BC."
+  },
+  {
+    question: "Is this calculator free?",
+    answer: "Yes, useUtils provides all developer tools free with no signup requirements."
+  },
+  {
+    question: "What timezone is used for date math?",
+    answer: "Calculations run in your local browser's timezone."
+  },
+  {
+    question: "How do I add days using this adjuster?",
+    answer: "Toggle the operation parameter to 'Add' or enter a positive value to calculate forward."
+  },
+  {
+    question: "What is the leap year formula?",
+    answer: "A year is a leap year if it is divisible by 4, except for end-of-century years which must also be divisible by 400."
+  },
+  {
+    question: "How do I subtract days to a date in Go?",
+    answer: "In Go, use the <code>AddDate</code> method with a negative value: <code>newTime := oldTime.AddDate(0, 0, -30)</code>."
+  },
+  {
+    question: "How does this tool help in server log analysis?",
+    answer: "It allows system administrators to calculate historical time windows (like '30 days ago') to locate specific log rotations."
+  }
+];
+
+const headers = ["Backward Offset", "Calendar Days Output", "Business Days Only", "Common Application"];
+const rows = [
+  {
+    label: "-30 Days",
+    values: ["4.28 weeks ago", "Skips ~8 weekends", "Audit logs retrieval, standard invoice lookbacks"]
+  },
+  {
+    label: "-90 Days",
+    values: ["12.85 weeks ago", "Skips ~26 weekends", "Quarterly database cleanups, system backups verification"]
+  }
+];
+
+const practices = [
+  {
+    title: "Verify Month Underflow Rules",
+    description: "Always account for variations in month durations when subtracting offsets manually."
+  },
+  {
+    title: "Store Dates as Strings",
+    description: "Store date representations in standard <code>YYYY-MM-DD</code> formats to maintain database compatibility."
+  }
+];
+
+const mistakes = [
+  {
+    title: "Subtracting raw milliseconds",
+    description: "Subtracting raw millisecond values does not account for local DST changes, resulting in offset drift.",
+    fix: "Use standard Date objects and subtraction APIs."
+  }
+];
+
+const languages = [
+  {
+    lang: "JavaScript",
+    code: `
+const date = new Date('2026-06-15');
+date.setDate(date.getDate() - 30);
+
+console.log("Historical Date:", date.toISOString().split('T')[0]);
+    `
+  },
+  {
+    lang: "Python",
+    code: `
+from datetime import datetime, timedelta
+
+start_date = datetime.strptime("2026-06-15", "%Y-%m-%d")
+historical_date = start_date - timedelta(days=30)
+
+print("Date:", historical_date.strftime("%Y-%m-%d"))
+    `
+  }
+];
+
+const references = [
+  { title: "W3C Date Formats", url: "https://www.w3.org/TR/NOTE-datetime" }
+];
+---
+
+<ToolPageLayout
+  title="Subtract Days from Date Calculator: Find Past Calendar Dates"
+  description="Subtract days, weeks, months, or years from any calendar starting date. Built-in business days options with 100% browser security."
+  keywords="subtract days from date, date subtractor calculator, calculate past date, subtract weeks from date, calendar subtractor tool"
+  toolTitle="Subtract Days from Date Calculator"
+  toolDescription="Subtract calendar offsets (days, weeks, months, years) from any starting date. Processed 100% locally in your browser sandbox."
+  faqs={faqs}
+>
+  <DateCalculator client:load defaultActiveSubTab="adjuster" />
+
+  <div slot="seo-content" class="flex flex-col gap-12 mt-10 max-w-4xl mx-auto w-full">
+    <PrivacyBadge />
+
+    <ComparisonTable 
+      headers={headers} 
+      rows={rows} 
+      title="Common Historical Offsets" 
+      description="Compare calendar offsets and business day representations:"
+    />
+
+    <BestPractices 
+      practices={practices} 
+      title="Date Subtractor Best Practices" 
+    />
+
+    <CommonMistakes 
+      mistakes={mistakes} 
+      title="Common Date Subtraction Pitfalls" 
+    />
+
+    <LanguageSupport 
+      languages={languages} 
+      title="Programmatic Date Subtractions" 
+    />
+
+    <OfficialReferences 
+      references={references} 
+    />
+
+    <RelatedTools />
+  </div>
+</ToolPageLayout>

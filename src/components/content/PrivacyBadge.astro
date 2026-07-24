@@ -1,0 +1,33 @@
+---
+interface Props {
+  variant?: 'pill' | 'banner';
+  text?: string;
+}
+
+const { 
+  variant = 'pill', 
+  text = "Processed locally in browser. Zero server transmission." 
+} = Astro.props;
+---
+
+{variant === 'banner' ? (
+  <div class="flex flex-wrap items-center justify-between gap-4 bg-panel border border-border-hairline rounded-lg px-4 py-3 w-full">
+    <div class="flex items-center gap-2.5">
+      <span class="flex h-2.5 w-2.5 relative">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent-emerald"></span>
+      </span>
+      <span class="text-xs md:text-sm text-zinc-300 font-medium font-sans">
+        {text}
+      </span>
+    </div>
+    <div class="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">
+      100% Privacy Assurance
+    </div>
+  </div>
+) : (
+  <div class="inline-flex items-center gap-1.5 bg-zinc-900/40 border border-border-hairline/80 rounded-md px-2.5 py-1.5 text-[10px] text-zinc-500 font-mono w-max">
+    <span class="text-accent-emerald">✓</span>
+    <span>{text}</span>
+  </div>
+)}

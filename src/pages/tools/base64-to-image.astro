@@ -1,0 +1,225 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { Base64Decoder } from '../../components/Base64Decoder';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'Base64 Encoder', href: '/tools/base64-encoder' },
+  { label: 'Image to Base64', href: '/tools/image-to-base64' },
+  { label: 'Base64 Decoder', href: '/tools/base64-decoder' },
+  { label: 'Base64 to Image', href: '/tools/base64-to-image', active: true }
+];
+
+const faqs = [
+  {
+    question: "How do I convert a Base64 string to an image file?",
+    answer: "Paste your Base64 encoded string or complete Data URI into the text input area. The decoder will automatically analyze the string header, detect the MIME type, render a visual preview, and let you download the image."
+  },
+  {
+    question: "Does the decoder support Data URIs?",
+    answer: "Yes, it parses Data URIs (e.g. <code>data:image/png;base64,...</code>) directly, automatically stripping out the prefix headers before decoding the raw bytes."
+  },
+  {
+    question: "What image formats can be decoded?",
+    answer: "The decoder parses and reconstructs PNG, JPEG, SVG, GIF, WebP, ICO, and BMP file types from Base64 data."
+  },
+  {
+    question: "How are file types detected if the Data URI header is missing?",
+    answer: "If you paste a raw Base64 string without a header, the tool scans the first few decoded bytes (known as 'magic bytes' or signatures) to identify file signatures (e.g. <code>PNG</code> starts with <code>89 50 4E 47</code>)."
+  },
+  {
+    question: "Is it safe to decode private images using this tool?",
+    answer: "Absolutely. The decoding process runs entirely on your local machine using client-side JavaScript. No data is sent to external servers, protecting your private files and tokens."
+  },
+  {
+    question: "How to decode a Base64 string to an image file in Node.js?",
+    answer: "Use <code>Buffer.from(base64Str, 'base64')</code> to create a binary buffer, then write it to disk using the <code>fs</code> module: <br/><code>fs.writeFileSync('output.png', Buffer.from(base64String, 'base64'))</code>."
+  },
+  {
+    question: "How to decode a Base64 string to an image in Python?",
+    answer: "Use the built-in <code>base64</code> and file systems operations: <br/><code>open('output.png', 'wb').write(base64.b64decode(base64_string))</code>."
+  },
+  {
+    question: "Why does the tool show a 'Malformed Base64 sequence' error?",
+    answer: "This happens if the input contains invalid characters (non-Base64 symbols outside A-Z, a-z, 0-9, +, /, =), or lacks proper alignment padding."
+  },
+  {
+    question: "Can I decode Base64 to PDF or docx?",
+    answer: "Yes. In File Mode, the tool detects non-image binary signatures and lets you save them as PDFs or archives using standard file extensions."
+  },
+  {
+    question: "How do I save the decoded image to my computer?",
+    answer: "Click the 'Download File' button above the output panel. The tool compiles the decoded bytes into an HTML5 Blob and saves it directly to your downloads."
+  },
+  {
+    question: "What are magic bytes in binary files?",
+    answer: "Magic bytes are unique byte sequences at the beginning of files that signal the format to operating systems and parsers (e.g. <code>GIF89a</code> for GIF files)."
+  },
+  {
+    question: "Can I decode Base64 URL-safe strings?",
+    answer: "Yes. The tool automatically resolves and decodes URL-safe Base64 strings where <code>+</code> is replaced with <code>-</code> and <code>/</code> with <code>_</code>."
+  },
+  {
+    question: "How does the browser render decoded images locally?",
+    answer: "The tool creates a local Object URL from the decoded byte Blob (e.g. <code>blob:http://localhost...</code>) and references it inside the image preview tag."
+  },
+  {
+    question: "Why is the downloaded image file corrupted?",
+    answer: "Ensure the Base64 string is complete and does not contain truncated sections, HTML tags, or formatting carriage returns."
+  },
+  {
+    question: "What is the maximum file size I can decode?",
+    answer: "The browser's local RAM easily decodes Base64 payloads up to 30MB without performance degradation."
+  },
+  {
+    question: "Does the tool support drag-and-drop file imports?",
+    answer: "You can paste the Base64 text string directly into the text area. If you have an encoded text file, you can upload it in file mode."
+  },
+  {
+    question: "How do I decode Base64 back to text strings?",
+    answer: "Toggle to the standard Base64 Decoder page under navigation tabs to decode string payloads back to readable UTF-8 text."
+  },
+  {
+    question: "How is padding resolved in Base64 decoding?",
+    answer: "The decoder handles missing or malformed '=' padding characters automatically by computing character chunks."
+  },
+  {
+    question: "Is there a command line tool to decode Base64?",
+    answer: "Yes. In Linux or macOS terminals, run: <br/><code>base64 -d input.txt > output.png</code>."
+  },
+  {
+    question: "Does the tool log history?",
+    answer: "No history is sent to any server. Local browser states are temporary and cleared upon refreshing the page."
+  }
+];
+
+const references = [
+  { title: "RFC 4648 - The Base16, Base32, and Base64 Data Encodings", url: "https://datatracker.ietf.org/doc/html/rfc4648", source: "IETF Standards" },
+  { title: "File Signatures (Magic Bytes) Database Specs", url: "https://www.garykessler.net/library/file_sigs.html", source: "Gary Kessler Reference Library" }
+];
+
+const languageCodes = [
+  {
+    lang: "Node.js",
+    code: `const fs = require('fs');
+
+const base64Data = "iVBORw0KGgoAAAANSUhEUgAAAAUA...";
+
+// Convert Base64 string back into binary buffer
+const buffer = Buffer.from(base64Data, 'base64');
+
+// Write binary buffer to image file
+fs.writeFileSync('output.png', buffer);`,
+    note: "Buffer.from decodes base64 strings natively into file buffers."
+  },
+  {
+    lang: "Python",
+    code: `import base64
+
+base64_str = "iVBORw0KGgoAAAANSUhEUgAAAAUA..."
+
+# Decode base64 to binary bytes
+image_data = base64.b64decode(base64_str)
+
+# Save bytes to disk
+with open("output.png", "wb") as fh:
+    fh.write(image_data)`,
+    note: "Opens output file in binary write mode ('wb')."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Truncating Base64 Strings",
+    description: "Missing even a single character at the end of a long Base64 string causes corruption, preventing the image from rendering.",
+    fix: "Always use standard Select All commands (Ctrl+A / Cmd+A) when copying Base64 payloads."
+  },
+  {
+    title: "Leaving Carriage Returns in Script Outputs",
+    description: "Pasting Base64 strings containing formatting line-breaks or spaces can cause parsing delays in older decoder engines.",
+    fix: "Our decoder automatically strips whitespaces and line feeds prior to processing."
+  }
+];
+---
+
+<ToolPageLayout
+  title="Base64 to Image Decoder Online: Convert base64 to image files"
+  description="Decode Base64 strings or Data URIs back to PNG, JPEG, SVG, GIF, and WebP images. Real-time visual preview and local downloads. 100% private."
+  keywords="base64 to image, convert base64 to image, base64 to image online, decode base64 to png, data uri to image, base64 image decoder"
+  toolTitle="Base64 to Image Decoder"
+  toolDescription="Convert Base64 strings or Data URIs into previewable image files instantly. Features real-time magic-bytes type detection, file size stats, and secure local file downloads."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <Base64Decoder client:load defaultOutputMode="file" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How Base64 to Image Decoding Works
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Base64 is a text representation of binary data. When developers need to inspect inline graphics from HTML sources, CSS stylesheets, or JSON API payloads, they must reverse this encoding to verify the image content.
+      </p>
+      <p class="leading-relaxed">
+        Our **Base64 to Image Decoder** automates this process. The engine handles standard Base64 characters, strips Data URI headers, runs heuristics on headers to detect file formats, renders visual previews, and packages the binary buffer into local downloads.
+      </p>
+    </div>
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="File Magic Bytes (Format Headers)"
+      headers={["Image Format", "MIME Type", "Header Magic Bytes (Hex)", "File Signature"]}
+      rows={[
+        { label: "PNG Image", values: ["image/png", "89 50 4E 47 0D 0A 1A 0A", "‰PNG\\r\\n"] },
+        { label: "JPEG Image", values: ["image/jpeg", "FF D8 FF", "ÿØÿ"] },
+        { label: "GIF Image", values: ["image/gif", "47 49 46 38 37 61 / 39 61", "GIF87a / GIF89a"] },
+        { label: "WebP Image", values: ["image/webp", "52 49 46 46 (offset RIFF) 57 45 42 50", "RIFF....WEBP"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Decoding Operations"
+      description="Inspect how Base64 inputs translate to renderable image elements:"
+      examples={[
+        { label: "PNG String Input", input: "iVBORw0KGgoAAAANSUhEUgAAAAUA...", output: "📸 Rendered Image Preview element (PNG)", badge: "PNG Preview" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Base64 Decoding Snippets"
+      description="Decode Base64 string payloads to local binary files using these patterns:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Image Decoding Pitfalls"
+      description="Avoid these common errors to ensure clean file recoveries:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Base64 Image Decoding Best Practices"
+      practices={[
+        { title: "Strip Data URI Headers", description: "Remember to remove data:image/png;base64 prefixes if your backend decoder only expects raw base64 data." },
+        { title: "Validate String Integrity", description: "Verify the length of your Base64 string is a multiple of 4; apply padding if characters are missing." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

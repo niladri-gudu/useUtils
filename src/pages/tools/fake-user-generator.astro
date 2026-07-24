@@ -1,6 +1,13 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { FakeUserGenerator } from '../../components/FakeUserGenerator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
 
 const faqs = [
   {
@@ -46,7 +53,157 @@ const faqs = [
   {
     question: "How do I format generated fields as valid JSON?",
     answer: "The tool automatically outputs valid, prettified JSON arrays with correct syntax, double-quoted keys, and structured indentation. You can copy the code or save it directly as a <code>.json</code> file for immediate use in Mock APIs or local testing files."
+  },
+  {
+    question: "Is mock data generation GDPR compliant?",
+    answer: "Yes. Since the data is created completely from synthetic lists and random numbers, it does not correspond to any real living individual. Therefore, GDPR, HIPAA, and other privacy frameworks do not apply, making it safe to distribute and use freely."
+  },
+  {
+    question: "How do I import the generated CSV mock files into Microsoft Excel?",
+    answer: "You can open the downloaded CSV file directly in Microsoft Excel. Go to the Data tab, select 'From Text/CSV', specify UTF-8 encoding, set the delimiter to Comma, and load the dataset to maintain formatting for columns and headers."
+  },
+  {
+    question: "What databases are supported by the SQL generation format?",
+    answer: "The generated INSERT queries conform to standard SQL-92 protocols. This syntax is fully compatible with MySQL, PostgreSQL, MariaDB, SQLite, Microsoft SQL Server, and Oracle Database."
+  },
+  {
+    question: "Can I simulate IoT device telemetry data?",
+    answer: "Yes. By customizing fields for device ID (using UUID), temperature (using random decimals), status (using custom list picker), and dates, you can model realistic streams of time-series data to test data ingestion pipelines."
+  },
+  {
+    question: "How are the fake email addresses generated?",
+    answer: "Emails are formatted dynamically by joining a sanitized lowercase version of the generated first name and last name with popular dummy domains (e.g. <code>@example.com</code>, <code>@testmail.org</code>, or <code>@company.io</code>)."
+  },
+  {
+    question: "Can I generate Boolean values?",
+    answer: "Yes, the Boolean data type randomly yields <code>true</code> or <code>false</code> with a 50/50 probability, which is excellent for testing binary conditions like active accounts, notification preferences, or newsletter signups."
+  },
+  {
+    question: "How are phone numbers formatted in the generator?",
+    answer: "Phone numbers are generated using standard US mock formats (e.g., <code>555-XXX-XXXX</code>) to ensure they pass standard regex formatting checks in application input fields without mapping to real active phone lines."
+  },
+  {
+    question: "What is the difference between a Random Integer and a Random Decimal?",
+    answer: "A Random Integer generates whole numbers (like age or quantity count) within your min and max bounds. A Random Decimal generates numbers with decimal precision (like price or sensor reading) within your bounds, supporting fractional checks."
+  },
+  {
+    question: "How are paragraphs and sentences generated?",
+    answer: "The engine uses a client-side lorem-ipsum word picker to assemble grammatically-styled sentences and paragraphs, providing realistic text lengths for descriptions, bios, and article summaries."
+  },
+  {
+    question: "Can I use this tool offline?",
+    answer: "Absolutely. Once the page is loaded, all generator utilities, schema builders, formatting engines, and download operations run on your local CPU. No network connection is required to design schemas or generate data."
   }
+];
+
+const headers = ["Export Format", "File Extension", "Primary Ecosystem", "Best Use Case"];
+const rows = [
+  {
+    label: "JSON",
+    values: ["<code>.json</code>", "REST APIs, NoSQL, Javascript Web Apps", "Seeding Document databases, mocking API endpoints"]
+  },
+  {
+    label: "CSV",
+    values: ["<code>.csv</code>", "Spreadsheets, Python Pandas, Data Science", "Importing into Excel, loading tables into analytic platforms"]
+  },
+  {
+    label: "YAML",
+    values: ["<code>.yaml</code> / <code>.yml</code>", "DevOps, Kubernetes configs, config stores", "Seeding key-value parameters and platform structures"]
+  },
+  {
+    label: "SQL",
+    values: ["<code>.sql</code>", "Relational Databases (PostgreSQL, MySQL)", "Direct database migrations and staging schema seeding"]
+  },
+  {
+    label: "TypeScript",
+    values: ["<code>.ts</code>", "Frontend codebases, API type safety", "Creating copy-paste interface declarations for React/Angular/Vue"]
+  }
+];
+
+const practices = [
+  {
+    title: "Always Seed Staging with Fake Data",
+    description: "Never migrate real production databases down to staging or local environments. Always seed testing environments with synthetic mock data to ensure privacy compliance."
+  },
+  {
+    title: "Match Production Schemas Precisely",
+    description: "Ensure your mock field names and data types correspond exactly to your production database schema to capture bugs early during development."
+  },
+  {
+    title: "Use Strict Types in Frontend Models",
+    description: "Leverage the TypeScript export tab to auto-generate interface types, keeping your frontend views strictly typed against API payloads."
+  },
+  {
+    title: "Sanitize SQL Imports",
+    description: "When importing generated SQL inserts, execute them in transactions so that you can roll back easily if schema mismatch issues crop up."
+  }
+];
+
+const mistakes = [
+  {
+    title: "Using Real PII for Sandbox Testing",
+    description: "Reusing actual customer email addresses, passwords, or phone numbers in development builds violates GDPR, HIPAA, and corporate security guidelines.",
+    fix: "Always fabricate mock profiles using random names and placeholder domains like <code>@example.com</code>."
+  },
+  {
+    title: "Exposing Real APIs during UI Mocking",
+    description: "Waiting for backend services to be fully built before testing frontend screens slows down velocity and creates tight coupling.",
+    fix: "Generate mock JSON mockups and feed them into local fetch handlers to design interfaces asynchronously."
+  },
+  {
+    title: "Ignoring Field Limits and Boundaries",
+    description: "Failing to check how UI components render when text is too long or numbers are too large can cause broken UI layouts in production.",
+    fix: "Create fields with maximum decimal lengths or paragraphs to stress-test layout constraints."
+  }
+];
+
+const languages = [
+  {
+    lang: "Node.js (Faker)",
+    code: `
+import { faker } from '@faker-js/faker';
+
+// Generate a random user
+export function generateUser() {
+  return {
+    id: faker.string.uuid(),
+    name: faker.person.fullName(),
+    email: faker.internet.email(),
+    role: faker.helpers.arrayElement(['admin', 'editor', 'user']),
+    registeredAt: faker.date.past()
+  };
+}
+
+console.log(generateUser());
+    `,
+    note: "The @faker-js/faker package is the industry standard for programmatic mock data generation in Node/TS."
+  },
+  {
+    lang: "Python (Faker)",
+    code: `
+from faker import Faker
+fake = Faker()
+
+# Generate profile data
+def generate_profile():
+    return {
+        "id": fake.uuid4(),
+        "name": fake.name(),
+        "email": fake.email(),
+        "address": fake.address(),
+        "created_at": fake.date_this_decade().isoformat()
+    }
+
+print(generate_profile())
+    `,
+    note: "Python's faker module provides rich localized generators for names, jobs, addresses, and dates."
+  }
+];
+
+const references = [
+  { title: "W3C CSV Specification and Standard", url: "https://www.w3.org/TR/tabular-data-model/" },
+  { title: "TypeScript Interfaces documentation", url: "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#interfaces" },
+  { title: "JSON Standard ECMA-404", url: "https://www.ecma-international.org/publications-and-standards/standards/ecma-404/" }
 ];
 ---
 
@@ -60,45 +217,39 @@ const faqs = [
 >
   <FakeUserGenerator client:load />
 
-  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
-  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        The Importance of Mock Data in Modern Software Testing
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Developing database schemas, REST APIs, or frontend interfaces requires high-quality placeholder data. Manually writing dummy records is time-consuming, while reusing real customer database rows carries immense security risks. Storing authentic personal data (PII) in staging environments violates compliance laws like GDPR and HIPAA.
-      </p>
-      <p class="leading-relaxed">
-        A schema-based mock data generator bridges this gap. It constructs realistic values (such as email addresses, coordinates, and UUIDs) that follow standard protocols, allowing developers to test search algorithms, validate form parsing, and optimize database indexing under lifelike loads.
-      </p>
-    </div>
+  <div slot="seo-content" class="flex flex-col gap-12 mt-10 max-w-4xl mx-auto w-full">
+    <PrivacyBadge />
 
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Zero Server Transmission: A Privacy-First Engineering Choice
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Many online generators require users to submit parameters to a backend server which then compiles the JSON or CSV file. This workflow introduces unnecessary delays and poses a potential leakage point if you are configuring specific key naming configurations or testing proprietary structures.
-      </p>
-      <p class="leading-relaxed">
-        By utilizing client-side Web APIs, this utility generates all mock rows instantly on your local device. The data is created directly in the browser's thread, meaning zero bytes of your custom schema are transmitted over the internet. This aligns with our 100% offline sandbox guarantee, giving developers peace of mind when working on secure projects.
-      </p>
-    </div>
+    <ComparisonTable 
+      headers={headers} 
+      rows={rows} 
+      title="Comparing Data Export Formats" 
+      description="Select the most appropriate serialization structure for your development pipeline, analytics stacks, or database seed needs:"
+    />
 
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Seamless Integrations: Formats for Every Stack
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Our Fake User Generator supports 5 distinct export styles to fit any engineering pipeline. The **JSON** format is perfect for seeding document stores (MongoDB) or writing REST API mock endpoints. The **CSV** layout easily imports into spreadsheet software like Microsoft Excel or Google Sheets. The **YAML** option integrates with configuration tools, and the **SQL** format outputs pure SQL insertions to seed relational engines like PostgreSQL or MySQL.
-      </p>
-      <p class="leading-relaxed">
-        Finally, the **TypeScript** generator compiles a type-safe structural definition matching your custom schema. This ensures your frontend models match your API payload type interfaces precisely, eliminating runtime issues and typo bugs.
-      </p>
-    </div>
+    <BestPractices 
+      practices={practices} 
+      title="Mock Data Best Practices" 
+      description="Follow these industry guidelines to manage sandboxed user profiles and database seed files safely and productively:"
+    />
+
+    <CommonMistakes 
+      mistakes={mistakes} 
+      title="Common Mocking Mistakes" 
+      description="Avoid these common errors when structuring staging mockups and integration tests in test suites:"
+    />
+
+    <LanguageSupport 
+      languages={languages} 
+      title="Programmatic Mock Data Libraries" 
+      description="Incorporate programmatic mock generation workflows directly into your local testing codebases:"
+    />
+
+    <OfficialReferences 
+      references={references} 
+      title="Developer Standards & Specifications" 
+    />
+
+    <RelatedTools />
   </div>
 </ToolPageLayout>

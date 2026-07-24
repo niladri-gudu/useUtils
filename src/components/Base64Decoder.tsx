@@ -45,10 +45,16 @@ const SAMPLE_ENCODED_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDov
 
 
 
-export const Base64Decoder: React.FC = () => {
+interface Base64DecoderProps {
+  defaultOutputMode?: 'text' | 'file';
+}
+
+export const Base64Decoder: React.FC<Base64DecoderProps> = ({
+  defaultOutputMode = 'text'
+}) => {
   const [input, setInput] = useState<string>('');
   const [encoding, setEncoding] = useState<'utf-8' | 'ascii'>('utf-8');
-  const [outputMode, setOutputMode] = useState<'text' | 'file'>('text');
+  const [outputMode, setOutputMode] = useState<'text' | 'file'>(defaultOutputMode);
   
   // Custom file download details
   const [fileName, setFileName] = useState<string>('decoded_file');

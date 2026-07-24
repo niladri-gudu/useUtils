@@ -1,6 +1,13 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { CronGenerator } from '../../components/CronGenerator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
 
 const faqs = [
   {
@@ -46,7 +53,144 @@ const faqs = [
   {
     question: "How do I specify ranges in a cron expression?",
     answer: "Ranges are defined using the hyphen (<code>-</code>) character. For example, <code>9-17</code> in the hours field means the job will run during every hour starting from 9:00 AM through 5:00 PM inclusive."
+  },
+  {
+    question: "Can I schedule jobs to run every N seconds in crontab?",
+    answer: "Standard UNIX crontabs only support a minimum resolution of 1 minute. If you need sub-minute executions, you can write a wrapper script that executes your command, sleeps for N seconds, and runs again in a loop, or use systemd timers."
+  },
+  {
+    question: "How do I view or edit my system cron jobs on Linux?",
+    answer: "Run <code>crontab -l</code> in your terminal to list the active jobs for the current user. To edit the jobs, run <code>crontab -e</code>, which launches the default text editor defined in your environment."
+  },
+  {
+    question: "Why do cron jobs fail with a 'command not found' error?",
+    answer: "Cron runs commands in a very restricted shell environment with a minimal <code>PATH</code> variable (usually just <code>/usr/bin:/bin</code>). It will fail to find custom scripts or binaries. To fix this, always use absolute paths for commands (e.g. <code>/usr/local/bin/node</code> instead of <code>node</code>)."
+  },
+  {
+    question: "How do I redirect cron stdout and stderr outputs to a log file?",
+    answer: "You can redirect standard output and standard error using redirection operators. For example, <code>* * * * * /path/to/script.sh >> /var/log/myjob.log 2>&1</code> appends all outputs and errors to the specified log file."
+  },
+  {
+    question: "What is anacron and how does it relate to cron?",
+    answer: "Anacron is a sibling scheduler designed for desktops or laptops that do not run 24 hours a day. Unlike cron, which misses execution if the computer is turned off, anacron tracks missing jobs and runs them immediately when the system boots up."
+  },
+  {
+    question: "What are crontab nicknames?",
+    answer: "Many cron versions support nicknames that replace the 5-field syntax. These include: <code>@hourly</code> (0 * * * *), <code>@daily</code> (0 0 * * *), <code>@weekly</code> (0 0 * * 0), <code>@monthly</code> (0 0 1 * *), and <code>@reboot</code> (runs once at system startup)."
+  },
+  {
+    question: "Can cron jobs run concurrently?",
+    answer: "Yes. If a cron job is scheduled to run every minute and takes 2 minutes to complete, cron will start a second instance while the first is still running. To prevent this concurrency, use lock wrappers like <code>flock</code> or <code>sem-run</code>."
+  },
+  {
+    question: "What timezone does crontab execute in?",
+    answer: "Crontab tasks run in the local timezone of the cron daemon. On most servers, this timezone is set to UTC, but you can override it on modern systems by setting a <code>CRON_TZ</code> variable at the top of the crontab file."
+  },
+  {
+    question: "What does the 'L' character represent in some crons?",
+    answer: "The 'L' character stands for 'Last'. In the Day of Month field, it represents the last day of the month (e.g. 28, 30, or 31). In the Day of Week field, it represents the last weekday of the month (e.g. <code>5L</code> means last Friday)."
+  },
+  {
+    question: "How do I disable email notifications from cron?",
+    answer: "By default, cron emails the system administrator with any output from the job. To disable this, set <code>MAILTO=''</code> at the top of your crontab file, or redirect all command outputs to <code>/dev/null</code>."
   }
+];
+
+const headers = ["Field Position", "Field Identifier", "Allowed Range", "Special Toggles", "Example Syntax"];
+const rows = [
+  {
+    label: "1",
+    values: ["Minute", "0 - 59", "<code>* , - /</code>", "<code>*/15</code> (every 15 min)"]
+  },
+  {
+    label: "2",
+    values: ["Hour", "0 - 23", "<code>* , - /</code>", "<code>9-17</code> (9 AM to 5 PM)"]
+  },
+  {
+    label: "3",
+    values: ["Day of Month", "1 - 31", "<code>* , - / ? L W</code>", "<code>1,15</code> (1st and 15th)"]
+  },
+  {
+    label: "4",
+    values: ["Month", "1 - 12 (or JAN-DEC)", "<code>* , - /</code>", "<code>*/3</code> (quarterly)"]
+  },
+  {
+    label: "5",
+    values: ["Day of Week", "0 - 6 (or SUN-SAT)", "<code>* , - / ? L #</code>", "<code>1-5</code> (Mon to Fri)"]
+  }
+];
+
+const practices = [
+  {
+    title: "Always Use Absolute Paths",
+    description: "Always write full binary paths in crontabs (like <code>/usr/bin/python3</code> instead of <code>python3</code>) to prevent system path resolution failures."
+  },
+  {
+    title: "Redirect Output to Logs",
+    description: "Redirect stdout and stderr (<code>>> /var/log/app.log 2>&1</code>) to prevent filling local mailbox buffers and to track execution failures."
+  },
+  {
+    title: "Configure Locking for Long Tasks",
+    description: "Use lock utilities like <code>flock -n /var/run/myjob.lock</code> to prevent multiple instances of long tasks from executing concurrently."
+  },
+  {
+    title: "Set PATH variables explicitly",
+    description: "Define the PATH environment variable at the top of your crontab file to ensure referenced commands resolve correctly without fully qualified paths."
+  }
+];
+
+const mistakes = [
+  {
+    title: "Writing Standard Schedulers with seconds",
+    description: "Writing 6 fields (adding seconds) in a standard Linux crontab fails because standard crond daemons only accept exactly 5 fields.",
+    fix: "Stick to the standard 5-field UNIX configuration for native crontabs."
+  },
+  {
+    title: "Relying on Local Server timezone",
+    description: "Assuming your cron executes in your local timezone can lead to jobs running at odd hours if servers are deployed in UTC datacenters.",
+    fix: "Standardize your schedule parameters to UTC or configure the <code>CRON_TZ</code> variable."
+  },
+  {
+    title: "Leaving wildcards in Minute fields",
+    description: "Writing <code>* 9 * * 1-5</code> with the intent to run a job once at 9 AM actually executes it 60 times (once every minute from 9:00 to 9:59).",
+    fix: "Define the minute field explicitly, e.g. <code>0 9 * * 1-5</code>."
+  }
+];
+
+const languages = [
+  {
+    lang: "Bash (crontab)",
+    code: `
+# Edit crontab
+crontab -e
+
+# Format entry:
+# Min Hour Day Month Weekday Command
+0 3 * * * /usr/local/bin/backup-db.sh >> /var/log/backup.log 2>&1
+
+# List crontab entries
+crontab -l
+    `,
+    note: "Use crontab -e to open the current user schedule file and validate the syntax."
+  },
+  {
+    lang: "Node.js (node-cron)",
+    code: `
+const cron = require('node-cron');
+
+// Schedule task to run every 15 minutes
+cron.schedule('*/15 * * * *', () => {
+  console.log('Running task at:', new Date().toISOString());
+});
+    `,
+    note: "Node-cron supports 5-field standard schedules inside local JavaScript daemon scripts."
+  }
+];
+
+const references = [
+  { title: "IEEE POSIX crontab Specification", url: "https://pubs.opengroup.org/onlinepubs/9699919799/utilities/crontab.html" },
+  { title: "Debian Cron Daemon Documentation", url: "https://manpages.debian.org/bookworm/cron/cron.8.en.html" },
+  { title: "Quartz Scheduler Cron Trigger Tutorial", url: "https://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html" }
 ];
 ---
 
@@ -60,121 +204,39 @@ const faqs = [
 >
   <CronGenerator client:load />
 
-  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
-    <!-- Section: Intro -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        How to Use the Cron Expression Generator
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Our visual cron generator takes the mystery out of scheduling tasks. You can either type a raw cron string into the input field at the top to validate and translate it, or use the interactive tabbed builder to generate one step-by-step:
-      </p>
-      <ul class="list-disc list-inside space-y-2 pl-2">
-        <li>Select a pre-built schedule from the <strong class="text-zinc-200">Presets</strong> tab for standard execution routines.</li>
-        <li>Customize individual fields (Minutes, Hours, Days, Months, Weekdays) using simple radio toggles: Every value, Step intervals, Range, or Specific lists.</li>
-        <li>The generator immediately compiles your selections into a valid UNIX cron string, translates it into standard English, and projects the next 5 execution dates based on your local system time.</li>
-      </ul>
-    </div>
+  <div slot="seo-content" class="flex flex-col gap-12 mt-10 max-w-4xl mx-auto w-full">
+    <PrivacyBadge />
 
-    <!-- Section: Cron Structure Explanation -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        UNIX Cron Syntax Structure & Reference
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Standard UNIX crontabs rely on exactly 5 fields separated by spaces. The order and permitted values are strictly enforced as follows:
-      </p>
-      
-      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
-              <th class="p-3">Position</th>
-              <th class="p-3">Field Name</th>
-              <th class="p-3">Allowed Values</th>
-              <th class="p-3">Special Characters</th>
-              <th class="p-3">Example</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
-            <tr>
-              <td class="p-3 text-zinc-200">1</td>
-              <td class="p-3">Minute</td>
-              <td class="p-3">0 - 59</td>
-              <td class="p-3">* , - /</td>
-              <td class="p-3"><code>*/15</code> (every 15m)</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">2</td>
-              <td class="p-3">Hour</td>
-              <td class="p-3">0 - 23</td>
-              <td class="p-3">* , - /</td>
-              <td class="p-3"><code>9-17</code> (9 AM to 5 PM)</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">3</td>
-              <td class="p-3">Day of Month</td>
-              <td class="p-3">1 - 31</td>
-              <td class="p-3">* , - /</td>
-              <td class="p-3"><code>1,15</code> (1st and 15th)</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">4</td>
-              <td class="p-3">Month</td>
-              <td class="p-3">1 - 12 (or JAN-DEC)</td>
-              <td class="p-3">* , - /</td>
-              <td class="p-3"><code>*/3</code> (every quarter)</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">5</td>
-              <td class="p-3">Day of Week</td>
-              <td class="p-3">0 - 6 (or SUN-SAT, 0 or 7 = SUN)</td>
-              <td class="p-3">* , - /</td>
-              <td class="p-3"><code>1-5</code> (Mon to Fri)</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <ComparisonTable 
+      headers={headers} 
+      rows={rows} 
+      title="Cron Syntax Field Structure" 
+      description="Refer to this layout mapping to understand field order, value limits, and active character options:"
+    />
 
-    <!-- Section: Practical Examples -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Common Scheduling Examples
-      </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Every hour on the hour</strong>
-          <code class="text-accent-emerald font-mono text-xs block mb-2">0 * * * *</code>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            Executes at minute 0 of every hour (e.g. 9:00, 10:00, 11:00). Excellent for running recurring light data checks.
-          </p>
-        </div>
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Every 30 minutes on weekdays</strong>
-          <code class="text-accent-emerald font-mono text-xs block mb-2">*/30 * * * 1-5</code>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            Executes every 30 minutes, 24 hours a day, but only from Monday through Friday. Often used for syncing files during work hours.
-          </p>
-        </div>
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Once a day at midnight</strong>
-          <code class="text-accent-emerald font-mono text-xs block mb-2">0 0 * * *</code>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            Runs exactly at 12:00 AM every day. Ideal for daily database backups or cleanup routines.
-          </p>
-        </div>
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">First day of every month at 3:00 AM</strong>
-          <code class="text-accent-emerald font-mono text-xs block mb-2">0 3 1 * *</code>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            Runs once a month on the 1st day at 3:00 AM. Perfect for monthly billing operations or generating monthly usage reports.
-          </p>
-        </div>
-      </div>
-    </div>
+    <BestPractices 
+      practices={practices} 
+      title="Crontab Best Practices" 
+      description="Apply these standards to ensure cron execution security and logging clarity in Linux environments:"
+    />
+
+    <CommonMistakes 
+      mistakes={mistakes} 
+      title="Common Cron Mistakes" 
+      description="Avoid these common errors when writing scheduling strings for servers or application scripts:"
+    />
+
+    <LanguageSupport 
+      languages={languages} 
+      title="Programmatic Schedulers" 
+      description="Implement background scheduler operations directly in codebases using standard tools:"
+    />
+
+    <OfficialReferences 
+      references={references} 
+      title="Scheduling Standards & References" 
+    />
+
+    <RelatedTools />
   </div>
 </ToolPageLayout>

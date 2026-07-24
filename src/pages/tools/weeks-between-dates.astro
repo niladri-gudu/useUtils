@@ -1,0 +1,187 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { DateCalculator } from '../../components/DateCalculator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "How do I calculate the weeks between two dates?",
+    answer: "Enter Date A (Start) and Date B (End) into our calculator. The engine will compute the total calendar days, divide by 7, and return the exact weeks and remaining days."
+  },
+  {
+    question: "What is the difference between calendar weeks and business weeks?",
+    answer: "Calendar weeks represent full 7-day spans. Business weeks represent standard 5-day intervals, excluding weekends."
+  },
+  {
+    question: "How does the weeks calculation handle leap years?",
+    answer: "The underlying JS Date engine automatically includes leap days when counting date deltas, maintaining week precision."
+  },
+  {
+    question: "What does it mean to make week calculations inclusive?",
+    answer: "Standard subtraction counts the interval between dates. Toggling the inclusive option appends 1 full day to the total count."
+  },
+  {
+    question: "Do timezone shifts affect week calculations?",
+    answer: "No, because the calculator computes time using local browser boundaries, keeping week spans aligned with your calendar."
+  },
+  {
+    question: "How many weeks are in a standard year?",
+    answer: "A standard calendar year contains 52 weeks and 1 day (or 52 weeks and 2 days in leap years)."
+  },
+  {
+    question: "Is my date calculation private?",
+    answer: "Yes. All computations are handled locally in your browser sandbox, with zero data uploaded to servers."
+  },
+  {
+    question: "How do I calculate weeks between dates in JavaScript?",
+    answer: "Subtract dates to get milliseconds, convert to days, and divide by 7: <code>const weeks = Math.floor(Math.abs(dateB - dateA) / (1000 * 60 * 60 * 24 * 7));</code>."
+  },
+  {
+    question: "How do I calculate weeks between dates in Python?",
+    answer: "In Python, subtract dates and divide the result days by 7: <code>weeks = (date_b - date_a).days // 7</code>."
+  },
+  {
+    question: "Does this page support counting working days?",
+    answer: "Yes, you can toggle the business days filter to count standard workdays between dates."
+  },
+  {
+    question: "What is ISO 8601 week numbering?",
+    answer: "ISO 8601 defines the first week of the year as the week containing the first Thursday of the year, starting on Monday."
+  },
+  {
+    question: "Can I input negative offsets in the adjuster?",
+    answer: "Yes, you can toggle positive or negative offsets to adjust dates."
+  },
+  {
+    question: "How do I count weeks between dates in SQL?",
+    answer: "In PostgreSQL, use <code>DATE_PART('day', date_b - date_a) / 7</code>. In MySQL, use <code>TIMESTAMPDIFF(WEEK, date_a, date_b)</code>."
+  },
+  {
+    question: "What is Julian week representation?",
+    answer: "Standard week numbers are identical across both Julian and Gregorian calendars, mapping to 7-day intervals."
+  },
+  {
+    question: "Does this tool support copy shortcuts?",
+    answer: "Yes, pressing copy shortcuts duplicates the results table to your clipboard."
+  },
+  {
+    question: "Is this calculator free?",
+    answer: "Yes, useUtils provides all developer tools free with no subscription barriers."
+  },
+  {
+    question: "What timezone does UTC stand for?",
+    answer: "UTC stands for Coordinated Universal Time."
+  },
+  {
+    question: "What is NTP clock drift?",
+    answer: "NTP clock drift is the difference that accumulates in server clocks without network synchronization."
+  },
+  {
+    question: "How do I calculate weeks in Go?",
+    answer: "In Go, subtract dates to get a Duration, convert to hours, and divide by 168 (hours in a week)."
+  },
+  {
+    question: "What is a leap second?",
+    answer: "Leap seconds are periodic adjustments made to UTC to keep it aligned with solar rotation."
+  },
+  {
+    question: "How does this tool help during project roadmaps?",
+    answer: "It allows developers to quickly estimate sprint counts and task milestones by converting calendar durations to weeks."
+  }
+];
+
+const headers = ["Start Date", "End Date", "Total Weeks Output", "Additional Days Remaining"];
+const rows = [
+  {
+    label: "2026-06-01",
+    values: ["2026-06-25", "3 weeks", "3 days"]
+  },
+  {
+    label: "2026-06-01",
+    values: ["2026-07-15", "6 weeks", "2 days"]
+  }
+];
+
+const practices = [
+  {
+    title: "Verify Week Boundaries",
+    description: "Align with stakeholders on whether fractional weeks are rounded up, rounded down, or represented as floating values."
+  }
+];
+
+const mistakes = [
+  {
+    title: "Ignoring remaining days in week math",
+    description: "Dividing total days by 7 and rounding down discards fractional days, creating errors in scheduling calculations.",
+    fix: "Always display remaining days along with completed week counts."
+  }
+];
+
+const languages = [
+  {
+    lang: "JavaScript",
+    code: `
+const start = new Date('2026-06-01');
+const end = new Date('2026-06-25');
+const totalDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24));
+const weeks = Math.floor(totalDays / 7);
+const remDays = totalDays % 7;
+
+console.log(\`Weeks: \${weeks}, Days: \${remDays}\`);
+    `
+  }
+];
+
+const references = [
+  { title: "W3C Date Formats Guide", url: "https://www.w3.org/TR/NOTE-datetime" }
+];
+---
+
+<ToolPageLayout
+  title="Weeks Between Dates Calculator: Find Elapsed Weeks Online"
+  description="Calculate the exact weeks and remaining days between two dates. Built-in business days options with 100% browser security."
+  keywords="weeks between dates, calculate weeks between dates, weeks calculator, calendar weeks tool"
+  toolTitle="Weeks Between Dates Calculator"
+  toolDescription="Find the exact elapsed weeks and remaining days between two dates. Processed 100% locally in your browser sandbox."
+  faqs={faqs}
+>
+  <DateCalculator client:load defaultActiveSubTab="difference" />
+
+  <div slot="seo-content" class="flex flex-col gap-12 mt-10 max-w-4xl mx-auto w-full">
+    <PrivacyBadge />
+
+    <ComparisonTable 
+      headers={headers} 
+      rows={rows} 
+      title="Weeks Differences Outputs" 
+      description="Compare weeks difference representations:"
+    />
+
+    <BestPractices 
+      practices={practices} 
+      title="Weeks Calculation Best Practices" 
+    />
+
+    <CommonMistakes 
+      mistakes={mistakes} 
+      title="Common Weeks Math Pitfalls" 
+    />
+
+    <LanguageSupport 
+      languages={languages} 
+      title="Programmatic Weeks Difference" 
+    />
+
+    <OfficialReferences 
+      references={references} 
+    />
+
+    <RelatedTools />
+  </div>
+</ToolPageLayout>

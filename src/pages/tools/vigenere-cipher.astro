@@ -1,0 +1,237 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { Rot13Encoder } from '../../components/Rot13Encoder';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'ROT13 Encoder', href: '/tools/rot13-encoder' },
+  { label: 'Caesar Cipher', href: '/tools/caesar-cipher' },
+  { label: 'Vigenere Cipher', href: '/tools/vigenere-cipher', active: true }
+];
+
+const faqs = [
+  {
+    question: "What is a Vigenère Cipher?",
+    answer: "The Vigenère Cipher is a method of encrypting alphabetic text by using a series of interwoven Caesar ciphers based on the letters of a keyword. It is a classic polyalphabetic substitution cipher."
+  },
+  {
+    question: "How does the Vigenère Cipher work?",
+    answer: "The keyword is repeated to match the length of the plaintext. For each character, the shift key is determined by the corresponding keyword letter (e.g. 'A' shifts by 0, 'B' by 1, 'C' by 2). This creates multiple shifting keys across the string."
+  },
+  {
+    question: "How do I encode or decode Vigenère ciphers online?",
+    answer: "Type your text in the input area above, set a secret alphabetic Keyword (letters only), toggle the decrypt checkbox if decoding, and watch the output calculate in real-time."
+  },
+  {
+    question: "What is the Tabula Recta?",
+    answer: "The Tabula Recta (or Vigenère square) is a 26x26 grid of alphabets, where each row is shifted by one letter compared to the previous row. It is used as a visual lookup table to encrypt and decrypt characters."
+  },
+  {
+    question: "Can a Vigenère cipher be cracked without the key?",
+    answer: "Yes. Vigenère ciphers were considered unbreakable for centuries, but they can be cracked using Kasiski examination or index of coincidence tests to discover the key length, then applying standard frequency analysis to each group."
+  },
+  {
+    question: "Is the Vigenère cipher secure today?",
+    answer: "No. High-speed computer processors can crack Vigenère ciphers in microseconds using automated letter-frequency analysis and dictionary attacks."
+  },
+  {
+    question: "What is a polyalphabetic cipher?",
+    answer: "A polyalphabetic cipher uses multiple substitution alphabets to encrypt a message. This makes simple frequency analysis much harder than monoalphabetic ciphers (like Caesar) because the same letter in the plaintext can map to different letters in the ciphertext."
+  },
+  {
+    question: "How to program a Vigenère cipher in JavaScript?",
+    answer: "Convert the key and text to code points, shift character codes, and wrap using modulo arithmetic: <br/><code>((textCode + keyCode) % 26) + 65</code> for uppercase."
+  },
+  {
+    question: "How to code a Vigenère cipher in Python?",
+    answer: "Loop through the text, keeping track of the key index, and shift each letter by the key offset: <br/><code>chr((ord(char) + ord(key[key_idx]) - 2 * 65) % 26 + 65)</code>."
+  },
+  {
+    question: "Does the Vigenère cipher encrypt spaces or digits?",
+    answer: "No. Standard Vigenère ciphers only shift alphabetic letters (A-Z and a-z), leaving spaces, punctuation, and digits in their original places."
+  },
+  {
+    question: "What is the Kasiski examination?",
+    answer: "Kasiski examination is a technique developed in the 19th century that identifies repeated groups of characters in a Vigenère ciphertext to deduce the length of the secret key."
+  },
+  {
+    question: "What is the index of coincidence?",
+    answer: "The Index of Coincidence (IoC) measures the probability that two randomly chosen letters from a text are identical. It helps cryptanalysts determine if a ciphertext was written in a single alphabet (Caesar) or multiple alphabets (Vigenère)."
+  },
+  {
+    question: "Is this Vigenère tool safe to use offline?",
+    answer: "Yes. All computations are calculated in your browser using local memory. No text or keywords are uploaded to any server."
+  },
+  {
+    question: "What is a one-time pad (OTP)?",
+    answer: "A one-time pad is a Vigenère cipher where the key is truly random, at least as long as the plaintext, and used only once. An OTP is mathematically unbreakable if implemented correctly."
+  },
+  {
+    question: "How does the tool display Vigenère key alignment?",
+    answer: "Below the keyword input, our tool renders a helper diagram showing how your secret keyword aligns character-by-character with your input string."
+  },
+  {
+    question: "Why does the tool show a keyword warning?",
+    answer: "The keyword must contain only alphabetical characters. Digits, spaces, and special symbols are stripped from the key to maintain classic cipher rules."
+  },
+  {
+    question: "How do I copy the Vigenère output?",
+    answer: "Click the Copy button above the output text box to copy the translated cipher results directly to your clipboard."
+  },
+  {
+    question: "What is the difference between Vigenère and Caesar ciphers?",
+    answer: "Caesar shifts the entire alphabet by a single key value. Vigenère shifts each character by a different key value based on the repeating keyword."
+  },
+  {
+    question: "Can I encrypt files with the Vigenère cipher?",
+    answer: "Yes. Drop any plaintext file into the File tab, and the tool will run Vigenère shifts on the contents locally."
+  },
+  {
+    question: "Does the tool log Vigenère keywords?",
+    answer: "No. All settings are kept temporarily in local React state variables and are erased when you close or reload the browser."
+  }
+];
+
+const references = [
+  { title: "The Vigenère Cipher and Polyalphabetic Substitution", url: "https://www.cryptomuseum.com/crypto/vigenere/index.htm", source: "Crypto Museum Reference" },
+  { title: "Kasiski Examination and Index of Coincidence Analysis Guide", url: "https://en.wikipedia.org/wiki/Kasiski_examination", source: "Wikipedia Cryptography Library" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `function vigenere(text, key, decrypt = false) {
+  const k = key.toUpperCase();
+  let keyIdx = 0;
+  return text.replace(/[a-zA-Z]/g, char => {
+    const code = char.charCodeAt(0);
+    const isLower = code >= 97;
+    const base = isLower ? 97 : 65;
+    const shift = k.charCodeAt(keyIdx % k.length) - 65;
+    const s = decrypt ? (26 - shift) % 26 : shift;
+    keyIdx++;
+    return String.fromCharCode(((code - base + s) % 26) + base);
+  });
+}
+
+console.log(vigenere("HELLO", "KEY")); // Output: RIJVS`,
+    note: "Maintains keyword cycles independently of non-alphabetical characters."
+  },
+  {
+    lang: "Python",
+    code: `def vigenere(text, key, decrypt=False):
+    k = key.upper()
+    key_idx = 0
+    result = []
+    for char in text:
+        if char.isalpha():
+            base = 97 if char.islower() else 65
+            shift = ord(k[key_idx % len(k)]) - 65
+            s = (26 - shift) % 26 if decrypt else shift
+            result.append(chr((ord(char) - base + s) % 26 + base))
+            key_idx += 1
+        else:
+            result.append(char)
+    return "".join(result)
+
+print(vigenere("HELLO", "KEY")) # Output: RIJVS`,
+    note: "Cycles through keyword letters only when shifting active letters."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Using Short Repeating Keywords",
+    description: "Using very short keywords (like <code>KEY</code>) creates predictable repeating patterns in the ciphertext, making Kasiski crack methods highly effective.",
+    fix: "Use longer, random keywords to increase the period length of the polyalphabetic substitution."
+  },
+  {
+    title: "Treating Vigenère as Secure",
+    description: "Relying on Vigenère ciphers to protect modern digital credentials or API payloads is a severe vulnerability. It can be cracked in microseconds.",
+    fix: "Standardize on authenticated modern ciphers like AES-GCM for any active data transit or storage."
+  }
+];
+---
+
+<ToolPageLayout
+  title="Vigenère Cipher Online: Encoder, Decoder & Solver"
+  description="Encode and decode messages using the classical Vigenère polyalphabetic cipher. Features custom secret keywords and interactive key-matching visualizations."
+  keywords="vigenere cipher, vigenere encoder, vigenere solver, polyalphabetic cipher online, vigenere decoder, tabula recta"
+  toolTitle="Vigenère Cipher Studio"
+  toolDescription="Encode and decode messages using Vigenère polyalphabetic substitutions. Input custom secret keywords, examine byte distributions, and test decryptions locally."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <Rot13Encoder client:load defaultMode="vigenere" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        The 'Le Chiffre Indéchiffrable' (Vigenère Cipher)
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Originally described by Giovan Battista Bellaso in 1553, the cipher was later misattributed to Blaise de Vigenère in the 19th century. As a **polyalphabetic cipher**, it shifts characters using repeating cycles of a secret keyword, preventing simple monoalphabetic frequency attacks.
+      </p>
+      <p class="leading-relaxed">
+        Our **Vigenère Cipher Studio** provides a visual playground to test keyword schedules. The layout generates real-time key alignment charts, plots input vs output letter distributions, and decodes polyalphabetic ciphertexts locally.
+      </p>
+    </div>
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Classical Substitution Ciphers Comparison"
+      headers={["Cipher Type", "Key Type", "Alphabets Count", "Vulnerability Level", "Typical Crack Method"]}
+      rows={[
+        { label: "Caesar Cipher", values: ["Single Shift Number (0-25)", "One (Monoalphabetic)", "Extremely High", "Brute-force (25 keys)"] },
+        { label: "Atbash Cipher", values: ["None (Fixed reflection)", "One (Monoalphabetic)", "Extremely High", "Direct character swap"] },
+        { label: "Vigenère Cipher", values: ["Keyword string", "Multiple (Polyalphabetic)", "High", "Kasiski examination, frequency separation"] },
+        { label: "One-Time Pad", values: ["Random key matching length", "Infinite", "None (Mathematically Unbreakable)", "Impossible if key remains secret"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Vigenère Cipher Examples"
+      description="Inspect typical Vigenère encryptions using keyword schedules:"
+      examples={[
+        { label: "Text = 'HELLO', Key = 'KEY'", input: "HELLO", output: "RIJVS", badge: "Keyword: KEY" },
+        { label: "Text = 'useutils', Key = 'CODE'", input: "useutils", output: "wggitwzx", badge: "Keyword: CODE" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Vigenère Ciphers"
+      description="Implement Vigenère shift logic in your code scripts using these blocks:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Vigenère Cipher Pitfalls"
+      description="Keep these historical security limitations in mind when studying:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Vigenère Cipher Best Practices"
+      practices={[
+        { title: "Use for Education", description: "Use the Vigenère cipher strictly to study cryptographic history, polyalphabetic cycles, and index of coincidence." },
+        { title: "Avoid Dictionary Keywords", description: "Test the cipher with long, random, non-dictionary keys to understand how period length increases security." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

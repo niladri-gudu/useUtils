@@ -1,0 +1,227 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { GlassmorphismGenerator } from '../../components/GlassmorphismGenerator';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "What is CSS Backdrop Filter?",
+    answer: "The `backdrop-filter` CSS property applies graphical effects (like blur, color shifting, or contrast adjustments) to the area behind an element, rather than to the element itself."
+  },
+  {
+    question: "How do I write a backdrop filter in CSS?",
+    answer: "Declare the property with your desired filter function. For example: `backdrop-filter: blur(10px);`."
+  },
+  {
+    question: "What is the difference between filter and backdrop-filter?",
+    answer: "The `filter` property applies effects to the element's own content (including text and images). The `backdrop-filter` property applies effects to whatever is visible behind the element."
+  },
+  {
+    question: "Which browsers support backdrop-filter?",
+    answer: "Backdrop-filter is fully supported by all modern browsers. iOS Safari and older macOS Safari engines require the vendor prefix: `-webkit-backdrop-filter`."
+  },
+  {
+    question: "Can I combine multiple functions inside backdrop-filter?",
+    answer: "Yes, declare them space-separated within the same property: `backdrop-filter: blur(8px) saturate(150%) brightness(95%);`."
+  },
+  {
+    question: "Why is my backdrop-filter not working?",
+    answer: "Ensure the element's background color is semi-transparent (e.g. `background: rgba(255, 255, 255, 0.1);`), as a fully solid background will completely block the blurred background from view."
+  },
+  {
+    question: "What filter functions are available?",
+    answer: "Available functions include `blur()`, `brightness()`, `contrast()`, `grayscale()`, `hue-rotate()`, `invert()`, `opacity()`, `sepia()`, and `saturate()`."
+  },
+  {
+    question: "How do I create a frosted glass effect using backdrop-filter?",
+    answer: "Combine a semi-transparent background with a blur filter and a border: `background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.2);`."
+  },
+  {
+    question: "Is there a performance cost to using backdrop-filter?",
+    answer: "Yes. Backdrop blur is GPU-accelerated, but applying it to many large, nested overlapping panels can cause frame rate drops on mobile devices."
+  },
+  {
+    question: "Can I animate backdrop-filter?",
+    answer: "Yes, modern browser engines can smoothly transition backdrop filter values (like animating blur from 0px to 10px on hover)."
+  },
+  {
+    question: "Does backdrop-filter work on transparent PNG images?",
+    answer: "It applies to whatever is behind the bounding box of the element. For non-rectangular elements, SVG clipping masks can define custom filter boundaries."
+  },
+  {
+    question: "How do CSS color variables interact with backdrop filters?",
+    answer: "You can define the values as custom variables: `backdrop-filter: blur(var(--blur-amount));`."
+  },
+  {
+    question: "What is the fallback strategy for older browsers?",
+    answer: "Declare a standard transparent background color first, or use `@supports (backdrop-filter: none)` to apply the filter only where supported."
+  },
+  {
+    question: "How does screen resolution affect backdrop blur?",
+    answer: "The browser's layout engine recalculates the blur effect dynamically, keeping it crisp on high-density screens."
+  },
+  {
+    question: "Does transparency affect color contrast?",
+    answer: "Yes. Semi-transparent colors blend with the background beneath them, meaning contrast calculations must evaluate the final flattened color values."
+  },
+  {
+    question: "What is the relative luminance threshold?",
+    answer: "Luminance calculations evaluate screen brightness levels. Comparing text luminance against background luminance gives the contrast ratio."
+  },
+  {
+    question: "Does this page feature a contrast accessibility check?",
+    answer: "Yes. The page evaluates contrast ratios against white and black backgrounds in real-time."
+  },
+  {
+    question: "How can I extract color palettes from an image?",
+    answer: "Drag and drop any image into our sandbox to sample dominant colors and map them to gradient stops."
+  },
+  {
+    question: "Why do colors look different in print?",
+    answer: "Screens emit RGB light, whereas print ink absorbs CMYK light. This difference in color models results in varying color ranges."
+  },
+  {
+    question: "Are color conversions private on this page?",
+    answer: "Yes, all processing is performed client-side in your browser, keeping your design details secure."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "CSS",
+    code: `
+/* Frosted Glass Overlay */
+.overlay-panel {
+  background: rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+    `,
+    note: "Modern CSS declarations using standard filter properties."
+  },
+  {
+    lang: "SCSS",
+    code: `
+.overlay-panel {
+  background: rgba(255, 255, 255, 0.1);
+  @supports (backdrop-filter: none) or (-webkit-backdrop-filter: none) {
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+}
+    `,
+    note: "SCSS feature query implementation."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Omiting Transparency on the Background",
+    description: "Setting background opacity to 100% or using solid background colors, which completely hides the backdrop filter effect."
+  },
+  {
+    title: "Omitting Webkit Prefixes",
+    description: "Neglecting the `-webkit-backdrop-filter` prefix, which is required to support the blur effect on Safari and iOS browsers."
+  },
+  {
+    title: "Nesting Multiple Blurred Panels",
+    description: "Nesting multiple blurred panels inside each other, which degrades rendering performance on mobile devices."
+  }
+];
+
+const references = [
+  {
+    title: "W3C Filter Effects Module Level 1",
+    url: "https://www.w3.org/TR/filter-effects-1/"
+  },
+  {
+    title: "MDN Web Docs: backdrop-filter",
+    url: "https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter"
+  }
+];
+---
+
+<ToolPageLayout
+  title="CSS Backdrop Filter Generator | Visual Layout Effects Designer"
+  description="Generate custom CSS backdrop-filter styles visually. Configure backdrop blur, saturation, and brightness, and copy clean CSS code."
+  keywords="css backdrop filter, backdrop filter blur, glassmorphism css, web design filter effects, visual css layout designer"
+  toolTitle="Backdrop Filter Generator"
+  toolDescription="Design custom backdrop filters. Configure backdrop blur, saturation, and brightness, and copy clean CSS or Tailwind classes."
+  faqs={faqs}
+>
+  <GlassmorphismGenerator defaultActiveTab="music" client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <PrivacyBadge />
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Visualizing and Styling CSS Backdrop Filters
+      </h2>
+      <p class="leading-relaxed mb-3">
+        The `backdrop-filter` CSS property applies graphical effects (like blur, color shifting, or contrast adjustments) to the area behind an element, rather than to the element itself.
+      </p>
+      <p class="leading-relaxed">
+        Our Backdrop Filter Generator provides an interactive timeline to adjust color coordinates, customize transparency levels, and copy responsive class utilities.
+      </p>
+    </div>
+
+    <ComparisonTable
+      title="Backdrop Filter Properties"
+      description="Compare filter functions and properties:"
+      headers={["Property Style", "CSS Declaration Example", "Visual Effect", "Standard UI Role"]}
+      rows={[
+        { label: "Backdrop Blur", values: ["backdrop-filter: blur(10px)", "Frosted glass effect", "Dashboard sidebars and navbars"] },
+        { label: "Saturate Filter", values: ["backdrop-filter: saturate(150%)", "Vibrant colors", "Active state ambient glows"] },
+        { label: "Brightness Filter", values: ["backdrop-filter: brightness(90%)", "Dimmed backdrop", "Modal overlay backdrops"] }
+      ]}
+    />
+
+    <ExampleCard
+      title="Popular Backdrop Filter Presets"
+      description="Frequently used design coordinates:"
+      examples={[
+        { label: "Standard Blur", input: "backdrop-filter: blur(12px)", output: "Copied!", badge: "CSS" },
+        { label: "Vibrant Glow", input: "backdrop-filter: saturate(180%) blur(8px)", output: "Copied!", badge: "CSS" },
+        { label: "Dimmed Overlay", input: "backdrop-filter: brightness(80%) blur(16px)", output: "Copied!", badge: "CSS" }
+      ]}
+    />
+
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Backdrop Filter Integration"
+      description="Apply these styles in your markup code:"
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Backdrop Filter Pitfalls"
+    />
+
+    <BestPractices
+      title="Backdrop Filter Best Practices"
+      practices={[
+        { title: "Define a Theme Property", description: "Save repeating custom backdrop-filter styles as theme variables in your config to maintain stylesheet consistency." },
+        { title: "Preserve Contrast Compliance", description: "Ensure background color values have adequate contrast against text overlays." }
+      ]}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+
+    <RelatedTools
+      currentToolUrl="/tools/css-backdrop-filter"
+      category="css"
+    />
+  </div>
+</ToolPageLayout>

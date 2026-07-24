@@ -16,6 +16,7 @@
   "dependencies": {
     "@astrojs/cloudflare": "^13.7.0",
     "@astrojs/react": "^4.2.0",
+    "@astrojs/sitemap": "^3.7.3",
     "astro": "^6.4.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

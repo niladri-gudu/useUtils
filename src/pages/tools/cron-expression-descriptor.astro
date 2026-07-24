@@ -1,0 +1,183 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { CronGenerator } from '../../components/CronGenerator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "What is a cron expression descriptor?",
+    answer: "A cron expression descriptor is a utility that parses a UNIX cron string and translates it into a readable human-English sentence, explaining exactly when the job is scheduled to execute."
+  },
+  {
+    question: "How do I describe a cron expression?",
+    answer: "Type or paste your cron string into the input field at the top of the page. The translator will parse the fields in real-time and display the human description in the right panel."
+  },
+  {
+    question: "What is a cron expression and how is it structured?",
+    answer: "A cron expression is a string representing a time schedule, containing 5 fields separated by spaces: minute, hour, day of month, month, and day of week."
+  },
+  {
+    question: "Are cron expressions parsed securely?",
+    answer: "Yes, 100% of the parsing and translation executes client-side in your web browser. No parameters or strings are sent to external servers."
+  },
+  {
+    question: "What are the next execution times?",
+    answer: "The descriptor projects the upcoming 5 dates and times when the cron job will execute, calculated using your local system timezone."
+  },
+  {
+    question: "What does the slash (/) character represent in cron?",
+    answer: "The slash specifies step intervals (e.g. <code>*/5</code> in the minutes field indicates execution every 5 minutes)."
+  },
+  {
+    question: "What does the asterisk (*) represent in cron?",
+    answer: "The asterisk is a wildcard representing 'every value' for that specific field position."
+  },
+  {
+    question: "How do I schedule a job to run only on weekdays?",
+    answer: "Set the 5th field (Day of Week) to <code>1-5</code>. For example: <code>0 9 * * 1-5</code> translates to 'at 9:00 AM, Monday through Friday'."
+  },
+  {
+    question: "Can I use month and weekday names?",
+    answer: "Yes, standard UNIX cron supports 3-letter case-insensitive abbreviations like <code>JAN, FEB, SUN, MON</code>."
+  },
+  {
+    question: "Is Sunday represented by 0 or 7?",
+    answer: "In UNIX crontab, both <code>0</code> and <code>7</code> represent Sunday."
+  },
+  {
+    question: "What is the difference between standard and non-standard crons?",
+    answer: "Standard cron has 5 fields (minute resolution). Some schedulers support 6 or 7 fields to include seconds and years."
+  },
+  {
+    question: "Can I run this descriptor offline?",
+    answer: "Yes. All translation scripts run client-side, allowing complete offline execution."
+  },
+  {
+    question: "How do I view my current crontab on Linux?",
+    answer: "Run <code>crontab -l</code> in your terminal. To edit, run <code>crontab -e</code>."
+  },
+  {
+    question: "Why do cron jobs fail with a 'command not found' error?",
+    answer: "Cron executes commands in a restricted path. Always specify absolute paths for scripts and binaries."
+  },
+  {
+    question: "How do I redirect cron output to logs?",
+    answer: "Use standard redirection: <code>* * * * * command >> /var/log/job.log 2>&1</code>."
+  },
+  {
+    question: "What is anacron?",
+    answer: "Anacron is a task scheduler for systems that don't run continuously, tracking and running missed jobs upon boot."
+  },
+  {
+    question: "What are crontab nicknames?",
+    answer: "Nicknames replace fields with shortcodes like <code>@hourly</code> (0 * * * *) or <code>@daily</code> (0 0 * * *)."
+  },
+  {
+    question: "Can cron expressions run concurrently?",
+    answer: "Yes, if a job takes longer than its scheduling interval, cron will launch another instance. Use lock wrappers like <code>flock</code> to prevent this."
+  },
+  {
+    question: "What timezone does crontab run in?",
+    answer: "The scheduler runs in the server's system timezone (usually UTC). You can specify <code>CRON_TZ</code> on modern systems."
+  },
+  {
+    question: "What does the 'L' character mean?",
+    answer: "'L' stands for 'Last', denoting the last day of a month or the last weekday of a month."
+  },
+  {
+    question: "How do I disable email notifications from cron?",
+    answer: "Set <code>MAILTO=''</code> at the top of your crontab file to turn off execution email notifications."
+  }
+];
+
+const headers = ["Cron String", "Human Translation", "Execution Pattern"];
+const rows = [
+  {
+    label: "<code>*/15 9-17 * * 1-5</code>",
+    values: ["Every 15 minutes, between 9:00 AM and 5:59 PM, Monday through Friday", "Active office hours check-ins"]
+  },
+  {
+    label: "<code>0 0 1 * *</code>",
+    values: ["At 12:00 AM, on day 1 of the month", "Monthly backups and billing runs"]
+  }
+];
+
+const practices = [
+  {
+    title: "Validate Before Scheduling",
+    description: "Always translate and check the next execution dates of a cron string before deploying it to production servers."
+  }
+];
+
+const mistakes = [
+  {
+    title: "Leaving wildcards in Minute fields",
+    description: "Writing <code>* 9 * * 1-5</code> executes the command every single minute of the 9th hour (60 runs total).",
+    fix: "Specify the exact minute, e.g. <code>0 9 * * 1-5</code>."
+  }
+];
+
+const languages = [
+  {
+    lang: "JavaScript (cronstrue)",
+    code: `
+import cronstrue from 'cronstrue';
+console.log(cronstrue.toString("*/15 9-17 * * 1-5"));
+// Output: Every 15 minutes, between 09:00 AM and 05:59 PM, Monday through Friday
+    `
+  }
+];
+
+const references = [
+  { title: "POSIX crontab Standards", url: "https://pubs.opengroup.org/" }
+];
+---
+
+<ToolPageLayout
+  title="Cron Expression Descriptor: Translate Cron Strings to Human English"
+  description="Validate and translate UNIX cron expressions to readable sentences. Projects next execution schedules locally with 100% security."
+  keywords="cron expression descriptor, cron translator, translate cron string, crontab description, cron parser"
+  toolTitle="Cron Expression Descriptor"
+  toolDescription="Validate and translate UNIX cron strings into human-readable sentences, and predict next execution cycles locally in your browser sandbox."
+  faqs={faqs}
+>
+  <CronGenerator client:load defaultActiveTab="presets" />
+
+  <div slot="seo-content" class="flex flex-col gap-12 mt-10 max-w-4xl mx-auto w-full">
+    <PrivacyBadge />
+
+    <ComparisonTable 
+      headers={headers} 
+      rows={rows} 
+      title="Cron Translation Examples" 
+      description="Compare common cron strings and their translated human descriptions:"
+    />
+
+    <BestPractices 
+      practices={practices} 
+      title="Cron Scheduling Best Practices" 
+    />
+
+    <CommonMistakes 
+      mistakes={mistakes} 
+      title="Common Cron Pitfalls" 
+    />
+
+    <LanguageSupport 
+      languages={languages} 
+      title="Programmatic Cron Translation" 
+    />
+
+    <OfficialReferences 
+      references={references} 
+    />
+
+    <RelatedTools />
+  </div>
+</ToolPageLayout>

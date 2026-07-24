@@ -1,0 +1,237 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { CaseConverter } from '../../components/CaseConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const faqs = [
+  {
+    question: "How do I convert camelCase to snake_case?",
+    answer: "You can convert camelCase to snake_case by identifying each uppercase letter in the camelCase string, inserting an underscore (<code>_</code>) before it, and converting that uppercase letter to lowercase. For example, <code>userProfileImage</code> becomes <code>user_profile_image</code>. Our free online tool performs this conversion instantly on single strings or bulk lists."
+  },
+  {
+    question: "How do you convert camelCase to snake_case in JavaScript?",
+    answer: "In JavaScript, you can use regular expressions to replace uppercase letters: <code>const camelToSnake = str => str.replace(/[A-Z]/g, letter => `_\${letter.toLowerCase()}`);</code>. This inserts an underscore before each uppercase letter and converts it to lowercase."
+  },
+  {
+    question: "How do you convert camelCase to snake_case in Python?",
+    answer: "In Python, you can use the <code>re</code> module to convert naming conventions: <code>import re; camel_to_snake = lambda s: re.sub(r'(?<!^)(?=[A-Z])', '_', s).lower()</code>."
+  },
+  {
+    question: "What is the difference between camelCase and snake_case?",
+    answer: "<code>camelCase</code> joins words without spaces, capitalising every word after the first (e.g., <code>myVarName</code>). It is standard in JavaScript, TypeScript, and Java. <code>snake_case</code> joins words using underscores (<code>_</code>) in lowercase (e.g., <code>my_var_name</code>) and is standard in Python, SQL, and database columns."
+  },
+  {
+    question: "Is my data secure when using useUtils?",
+    answer: "Yes, 100%. Like all tools on useUtils, the camelCase to snake_case converter runs entirely in your web browser. No text is ever uploaded, transmitted, or stored on our servers. Your data remains fully secure and private."
+  },
+  {
+    question: "Why does database design prefer snake_case columns over camelCase?",
+    answer: "Many relational databases (like PostgreSQL) are case-insensitive by default and fold all unquoted table and column names to lowercase. If you use camelCase like <code>userId</code>, PostgreSQL will look for <code>userid</code>, causing queries to fail unless quoted. Using <code>user_id</code> avoids these database parser issues."
+  },
+  {
+    question: "How does Java Jackson handle camelCase to snake_case serialization?",
+    answer: "In Java's Jackson library, you can configure camelCase to snake_case naming strategies globally on the ObjectMapper: <code>objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);</code>. This automatically maps API responses to match Python/Go client parameters."
+  },
+  {
+    question: "What is Lodash's snakeCase behavior?",
+    answer: "Lodash's <code>_.snakeCase()</code> parses strings and splits them on word boundaries, capitalization changes, and special symbols, returning a lowercase underscore-separated string. Our converter mimics this behavior, making it safe for JS developers mapping database payloads."
+  },
+  {
+    question: "Does camelCase to snake_case handle numeric bounds?",
+    answer: "Yes. Acronyms or numbers like <code>apiV1Setup</code> typically convert to <code>api_v1_setup</code>. Our converter isolates numeric segments properly to ensure clean snake_case outputs."
+  },
+  {
+    question: "Can I convert camelCase to snake_case in bulk?",
+    answer: "Yes. Paste your bulk list of variable declarations, environment paths, or column lists, enable 'Treat each line independently' in the case converter, and the tool will convert each line individually."
+  },
+  {
+    question: "How do API gateways transform naming conventions?",
+    answer: "API gateways or middleware serializers inspect request payloads, recursively replacing object keys from frontend camelCase to database-friendly snake_case before passing the payload to background services."
+  },
+  {
+    question: "Why do Rust and Go prefer snake_case for local variables?",
+    answer: "Rust's compiler raises style compiler warnings (e.g., <code>non_snake_case</code>) if variables are declared in camelCase. Go's official linter recommends snake_case for local test files and camelCase for struct properties."
+  },
+  {
+    question: "How do I convert a JSON object keys from camelCase to snake_case?",
+    answer: "You can convert JSON keys recursively in JavaScript using a mapping function: <code>const camelToSnakeObject = obj => Object.keys(obj).reduce((acc, key) => ({ ...acc, [key.replace(/[A-Z]/g, l => `_\${l.toLowerCase()}`)]: obj[key] }), {});</code>."
+  },
+  {
+    question: "How do you handle leading underscores in camelCase?",
+    answer: "Leading underscores (often signifying private class properties like <code>_privateVar</code>) are preserved during conversion, outputting as <code>_private_var</code> to maintain access levels."
+  },
+  {
+    question: "What is Screaming Snake Case and how does it compare?",
+    answer: "Screaming Snake Case (or <code>CONSTANT_CASE</code>) capitalizes all letters (e.g. <code>USER_ID</code>). Standard snake_case is entirely lowercase (e.g. <code>user_id</code>). Screaming snake case is reserved for constants and environment variables."
+  },
+  {
+    question: "Does this tool work offline?",
+    answer: "Yes. The page is compiled statically and runs entirely inside your browser's runtime. You can download or access it without active internet connections to sanitize sensitive code repositories."
+  },
+  {
+    question: "How do I convert camelCase to snake_case in Bash?",
+    answer: "You can use <code>sed</code> or <code>awk</code>: <code>echo 'myVarName' | sed 's/\\([A-Z]\\)/_\\1/g' | tr '[:upper:]' '[:lower:]'</code>, which prefixes uppercase letters with underscores and converts the output to lowercase."
+  },
+  {
+    question: "How do I convert camelCase to snake_case in PHP?",
+    answer: "In PHP, use <code>preg_replace</code>: <code>$snake = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $camel));</code>. This identifies non-starting uppercase letters, prefixes them with an underscore, and lowercases the string."
+  },
+  {
+    question: "What happens to hyphens when converting camelCase to snake_case?",
+    answer: "Hyphens present in the input (often indicating mixed kebab-case) are replaced with underscores to maintain strict snake_case formatting."
+  },
+  {
+    question: "Does Title Case convert to snake_case cleanly?",
+    answer: "Yes, but it is best to strip spaces first. Our case converter automatically strips spaces and replaces them with underscores during snake_case mapping."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `const camelToSnake = str => 
+  str.replace(/[A-Z]/g, letter => \`_\${letter.toLowerCase()}\`);
+
+console.log(camelToSnake("userProfileImage")); // "user_profile_image"`,
+    note: "Safe for modern Node.js and browser JS environments."
+  },
+  {
+    lang: "Python",
+    code: `import re
+
+def camel_to_snake(s):
+    return re.sub(r'(?<!^)(?=[A-Z])', '_', s).lower()
+
+print(camel_to_snake("userProfileImage")) # "user_profile_image"`,
+    note: "Uses standard regex parsing."
+  },
+  {
+    lang: "Go",
+    code: `package main
+
+import (
+	"fmt"
+	"regexp"
+	"strings"
+)
+
+var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
+var matchAllCap   = regexp.MustCompile("([a-z0-9])([A-Z])")
+
+func CamelToSnake(str string) string {
+	snake := matchFirstCap.ReplaceAllString(str, "\${1}_\${2}")
+	snake = matchAllCap.ReplaceAllString(snake, "\${1}_\${2}")
+	return strings.ToLower(snake)
+}
+
+func main() {
+	fmt.Println(CamelToSnake("userProfileImage")) // "user_profile_image"
+}`,
+    note: "Standard Go libraries, safe for struct key transformations."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Leaving Uppercase Letters after Underscores",
+    description: "Some naive converters output my_Var_Name instead of fully lowercasing all segments.",
+    fix: "Ensure your conversion engine calls a final <code>toLowerCase()</code> modifier to guarantee standard snake_case compliance."
+  },
+  {
+    title: "Double Underscores from Mixed Inputs",
+    description: "Inputting strings with hyphens or mixed underscores like user_ProfileImage can result in double underscores (user__profile_image).",
+    fix: "Use clean regex mapping to collapse consecutive underscores or run a post-replacement sequence to replace <code>__</code> with <code>_</code>."
+  }
+];
+
+const references = [
+  { title: "PSR-12 PHP Coding Style Guide - Variable Names", url: "https://www.php-fig.org/psr/psr-12/", source: "PHP-FIG Standards" },
+  { title: "PEP 8 Style Guide for Python Code - Naming Conventions", url: "https://peps.python.org/pep-0008/#naming-conventions", source: "Python Software Foundation" }
+];
+---
+
+<ToolPageLayout
+  title="camelCase to snake_case Converter - Convert Variables Online"
+  description="Convert camelCase variable names to snake_case format in real-time. Free, client-side converter with line-by-line batch support and live character diff highlights."
+  keywords="camelcase to snake_case, camel to snake, convert camelcase to snake_case, case converter, variable case converter, developer tools"
+  toolTitle="camelCase to snake_case"
+  toolDescription="Convert variable names and identifiers from camelCase (e.g. userProfile) to snake_case (e.g. user_profile) instantly. Processed entirely locally."
+  faqs={faqs}
+>
+  <CaseConverter client:load defaultCaseId="snake" defaultInput={`userProfileImage\nauthKeySecret\napiGatewayUrl\ndatabasePoolSize`} />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Convert camelCase to snake_case
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Adapting code across different languages often requires converting naming styles. In JavaScript/TypeScript, variables are typically written in <strong class="text-zinc-250 font-mono">camelCase</strong>. However, database columns (PostgreSQL, MySQL) and languages like Python, Rust, and Ruby mandate <strong class="text-zinc-250 font-mono">snake_case</strong>.
+      </p>
+      <p class="leading-relaxed">
+        To use this tool, simply paste your camelCase list in the input box, configure whether you want to treat each line independently, and copy the resulting snake_case list instantly.
+      </p>
+    </div>
+
+    <!-- Section: Cross Links -->
+    <div class="flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Other Naming Converters
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <a href="/tools/case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">All-in-One Case Converter</a>
+        <a href="/tools/snake-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">snake_case Converter</a>
+        <a href="/tools/pascal-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">PascalCase Converter</a>
+        <a href="/tools/kebab-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">kebab-case Converter</a>
+        <a href="/tools/title-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Title Case Converter</a>
+      </div>
+    </div>
+
+    <!-- Conversion Example Showcase -->
+    <ExampleCard
+      title="camelCase to snake_case Conversion Examples"
+      description="Study the raw inputs and conversion results for common programming names:"
+      examples={[
+        { label: "User Details Payload Key", input: "userDetailsPayload", output: "user_details_payload", badge: "snake_case" },
+        { label: "Security Authentication Token", input: "authTokenSecretKey", output: "auth_token_secret_key", badge: "snake_case" },
+        { label: "API Rate Limiter Settings", input: "rateLimitWindowMs", output: "rate_limit_window_ms", badge: "snake_case" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Variable Mapping Snippets"
+      description="Convert naming formats dynamically in your custom modules:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Conversion Pitfalls"
+      description="Avoid these common errors when transforming cases in variables and columns:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Variable Casing Recommendations"
+      practices={[
+        { title: "Maintain Database Conformity", description: "Convert all payload keys to snake_case at your server's database layer to avoid PostgreSQL folded column failures." },
+        { title: "Keep Acronyms Grouped", description: "Avoid breaking acronyms into single letter segments (e.g. use api_url rather than a_p_i_u_r_l)." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

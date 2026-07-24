@@ -1,0 +1,218 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { BinaryConverter } from '../../components/BinaryConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'Binary Converter', href: '/tools/binary-converter' },
+  { label: 'Text to Binary', href: '/tools/text-to-binary' },
+  { label: 'Binary to Text', href: '/tools/binary-to-text', active: true }
+];
+
+const faqs = [
+  {
+    question: "How do I convert binary to text online?",
+    answer: "Paste your binary numbers (zeros and ones) into the Binary input area in the dashboard above. The translator will parse the byte stream and render the corresponding text characters instantly."
+  },
+  {
+    question: "What is a binary to text translator?",
+    answer: "A binary to text translator takes a sequence of binary digits (bits), splits them into 8-bit blocks (bytes), maps each byte to its numerical decimal equivalent, and translates it to standard characters using ASCII or UTF-8 rules."
+  },
+  {
+    question: "How does the translator handle different delimiters?",
+    answer: "The converter is designed to automatically ignore or parse spaces, commas, colons, or array brackets separating binary bytes, letting you translate multiple formatting types."
+  },
+  {
+    question: "Is this binary to text decoder secure?",
+    answer: "Yes, 100%. The translation is executed entirely in your local browser sandbox using JavaScript. No binary payloads or decoded strings are sent to our servers."
+  },
+  {
+    question: "How to translate binary to text in JavaScript?",
+    answer: "Split the binary string by space, parse each 8-digit block as an integer in base 2, and convert to a character: <br/><code>String.fromCharCode(parseInt(binaryByte, 2))</code>."
+  },
+  {
+    question: "How do I decode binary to text in Python?",
+    answer: "Split the string, convert each block to an integer, and decode to characters: <br/><code>''.join(chr(int(b, 2)) for b in binary_str.split())</code>."
+  },
+  {
+    question: "What happens if a binary byte is invalid?",
+    answer: "If a byte contains characters other than 0 or 1, or is not 8 digits long (when no spaces are used), the tool displays a parsing error highlighting the invalid block."
+  },
+  {
+    question: "How do I translate binary numbers to ASCII?",
+    answer: "ASCII uses 7 or 8 bits per character. The tool parses each block as an ASCII value between 0 and 127 to reconstruct standard characters."
+  },
+  {
+    question: "How do I translate binary numbers to UTF-8?",
+    answer: "UTF-8 uses variable byte lengths. The translator compiles the binary stream into a byte array first, then uses <code>TextDecoder</code> to parse UTF-8 unicode characters."
+  },
+  {
+    question: "Can I edit the binary visually by clicking?",
+    answer: "Yes. Toggle to the 'Bit Sandbox' tab to view a visual grid of the loaded bytes. Click any bit node to flip it between 0 and 1, and watch the plain text update instantly."
+  },
+  {
+    question: "Why do some binary streams translate to scrambled text?",
+    answer: "This occurs if the binary payload is encoded in a different format (like UTF-16, EBCDIC, or compressed formats), or if some bits are corrupted or missing."
+  },
+  {
+    question: "What is the binary value of an empty string?",
+    answer: "An empty string has no characters and is represented by an empty binary stream with zero bits."
+  },
+  {
+    question: "What is a nibble in binary?",
+    answer: "A nibble is a 4-bit aggregation, which is exactly half of an 8-bit byte. One hexadecimal character represents one nibble."
+  },
+  {
+    question: "Can I convert binary streams to hexadecimal here?",
+    answer: "Yes. The dashboard displays the equivalent Hexadecimal, Octal, Decimal, and Base64 representations simultaneously."
+  },
+  {
+    question: "Is there a binary translator command in Windows command prompt?",
+    answer: "Windows PowerShell does not have a single command, but you can run inline scripts: <br/><code>[char][Convert]::ToInt32(\"01000001\", 2)</code>."
+  },
+  {
+    question: "How is the binary code for 'hello' decoded?",
+    answer: "The stream <code>01101000 01100101 01101100 01101100 01101111</code> is split into five bytes: 104 ('h'), 101 ('e'), 108 ('l'), 108 ('l'), and 111 ('o'), outputting 'hello'."
+  },
+  {
+    question: "Can I translate binary to decimals here?",
+    answer: "Yes. The Decimal input area in our dashboard displays the corresponding base-10 ASCII values for each byte."
+  },
+  {
+    question: "Does the translator support offline operations?",
+    answer: "Yes. Once the page is loaded, the entire translation script runs offline on your local computer."
+  },
+  {
+    question: "How do I download the translated text output?",
+    answer: "Click the Copy button above the Plain Text area to copy the decoded string directly to your clipboard."
+  },
+  {
+    question: "Does this tool store a history of translated text?",
+    answer: "No. All data stays in temporary memory and is cleared when the browser tab is closed or refreshed."
+  }
+];
+
+const references = [
+  { title: "ANSI X3.4 - American Standard Code for Information Interchange (ASCII)", url: "https://www.iso.org/standard/4747.html", source: "ISO Standards" },
+  { title: "RFC 3629 - UTF-8, a transformation format of ISO 10646", url: "https://datatracker.ietf.org/doc/html/rfc3629", source: "IETF Standards" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `function binaryToText(binaryStr) {
+  return binaryStr
+    .split(' ')
+    .map(bin => String.fromCharCode(parseInt(bin, 2)))
+    .join('');
+}
+
+console.log(binaryToText("01001000 01101001")); // Output: Hi`,
+    note: "Parses each binary block using base-2 radix."
+  },
+  {
+    lang: "Python",
+    code: `def binary_to_text(binary_str):
+    return ''.join(chr(int(b, 2)) for b in binary_str.split())
+
+text = binary_to_text("01001000 01101001")
+print(text) # Output: Hi`,
+    note: "Uses standard chr function to convert Unicode ordinals back to text."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Mismatched Byte Spacings",
+    description: "Providing binary streams with inconsistent byte lengths (e.g. mix of 7 and 8 bits) without spaces will cause the parsing window to drift, outputting garbled text.",
+    fix: "Ensure all binary blocks are padded to exactly 8 bits, or separate them with consistent space delimiters."
+  },
+  {
+    title: "Decoding Non-Printable ASCII Control Bytes",
+    description: "Attempting to render binary values between 0 and 31 (like null bytes or bell triggers) can result in invisible characters or rendering quirks in text areas.",
+    fix: "Filter or escape non-printable ASCII characters before displaying outputs in web interfaces."
+  }
+];
+---
+
+<ToolPageLayout
+  title="Binary to Text Translator Online: Decode Binary Strings"
+  description="Convert binary numbers (0s and 1s) back to plain text, strings, and characters. Real-time translation, bit sandbox, and custom delimiter options."
+  keywords="binary to text, convert binary to text, binary translator, decode binary online, binary to ascii, bit flipper"
+  toolTitle="Binary to Text Translator"
+  toolDescription="Decode binary byte streams into human-readable characters instantly. Features customizable delimiters, UTF-8 unicode encoding support, and interactive bit flippers."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <BinaryConverter client:load defaultActiveTab="converter" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How Binary Streams are Translated Back to Text
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Binary translation is the reverse of encoding. When digital data is retrieved from network packets, storage disks, or memory registries, the raw **bit sequences** must be grouped into bytes and matched against character encoding tables.
+      </p>
+      <p class="leading-relaxed">
+        Our **Binary to Text Translator** automates this mapping. The decoder parses bit sequences, handles multiple delimiter formats, resolves multi-byte UTF-8 character points, and renders the output text in real-time.
+      </p>
+    </div>
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Common Character Codes"
+      headers={["Character", "ASCII Decimal Value", "Hexadecimal Code", "Binary Representation"]}
+      rows={[
+        { label: "A (Uppercase)", values: ["65", "41", "01000001"] },
+        { label: "a (Lowercase)", values: ["97", "61", "01100001"] },
+        { label: "0 (Digit)", values: ["48", "30", "00110000"] },
+        { label: "Space", values: ["32", "20", "00100000"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Binary to Text Translation Examples"
+      description="Inspect typical binary sequences and their decoded text outputs:"
+      examples={[
+        { label: "Convert 'Ok'", input: "01001111 01101011", output: "Ok", badge: "2 Bytes" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Binary Translations"
+      description="Translate binary numbers back to plain text using these code blocks:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Binary Translation Mistakes"
+      description="Avoid these common errors when decoding bitwise streams into text formats:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Binary to Text Decoding Best Practices"
+      practices={[
+        { title: "Standardize Delimiters", description: "Use space delimiters when displaying binary strings to humans, but strip delimiters when passing streams to code scripts." },
+        { title: "Use UTF-8 Encoders", description: "Always decode strings using UTF-8 rather than simple ASCII arrays to support international languages and emojis." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

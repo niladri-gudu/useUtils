@@ -1,0 +1,180 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { DateCalculator } from '../../components/DateCalculator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "How do I calculate the days between two dates?",
+    answer: "Enter Date A (Start) and Date B (End) into our calculator. The engine computes the absolute millisecond delta and converts it to total days. You can choose to exclude weekends or make the calculation inclusive of the final day."
+  },
+  {
+    question: "What are business days and how are they counted?",
+    answer: "Business days are weekdays (Monday through Friday), excluding Saturdays and Sundays. The calculator iterates through the calendar span and skips weekends."
+  },
+  {
+    question: "Does this date calculator account for leap years?",
+    answer: "Yes. The calculator runs on the JavaScript native Date engine which automatically handles leap years (adding February 29th for years divisible by 4, except for century years not divisible by 400)."
+  },
+  {
+    question: "What does it mean to make date calculations inclusive?",
+    answer: "Standard date subtraction calculates the elapsed time between two points, meaning the end date itself is not fully counted. Enabling the 'Include final day' option appends 1 full day to the output."
+  },
+  {
+    question: "Do timezones affect date difference calculations?",
+    answer: "Our Date Calculator executes computations using your local browser timezone. This ensures that date changes align with your physical location."
+  },
+  {
+    question: "What is the difference between calendar days and working days?",
+    answer: "Calendar days represent every consecutive day on the calendar, including weekends and public holidays. Working days represent weekdays only (Monday through Friday), excluding Saturdays and Sundays."
+  },
+  {
+    question: "Is my date calculator data secure and private?",
+    answer: "Yes. All computations run client-side in your web browser. No dates, selections, or calculation outputs are ever sent to a server, keeping your data secure."
+  },
+  {
+    question: "How do I calculate the number of weeks between two dates?",
+    answer: "The Date Difference tab computes the division of total days by 7 and returns a detailed weeks-and-remaining-days breakdown next to total day results."
+  },
+  {
+    question: "What happens when I add 1 month to January 31st?",
+    answer: "The native JavaScript Date engine resolves month overflow by wrapping to the next month. Adding 1 month to January 31st wraps to March 3rd (in standard years) because February has only 28 days."
+  },
+  {
+    question: "Can I input negative numbers in the Date Adjuster?",
+    answer: "Yes, you can configure positive or negative offsets to add or subtract days, weeks, months, or years."
+  },
+  {
+    question: "What is ISO 8601 week numbering?",
+    answer: "ISO 8601 week numbering defines the first week of the year as the week containing the first Thursday of the year, with weeks starting on Mondays."
+  },
+  {
+    question: "Can the timesheet parser read '30m' as half an hour?",
+    answer: "Yes, typing <code>30m</code> or <code>30 minutes</code> translates to 0.5 hours or 30 minutes of accumulated duration in the timesheet shift rows."
+  },
+  {
+    question: "How can I calculate how many days are left in the current year?",
+    answer: "Set Date A to the current date and Date B to December 31st of this year. The Date Difference calculator will return the exact days remaining."
+  },
+  {
+    question: "What is the difference between UTC date math and local date math?",
+    answer: "UTC date math calculates time deltas using standard GMT boundaries, ignoring local daylight saving shifts. Local date math accounts for daylight saving transitions."
+  },
+  {
+    question: "Does this tool support keyboard copy shortcuts?",
+    answer: "Yes. Pressing <code>Command+C</code> (Mac) or <code>Control+C</code> (Windows) anywhere on the page copies a formatted text summary of your calculations instantly."
+  },
+  {
+    question: "How do I calculate business days in Python?",
+    answer: "In Python, you can calculate business days using the <code>numpy.busday_count</code> function or by iterating through dates and filtering weekends."
+  },
+  {
+    question: "How do I calculate business days in SQL?",
+    answer: "In SQL, you can calculate weekdays by subtracting dates and dividing by 7, then subtracting weekend counts using conditional statements."
+  },
+  {
+    question: "What is standard calendar date representation?",
+    answer: "ISO 8601 is the standard representation format (<code>YYYY-MM-DD</code>)."
+  },
+  {
+    question: "How is the billing amount calculated?",
+    answer: "In the Timesheet Accumulator, we sum the minutes for all shift rows. The total minutes are divided by 60 to derive a fractional hour value, which is then multiplied by your custom hourly rate."
+  },
+  {
+    question: "Is this date calculator free?",
+    answer: "Yes, useUtils provides all developer tools free with no subscription gates or account registrations."
+  },
+  {
+    question: "What is a leap second?",
+    answer: "Leap seconds are one-second adjustments occasionally applied to Coordinated Universal Time to keep it aligned with solar time."
+  }
+];
+
+const headers = ["Calculation Method", "Calendar Days", "Business Days Only", "Inclusive Option"];
+const rows = [
+  {
+    label: "Days Difference",
+    values: ["Yes", "Optional (skips weekends)", "Optional (adds 1 day)"]
+  }
+];
+
+const practices = [
+  {
+    title: "Verify Inclusive Flag in Contracts",
+    description: "Always align on whether date ranges are inclusive of both start and end days before signing legal contracts."
+  }
+];
+
+const mistakes = [
+  {
+    title: "Subtracting Dates Natively in JS",
+    description: "Subtracting two JS dates returns milliseconds, which must be divided by <code>1000 * 60 * 60 * 24</code>. Rounding errors can occur due to DST.",
+    fix: "Use rounded math or standard date libraries for safe division."
+  }
+];
+
+const languages = [
+  {
+    lang: "JavaScript",
+    code: `
+const dateA = new Date('2026-06-01');
+const dateB = new Date('2026-06-15');
+const diffDays = Math.ceil(Math.abs(dateB - dateA) / (1000 * 60 * 60 * 24));
+console.log('Days:', diffDays);
+    `
+  }
+];
+
+const references = [
+  { title: "W3C Date Formats", url: "https://www.w3.org/TR/NOTE-datetime" }
+];
+---
+
+<ToolPageLayout
+  title="Days Between Dates: Calculate Calendar & Business Days"
+  description="Calculate the exact days between two dates. Exclude weekends to count business days, and toggle inclusive options locally."
+  keywords="days between dates, days calculator, calculate days, business days calculator, working days count"
+  toolTitle="Days Between Dates Calculator"
+  toolDescription="Find the exact calendar difference between two dates, add or subtract time offsets, and filter weekends locally."
+  faqs={faqs}
+>
+  <DateCalculator client:load defaultActiveSubTab="difference" />
+
+  <div slot="seo-content" class="flex flex-col gap-12 mt-10 max-w-4xl mx-auto w-full">
+    <PrivacyBadge />
+
+    <ComparisonTable 
+      headers={headers} 
+      rows={rows} 
+      title="Days Difference Methods" 
+      description="Compare date difference attributes:"
+    />
+
+    <BestPractices 
+      practices={practices} 
+      title="Date Difference Best Practices" 
+    />
+
+    <CommonMistakes 
+      mistakes={mistakes} 
+      title="Common Days Difference Pitfalls" 
+    />
+
+    <LanguageSupport 
+      languages={languages} 
+      title="Programmatic Days Difference" 
+    />
+
+    <OfficialReferences 
+      references={references} 
+    />
+
+    <RelatedTools />
+  </div>
+</ToolPageLayout>

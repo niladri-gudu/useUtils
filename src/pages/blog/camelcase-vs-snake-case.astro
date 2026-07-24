@@ -1,0 +1,125 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<Layout 
+  title="camelCase vs snake_case: Code Naming Conventions - useUtils Blog" 
+  description="Learn the differences between camelCase and snake_case, their ideal use cases, and when to apply them in JavaScript, Python, Rust, and SQL."
+  keywords="camelcase vs snakecase, camelcase, snake_case, naming conventions, python pep 8, javascript naming"
+>
+  <Header />
+
+  <main class="flex-grow w-full max-w-3xl mx-auto px-4 py-12 flex flex-col gap-8">
+    <nav class="flex items-center gap-2 text-[10px] md:text-[11px] font-mono text-zinc-500 select-none" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-accent-emerald transition-colors">home</a>
+      <span class="text-zinc-700">/</span>
+      <a href="/blog" class="hover:text-accent-emerald transition-colors">blog</a>
+      <span class="text-zinc-700">/</span>
+      <span class="text-accent-emerald font-medium">camelcase-vs-snake-case</span>
+    </nav>
+
+    <!-- Post Header -->
+    <div class="flex flex-col gap-4 border-b border-border-hairline/60 pb-6">
+      <div class="flex items-center gap-3">
+        <span class="text-[10px] font-mono uppercase tracking-wider text-accent-emerald bg-accent-emerald/10 border border-accent-emerald/10 px-2 py-0.5 rounded">
+          Naming Conventions
+        </span>
+        <span class="text-[10px] font-mono text-zinc-500">July 23, 2026 • 5 min read</span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-zinc-50 font-sans leading-tight">
+        camelCase vs snake_case: Choosing the Right Code Naming Convention
+      </h1>
+      <p class="text-zinc-400 text-sm leading-relaxed">
+        An in-depth comparison of the two most popular identifier formatting standards, exploring syntax patterns, platform conventions, and readability implications.
+      </p>
+    </div>
+
+    <!-- Article Content (Markdown-like styled HTML) -->
+    <article class="prose prose-invert max-w-none text-zinc-300 text-sm md:text-base leading-relaxed flex flex-col gap-6 font-sans">
+      <p>
+        In modern software development, code is read far more often than it is written. Choosing a consistent naming convention is one of the easiest ways to improve a codebase's maintainability and scannability. Among the various case options, <strong>camelCase</strong> and <strong>snake_case</strong> are the two most prominent contenders.
+      </p>
+
+      <h2 class="text-lg font-semibold text-zinc-100 mt-4 flex items-center gap-2">
+        <span class="w-1 h-5 bg-accent-emerald rounded-full"></span>
+        What is camelCase?
+      </h2>
+      <p>
+        In <strong>camelCase</strong>, words are joined together without spaces, and each word starts with a capital letter except for the very first word. The capitalization peaks resemble the humps of a camel:
+      </p>
+      <pre class="bg-zinc-950 border border-border-hairline p-4 rounded-lg font-mono text-xs text-zinc-400">{`const userSessionToken = "abc123xyz";
+function calculateDiscountPrice() {}`}</pre>
+      <p>
+        It is the de-facto standard across major ecosystems, particularly:
+      </p>
+      <ul class="list-dash pl-6 space-y-1 text-xs">
+        <li><strong class="text-zinc-200">JavaScript / TypeScript:</strong> Variables, function names, and methods.</li>
+        <li><strong class="text-zinc-200">Java:</strong> Variables and methods.</li>
+        <li><strong class="text-zinc-200">C++ / Swift:</strong> Native variable identifiers.</li>
+      </ul>
+
+      <h2 class="text-lg font-semibold text-zinc-100 mt-4 flex items-center gap-2">
+        <span class="w-1 h-5 bg-accent-emerald rounded-full"></span>
+        What is snake_case?
+      </h2>
+      <p>
+        In <strong>snake_case</strong>, all letters are written in lowercase, and words are joined using underscores (<code>_</code>). This resembles a snake slithering along the ground:
+      </p>
+      <pre class="bg-zinc-950 border border-border-hairline p-4 rounded-lg font-mono text-xs text-zinc-400">{`user_session_token = "abc123xyz"
+def calculate_discount_price(): pass`}</pre>
+      <p>
+        This style is standard in:
+      </p>
+      <ul class="list-dash pl-6 space-y-1 text-xs">
+        <li><strong class="text-zinc-200">Python:</strong> Defined in PEP 8 for variables, functions, and modules.</li>
+        <li><strong class="text-zinc-200">Rust & Ruby:</strong> Standard naming guidelines.</li>
+        <li><strong class="text-zinc-200">SQL Databases:</strong> PostgreSQL, MySQL, and SQL Server column/table naming schemes.</li>
+      </ul>
+
+      <h2 class="text-lg font-semibold text-zinc-100 mt-4 flex items-center gap-2">
+        <span class="w-1 h-5 bg-accent-emerald rounded-full"></span>
+        Which Naming Convention is More Readable?
+      </h2>
+      <p>
+        Several usability studies have investigated spelling errors and reading speeds under camelCase and snake_case conventions.
+      </p>
+      <p>
+        A notable research study conducted by the <em>Software Engineering Research Laboratory</em> discovered that **snake_case is significantly faster to recognize and read** compared to camelCase. The underscore character acts as a clear divider, allowing the human eye to process the identifier in the same way it processes standard whitespace.
+      </p>
+      <p>
+        However, camelCase has one major advantage: **line space efficiency**. Since it strips out the underscore character, camelCase strings are slightly shorter, saving horizontal real estate in deeply indented lines of code.
+      </p>
+
+      <h2 class="text-lg font-semibold text-zinc-100 mt-4 flex items-center gap-2">
+        <span class="w-1 h-5 bg-accent-emerald rounded-full"></span>
+        Database Column Naming vs JSON Keys
+      </h2>
+      <p>
+        One of the most common friction points in modern web applications occurs during API serialization. Databases typically store columns in snake_case (e.g. <code>created_at</code>), while the React frontend expects camelCase variables (e.g. <code>createdAt</code>).
+      </p>
+      <p>
+        This discrepancy requires mapping keys during serialization. If you have variables in your TypeScript codebase that need database alignment, you can use our dedicated tools to perform manual translations:
+      </p>
+      <div class="flex flex-wrap gap-4 mt-2">
+        <a 
+          href="/tools/camelcase-to-snake-case"
+          class="flex-grow p-4 bg-panel border border-border-hairline rounded-xl hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald flex items-center justify-between"
+        >
+          <span>camelCase to snake_case Converter</span>
+          <span>→</span>
+        </a>
+        <a 
+          href="/tools/snake-case-converter"
+          class="flex-grow p-4 bg-panel border border-border-hairline rounded-xl hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald flex items-center justify-between"
+        >
+          <span>snake_case Converter</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+  </main>
+
+  <Footer />
+</Layout>

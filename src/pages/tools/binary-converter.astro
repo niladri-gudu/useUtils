@@ -1,11 +1,18 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { BinaryConverter } from '../../components/BinaryConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
 
 const tabs = [
   { label: 'Binary Converter', href: '/tools/binary-converter', active: true },
-  { label: 'Base64 Encoder', href: '/tools/base64-encoder' },
-  { label: 'Base64 Decoder', href: '/tools/base64-decoder' }
+  { label: 'Text to Binary', href: '/tools/text-to-binary' },
+  { label: 'Binary to Text', href: '/tools/binary-to-text' }
 ];
 
 const faqs = [
@@ -52,6 +59,86 @@ const faqs = [
   {
     question: "Is my data secure when using this binary converter utility?",
     answer: "Absolutely. Like all developer utilities on useUtils, the binary converter operates entirely in client-side memory inside your web browser sandbox. No input payloads, typed strings, or uploaded files are ever sent to external servers or tracking databases, guaranteeing complete data privacy."
+  },
+  {
+    question: "How to convert text to binary in Python?",
+    answer: "You can use Python formatting: <br/><code>' '.join(format(ord(c), '08b') for c in text)</code>."
+  },
+  {
+    question: "How do I convert binary to text in Python?",
+    answer: "Use list comprehensions with character conversion: <br/><code>''.join(chr(int(b, 2)) for b in binary_str.split())</code>."
+  },
+  {
+    question: "What is the binary representation of a newline (LF) character?",
+    answer: "The newline character has an ASCII decimal value of 10, which equates to <code>00001010</code> in binary."
+  },
+  {
+    question: "What is an octal numeral system?",
+    answer: "Octal is a base-8 numeral system using digits 0 to 7. Historically, it was used to map 3-bit combinations in older computer architectures."
+  },
+  {
+    question: "What is the maximum byte value?",
+    answer: "An 8-bit byte can represent a maximum value of 255 (binary <code>11111111</code>, hexadecimal <code>FF</code>)."
+  },
+  {
+    question: "What is the binary code for a carriage return (CR) character?",
+    answer: "A carriage return (CR) has an ASCII value of 13, which equates to <code>00001101</code> in binary."
+  },
+  {
+    question: "Can I inspect local files using the hex dump viewer?",
+    answer: "Yes. Select the 'Hex Dump Explorer' tab in our tool, and upload any binary or log file to generate a classic memory hex grid."
+  },
+  {
+    question: "What is the difference between MSB and LSB?",
+    answer: "MSB (Most Significant Bit) is the leftmost bit carrying the highest numerical weight. LSB (Least Significant Bit) is the rightmost bit carrying the lowest weight."
+  },
+  {
+    question: "Does the binary tool run completely offline?",
+    answer: "Yes, all conversion and bit-flipping routines execute locally in browser memory without sending network requests."
+  }
+];
+
+const references = [
+  { title: "ANSI X3.4 - American Standard Code for Information Interchange (ASCII)", url: "https://www.iso.org/standard/4747.html", source: "ISO Standards" },
+  { title: "RFC 3629 - UTF-8 standard definitions", url: "https://datatracker.ietf.org/doc/html/rfc3629", source: "IETF Standards" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `const text = "Hi!";
+const bytes = new TextEncoder().encode(text);
+
+// Map bytes to standard 8-bit binary strings
+const binaryString = Array.from(bytes)
+  .map(b => b.toString(2).padStart(8, '0'))
+  .join(' ');
+
+console.log(binaryString); // Output: 01001000 01101001 00100001`,
+    note: "TextEncoder handles unicode bytes correctly."
+  },
+  {
+    lang: "Python",
+    code: `text = "Hi!"
+
+# Convert each character code point to 8-bit binary representation
+binary_str = ' '.join(f"{ord(c):08b}" for c in text)
+
+print(binary_str) # Output: 01001000 01101001 00100001`,
+    note: "Uses formatted string literals to pad bits with leading zeros."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Truncating Bit Strings Below 8 Bits",
+    description: "Skipping leading zeros (e.g. formatting decimal 5 as <code>101</code> instead of <code>00000101</code>) breaks alignment windows, causing decoding logic to fail.",
+    fix: "Always pad binary bytes to exactly 8 bits using padStart(8, '0') or format formats."
+  },
+  {
+    title: "Mismatched Unicode Decodings",
+    description: "Decoding multi-byte UTF-8 character sequences by reading individual single bytes as ASCII characters outputs garbled unicode glyphs.",
+    fix: "Use TextDecoder to decode complete byte blocks back into text."
   }
 ];
 ---
@@ -67,98 +154,72 @@ const faqs = [
 >
   <BinaryConverter client:load />
 
-  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
-    
     <!-- Section: Intro -->
     <div>
       <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
         <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        How to Use the Binary Converter
+        Numeral System Base Conversions
       </h2>
       <p class="leading-relaxed mb-4">
-        Our multi-base converter provides a complete local playground for translating data types. Type or paste characters in the <strong class="text-zinc-200">Plain Text</strong> field, and watch all other fields (Binary, Hex, Decimal, Octal, and Base64) update simultaneously as you type. Alternatively, paste raw code sequences in any of the base format boxes to decode them back into human-readable text.
+        Computer processing is built on digital numeric representations. Alphanumeric characters are converted to numerical codes (under ASCII or UTF-8 rules) which map directly to **binary systems (base 2)**, **hexadecimal systems (base 16)**, **octal systems (base 8)**, and base 10 decimals.
       </p>
       <p class="leading-relaxed">
-        Use the top settings panel to configure character delimiters (Spaces, Commas, Colons, or None), swap character encoding standard (UTF-8 vs ASCII), or change Hex casing. Use the clipboard buttons to copy results instantly.
+        Our **Binary Converter & Bit Sandbox** is a powerful educational utility. Visualize active bit arrays, toggle bit values inside our interactive sandbox card deck, render detailed memory address hex dumps, or convert large numbers with BigInt precision completely client-side.
       </p>
     </div>
 
-    <!-- Section: Character Representation Grid -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Character Base Mapping Standards
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Understanding the relationship between standard text codes and numeric bases is key to working with binary layouts:
-      </p>
-      
-      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
-              <th class="p-3">Character</th>
-              <th class="p-3">Decimal (ASCII)</th>
-              <th class="p-3">Hexadecimal</th>
-              <th class="p-3">Octal</th>
-              <th class="p-3">Binary (Byte representation)</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
-            <tr>
-              <td class="p-3 text-zinc-200">A</td>
-              <td class="p-3"><code>65</code></td>
-              <td class="p-3"><code>41</code></td>
-              <td class="p-3"><code>101</code></td>
-              <td class="p-3"><code>01000001</code></td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">B</td>
-              <td class="p-3"><code>66</code></td>
-              <td class="p-3"><code>42</code></td>
-              <td class="p-3"><code>102</code></td>
-              <td class="p-3"><code>01000010</code></td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">a</td>
-              <td class="p-3"><code>97</code></td>
-              <td class="p-3"><code>61</code></td>
-              <td class="p-3"><code>141</code></td>
-              <td class="p-3"><code>01100001</code></td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">0</td>
-              <td class="p-3"><code>48</code></td>
-              <td class="p-3"><code>30</code></td>
-              <td class="p-3"><code>060</code></td>
-              <td class="p-3"><code>00110000</code></td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">!</td>
-              <td class="p-3"><code>33</code></td>
-              <td class="p-3"><code>21</code></td>
-              <td class="p-3"><code>041</code></td>
-              <td class="p-3"><code>00100001</code></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <!-- Section: Privacy Badge -->
+    <PrivacyBadge />
 
-    <!-- Section: Educational Bit Sandbox -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Exploring Binary via the Bit Sandbox
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Our exclusive **Bit Sandbox** tab bridges the gap between binary representations and interactive memory bytes. In computer systems, characters are stored as bits (0 or 1). There are exactly 8 bits in one byte, capable of representing values from 0 to 255 (2<sup>8</sup> combinations).
-      </p>
-      <p class="leading-relaxed">
-        By clicking individual bit boxes, you directly trigger a bit-flipping operation (XOR gate). For instance, clicking the least significant bit (LSB, 2<sup>0</sup>) of character <code>A</code> (binary <code>01000001</code>, decimal 65) turns it to 0, which immediately alters the decimal code to 64, changing the text character output to <code>@</code>. This provides a direct, hands-on tool to comprehend binary conversions, bit masks, and low-level computer science architecture.
-      </p>
-    </div>
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Numeral Base Systems compared"
+      headers={["Base System", "Radix", "Allowed Digits / Symbols", "Typical Computer Role"]}
+      rows={[
+        { label: "Binary", values: ["Base 2", "0, 1", "Hardware electric status, storage logic gates"] },
+        { label: "Octal", values: ["Base 8", "0-7", "Unix file permissions (e.g. 755), legacy mainframes"] },
+        { label: "Decimal", values: ["Base 10", "0-9", "Human arithmetic, standard integer data types"] },
+        { label: "Hexadecimal", values: ["Base 16", "0-9, a-f", "Memory addressing offsets, color codes, instruction values"] }
+      ]}
+    />
 
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Common Character Base Conversions"
+      description="Inspect conversions for typical ASCII characters:"
+      examples={[
+        { label: "Letter 'A'", input: "A", output: "Dec: 65 | Hex: 41 | Oct: 101 | Bin: 01000001", badge: "A" },
+        { label: "Letter 'a'", input: "a", output: "Dec: 97 | Hex: 61 | Oct: 141 | Bin: 01100001", badge: "a" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Base Conversions"
+      description="Implement base conversion logic in your backend logic using these blocks:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Binary Conversion Mistakes"
+      description="Avoid these common errors when coding low-level numeric conversions:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Binary Conversion Best Practices"
+      practices={[
+        { title: "Standardize Spacings", description: "Use space delimiters to split binary streams into readable bytes when displaying data to human operators." },
+        { title: "Avoid IEEE 754 Precision Caps", description: "Utilize BigInt variables in JavaScript to prevent rounding errors on numbers larger than 9,007,199,254,740,991." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
   </div>
 </ToolPageLayout>

@@ -1,0 +1,225 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { AesEncryptDecrypt } from '../../components/AesEncryptDecrypt';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'AES Encrypt & Decrypt', href: '/tools/aes-encrypt-decrypt' },
+  { label: 'AES Encryption', href: '/tools/aes-encryption', active: true },
+  { label: 'AES Decryption', href: '/tools/aes-decryption' }
+];
+
+const faqs = [
+  {
+    question: "What is AES Encryption?",
+    answer: "AES (Advanced Encryption Standard) is a symmetric block cipher established by the US NIST in 2001. It is the global standard for encrypting sensitive data, using keys of 128, 192, or 256 bits."
+  },
+  {
+    question: "How do I encrypt text online with AES?",
+    answer: "Enter your plain text in the input area above, set a secret passphrase or raw key, choose your preferred cipher mode (like AES-GCM or AES-CBC), and copy the resulting secure ciphertext output."
+  },
+  {
+    question: "What is the difference between AES-GCM and AES-CBC?",
+    answer: "AES-GCM (Galois/Counter Mode) provides authenticated encryption, verifying both secrecy and data integrity (tamper-detection). AES-CBC (Cipher Block Chaining) only provides confidentiality and is vulnerable to padding oracle attacks if not combined with an HMAC."
+  },
+  {
+    question: "Is this online AES encryption tool secure?",
+    answer: "Yes. The encryption process runs completely in client-side JavaScript using the browser's Web Crypto API. Your secret passphrases, keys, and text never leave your machine."
+  },
+  {
+    question: "What is an Initialization Vector (IV)?",
+    answer: "An Initialization Vector (IV) is a random block of bytes combined with the key and first data block during encryption. It ensures that encrypting the same text twice with the same key produces entirely different ciphertexts."
+  },
+  {
+    question: "What is PBKDF2 key derivation?",
+    answer: "PBKDF2 (Password-Based Key Derivation Function 2) derives a cryptographically strong binary key from a standard text password using thousands of hashing iterations and a unique salt."
+  },
+  {
+    question: "How many iterations should I use for key derivation?",
+    answer: "OWASP recommends at least 100,000 iterations for PBKDF2-HMAC-SHA256 to slow down brute-force attacks. Our tool uses 100,000 iterations by default."
+  },
+  {
+    question: "Can I encrypt files using this tool?",
+    answer: "Yes. Toggle the file option inside the tool, select any file (up to 5MB), and encrypt it. The tool packages the salt, IV, filename, and ciphertext into a secure local <code>.enc</code> envelope download."
+  },
+  {
+    question: "What is the difference between AES-128 and AES-256?",
+    answer: "AES-128 uses a 128-bit key size and is faster, while AES-256 uses a 256-bit key size and offers the highest security level, protecting against potential quantum computer attacks."
+  },
+  {
+    question: "How to encrypt text with AES in Node.js?",
+    answer: "Use the built-in <code>crypto</code> module with cipher methods: <br/><code>const cipher = crypto.createCipheriv('aes-256-gcm', key, iv)</code>."
+  },
+  {
+    question: "How to encrypt text with AES in Python?",
+    answer: "Use the <code>pycryptodome</code> package: <br/><code>cipher = AES.new(key, AES.MODE_GCM, nonce=iv)</code>."
+  },
+  {
+    question: "Can I generate a secure passphrase here?",
+    answer: "Yes. Inside the key configuration options, click 'Generate strong passphrase' to create a random high-entropy credential."
+  },
+  {
+    question: "Why does the ciphertext output change every time I hit encrypt?",
+    answer: "This is because a new, random Initialization Vector (IV) is generated for each encryption run. This is a critical security requirement."
+  },
+  {
+    question: "What is the default output format of the ciphertext?",
+    answer: "The tool packages the ciphertext, IV, and salt into a single concatenated Base64 or Hexadecimal string that can be easily shared or stored."
+  },
+  {
+    question: "Can I share encrypted text with a link?",
+    answer: "Yes. After encrypting, click the 'Generate Share URL' button. It copies a link containing the ciphertext, IV, and salt metadata. The password is NOT included for safety."
+  },
+  {
+    question: "What is a salt in cryptographic key derivation?",
+    answer: "A salt is random data added to a passphrase during key derivation, ensuring that the same password used across different systems produces completely unique derived keys."
+  },
+  {
+    question: "Is AES encryption fast?",
+    answer: "Yes, AES is a symmetric block cipher, making it computationally efficient and fast to process even on mobile processors."
+  },
+  {
+    question: "What is the block size of AES?",
+    answer: "The block size of AES is always 128 bits (16 bytes), regardless of the key size (which can be 128, 192, or 256 bits)."
+  },
+  {
+    question: "Can I decrypt the ciphertext without the password?",
+    answer: "No. Without the correct password or key, decrypting the ciphertext is practically impossible, as it would require brute-forcing up to 2^256 combinations."
+  },
+  {
+    question: "Is AES encryption legal worldwide?",
+    answer: "Yes, AES is an open public standard and is legally approved for general data security and commerce in almost all jurisdictions."
+  }
+];
+
+const references = [
+  { title: "FIPS PUB 197 - Advanced Encryption Standard (AES) Specifications", url: "https://csrc.nist.gov/publications/detail/fips/197/final", source: "NIST Publications" },
+  { title: "RFC 2898 - PBKDF2 Specifications Standard", url: "https://datatracker.ietf.org/doc/html/rfc2898", source: "IETF Standards" }
+];
+
+const languageCodes = [
+  {
+    lang: "Node.js (AES-GCM)",
+    code: `const crypto = require('crypto');
+
+const secretKey = crypto.randomBytes(32); // 256-bit key
+const iv = crypto.randomBytes(12); // 96-bit nonce for GCM
+
+const cipher = crypto.createCipheriv('aes-256-gcm', secretKey, iv);
+let encrypted = cipher.update('Plain Text Data', 'utf8', 'hex');
+encrypted += cipher.final('hex');
+
+const authTag = cipher.getAuthTag().toString('hex');
+console.log({ encrypted, authTag });`,
+    note: "AES-GCM requires capturing and verifying the authentication tag."
+  },
+  {
+    lang: "Python (AES-GCM)",
+    code: `from Crypto.Cipher import AES
+import os
+
+key = os.urandom(32) # 256-bit key
+nonce = os.urandom(12) # 96-bit IV
+
+cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+ciphertext, tag = cipher.encrypt_and_digest(b"Plain Text Data")
+
+print(ciphertext.hex())`,
+    note: "Requires PyCryptodome library for cryptographic algorithms."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Reusing Initialization Vectors (IVs)",
+    description: "Reusing the same IV with the same key across multiple encryption requests allows attackers to compromise GCM/CTR ciphertext authenticity.",
+    fix: "Always generate a cryptographically secure random IV for every single encryption transaction."
+  },
+  {
+    title: "Using Low Iteration Counts in PBKDF2",
+    description: "Setting low PBKDF2 iterations (under 10,000) makes the derived key vulnerable to rapid dictionary cracking attacks.",
+    fix: "Enforce iteration counts of at least 100,000 rounds for modern CPU scales."
+  }
+];
+---
+
+<ToolPageLayout
+  title="AES Encryption Online: Encrypt Strings & Files securely"
+  description="Encrypt plain text or files locally using Advanced Encryption Standard (AES). Supports AES-GCM/CBC, PBKDF2 key derivation, and client-side execution."
+  keywords="aes encryption, encrypt text with aes, aes 256 encryption, online aes tool, pbkdf2 key derivation, aes-gcm encryption"
+  toolTitle="AES Encryption Studio"
+  toolDescription="Secure text or files locally using Advanced Encryption Standard ciphers. Features customizable key sizes, PBKDF2 iterations, authenticated GCM modes, and local client sandbox processing."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <AesEncryptDecrypt client:load defaultActiveTab="encrypt" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Understanding AES Encryption Protocols
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Symmetric encryption relies on a single shared credential to protect digital payloads. The **Advanced Encryption Standard (AES)** is a substitution-permutation network that processes data blocks through iterative rounds of byte substitution, row shifting, column mixing, and round key additions.
+      </p>
+      <p class="leading-relaxed">
+        Our **AES Encryption Studio** allows developers to test ciphers under different configurations. By providing options to adjust key sizes (128 vs 256 bits), select block modes (GCM vs CBC), tune PBKDF2 derivation thresholds, and upload files, it offers a visual sandbox for learning standard security specifications.
+      </p>
+    </div>
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="AES Block Modes Comparison"
+      headers={["Cipher Mode", "Integrity Check", "Parallel Processing", "Padding Required", "Security Status"]}
+      rows={[
+        { label: "AES-GCM", values: ["Yes (Built-in Auth Tag)", "Yes (Highly optimized)", "No (Stream mode)", "Recommended (Industry Standard)"] },
+        { label: "AES-CBC", values: ["No (Requires separate HMAC)", "No (Blocks are chained)", "Yes (To block boundary)", "Legacy (Vulnerable to padding oracle attacks)"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="AES Envelope Structures"
+      description="Inspect the payload layouts generated by our tools:"
+      examples={[
+        { label: "Concatenated Payload", input: "Plain Text", output: "salt[16 bytes] + iv[12 bytes] + ciphertext (Encoded in Base64 or Hex)", badge: "Concatenated" },
+        { label: "JSON Envelope", input: "Plain Text", output: '{"mode": "AES-GCM", "keySize": 256, "iv": "...", "ciphertext": "...", "salt": "..."}', badge: "Structured JSON" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic AES Encryption Snippets"
+      description="Implement authenticated AES-GCM encryption in your codebase using these templates:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common AES Hashing Pitfalls"
+      description="Avoid these common implementation vulnerabilities when coding:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="AES Hashing Best Practices"
+      practices={[
+        { title: "Always Use GCM Mode", description: "Prefer GCM over CBC block modes because GCM provides built-in integrity tags, preventing ciphertext tampering." },
+        { title: "Use High Entropy Keys", description: "Avoid short simple passwords. Derive keys from high-entropy strings or use 32-byte secure random arrays." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

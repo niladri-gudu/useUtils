@@ -1,52 +1,165 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { Base64Encoder } from '../../components/Base64Encoder';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
 
 const tabs = [
-  { label: 'Encoder', href: '/tools/base64-encoder', active: true },
-  { label: 'Decoder', href: '/tools/base64-decoder' }
+  { label: 'Base64 Encoder', href: '/tools/base64-encoder', active: true },
+  { label: 'Image to Base64', href: '/tools/image-to-base64' },
+  { label: 'Base64 Decoder', href: '/tools/base64-decoder' },
+  { label: 'Base64 to Image', href: '/tools/base64-to-image' }
 ];
 
 const faqs = [
   {
     question: "What is Base64 encoding?",
-    answer: "Base64 encoding is a binary-to-text encoding scheme that translates binary data into an ASCII string format using a set of 64 characters (A-Z, a-z, 0-9, +, /), with '=' used for padding. This ensures that the data remains intact during transit over systems that only support text."
+    answer: "Base64 is a binary-to-text encoding scheme that translates raw binary data into an ASCII string format. It utilizes 64 safe characters (A-Z, a-z, 0-9, +, and /) with '=' used for alignment padding."
   },
   {
-    question: "How does Base64 encoding work?",
-    answer: "Base64 encoding works by dividing groups of 3 bytes (24 bits) from the input data into 4 groups of 6 bits each. Each 6-bit group represents a number from 0 to 63, which is then mapped to its corresponding character in the Base64 alphabet."
+    question: "Why do we use Base64 encoding?",
+    answer: "Web systems and email protocols (like MIME) traditionally expect text-only assets. Base64 lets developers transport binary data (such as images, PDF sheets, and cryptographic hashes) securely inside text fields without data corruption."
   },
   {
-    question: "Does Base64 encoding encrypt my data?",
-    answer: "No, Base64 is not encryption. It is a simple encoding scheme that is easily reversible by anyone. Do not use Base64 to secure sensitive credentials or payloads without encrypting them first."
+    question: "How does Base64 convert binary bytes into text?",
+    answer: "The Base64 engine groups the binary stream into 24-bit segments (3 bytes). These 24 bits are split into 4 chunks of 6 bits each. Each 6-bit chunk maps to a index number from 0 to 63, which links to a character in the Base64 alphabet."
   },
   {
-    question: "What characters are used in the Base64 alphabet?",
-    answer: "The Base64 alphabet consists of 64 characters: uppercase letters (<code>A-Z</code>), lowercase letters (<code>a-z</code>), numerals (<code>0-9</code>), and the symbols <code>+</code> and <code>/</code>. A 65th character, the equals sign (<code>=</code>), is used as a padding indicator at the end of the string."
+    question: "Does Base64 encryption secure text?",
+    answer: "No. Base64 is not encryption. It is an open, easily reversible encoding standard. Anyone can decode a Base64 string back into its original binary. Never use Base64 to secure passwords or credentials."
   },
   {
-    question: "What is the difference between Base64 and Base64URL?",
-    answer: "Standard Base64 contains characters like '+' and '/' which have special meanings in URLs (acting as separators). Base64URL replaces '+' with '-' and '/' with '_', and usually omits the '=' padding character to make the output safe to pass in URL paths or query parameters."
+    question: "Why does Base64 increase payload size by 33%?",
+    answer: "Since Base64 represents 3 bytes of binary data using 4 character symbols, the output string is always exactly 33.3% larger than the source file (plus small additions for formatting or line wraps)."
   },
   {
-    question: "Why does Base64 increase file sizes by 33%?",
-    answer: "Because Base64 represents 3 bytes of data using 4 ASCII characters, it increases the total data size by exactly 33.3%. If you use line wrapping or headers (like in Data URIs), the overhead can be slightly higher."
+    question: "What is Base64 padding (=)?",
+    answer: "Base64 processes data in 24-bit (3-byte) chunks. If the input data has only 1 remaining byte, the encoder pads the binary stream with zeros and adds two '=' characters. If 2 bytes remain, it adds one '=' padding character."
   },
   {
     question: "What is a Data URI?",
-    answer: "A Data URI allows you to embed files directly into HTML or CSS using the scheme <code>data:[mediatype];base64,[data]</code>. This avoids needing separate HTTP requests to load small icons or assets, improving initial page load times."
+    answer: "A Data URI allows you to embed files directly into HTML markup or CSS stylesheets using the format <code>data:[mediatype];base64,[data]</code>. This avoids requiring separate HTTP requests to load assets."
   },
   {
-    question: "How do I use Base64 to embed images in HTML or CSS?",
-    answer: "You can embed a Base64 image in HTML using <code>&lt;img src=\"data:image/png;base64,iVBORw...\" alt=\"Image\" /&gt;</code>. In CSS, you can embed it inside a background property: <code>background-image: url(\"data:image/png;base64,iVBORw...\");</code>."
+    question: "How do I embed a Base64 image in HTML?",
+    answer: "Reference the Base64 Data URI inside the image source tag: <br/><code>&lt;img src=\"data:image/png;base64,iVBORw0KG...\" alt=\"Logo\" /&gt;</code>."
   },
   {
-    question: "Is my data secure when using this online encoder?",
-    answer: "Yes, 100%. Like all tools on useUtils, the Base64 Encoder operates completely client-side in your web browser. Your text inputs and files are processed in your local memory sandbox and are never sent to a server."
+    question: "How do I embed Base64 images in CSS?",
+    answer: "Set it inside background-image property values: <br/><code>background-image: url(\"data:image/png;base64,iVBORw0KG...\");</code>."
   },
   {
-    question: "How do I encode text to Base64 in JavaScript?",
-    answer: "In JavaScript, you can use the native <code>btoa()</code> function for ASCII text: <code>btoa('hello')</code>. For Unicode (UTF-8) text, first encode the string into bytes using a TextEncoder, then convert the bytes: <br /><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto whitespace-pre\">const bytes = new TextEncoder().encode('text');\nconst base64 = btoa(String.fromCharCode(...bytes));</code>"
+    question: "What is the difference between Base64 and Base64URL?",
+    answer: "Standard Base64 contains '+' and '/' characters, which have special syntax meanings in URLs. Base64URL replaces '+' with '-' and '/' with '_', making the output safe for web path mappings."
+  },
+  {
+    question: "How to encode strings to Base64 in JavaScript?",
+    answer: "In client-side JS, use the native <code>btoa()</code> function for ASCII text: <code>btoa('hello')</code>. For Unicode UTF-8 strings, convert them into binary bytes using a <code>TextEncoder</code> first."
+  },
+  {
+    question: "How to encode strings to Base64 in Node.js?",
+    answer: "Create a Buffer from your string and serialize it to base64: <br/><code>Buffer.from('hello').toString('base64')</code>."
+  },
+  {
+    question: "How to encode text to Base64 in Python?",
+    answer: "Use the built-in <code>base64</code> module: <br/><code>base64.b64encode(text.encode('utf-8')).decode('utf-8')</code>."
+  },
+  {
+    question: "How to encode text to Base64 in Go?",
+    answer: "Use Go's built-in <code>encoding/base64</code> library: <br/><code>base64.StdEncoding.EncodeToString([]byte(\"hello\"))</code>."
+  },
+  {
+    question: "How to encode text to Base64 in Java?",
+    answer: "Use Java 8's built-in Base64 utility: <br/><code>Base64.getEncoder().encodeToString(\"hello\".getBytes(StandardCharsets.UTF_8))</code>."
+  },
+  {
+    question: "Is this online Base64 encoder safe for sensitive data?",
+    answer: "Yes. All computations are calculated in your browser sandbox using client-side JavaScript. None of your strings, file uploads, or assets are sent to our servers."
+  },
+  {
+    question: "Does Base64 support file uploads?",
+    answer: "Yes. Toggle the File Drop tab, upload any image, PDF, audio, or archive file up to 5MB, and convert it to Base64."
+  },
+  {
+    question: "What is line wrapping in Base64?",
+    answer: "MIME standards require Base64 text to wrap at exactly 64 or 76 characters per line to support older email server relays. Our encoder lets you configure line wraps easily."
+  },
+  {
+    question: "Can I convert Base64 back to original files?",
+    answer: "Yes. You can paste Base64 text or Data URIs into our Base64 Decoder page to recover the original files."
+  },
+  {
+    question: "What is the ASCII value of the Base64 pad character (=)?",
+    answer: "The equals sign (=) maps to ASCII character code 61. It is only appended to the end of Base64 streams as padding."
+  },
+  {
+    question: "Does Base64 encoding modify the source file?",
+    answer: "No. Base64 is non-destructive. It translates binary bytes into text representation without changing the underlying file data."
+  },
+  {
+    question: "Does Base64 support UTF-8 characters?",
+    answer: "Yes, our encoder converts UTF-8 multi-byte characters to raw byte streams before applying Base64 encoding, preventing encoding breaks."
+  },
+  {
+    question: "How does Base64 handle binary zeros?",
+    answer: "A binary byte of zero (0x00) maps to the index letter 'A' in standard Base64 representation."
+  },
+  {
+    question: "Is there a command-line tool to encode Base64?",
+    answer: "Yes. In macOS or Linux terminals, run: <br/><code>base64 input.txt > output.txt</code>. In Windows PowerShell: <br/><code>[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes(\"text\"))</code>."
+  },
+  {
+    question: "Does using inline Base64 images hurt SEO?",
+    answer: "No, Google can index inline image data. However, large base64 strings increase HTML file sizes, which can slow down page loading and indirectly impact SEO rankings."
+  }
+];
+
+const references = [
+  { title: "RFC 4648 - The Base16, Base32, and Base64 Data Encodings", url: "https://datatracker.ietf.org/doc/html/rfc4648", source: "IETF Standards" },
+  { title: "MDN Web Docs - Base64 encoding and decoding", url: "https://developer.mozilla.org/en-US/docs/Glossary/Base64", source: "MDN Glossary" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `// Unicode-safe Base64 encoding
+function utf8ToBase64(str) {
+  const bytes = new TextEncoder().encode(str);
+  const binString = String.fromCharCode(...bytes);
+  return btoa(binString);
+}
+
+console.log(utf8ToBase64("Hello 🚀")); // Output: SGVsbG8g8J+Gog==`,
+    note: "TextEncoder translates Unicode code points to binary arrays before base64 conversion."
+  },
+  {
+    lang: "Python",
+    code: `import base64
+
+text = "Hello 🚀"
+# Encode text to bytes, then base64 bytes, then decode to UTF-8 string
+encoded = base64.b64encode(text.encode('utf-8')).decode('utf-8')
+
+print(encoded) # Output: SGVsbG8g8J+Gog==`,
+    note: "Encodes input strings using UTF-8 before applying base64 conversions."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Using standard btoa() on Unicode Characters",
+    description: "Calling <code>btoa()</code> directly on multi-byte characters like emojis or Cyrillic letters raises a 'String contains characters outside of the Latin1 range' error in browsers.",
+    fix: "Convert the string into binary bytes with TextEncoder before calling btoa."
+  },
+  {
+    title: "Embedding Large Base64 Payloads in Stylesheets",
+    description: "Inlining files larger than 100KB in CSS increases file delivery times, blocking DOM parsing and layout rendering.",
+    fix: "Only embed tiny graphics under 10KB. Serve larger images via standard external URLs."
   }
 ];
 ---
@@ -62,76 +175,72 @@ const faqs = [
 >
   <Base64Encoder client:load />
 
-  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
     <!-- Section: Intro -->
     <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
         <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        How to Use the Base64 Encoder
+        How the Base64 Encoding Mechanism Works
       </h2>
       <p class="leading-relaxed mb-4">
-        Our Base64 Encoder allows you to convert text or binary files directly into ASCII characters. Paste your text inside the <strong class="text-zinc-200">Text tab</strong>, or drag-and-drop any image, PDF, or document inside the <strong class="text-zinc-200">File Drop tab</strong>. The encoder converts the input instantly in your browser sandbox.
+        Web data transmission protocols historically relied on plain text formats. When transferring binary streams (such as image pixels or database configuration blobs), raw data can trigger routing failures or line ending breaks. 
       </p>
       <p class="leading-relaxed">
-        Choose your desired output wrappers like <strong class="text-zinc-200">Data URI</strong> (for inline source embeddings), <strong class="text-zinc-200">CSS backgrounds</strong>, or <strong class="text-zinc-200">HTML image tags</strong>. Click the copy buttons or use standard keyboard shortcuts (<kbd class="font-mono bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">⌘ C</kbd>) to copy the output.
+        **Base64 encoding** solves this by converting binary data into safe text strings. It translates groups of 3 binary bytes (24 bits) into 4 text characters, mapping values to a standardized character set. This ensures files are transmitted without corruption.
       </p>
     </div>
 
-    <!-- Section: Comparison of Data Wrapping Options -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Comparison of Data Wrapping Options
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Selecting the correct output format depends on how you plan to use the Base64 representation in your source code:
-      </p>
-      
-      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
-              <th class="p-3">Wrapper Format</th>
-              <th class="p-3">Structure / Schema</th>
-              <th class="p-3">Typical Use Case</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
-            <tr>
-              <td class="p-3 text-zinc-200">Raw Base64</td>
-              <td class="p-3"><code>aGVsbG8gd29ybGQ=</code></td>
-              <td class="p-3">API payloads, custom serialization, environment configurations</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">Data URI</td>
-              <td class="p-3"><code>data:text/plain;base64,aGVsbG8gd29ybGQ=</code></td>
-              <td class="p-3">Inline source linking, web page image tags, small inline assets</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">CSS Background</td>
-              <td class="p-3"><code>background-image: url("data:image/png;base64,...");</code></td>
-              <td class="p-3">Embedding small graphic icons or indicators directly inside stylesheet classes</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">HTML Image Tag</td>
-              <td class="p-3"><code>&lt;img src="data:image/png;base64,..." alt="..." /&gt;</code></td>
-              <td class="p-3">Injecting dynamic preview graphics or tiny logos inline in markup files</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <!-- Section: Privacy Badge -->
+    <PrivacyBadge />
 
-    <!-- Section: File Size Overhead -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Understanding Base64 Overhead
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Since Base64 represents data in groups of 6 bits rather than 8 bits, every group of 3 raw binary bytes is converted to 4 character bytes. This yields a mathematically fixed <strong class="text-zinc-200">33.3% increase in data size</strong>. If your file is 75 KB, the resulting base64 representation will be approximately 100 KB. Because of this overhead, Base64 is recommended primarily for small files (under 100 KB) to avoid significant network payload bloating.
-      </p>
-    </div>
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Base64 Wrappers & Formats"
+      headers={["Output Wrapper", "Structure Syntax", "Best Used For"]}
+      rows={[
+        { label: "Raw Base64", values: ["aGVsbG8gd29ybGQ=", "API payloads, configuration values, environments"] },
+        { label: "Data URI Schema", values: ["data:text/plain;base64,aGVsbG8=", "Inline document links, single asset routing"] },
+        { label: "CSS Background", values: ["background-image: url('data:...');", "Embedding tiny site icons or repeat patterns"] },
+        { label: "HTML Embed Tag", values: ["<img src='data:...' />", "Rendering small site logos or placeholder images"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Common Text Base64 Conversions"
+      description="Inspect typical strings converted to Base64 representation:"
+      examples={[
+        { label: "Convert 'hello'", input: "hello", output: "aGVsbG8=", badge: "No Padding" },
+        { label: "Convert 'hello!' (Length change)", input: "hello!", output: "aGVsbG8h", badge: "Pad character added" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Base64 Encoding Snippets"
+      description="Encode strings in your application code using these standards:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Base64 Encoding Mistakes"
+      description="Avoid these common errors when converting data formats to text strings:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Base64 Encoding Best Practices"
+      practices={[
+        { title: "Optimize Asset Sizes First", description: "Always run image files through compression scripts before base64 conversion to minimize string lengths." },
+        { title: "Set Correct MIME Headers", description: "Verify that Data URI headers contain the exact MIME type (e.g. image/webp) to ensure browser compatibility." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
   </div>
 </ToolPageLayout>

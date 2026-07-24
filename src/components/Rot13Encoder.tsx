@@ -56,9 +56,15 @@ const SAMPLE_TEXT = 'Cryptography is the practice and study of techniques for se
 
 type CipherMode = 'rot13' | 'rot5' | 'rot18' | 'rot47' | 'caesar' | 'vigenere' | 'atbash';
 
-export const Rot13Encoder: React.FC = () => {
+interface Rot13EncoderProps {
+  defaultMode?: CipherMode;
+}
+
+export const Rot13Encoder: React.FC<Rot13EncoderProps> = ({
+  defaultMode = 'rot13'
+}) => {
   const [inputText, setInputText] = useState<string>('');
-  const [mode, setMode] = useState<CipherMode>('rot13');
+  const [mode, setMode] = useState<CipherMode>(defaultMode);
   const [caesarShift, setCaesarShift] = useState<number>(3);
   const [vigenereKey, setVigenereKey] = useState<string>('KEY');
   const [isDecrypt, setIsDecrypt] = useState<boolean>(false);
@@ -82,8 +88,10 @@ export const Rot13Encoder: React.FC = () => {
     const storedInput = localStorage.getItem('useutils_rot13_input_text');
     if (storedInput) setInputText(storedInput);
 
-    const storedMode = localStorage.getItem('useutils_rot13_mode') as CipherMode;
-    if (storedMode) setMode(storedMode);
+    if (defaultMode === 'rot13') {
+      const storedMode = localStorage.getItem('useutils_rot13_mode') as CipherMode;
+      if (storedMode) setMode(storedMode);
+    }
 
     const storedShift = localStorage.getItem('useutils_rot13_caesar_shift');
     if (storedShift) setCaesarShift(parseInt(storedShift, 10));
@@ -93,7 +101,7 @@ export const Rot13Encoder: React.FC = () => {
 
     const storedDecrypt = localStorage.getItem('useutils_rot13_is_decrypt');
     if (storedDecrypt) setIsDecrypt(storedDecrypt === 'true');
-  }, []);
+  }, [defaultMode]);
 
   // Sync state helpers
   const handleInputChange = (val: string) => {

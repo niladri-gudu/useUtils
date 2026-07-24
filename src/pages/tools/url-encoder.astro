@@ -1,10 +1,18 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { UrlEncoder } from '../../components/UrlEncoder';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
 
 const tabs = [
-  { label: 'Decoder', href: '/tools/url-decoder' },
-  { label: 'Encoder', href: '/tools/url-encoder', active: true }
+  { label: 'URL Encoder', href: '/tools/url-encoder', active: true },
+  { label: 'Hex URL Encoder', href: '/tools/hex-url-encoder' },
+  { label: 'URL Decoder', href: '/tools/url-decoder' }
 ];
 
 const faqs = [
@@ -47,6 +55,89 @@ const faqs = [
   {
     question: "How do I encode a query string manually in JavaScript?",
     answer: "In JavaScript, you should encode each query parameter key and value separately using <code>encodeURIComponent(val)</code> and join them with <code>=</code> and <code>&</code>. For example: <code>const url = 'https://example.com/?q=' + encodeURIComponent('hello world');</code>"
+  },
+  {
+    question: "How do I URL encode a string in Python?",
+    answer: "Use Python's built-in <code>urllib.parse</code> module: <br/><code>import urllib.parse; encoded = urllib.parse.quote_plus(text)</code>."
+  },
+  {
+    question: "How do I URL encode in Go?",
+    answer: "Use Go's built-in <code>net/url</code> package: <br/><code>url.QueryEscape(\"hello world\")</code>."
+  },
+  {
+    question: "How do I URL encode in Java?",
+    answer: "Use Java's built-in <code>URLEncoder</code> class: <br/><code>URLEncoder.encode(\"hello world\", StandardCharsets.UTF_8.toString())</code>."
+  },
+  {
+    question: "How do I URL encode in PHP?",
+    answer: "Use the built-in function <code>rawurlencode($str)</code> (for RFC 3986 percent-encoding) or <code>urlencode($str)</code> (for query parameter encoding)."
+  },
+  {
+    question: "What is the difference between URL encoding and HTML entity encoding?",
+    answer: "URL encoding uses percent hex codes for URI safety. HTML entity encoding uses format indicators (like <code>&amp;lt;</code>) to represent special signs inside HTML elements to prevent DOM injection vulnerabilities (XSS)."
+  },
+  {
+    question: "Can URL encoding prevent SQL injection?",
+    answer: "No, URL encoding is merely an transport format. It does not sanitize inputs inside SQL queries. Always use parameterized queries or prepared statements to prevent SQLi."
+  },
+  {
+    question: "What is the percent-encoding for double quotes (\")?",
+    answer: "Double quotes are represented as <code>%22</code> in URL queries."
+  },
+  {
+    question: "What is the percent-encoding for a hash symbol (#)?",
+    answer: "The hash symbol (which indicates the start of a URL fragment identifier) is represented as <code>%23</code>."
+  },
+  {
+    question: "How are emojis handled in URL encoding?",
+    answer: "Emojis are encoded in UTF-8, generating multiple bytes. Each byte is converted into a separate %XX sequence (e.g. 🚀 becomes <code>%F0%9F%9A%80</code>)."
+  },
+  {
+    question: "Does URL encoding compress strings?",
+    answer: "No. URL encoding actually increases string sizes since each converted symbol is replaced by a 3-character %XX block."
+  }
+];
+
+const references = [
+  { title: "RFC 3986 - Uniform Resource Identifier (URI) Standard", url: "https://datatracker.ietf.org/doc/html/rfc3986", source: "IETF Standards" },
+  { title: "W3C HTML URL Encoding Guide Reference", url: "https://www.w3schools.com/tags/ref_urlencode.ASP", source: "W3C Web Specs" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `const paramValue = "hello world & stars!";
+
+// Encode parameter value for safe query injection
+const encodedValue = encodeURIComponent(paramValue);
+
+const fullUrl = \`https://api.example.com/search?q=\${encodedValue}\`;
+console.log(fullUrl); // https://api.example.com/search?q=hello%20world%20%26%20stars%21`,
+    note: "encodeURIComponent escapes all reserved characters."
+  },
+  {
+    lang: "Python",
+    code: `import urllib.parse
+
+param_value = "hello world & stars!"
+# Encode parameters for queries (spaces become +)
+encoded = urllib.parse.quote_plus(param_value)
+
+print(encoded) # Output: hello+world+%26+stars%21`,
+    note: "quote_plus converts spaces to plus signs for application/x-www-form-urlencoded queries."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Encoding the Whole URL with encodeURIComponent",
+    description: "Calling <code>encodeURIComponent</code> on a full URL (including the protocol and domain) converts <code>://</code> and <code>/</code>, making the URL invalid for browser routing.",
+    fix: "Only encode query parameter keys/values or path segments separately; use encodeURI if you must escape a whole URL."
+  },
+  {
+    title: "Double URL Encoding",
+    description: "Encoding an already URL-encoded string converts the percent signs to %25, breaking parameter parsing on backends.",
+    fix: "Keep track of whether inputs are already encoded, or decode before re-encoding."
   }
 ];
 ---
@@ -62,116 +153,74 @@ const faqs = [
 >
   <UrlEncoder client:load />
 
-  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
     <!-- Section: Intro -->
     <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
         <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        How to Use the URL Encoder
+        How URL Percent-Encoding Works
       </h2>
       <p class="leading-relaxed mb-4">
-        Our URL Encoder parses strings instantly in your browser to adapt them to different web standards and transmission protocols. You can paste your text in the <strong class="text-zinc-200">raw input pane</strong>, select the target encoding standard (such as RFC 3986 or Form-urlencoded), and view the encoded output in real-time.
+        Web links must operate under strict syntax parameters. Because query characters (like <code>?</code>, <code>&</code>, and <code>=</code>) act as router instructions, using them inside parameter keys or values breaks URLs.
       </p>
       <p class="leading-relaxed">
-        Click the copy buttons or use developer keyboard shortcuts (<kbd class="font-mono bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">⌘ C</kbd>) to copy the converted text to your clipboard. You can also toggle the <strong class="text-zinc-200">Show Diff</strong> view to see exactly which characters were converted.
+        Our **URL Encoder** converts these characters into safe **percent-encoded hex codes**. We support all standard variations, from standard JavaScript `encodeURIComponent` to strict RFC 3986 formatting, form parameter formats, and security testing hex obfuscation.
       </p>
     </div>
 
-    <!-- Section: Specifications Reference -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Comparison of URL Encoding Standards
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Selecting the correct encoding scheme is essential for writing robust API integrations and handling web queries. Different specifications treat characters differently:
-      </p>
-      
-      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
-              <th class="p-3">Encoding Mode</th>
-              <th class="p-3">Spaces</th>
-              <th class="p-3">Reserved Chars (e.g. <code>/ : ? =</code>)</th>
-              <th class="p-3">Unreserved Chars (e.g. <code>! * ' ( )</code>)</th>
-              <th class="p-3">Typical Use Case</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
-            <tr>
-              <td class="p-3 text-zinc-200">Standard (encodeURIComponent)</td>
-              <td class="p-3"><code>%20</code></td>
-              <td class="p-3">Encoded</td>
-              <td class="p-3">Preserved</td>
-              <td class="p-3">Single query parameters</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">Full URL (encodeURI)</td>
-              <td class="p-3"><code>%20</code></td>
-              <td class="p-3">Preserved</td>
-              <td class="p-3">Preserved</td>
-              <td class="p-3">Entire URL strings</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">Strict RFC 3986</td>
-              <td class="p-3"><code>%20</code></td>
-              <td class="p-3">Encoded</td>
-              <td class="p-3">Encoded</td>
-              <td class="p-3">Strict OAuth / REST APIs</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">Form (x-www-form-urlencoded)</td>
-              <td class="p-3"><code>+</code></td>
-              <td class="p-3">Encoded</td>
-              <td class="p-3">Preserved</td>
-              <td class="p-3">HTML Form payloads</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">Strict Hex (Obfuscate)</td>
-              <td class="p-3"><code>%20</code></td>
-              <td class="p-3">Encoded (All)</td>
-              <td class="p-3">Encoded (All)</td>
-              <td class="p-3">WAF & SQLi Security tests</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <!-- Section: Privacy Badge -->
+    <PrivacyBadge />
 
-    <!-- Section: Features -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Advanced URL Encoding Features
-      </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Character-Level Diffing</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            Compare your original input directly with the encoded output. The inline diff flags modified sequences in emerald green, allowing easy visual validation of converted components.
-          </p>
-        </div>
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Local Sandboxed Processing</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            None of your inputs are sent to a server. Processing uses native client APIs to guarantee complete security for tokens, keys, and confidential configuration parameters.
-          </p>
-        </div>
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">State Sync Switching</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            Raw inputs are automatically cached to allow switching seamlessly to the URL Decoder tab without needing to re-copy or paste your workspace data.
-          </p>
-        </div>
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Strict Hex Obfuscation</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            Convert standard alphanumeric values into percent-encoded ASCII bytes to bypass strict input filters or inspect how systems parse raw escaping configurations.
-          </p>
-        </div>
-      </div>
-    </div>
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="URL Encoding Formats Comparison"
+      headers={["Mode", "Spaces", "Reserved Characters", "Typical Use Case"]}
+      rows={[
+        { label: "Standard (encodeURIComponent)", values: ["%20", "Fully Encoded", "Query parameter values"] },
+        { label: "Full URL (encodeURI)", values: ["%20", "Preserved (delimiters intact)", "Whole URL strings"] },
+        { label: "Strict RFC 3986", values: ["%20", "Fully Encoded (including ! * ' ( ))", "Strict API authentication, OAuth calls"] },
+        { label: "Form Parameter Mode", values: ["+", "Fully Encoded", "HTML form submissions"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Common Percent Encoding Mappings"
+      description="Observe standard URL character translations:"
+      examples={[
+        { label: "Space", input: " ", output: "%20", badge: "Space" },
+        { label: "Ampersand", input: "&", output: "%26", badge: "Query Divider" },
+        { label: "Slash", input: "/", output: "%2F", badge: "Path Divider" },
+        { label: "Equals", input: "=", output: "%3D", badge: "Value Association" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic URL Encoding"
+      description="Escape query string parameters in your application code using these blocks:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common URL Encoding Pitfalls"
+      description="Avoid these common errors when handling web query parameters:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="URL Encoding Best Practices"
+      practices={[
+        { title: "Encode Keys and Values Separately", description: "Always escape the parameter name and values individually before combining them into queries." },
+        { title: "Use UTF-8 Encoding", description: "Verify your server handles UTF-8 percent-encoding to support international languages and emojis." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
   </div>
 </ToolPageLayout>

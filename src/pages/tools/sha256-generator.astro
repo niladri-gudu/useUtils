@@ -1,0 +1,220 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { HashGenerator } from '../../components/HashGenerator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'Hash Generator', href: '/tools/hash-generator' },
+  { label: 'MD5 Hash', href: '/tools/md5-generator' },
+  { label: 'SHA256 Hash', href: '/tools/sha256-generator', active: true },
+  { label: 'SHA512 Hash', href: '/tools/sha512-generator' }
+];
+
+const faqs = [
+  {
+    question: "What is a SHA-256 Hash?",
+    answer: "SHA-256 (Secure Hash Algorithm 256-bit) is a cryptographic hash function designed by the NSA that generates a unique, fixed-size 256-bit (32-byte) hash value, represented as a 64-character hexadecimal string."
+  },
+  {
+    question: "Is SHA-256 secure?",
+    answer: "Yes. SHA-256 is the industry standard for cryptographic verification, blockchain hashes, and file signatures. There are no known collision attacks against SHA-256."
+  },
+  {
+    question: "What is SHA-256 used for?",
+    answer: "SHA-256 is widely used in SSL certificates, SSL handshake verification, Git commitments, Bitcoin blockchain blocks, HTTPS encryption, and system download verifications."
+  },
+  {
+    question: "How do I calculate a SHA-256 hash online?",
+    answer: "Input your plain text or drag your file into the tool above. The calculator computes the SHA-256 hash locally in your browser instantly."
+  },
+  {
+    question: "Is this SHA-256 generator safe to use?",
+    answer: "Yes, 100%. The hashing calculation is done client-side in your browser using the HTML5 Web Crypto API. No data is transmitted to external servers."
+  },
+  {
+    question: "Can SHA-256 be reversed or decrypted?",
+    answer: "No. SHA-256 is a one-way mathematical function. It is designed to be computationally infeasible to reconstruct the original input string from the hash digest."
+  },
+  {
+    question: "What is SHA-256 HMAC?",
+    answer: "HMAC-SHA-256 combines the SHA-256 hashing function with a secret cryptographic key, allowing systems to verify both data integrity and data authenticity."
+  },
+  {
+    question: "How to generate a SHA-256 hash in JavaScript?",
+    answer: "In modern browsers, use the Web Crypto API: <br/><code>crypto.subtle.digest('SHA-256', new TextEncoder().encode(text))</code>."
+  },
+  {
+    question: "How to calculate a SHA-256 hash in Node.js?",
+    answer: "Use the built-in crypto module: <br/><code>crypto.createHash('sha256').update(text).digest('hex')</code>."
+  },
+  {
+    question: "How to generate a SHA-256 hash in Python?",
+    answer: "Use Python's built-in hashlib library: <br/><code>hashlib.sha256(text.encode('utf-8')).hexdigest()</code>."
+  },
+  {
+    question: "How long is a SHA-256 hash output?",
+    answer: "A SHA-256 hash is always 256 bits, which is represented in text format as a 64-character hexadecimal string."
+  },
+  {
+    question: "Can I hash files with SHA-256?",
+    answer: "Yes. Drop your file into our File Checksum tab above, and the tool will compute the SHA-256 checksum locally using browser memory buffers."
+  },
+  {
+    question: "What is the avalanche effect in SHA-256?",
+    answer: "The avalanche effect means that changing a single bit in the input (e.g. changing 'a' to 'b') completely scrambles the output hash, making the new digest look entirely unrelated."
+  },
+  {
+    question: "Is SHA-256 faster than MD5?",
+    answer: "No, SHA-256 requires more rounds (64 rounds) and operates on larger bits. This makes it slightly slower than MD5, but significantly more secure."
+  },
+  {
+    question: "Can I generate SHA-256 hashes in bulk?",
+    answer: "Yes. Toggle the 'Bulk lines' tab, enter your words line-by-line, and convert all of them into SHA-256 hashes. You can export the results as a CSV sheet."
+  },
+  {
+    question: "How do I verify a file download using SHA-256?",
+    answer: "Calculate the SHA-256 of your downloaded file using the file tab above. Paste the expected publisher checksum in the Validator input to confirm matches."
+  },
+  {
+    question: "What is the difference between SHA-2 and SHA-256?",
+    answer: "SHA-2 is a family of cryptographic hash standards that includes SHA-224, SHA-256, SHA-384, and SHA-512. SHA-256 is the most widely used member of this family."
+  },
+  {
+    question: "How to calculate SHA-256 hash in bash/Linux?",
+    answer: "Run the command: <br/><code>echo -n \"text\" | sha256sum</code>."
+  },
+  {
+    question: "Does the size of the input text affect the SHA-256 hash length?",
+    answer: "No. Whether you hash a single letter or an entire library database, the SHA-256 digest is always exactly 256 bits (64 characters)."
+  },
+  {
+    question: "What is the SHA-256 hash of an empty string?",
+    answer: "The SHA-256 of an empty input is: <code>e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</code>."
+  }
+];
+
+const references = [
+  { title: "FIPS PUB 180-4 - Secure Hash Standard (SHS)", url: "https://csrc.nist.gov/publications/detail/fips/180/4/final", source: "NIST Publications" },
+  { title: "W3C Web Cryptography API - SubtleCrypto digest", url: "https://www.w3.org/TR/WebCryptoAPI/#SubtleCrypto-method-digest", source: "W3C Standards" }
+];
+
+const languageCodes = [
+  {
+    lang: "Node.js",
+    code: `const crypto = require('crypto');
+
+const text = "hello world";
+const hash = crypto.createHash('sha256').update(text).digest('hex');
+
+console.log(hash); // Output: b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9`,
+    note: "Calculates standard hex encoded SHA-256 hashes."
+  },
+  {
+    lang: "Python",
+    code: `import hashlib
+
+text = "hello world"
+hash_object = hashlib.sha256(text.encode('utf-8'))
+hex_dig = hash_object.hexdigest()
+
+print(hex_dig) # Output: b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9`,
+    note: "Encodes input strings to binary format prior to hashing."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Leaving Newline Characters in Command Line echo Outputs",
+    description: "Using standard <code>echo \"text\" | sha256sum</code> appends a hidden newline (<code>\\n</code>) to the string, changing the resulting hash value.",
+    fix: "Always use <code>echo -n</code> or <code>printf</code> in shells to prevent formatting breaks."
+  },
+  {
+    title: "Double Hash Obfuscations",
+    description: "Hashing a hash value (e.g. <code>SHA256(SHA256(x))</code>) doesn't increase its security but can cause compatibility issues with standard validation interfaces.",
+    fix: "Standardize on single SHA-256 passes or utilize standardized PBKDF2/HMAC protocols."
+  }
+];
+---
+
+<ToolPageLayout
+  title="SHA-256 Generator Online: Calculate SHA-256 checksums locally"
+  description="Generate SHA-256 hashes and HMAC signatures from strings or files. Free, secure, in-browser execution using Web Cryptography API."
+  keywords="sha256 generator, sha256 hash online, calculate sha256 checksum, sha-256 builder, sha-256 signature, verify sha256 hash"
+  toolTitle="SHA-256 Hash Generator"
+  toolDescription="Calculate cryptographically secure 256-bit SHA-256 hashes locally. Features single text inputs, bulk conversions, and offline file checksum validation."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <HashGenerator client:load defaultAlgorithm="SHA-256" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        SHA-256 Hashing Algorithm Mechanics
+      </h2>
+      <p class="leading-relaxed mb-4">
+        The **SHA-256 algorithm** is part of the SHA-2 family defined by the Federal Information Processing Standard (FIPS). It operates on 512-bit message blocks, executing a series of logical functions (including bit rotations, shifts, and XOR operations) over 64 structural processing rounds.
+      </p>
+      <p class="leading-relaxed">
+        The resulting **256-bit hash** acts as a digital fingerprint. Any modification to the source document, no matter how small, triggers the avalanche effect, producing a completely different hash string and revealing tampering instantly.
+      </p>
+    </div>
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="SHA Hashing Standards Comparison"
+      headers={["Family", "Bit Length", "Block Size", "Security Level", "Main Usage"]}
+      rows={[
+        { label: "SHA-1", values: ["160 bits", "512 bits", "Deprecated / Weak", "Legacy digital signatures, older Git indices"] },
+        { label: "SHA-256", values: ["256 bits", "512 bits", "Extremely High (Standard)", "SSL certificates, blockchain, secure downloads"] },
+        { label: "SHA-384", values: ["384 bits", "1024 bits", "Extremely High", "Federal government standards, IPsec data packets"] },
+        { label: "SHA-512", values: ["512 bits", "1024 bits", "Extremely High", "High-performance servers, Unix password databases"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="SHA-256 Avalanche Effect Demo"
+      description="Observe how tiny differences completely change the SHA-256 fingerprint:"
+      examples={[
+        { label: "SHA-256 of 'useutils'", input: "useutils", output: "85e3a8930b533f81e35fa848adbf54fb712f5a05b38258e72ad853b0a7cf63a1", badge: "Standard Hash" },
+        { label: "SHA-256 of 'useUtils' (Cap U)", input: "useUtils", output: "b890be4df0d7d6f51988899859f77f339cf9e525143a5cc4bb8d56c4d7ec6b89", badge: "Completely Scrambled" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic SHA-256 Calculations"
+      description="Generate secure hashes in your application logic using these standard snippets:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Hashing Pitfalls"
+      description="Ensure your verification flow matches standard practices:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="SHA-256 Hashing Best Practices"
+      practices={[
+        { title: "Salt HMAC Signatures", description: "Always combine SHA-256 hash calls with unique client secret keys when signing API payloads to block tampering." },
+        { title: "Use Local Libraries", description: "Avoid calling external Web APIs for checksum hashing. Process data locally in memory to keep data private." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

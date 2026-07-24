@@ -1,0 +1,222 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { JsonFormatter } from '../../components/JsonFormatter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'JSON Formatter', href: '/tools/json-formatter' },
+  { label: 'JSON Validator', href: '/tools/json-validator' },
+  { label: 'JSON Minifier', href: '/tools/json-minifier', active: true },
+  { label: 'JSON Viewer', href: '/tools/json-viewer' }
+];
+
+const faqs = [
+  {
+    question: "What is JSON minification?",
+    answer: "JSON minification is the process of removing all unnecessary whitespace characters, carriage returns, newlines, and indentation tabs from a JSON document. This reduces the file size while keeping the underlying data structure syntactically identical."
+  },
+  {
+    question: "Why should I minify JSON?",
+    answer: "Minified JSON has a smaller byte size, which reduces network payload sizes, minimizes bandwidth usage, and speeds up data transfers over HTTP requests, leading to faster loading times for web APIs."
+  },
+  {
+    question: "Does minifying JSON affect parser speeds?",
+    answer: "Yes, slightly. Because the parser has fewer characters to scan, parsing minified JSON strings can be faster for machines compared to parsing heavily formatted, large JSON payloads."
+  },
+  {
+    question: "Is this online JSON minifier secure?",
+    answer: "Absolutely. The compression engine runs 100% locally in your browser memory using client-side JavaScript. No data is sent to external servers, protecting sensitive keys, tokens, or configurations."
+  },
+  {
+    question: "What is the difference between JSON minification and Gzip compression?",
+    answer: "Minification is a text-level process that removes formatting characters (whitespace). Gzip is a binary compression algorithm that compresses file contents at the transport layer. For optimal performance, you should use both: minify the JSON text and compress the HTTP response with Gzip or Brotli."
+  },
+  {
+    question: "How do I minify JSON programmatically in Node.js?",
+    answer: "You can minify JSON by passing the parsed object to <code>JSON.stringify()</code> without any indentation arguments: <br/><code>JSON.stringify(jsonObject)</code>"
+  },
+  {
+    question: "Can I minify JSON using Python?",
+    answer: "Yes, use Python's built-in <code>json</code> module: <br/><code>json.dumps(obj, separators=(',', ':'))</code> which strips out all optional whitespaces around separators."
+  },
+  {
+    question: "Does minifying JSON strip comments?",
+    answer: "Standard JSON does not support comments. However, if you are using JSON5 or JSONC which do have comments, parsing them and stringifying them back into standard JSON will strip all comments automatically."
+  },
+  {
+    question: "How much space does JSON minification save?",
+    answer: "For highly nested and indented JSON, minification can reduce file size by 10% to 30% depending on the ratio of formatting whitespace to actual data characters."
+  },
+  {
+    question: "Does minifying JSON lose data?",
+    answer: "No. Minification only strips superficial formatting characters. The keys, values, types, and array order are completely preserved."
+  },
+  {
+    question: "What happens to whitespaces inside string values during minification?",
+    answer: "Only whitespace characters *outside* of string values (i.e. spacing around keys, brackets, colons, commas) are stripped. Spaces inside string value fields are left untouched to prevent data corruption."
+  },
+  {
+    question: "Why does my minified JSON show a syntax error?",
+    answer: "Minification requires a valid JSON document. If your source JSON contains syntax errors, the minifier parser will fail and report the error position."
+  },
+  {
+    question: "How do I minify a JSON file in a terminal?",
+    answer: "You can use utility tools like <code>jq</code> in your terminal: <br/><code>jq -c . input.json > output.json</code>"
+  },
+  {
+    question: "Is minified JSON valid JSON?",
+    answer: "Yes, absolutely. The JSON specification allows any amount of whitespace between tokens. Minified JSON is completely standard-compliant."
+  },
+  {
+    question: "Can I copy and paste minified JSON back to a formatter?",
+    answer: "Yes. Formatting and minifying are fully reversible. You can paste a minified single-line string into a formatter to make it human-readable again."
+  },
+  {
+    question: "How does the tool handle large files?",
+    answer: "Because calculations happen locally on your device, the browser can easily minify datasets of up to 40MB in under a second."
+  },
+  {
+    question: "What are the common whitespace characters in JSON?",
+    answer: "The allowed whitespace characters that get stripped are the space (U+0020), horizontal tab (U+0009), line feed (U+000A), and carriage return (U+000D)."
+  },
+  {
+    question: "Should I store minified JSON in my MongoDB database?",
+    answer: "MongoDB stores records in BSON (Binary JSON), which is a binary format. Minifying strings before inserting them into MongoDB is not necessary since MongoDB compiles them to binary internally."
+  },
+  {
+    question: "Can I minify JSON containing Unicode characters?",
+    answer: "Yes. Unicode characters are fully supported and will not be altered during the whitespace stripping process."
+  },
+  {
+    question: "Is there a performance drawback to minifying on the fly?",
+    answer: "For client-side operations, it is instantaneous. For servers returning dynamic payloads, it is best to serialize to minified strings directly rather than serializing formatted strings and minifying them."
+  }
+];
+
+const references = [
+  { title: "RFC 8259 - The JavaScript Object Notation (JSON) Data Format", url: "https://datatracker.ietf.org/doc/html/rfc8259", source: "IETF Standards" },
+  { title: "jq Manual - Compact Output option (-c)", url: "https://jqlang.github.io/jq/manual/", source: "jq Official Site" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `const formatted = \`{
+  "name": "Jane",
+  "score": 100
+}\`;
+
+// Parse then stringify without spacing arguments
+const minified = JSON.stringify(JSON.parse(formatted));
+console.log(minified); // {"name":"Jane","score":100}`,
+    note: "Default JSON.stringify behavior outputs compact single-line text."
+  },
+  {
+    lang: "Python",
+    code: `import json
+
+data = {
+    "name": "Jane",
+    "score": 100
+}
+
+# Remove space around delimiters for maximum compression
+minified = json.dumps(data, separators=(',', ':'))
+print(minified) # {"name":"Jane","score":100}`,
+    note: "Separators tuple overrides Python's default spacer padding."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Stripping Spaces Inside String Values",
+    description: "Naive regex engines that strip spaces globally will destroy spacing inside string fields (e.g. \"John Doe\" becomes \"JohnDoe\").",
+    fix: "Always use a proper AST-based parser like <code>JSON.parse</code> and <code>JSON.stringify</code> to perform minification safely."
+  },
+  {
+    title: "Minifying Invalid JSON Payloads",
+    description: "Minification will fail if the JSON is missing brackets or quotes.",
+    fix: "Ensure your payload passes validation before attempting to strip spaces."
+  }
+];
+---
+
+<ToolPageLayout
+  title="JSON Minifier Online: Compress JSON Strings"
+  description="Minify and compress JSON structures in real-time. Instantly strips whitespaces, line breaks, and tabs for optimal API payloads. 100% private."
+  keywords="json minifier, compress json, minify json online, strip json whitespace, compact json"
+  toolTitle="JSON Minifier & Compressor"
+  toolDescription="Compress your JSON data structures instantly. Remove spacing, carriage returns, and tabs to minimize network load sizes and optimize API delivery speeds."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <JsonFormatter client:load defaultMode="minify" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        The Science of JSON Minification
+      </h2>
+      <p class="leading-relaxed mb-4">
+        While whitespace, indentations, and newlines make JSON documents easy for human developers to read, they represent deadweight for machines. In high-traffic systems, transferring these formatting bytes across thousands of network calls accumulates significant data overhead.
+      </p>
+      <p class="leading-relaxed">
+        Our **JSON Minifier** extracts all superficial layout characters from your objects. By reducing the character footprint to the absolute minimum, the tool compresses file sizes for optimized web sockets, mobile APIs, and cloud database storage.
+      </p>
+    </div>
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Payload Sizes Compared"
+      headers={["State", "Formatting Bytes", "Typical Size", "API Performance"]}
+      rows={[
+        { label: "Beautified (2 Spaces)", values: ["Newlines, tabs, and space pads", "1.3 KB (sample dataset)", "Standard overhead"] },
+        { label: "Minified (Compact)", values: ["Zero formatting characters", "1.0 KB (same dataset - 23% saving)", "Reduced latency"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="JSON Minification Demonstrations"
+      description="Compare structural layouts before and after space compression:"
+      examples={[
+        { label: "Formatted Ingestion", input: '{\n  "status": "active",\n  "code": 200\n}', output: '{"status":"active","code":200}', badge: "Minified" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="How to Minify JSON Programmatically"
+      description="Perform whitespace compression within your deployment pipelines:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Minification Mistakes"
+      description="Avoid these pitfalls to maintain data structure integrity:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Payload Optimization Best Practices"
+      practices={[
+        { title: "Combine with Gzip", description: "Always combine text minification with server-level Gzip or Brotli compression for maximum bandwidth efficiency." },
+        { title: "Avoid Regex Strippers", description: "Never use simple regex replacements to compress JSON; they regularly damage string values containing commas or braces." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

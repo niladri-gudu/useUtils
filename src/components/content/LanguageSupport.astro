@@ -1,0 +1,92 @@
+---
+interface Props {
+  languages: Array<{ lang: string; code: string; note?: string }>;
+  title?: string;
+  description?: string;
+}
+
+const { 
+  languages = [], 
+  title = "Programmatic Implementation",
+  description = "Implement this utility logic directly in your own systems using the native code blocks below:"
+} = Astro.props;
+
+const uniqueId = `lang-support-${Math.random().toString(36).substring(2, 9)}`;
+---
+
+{languages.length > 0 && (
+  <div class="flex flex-col gap-4 w-full" id={uniqueId}>
+    {title && (
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        {title}
+      </h2>
+    )}
+    {description && <p class="text-zinc-400 text-xs leading-relaxed font-sans">{description}</p>}
+    
+    <div class="flex flex-col border border-border-hairline rounded-lg overflow-hidden bg-zinc-900/30">
+      <!-- Tabs Header -->
+      <div class="flex border-b border-border-hairline bg-zinc-950 p-1 overflow-x-auto no-scrollbar gap-1">
+        {languages.map((lang, index) => (
+          <button
+            type="button"
+            data-tab={index}
+            class={`px-3 py-1.5 text-xs font-mono rounded-md transition-all select-none cursor-pointer shrink-0 ${
+              index === 0 
+                ? 'bg-zinc-800 text-accent-emerald font-semibold shadow-sm' 
+                : 'text-zinc-400 hover:text-zinc-200'
+            }`}
+          >
+            {lang.lang}
+          </button>
+        ))}
+      </div>
+
+      <!-- Tab Contents -->
+      <div class="p-4 bg-zinc-950/20">
+        {languages.map((lang, index) => (
+          <div 
+            data-content={index}
+            class={index === 0 ? 'flex flex-col gap-2' : 'hidden flex flex-col gap-2'}
+          >
+            <pre class="bg-zinc-950 p-3.5 rounded-lg text-xs font-mono border border-zinc-900 text-zinc-350 leading-relaxed overflow-x-auto whitespace-pre">{lang.code.trim()}</pre>
+            {lang.note && <p class="text-[11px] text-zinc-500 font-sans leading-relaxed pl-1">Note: {lang.note}</p>}
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
+
+<script is:inline define:vars={{ uniqueId }}>
+  // Inline script runs immediately to bind event listeners
+  const container = document.getElementById(uniqueId);
+  if (container) {
+    const tabs = container.querySelectorAll('[data-tab]');
+    const contents = container.querySelectorAll('[data-content]');
+    
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const index = tab.getAttribute('data-tab');
+        
+        // Update active tab buttons
+        tabs.forEach((t) => {
+          t.classList.remove('bg-zinc-800', 'text-accent-emerald', 'font-semibold', 'shadow-sm');
+          t.classList.add('text-zinc-400', 'hover:text-zinc-200');
+        });
+        tab.classList.remove('text-zinc-400', 'hover:text-zinc-200');
+        tab.classList.add('bg-zinc-800', 'text-accent-emerald', 'font-semibold', 'shadow-sm');
+        
+        // Update contents
+        contents.forEach((c) => {
+          const contentIndex = c.getAttribute('data-content');
+          if (contentIndex === index) {
+            c.classList.remove('hidden');
+          } else {
+            c.classList.add('hidden');
+          }
+        });
+      });
+    });
+  }
+</script>

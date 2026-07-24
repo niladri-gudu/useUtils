@@ -46,9 +46,19 @@ const copyToClipboard = (text: string): boolean => {
   }
 };
 
-export const ClampGenerator: React.FC = () => {
+interface ClampGeneratorProps {
+  defaultMode?: 'single' | 'scale';
+}
+
+export const ClampGenerator: React.FC<ClampGeneratorProps> = ({ defaultMode }) => {
   // Mode: 'single' | 'scale'
-  const [mode, setMode] = useState<'single' | 'scale'>('single');
+  const [mode, setMode] = useState<'single' | 'scale'>(defaultMode || 'single');
+
+  useEffect(() => {
+    if (defaultMode) {
+      setMode(defaultMode);
+    }
+  }, [defaultMode]);
 
   // General Settings
   const [minWidth, setMinWidth] = useState<number>(320);

@@ -1,0 +1,241 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { ListUtilities as ListUtilitiesComponent } from '../../components/ListUtilities';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const faqs = [
+  {
+    question: "How do I remove duplicate lines from a text list online?",
+    answer: "Simply paste your list into the text area, and the tool will instantly filter out matching lines. You can configure options to keep the first or last occurrences."
+  },
+  {
+    question: "Is my text data safe and private when using this tool?",
+    answer: "Yes, 100%. The tool runs entirely in your local browser sandbox via JavaScript. No data is ever transmitted to external servers."
+  },
+  {
+    question: "What is the difference between Keep First and Keep Last deduplication policies?",
+    answer: "'Keep First' retains the first instance of a duplicate line and discards subsequent matches. 'Keep Last' retains the final occurrence and discards previous instances."
+  },
+  {
+    question: "Does this tool support case-insensitive deduplication?",
+    answer: "Yes. Toggling the 'Case Sensitive' checkbox determines whether 'Apple' and 'apple' are treated as duplicates or unique items."
+  },
+  {
+    question: "How do I deduplicate a list programmatically in JavaScript?",
+    answer: "Use ES6 Sets: <code>const unique = [...new Set(lines)];</code>. This retains unique elements while preserving order."
+  },
+  {
+    question: "How do I remove duplicates in Python while preserving insertion order?",
+    answer: "Use dict keys: <code>unique_lines = list(dict.fromkeys(lines))</code>. This filters duplicates while maintaining the original sequence order."
+  },
+  {
+    question: "How does the tool handle whitespace when identifying duplicates?",
+    answer: "You can apply 'Trim Lines' or 'Flat Spaces' under the Clean tab before deduplicating, ensuring lines with minor spacing differences match correctly."
+  },
+  {
+    question: "Can I completely remove all instances of repeated lines?",
+    answer: "Yes, by selecting the 'Remove All Dups' policy. This discards every line that appears more than once, leaving only truly unique elements."
+  },
+  {
+    question: "Does it support bulk line processing for large logs?",
+    answer: "Yes, the client-side JavaScript engine is highly optimized, allowing you to process thousands of lines in real-time without server timeouts."
+  },
+  {
+    question: "How do I analyze duplicate frequencies before deleting them?",
+    answer: "Switch the output display to 'Duplicates Table' to view a list of repeated items along with their specific counts."
+  },
+  {
+    question: "Why is deduplication crucial for database seeds or import lists?",
+    answer: "Database unique constraints will reject datasets containing duplicate keys. Sanitizing raw CSV files first guarantees clean, error-free inserts."
+  },
+  {
+    question: "Can I export the deduplicated results to a file?",
+    answer: "Yes, you can copy the output directly or click the export buttons to download standard CSV or JSON files."
+  },
+  {
+    question: "Does it support sorting the clean list alphabetically?",
+    answer: "Yes, you can combine deduplication with Sort operations (e.g. alphabetical or natural sort) to format the output."
+  },
+  {
+    question: "Does it support regex-based duplicate filtering?",
+    answer: "Yes, switch to the Filter tab to keep or remove items based on custom regular expression constraints."
+  },
+  {
+    question: "How do I handle newline or carriage return differences in text files?",
+    answer: "Carriage return differences (CRLF vs LF) can cause lines to mismatch. Enabling trim utilities normalizes line endings before processing."
+  },
+  {
+    question: "How to deduplicate lines in a text file using Command Line (CLI)?",
+    answer: "In Linux/macOS, use: <code>sort file.txt | uniq > unique.txt</code>. Note that <code>uniq</code> requires the file to be sorted first."
+  },
+  {
+    question: "What is the difference between uniq and sort -u in Unix?",
+    answer: "<code>uniq</code> only removes adjacent duplicate lines, while <code>sort -u</code> sorts the entire file and removes duplicates globally."
+  },
+  {
+    question: "Can I visually reorder lines after removing duplicates?",
+    answer: "Yes. Select the 'Visual Sandbox' tab to view lines as cards and drag-and-drop them to manually order them."
+  },
+  {
+    question: "Does the tool remove empty lines automatically?",
+    answer: "By default, 'Remove Empty Lines' is active under the Filter tab, keeping your output list dense and clean."
+  },
+  {
+    question: "Can I add prefix or suffix styling to the deduplicated list?",
+    answer: "Yes, under the Add Prefix/Suffix tab, you can prepend or append strings to all clean list items."
+  }
+];
+
+const references = [
+  { title: "POSIX specifications for sort and uniq utilities", url: "https://pubs.opengroup.org/onlinepubs/9699919799/utilities/uniq.html", source: "Open Group Standards" },
+  { title: "TC39 ECMAScript Set Collections Standard", url: "https://tc39.es/ecma262/#sec-set-objects", source: "TC39 Standards Reference" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `const deduplicate = (lines, caseSensitive = true) => {
+  if (caseSensitive) {
+    return [...new Set(lines)];
+  }
+  const seen = new Set();
+  return lines.filter(line => {
+    const lower = line.toLowerCase();
+    if (seen.has(lower)) return false;
+    seen.add(lower);
+    return true;
+  });
+};
+
+const raw = ["Apple", "apple", "Banana"];
+console.log(deduplicate(raw, false)); // ["Apple", "Banana"]`,
+    note: "Case-insensitive filter preserves the casing of the first encountered match."
+  },
+  {
+    lang: "Python",
+    code: `def deduplicate_list(lines, case_sensitive=True):
+    if case_sensitive:
+        return list(dict.fromkeys(lines))
+    
+    seen = set()
+    result = []
+    for line in lines:
+        lower = line.lower()
+        if lower not in seen:
+            seen.add(lower)
+            result.append(line)
+    return result
+
+print(deduplicate_list(["Apple", "apple", "Banana"], False)) # ['Apple', 'Banana']`,
+    note: "Deduplicates while preserving initial array indices."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Using Set() in non-insertion-ordered environments",
+    description: "In older language runtimes, converting arrays to sets removes sequence order, yielding random output orders.",
+    fix: "Ensure order preservation by using dict structures or custom index-preserving filters."
+  },
+  {
+    title: "Failing to Trim Spacing Before Comparing",
+    description: "Lines with identical words but different trailing spacing (e.g. 'data ' vs 'data') are treated as unique.",
+    fix: "Apply trim operations (trimming leading/trailing whitespace) prior to executing the deduplicator."
+  }
+];
+---
+
+<ToolPageLayout
+  title="Remove Duplicate Lines Online: Clean & Deduplicate Text Lists"
+  description="Free online tool to remove duplicate lines from text lists, files, and logs. Keep first/last occurrences, filter empty lines, and sort lists in real-time."
+  keywords="remove duplicate lines, remove duplicate text, deduplicate list, clean duplicates, duplicate line remover"
+  toolTitle="Remove Duplicate Lines"
+  toolDescription="Analyze and deduplicate text lists or logs in real-time. Keep first/last occurrences, filter empty lines, view frequency stats, and sort clean outputs with zero server uploads."
+  faqs={faqs}
+>
+  <ListUtilitiesComponent client:load defaultTab="dedupe" defaultDedupeEnabled={true} />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Remove Duplicate Lines
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Duplicate items in configurations, server logs, or email indexes degrade performance and violate system integrity guidelines. Our <strong>Remove Duplicate Lines</strong> tool enables you to clean strings instantly. Simply paste text, toggle your deduplication rules (such as case sensitivity and Keep First vs Keep Last policies), and copy the unique list.
+      </p>
+      <p class="leading-relaxed">
+        The tool operates 100% locally using secure client-side code, guaranteeing that sensitive keys or logs remain safe in browser sandbox memory.
+      </p>
+    </div>
+
+    <!-- Section: Cross Links -->
+    <div class="flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Related List & Text Cleaners
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <a href="/tools/list-utilities" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">List Utilities Workspace</a>
+        <a href="/tools/text-inspector" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Text Inspector & ZWSP Detector</a>
+        <a href="/tools/word-counter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Word Counter & Density Analyzer</a>
+      </div>
+    </div>
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Deduplication Policy Comparison"
+      description="Compare how different removal rules affect duplicate lists:"
+      headers={["Policy", "Processing Logic", "Use Case Example"]}
+      rows={[
+        { label: "Keep First", values: ["Retains the first instance of a line, throwing away subsequent occurrences", "Standard data cleaning when initial records carry priority"] },
+        { label: "Keep Last", values: ["Retains the final occurrence of a repeated item, discarding previous instances", "Log consolidation where the newest entries are required"] },
+        { label: "Remove All", values: ["Deletes all repeated lines completely (leaving zero instances)", "Isolating completely unique entries from dual sources"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Deduplication Mappings Examples"
+      description="Compare input arrays and their sanitized results under different policies:"
+      examples={[
+        { label: "Keep First (Case-Sensitive)", input: "Apple\nBanana\nApple", output: "Apple\nBanana", badge: "Deduplicated" },
+        { label: "Keep Last (Case-Sensitive)", input: "Apple\nBanana\nApple", output: "Banana\nApple", badge: "Deduplicated" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Deduplication Snippets"
+      description="Deduplicate arrays inside your custom scripts:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Deduplication Pitfalls"
+      description="Avoid these common list formatting bugs:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="List Sanitization Best Practices"
+      practices={[
+        { title: "Trim Whitespace First", description: "Collapse spacing before comparison to prevent lines with minor trailing space differences from slipping through." },
+        { title: "Review Duplicate Frequencies", description: "Switch to Dups Table to inspect counts and trace root causes of redundant configurations." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

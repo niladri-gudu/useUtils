@@ -49,9 +49,17 @@ const copyToClipboard = (text: string): boolean => {
 
 const SAMPLE_TEXT = 'The quick brown fox jumps over the lazy dog';
 
-export const HashGenerator: React.FC = () => {
-  const [mode, setMode] = useState<'text' | 'bulk' | 'file'>('text');
-  const [algorithm, setAlgorithm] = useState<string>('SHA-256');
+interface HashGeneratorProps {
+  defaultAlgorithm?: string;
+  defaultMode?: 'text' | 'bulk' | 'file';
+}
+
+export const HashGenerator: React.FC<HashGeneratorProps> = ({
+  defaultAlgorithm = 'SHA-256',
+  defaultMode = 'text'
+}) => {
+  const [mode, setMode] = useState<'text' | 'bulk' | 'file'>(defaultMode);
+  const [algorithm, setAlgorithm] = useState<string>(defaultAlgorithm);
   const [hmacEnabled, setHmacEnabled] = useState<boolean>(false);
   const [hmacKey, setHmacKey] = useState<string>('');
   const [showHmacKey, setShowHmacKey] = useState<boolean>(false);
@@ -85,9 +93,11 @@ export const HashGenerator: React.FC = () => {
     const storedKey = localStorage.getItem('useutils_hash_hmac_key');
     if (storedKey) setHmacKey(storedKey);
 
-    const storedAlgo = localStorage.getItem('useutils_hash_algo');
-    if (storedAlgo) setAlgorithm(storedAlgo);
-  }, []);
+    if (defaultAlgorithm === 'SHA-256') {
+      const storedAlgo = localStorage.getItem('useutils_hash_algo');
+      if (storedAlgo) setAlgorithm(storedAlgo);
+    }
+  }, [defaultAlgorithm]);
 
   const handleTextChange = (val: string) => {
     setTextInput(val);

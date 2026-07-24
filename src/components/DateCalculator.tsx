@@ -43,8 +43,14 @@ const copyToClipboard = (text: string): boolean => {
   }
 };
 
-export const DateCalculator: React.FC = () => {
-  const [activeSubTab, setActiveSubTab] = useState<'difference' | 'adjuster' | 'accumulator'>('difference');
+export interface DateCalculatorProps {
+  defaultActiveSubTab?: 'difference' | 'adjuster' | 'accumulator';
+}
+
+export const DateCalculator: React.FC<DateCalculatorProps> = ({
+  defaultActiveSubTab = 'difference'
+}) => {
+  const [activeSubTab, setActiveSubTab] = useState<'difference' | 'adjuster' | 'accumulator'>(defaultActiveSubTab);
   const [copyFeedback, setCopyFeedback] = useState<Record<string, boolean>>({});
 
   const triggerCopyFeedback = (key: string) => {

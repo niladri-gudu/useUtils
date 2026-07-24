@@ -1,0 +1,229 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { DiffChecker as DiffCheckerComponent } from '../../components/DiffChecker';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'Diff Checker', href: '/tools/diff-checker' },
+  { label: 'Semantic JSON Diff', href: '/tools/json-diff', active: true }
+];
+
+const faqs = [
+  {
+    question: "What is semantic JSON diffing?",
+    answer: "Semantic JSON diffing parses JSON text into an Abstract Syntax Tree (AST), recursively sorts all object keys alphabetically, normalizes spacing and indentation, and then compares the sorted structures. This avoids false-positive differences caused by different key orderings."
+  },
+  {
+    question: "Why is key ordering ignored in semantic JSON diff?",
+    answer: "According to the official RFC 8259 specification, an object is an unordered collection of zero or more name/value pairs. Therefore, <code>{\"id\": 1, \"name\": \"John\"}</code> and <code>{\"name\": \"John\", \"id\": 1}</code> are semantically identical, even though standard text diff tools would flag them as different."
+  },
+  {
+    question: "How does this tool handle JSON parsing errors?",
+    answer: "If either input contains invalid JSON syntax (e.g. missing commas, unquoted keys, trailing commas), the local parser fails and displays a detailed error message indicating the line number and character offset of the syntax error."
+  },
+  {
+    question: "Can I compare JSON arrays using this tool?",
+    answer: "Yes. Unlike objects, the order of elements inside a JSON array is semantically significant (e.g., <code>[1, 2]</code> is not the same as <code>[2, 1]</code>). The comparison engine preserves array indices exactly, highlighting any item insertions, deletions, or shifts."
+  },
+  {
+    question: "Is my JSON data uploaded to a server?",
+    answer: "No, 100% local. The JSON parsing, key sorting, and Myers diff comparison occur entirely inside your browser using client-side JavaScript. This makes it completely safe for comparing proprietary configuration files, system credentials, or database records."
+  },
+  {
+    question: "How do I ignore whitespace or spacing differences in JSON?",
+    answer: "Since the tool parses JSON into JavaScript objects before sorting and formatting them with standard 2-space indentation, all original formatting spaces, tab characters, and carriage returns are normalized automatically."
+  },
+  {
+    question: "How does the tool handle nested JSON structures?",
+    answer: "The key-sorting algorithm is recursive. It traverses deeply nested objects, arrays of objects, and sub-properties to sort all keys alphabetically at every level of the JSON document."
+  },
+  {
+    question: "How to perform JSON diffing programmatically in Node.js?",
+    answer: "You can use libraries like <code>fast-json-patch</code> or write a custom helper to recursively sort keys using <code>JSON.stringify(obj, Object.keys(obj).sort())</code> before comparing."
+  },
+  {
+    question: "What is the difference between JSON diff and XML diff?",
+    answer: "JSON structures are key-value based, where key order doesn't matter. XML structures are hierarchical document trees where element order is often significant, requiring different DOM-tree matching algorithms."
+  },
+  {
+    question: "Can I compare JSON with different data types?",
+    answer: "Yes, the tool highlights type differences (e.g. <code>\"1\"</code> vs <code>1</code>) by displaying them in the diff view, which is crucial for identifying API parameter bugs."
+  },
+  {
+    question: "Why do trailing commas cause JSON parsing errors?",
+    answer: "The JSON specification (RFC 8259) explicitly forbids trailing commas in objects and arrays. While some JavaScript engines tolerate them, standard JSON parsers will fail."
+  },
+  {
+    question: "How do I convert YAML to JSON before diffing?",
+    answer: "You can convert YAML to JSON using a converter, and then paste the JSON strings into this tool for semantic comparison."
+  },
+  {
+    question: "Can I upload local JSON files directly?",
+    answer: "Yes, under the File Upload tab, select your JSON files. They are parsed locally via HTML5 FileReaders."
+  },
+  {
+    question: "Does the tool support diffing JSON schema files?",
+    answer: "Yes, JSON schemas are valid JSON files and are compared semantically, showing modifications in constraints, types, or property definitions."
+  },
+  {
+    question: "What are the best practices for structuring API JSON payloads?",
+    answer: "Always use double quotes for keys, keep payloads flat where possible, use consistent casings (like camelCase), and avoid null properties where empty defaults are appropriate."
+  },
+  {
+    question: "How does this tool handle JSON values with different case sensitivity?",
+    answer: "JSON keys and string values are case-sensitive. If you wish to ignore capitalization, toggle the 'Case Insensitive' option under the comparison area."
+  },
+  {
+    question: "Does it highlight specific character differences inside a modified JSON string?",
+    answer: "Yes, when a string value is modified, the engine runs a character-level tokenized diff to pinpoint the exact added or deleted letters within that line."
+  },
+  {
+    question: "What is standard JSON indentation?",
+    answer: "The standard indentation is 2 spaces or 4 spaces. Our tool automatically formats all valid JSON inputs with 2 spaces for optimal split-view comparison on desktop screens."
+  },
+  {
+    question: "How do I resolve JSON merge conflicts locally?",
+    answer: "Toggle the 'Merge Tool' on the diff viewer to select whether to use version A or version B for each conflicting block, assembling a clean, merged JSON document."
+  },
+  {
+    question: "Does this tool support JSON5 or extended JSON configurations?",
+    answer: "Standard <code>JSON.parse</code> is used. If your input includes JSON5 (like comments or unquoted keys), convert it to standard JSON first."
+  }
+];
+
+const references = [
+  { title: "RFC 8259 - The JavaScript Object Notation (JSON) Data Format", url: "https://datatracker.ietf.org/doc/html/rfc8259", source: "IETF Standards" },
+  { title: "ECMA-404 JSON Text Format Specification", url: "https://www.ecma-international.org/publications-and-standards/standards/ecma-404/", source: "ECMA International" }
+];
+
+const languageCodes = [
+  {
+    lang: "Node.js",
+    code: `// Recursively sort object keys for semantic comparison
+function sortKeys(obj) {
+  if (obj === null || typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) return obj.map(sortKeys);
+  
+  return Object.keys(obj).sort().reduce((acc, key) => {
+    acc[key] = sortKeys(obj[key]);
+    return acc;
+  }, {});
+}
+
+const original = { b: 2, a: 1 };
+const modified = { a: 1, b: 2 };
+
+console.log(JSON.stringify(sortKeys(original)) === JSON.stringify(sortKeys(modified))); // true`,
+    note: "Normalizes key ordering in memory before stringification."
+  },
+  {
+    lang: "Python",
+    code: `import json
+
+def get_semantic_json_diff(json_a, json_b):
+    # Load and dump with sort_keys=True to normalize order
+    dict_a = json.loads(json_a)
+    dict_b = json.loads(json_b)
+    
+    sorted_a = json.dumps(dict_a, sort_keys=True, indent=2)
+    sorted_b = json.dumps(dict_b, sort_keys=True, indent=2)
+    return sorted_a, sorted_b`,
+    note: "Python's standard json module supports sorting natively."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Comparing Raw JSON Payloads as Plain Text",
+    description: "Standard text diff checkers report differences when keys are in a different order, even if the data objects are identical.",
+    fix: "Enable <code>Semantic Key Sorting</code> which automatically orders keys alphabetically at all nesting levels before running the comparison."
+  },
+  {
+    title: "Invalid Trailing Commas in Configuration files",
+    description: "Trailing commas are forbidden in the JSON specification, causing parser crashes.",
+    fix: "Ensure trailing commas are stripped from objects and arrays prior to copying data to the decoder."
+  }
+];
+---
+
+<ToolPageLayout
+  title="JSON Diff Online: Compare JSON Objects Semantically"
+  description="Compare JSON objects, API responses, and configurations. Features alphabetical key sorting, formatting normalization, and split-pane comparison."
+  keywords="json diff, compare json, semantically compare json, json comparison online"
+  toolTitle="Semantic JSON Diff"
+  toolDescription="Compare two JSON objects or files. The tool automatically formats strings, recursively sorts object keys alphabetically, and runs a semantic comparison with zero server transmission."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <DiffCheckerComponent client:load defaultTab="json" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Compare JSON Semantically
+      </h2>
+      <p class="leading-relaxed mb-4">
+        JSON (JavaScript Object Notation) is widely used in API communication and project configuration. However, because keys inside JSON objects are mathematically unordered, standard text diff checkers often highlight false differences simply because properties are serialized in a different order.
+      </p>
+      <p class="leading-relaxed">
+        Our <strong>Semantic JSON Diff</strong> tool solves this by parsing both inputs into temporary JavaScript syntax trees, recursively sorting all keys alphabetically, and auto-formatting them with clean 2-space indentation before performing Myers comparison.
+      </p>
+    </div>
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Semantic JSON Diff vs Text Diff"
+      headers={["Feature", "Text Diff Checker", "Semantic JSON Diff"]}
+      rows={[
+        { label: "Key Ordering Tolerance", values: ["Case-sensitive literal matching (flags order changes as diffs)", "Alphabetical key sorting (ignores order variations)"] },
+        { label: "Whitespace & Indentation", values: ["Literal line matching (flags spacing offsets)", "Auto-indent normalization (normalizes spacing)"] },
+        { label: "Validates JSON Syntax", values: ["No (compares character streams)", "Yes (validates JSON structure, highlights syntax errors)"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Semantic JSON Comparison Examples"
+      description="Inspect how keys are normalized and compared:"
+      examples={[
+        { label: "Object Key Order Variance", input: '{"id": 1, "role": "admin"}', output: '{"id": 1, "role": "admin"} (Keys sorted & matched)', badge: "Identical" },
+        { label: "Type Mismatch Identifier", input: '{"port": 8080}', output: '{"port": "8080"} (Type mismatch flagged)', badge: "Different" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic JSON Key Sorting Snippets"
+      description="Normalize JSON object ordering programmatically using these utilities:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common JSON Comparison Errors"
+      description="Avoid these common parser issues when dealing with API and config JSON streams:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="JSON Structure Best Practices"
+      practices={[
+        { title: "Avoid Trailing Commas", description: "Standard JSON does not tolerate trailing commas. Ensure lists and properties terminate correctly." },
+        { title: "Strict Key Quoting", description: "Always wrap keys in double quotes. Single quotes or unquoted properties are invalid in standard JSON specs." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

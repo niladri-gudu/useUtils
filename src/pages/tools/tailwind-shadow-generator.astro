@@ -1,0 +1,220 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { BoxShadowGenerator } from '../../components/BoxShadowGenerator';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "What is a Tailwind Shadow Generator?",
+    answer: "A Tailwind Shadow Generator is a visual utility designed to configure multi-layered box shadows and output them as standard Tailwind CSS class utility configurations."
+  },
+  {
+    question: "How do I create a shadow in Tailwind CSS v3?",
+    answer: "Use utility classes to declare the shadow type, such as: `shadow-md`, `shadow-lg`, or `shadow-xl`."
+  },
+  {
+    question: "How do I create a shadow in Tailwind CSS v4?",
+    answer: "Tailwind v4 retains standard shadow utility classes while extending support for custom themes inside the `@theme` directive, letting you define custom shadow variables easily."
+  },
+  {
+    question: "How do I use custom box shadows in Tailwind?",
+    answer: "Use Tailwind's arbitrary value syntax by placing the CSS declaration inside square brackets: `shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)]`. Make sure to replace any spaces with underscores (`_`)."
+  },
+  {
+    question: "How do I handle opacity on Tailwind shadows?",
+    answer: "You can apply opacity modifiers directly to the color utility classes or specify the alpha channel value inside the arbitrary bracket declaration (e.g. `shadow-[0_4px_6px_rgba(0,0,0,0.15)]`)."
+  },
+  {
+    question: "Can I use multi-layered shadows in Tailwind?",
+    answer: "Yes. Declare each shadow layer separated by a comma inside the arbitrary brackets, replacing all spaces with underscores: `shadow-[0_4px_6px_rgba(0,0,0,0.1),_0_1px_3px_rgba(0,0,0,0.08)]`."
+  },
+  {
+    question: "Does Tailwind CSS support inset shadows?",
+    answer: "Yes. Use the `shadow-inner` class for standard inset shadows, or specify the `inset` keyword inside custom arbitrary brackets: `shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)]`."
+  },
+  {
+    question: "How do you define custom shadows in the Tailwind Config file?",
+    answer: "Extend the box shadow properties in your config: `theme: { extend: { boxShadow: { 'brand-shadow': '0 4px 6px -1px rgba(0, 0, 0, 0.1)' } } }`."
+  },
+  {
+    question: "Why do I need to replace space characters with underscores inside arbitrary brackets?",
+    answer: "Tailwind's class scanner parses classes by splitting strings on whitespace. Replacing spaces with underscores ensures the arbitrary bracket arguments remain grouped as a single class."
+  },
+  {
+    question: "Does this shadow generator run offline?",
+    answer: "Yes, all processing is performed client-side in your browser, keeping your design details secure."
+  },
+  {
+    question: "How does screen resolution affect Tailwind shadows?",
+    answer: "Shadows are rendered as vector graphics by the browser, meaning they scale smoothly to any screen resolution without quality loss."
+  },
+  {
+    question: "What is the Tailwind class for coloring shadows?",
+    answer: "Use shadow color utility classes (e.g. `shadow-indigo-500/50` to apply a semi-transparent colored shadow in Tailwind v3/v4)."
+  },
+  {
+    question: "Are custom shadows supported in Tailwind v4?",
+    answer: "Yes, Tailwind v4 fully supports arbitrary color variables and theme properties."
+  },
+  {
+    question: "Is there a performance difference between standard utilities and arbitrary classes?",
+    answer: "No, both compiled outputs generate standard CSS rules on the page, resulting in identical rendering speeds."
+  },
+  {
+    question: "Can I animate shadows using Tailwind?",
+    answer: "Yes, you can animate a shadow's position or size using utility classes like `transition-shadow` combined with custom hover or state triggers."
+  },
+  {
+    question: "How can I extract color palettes from an image?",
+    answer: "Drag and drop any image into our sandbox to sample the dominant colors and map them to shadow stops."
+  },
+  {
+    question: "Why do colors look different in print?",
+    answer: "Screens emit RGB light, whereas print ink absorbs CMYK light. This difference in color models results in varying color ranges."
+  },
+  {
+    question: "What is the relative luminance threshold?",
+    answer: "Luminance calculations evaluate screen brightness levels. Comparing text luminance against background luminance gives the contrast ratio."
+  },
+  {
+    question: "Does this page feature a contrast accessibility check?",
+    answer: "Yes. The page evaluates contrast ratios against white and black backgrounds in real-time."
+  },
+  {
+    question: "Are color conversions private on this page?",
+    answer: "Yes, all processing is performed client-side in your browser, keeping your design details secure."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "HTML & Tailwind v3",
+    code: `
+<!-- Standard Utility Shadow -->
+<div class="shadow-lg h-32 w-full rounded-xl bg-zinc-800"></div>
+
+<!-- Arbitrary Custom Shadow -->
+<div class="shadow-[0_10px_15px_-3px_rgba(52,211,153,0.3)] h-32 w-full rounded-xl bg-zinc-800"></div>
+    `,
+    note: "Modern CSS declarations using standard gradient functions."
+  },
+  {
+    lang: "Tailwind v4 Config",
+    code: `
+@theme {
+  --box-shadow-brand-shadow: 0 10px 15px -3px rgba(52, 211, 153, 0.3);
+}
+    `,
+    note: "CSS theme variable configuration format."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Leaving Spaces in Arbitrary Values",
+    description: "Using standard spaces inside square brackets (e.g. `shadow-[0 4px 6px rgba(0, 0, 0, 0.1)]`). Use underscores instead of spaces: `shadow-[0_4px_6px_rgba(0,0,0,0.1)]`."
+  },
+  {
+    title: "Combining Conflicting Classes",
+    description: "Declaring conflicting direction keywords (like combining `shadow-inner` with arbitrary CSS directions), which breaks color interpolation."
+  },
+  {
+    title: "Missing Hover State Prefixes",
+    description: "Forgetting to apply hover prefixes to all shadow steps (e.g. only setting `hover:shadow-lg` without matching transition properties)."
+  }
+];
+
+const references = [
+  {
+    title: "Tailwind CSS v4 Documentation",
+    url: "https://tailwindcss.com/"
+  },
+  {
+    title: "Tailwind Arbitrary Styles Guide",
+    url: "https://tailwindcss.com/docs/adding-custom-styles#using-arbitrary-values"
+  }
+];
+---
+
+<ToolPageLayout
+  title="Tailwind Shadow Generator | Visual Utility Designer"
+  description="Generate custom Tailwind CSS box shadow classes visually. Design multi-layered shadow structures and copy clean, responsive class utilities."
+  keywords="tailwind shadow generator, tailwind css shadows, arbitrary value shadow, shadow class generator, custom shadow tailwind"
+  toolTitle="Tailwind Shadow Generator"
+  toolDescription="Design multi-layered shadow structures. Extract dominant color scales from photos and copy Tailwind utility classes instantly."
+  faqs={faqs}
+>
+  <BoxShadowGenerator client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <PrivacyBadge />
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Styling Shadows with Tailwind CSS
+      </h2>
+      <p class="leading-relaxed mb-3">
+        Tailwind CSS provides built-in utilities for simple shadows. However, when you need custom angles, more than three layers, or colored configurations, standard utility classes fall short.
+      </p>
+      <p class="leading-relaxed">
+        Our Tailwind Shadow Generator provides an interactive timeline to adjust color coordinates, customize transparency levels, and copy responsive class utilities.
+      </p>
+    </div>
+
+    <ComparisonTable
+      title="Tailwind Shadow Syntax Comparison"
+      description="Compare standard utilities and arbitrary layouts:"
+      headers={["Style Category", "Tailwind Class Example", "Compiled CSS Output", "Flexibility"]}
+      rows={[
+        { label: "Standard Utility", values: ["shadow-lg", "box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), ...", "Medium (limited to preset offsets)"] },
+        { label: "Arbitrary Class", values: ["shadow-[0_10px_15px_-3px_rgba(52,211,153,0.3)]", "box-shadow: 0 10px 15px -3px rgba(52, 211, 153, 0.3)", "High (supports custom offsets and colors)"] }
+      ]}
+    />
+
+    <ExampleCard
+      title="Popular Tailwind Shadow Combinations"
+      description="Frequently used design coordinates:"
+      examples={[
+        { label: "Standard Large", input: "shadow-lg", output: "Copied!", badge: "Tailwind" },
+        { label: "Emerald Ambient", input: "shadow-[0_10px_15px_-3px_rgba(52,211,153,0.3)]", output: "Copied!", badge: "Arbitrary" },
+        { label: "Soft Layered", input: "shadow-[0_4px_6px_rgba(0,0,0,0.05),_0_1px_3px_rgba(0,0,0,0.1)]", output: "Copied!", badge: "Arbitrary" }
+      ]}
+    />
+
+    <LanguageSupport
+      languages={languageCodes}
+      title="Tailwind Integration Snippets"
+      description="Apply these styles in your markup code:"
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Tailwind Shadow Pitfalls"
+    />
+
+    <BestPractices
+      title="Tailwind Styling Best Practices"
+      practices={[
+        { title: "Define a Theme Property", description: "Save repeating custom shadows as theme variables in your config to maintain stylesheet consistency." },
+        { title: "Preserve Contrast Compliance", description: "Ensure background color values have adequate contrast against text overlays." }
+      ]}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+
+    <RelatedTools
+      currentToolUrl="/tools/tailwind-shadow-generator"
+      category="css"
+    />
+  </div>
+</ToolPageLayout>

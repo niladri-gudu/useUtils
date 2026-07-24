@@ -1,10 +1,18 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { UrlDecoder } from '../../components/UrlDecoder';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
 
 const tabs = [
-  { label: 'Decoder', href: '/tools/url-decoder', active: true },
-  { label: 'Encoder', href: '/tools/url-encoder' }
+  { label: 'URL Encoder', href: '/tools/url-encoder' },
+  { label: 'Hex URL Encoder', href: '/tools/hex-url-encoder' },
+  { label: 'URL Decoder', href: '/tools/url-decoder', active: true }
 ];
 
 const faqs = [
@@ -47,6 +55,88 @@ const faqs = [
   {
     question: "Does the Parameter Manager support duplicate keys?",
     answer: "Yes. URL specifications allow duplicate keys (e.g., <code>?filter=a&amp;filter=b</code>). The Parameter Manager parses each instance independently, displaying them as separate rows in the table so you can edit, enable/disable, or delete them separately."
+  },
+  {
+    question: "How do I URL decode a string in Python?",
+    answer: "Use Python's built-in <code>urllib.parse</code> module: <br/><code>import urllib.parse; decoded = urllib.parse.unquote_plus(encoded_str)</code>."
+  },
+  {
+    question: "How do I URL decode a string in Node.js?",
+    answer: "Use the global <code>decodeURIComponent</code> function or the <code>querystring</code> module: <br/><code>const decoded = decodeURIComponent(encodedStr);</code>"
+  },
+  {
+    question: "How do I URL decode in Go?",
+    answer: "Use Go's built-in <code>net/url</code> package: <br/><code>decoded, err := url.QueryUnescape(encodedStr)</code>."
+  },
+  {
+    question: "How do I URL decode in Java?",
+    answer: "Use Java's built-in <code>URLDecoder</code> class: <br/><code>URLDecoder.decode(encodedStr, StandardCharsets.UTF_8.toString())</code>."
+  },
+  {
+    question: "Why does percent decoding return different characters than expected?",
+    answer: "Ensure the encoding used during percent generation matches your decoder's configuration (UTF-8 is standard; using legacy ISO-8859-1 can cause character decoding breaks)."
+  },
+  {
+    question: "What is the URL decoded value of %20?",
+    answer: "The code <code>%20</code> decodes to a standard space character."
+  },
+  {
+    question: "What is the URL decoded value of %2B?",
+    answer: "The code <code>%2B</code> decodes to a plus (+) symbol. Note that in Form mode, raw plus symbols are converted to spaces, whereas <code>%2B</code> is correctly preserved as a plus sign."
+  },
+  {
+    question: "How do I decode a fully hex-encoded URL?",
+    answer: "Paste the obfuscated hex URL into the decoder. It translates every %XX sequence back into readable letters, domain hosts, protocols, and ports."
+  },
+  {
+    question: "Is there a command line tool to decode URLs?",
+    answer: "Yes, you can use python or node in the terminal: <br/><code>python -c \"import urllib.parse; print(urllib.parse.unquote('encoded_string'))\"</code>."
+  },
+  {
+    question: "Does the URL decoder log my API keys?",
+    answer: "No. All operations run strictly client-side. The parsed parameters stay in local memory and are never sent to external servers."
+  }
+];
+
+const references = [
+  { title: "RFC 3986 - Uniform Resource Identifier (URI) Standard", url: "https://datatracker.ietf.org/doc/html/rfc3986", source: "IETF Standards" },
+  { title: "MDN Web Docs - decodeURIComponent Guide", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent", source: "MDN References" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `const encodedValue = "hello%20world%20%26%20stars%21";
+
+// Decode query parameter safely
+const decodedValue = decodeURIComponent(encodedValue);
+
+console.log(decodedValue); // Output: hello world & stars!`,
+    note: "decodeURIComponent resolves all standard %XX hex entities."
+  },
+  {
+    lang: "Python",
+    code: `import urllib.parse
+
+encoded_str = "hello+world+%26+stars%21"
+# Decode form-encoded parameter (plus signs become spaces)
+decoded = urllib.parse.unquote_plus(encoded_str)
+
+print(decoded) # Output: hello world & stars!`,
+    note: "unquote_plus decodes plus signs back to standard spaces."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Decoding literal + symbols in standard paths",
+    description: "Using form-urlencoded decoders on URL path segments converts legitimate plus (+) symbols (e.g. inside file names) into spaces, breaking local links.",
+    fix: "Only use unquote_plus/Form decoders when parsing query parameter lists; use standard percent-decoding for path strings."
+  },
+  {
+    title: "Assuming raw % symbols decode cleanly",
+    description: "Pasting standalone percent signs (e.g. inside search terms like '50% off') without proper encoding (as %25) throws malformed URI errors in decoders.",
+    fix: "Pre-validate or escape inputs containing literal percent symbols before decoding."
   }
 ];
 ---
@@ -62,70 +152,73 @@ const faqs = [
 >
   <UrlDecoder client:load />
 
-  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
     <!-- Section: Intro -->
     <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
         <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        How to Use the URL Decoder
+        How URL Percent-Decoding Works
       </h2>
       <p class="leading-relaxed mb-4">
-        Our URL Decoder parses and unescapes percent-encoded strings instantly in your browser. You can paste your encoded parameters or full website URLs in the <strong class="text-zinc-200">encoded input pane</strong>, select the appropriate decoding mode (Standard, Full URI, or Form-urlencoded), and view the decoded result instantly.
+        URL decoding restores character structures. The decoder scans strings for percent-encoding hex pairs (such as <code>%20</code>), converts these hexadecimal values back into decimal byte values, and decodes these bytes into text characters under target schema encodings.
       </p>
       <p class="leading-relaxed">
-        Click the copy buttons or use developer keyboard shortcuts (<kbd class="font-mono bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">⌘ C</kbd>) to copy the converted text to your clipboard.
+        Our **URL Decoder** simplifies debugging. Paste any web link to dissect it into schema protocols, port numbers, hosts, path directories, and search parameters. Edit keys and values inside the interactive parameter grid table to reconstruct clean links.
       </p>
     </div>
 
-    <!-- Section: Parameter Dissection -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Understanding URL Dissection & Query String Parsing
-      </h2>
-      <p class="leading-relaxed mb-4">
-        URLs are complex structures containing distinct components. When a URL is pasted into the decoder, our system dissects it into the following parts:
-      </p>
-      <ul class="list-disc list-inside space-y-2 mb-6 pl-2 leading-relaxed">
-        <li><strong class="text-zinc-200">Scheme/Protocol</strong>: Specifies the transfer protocol, such as <code>http:</code> or <code>https:</code>.</li>
-        <li><strong class="text-zinc-200">Host/Domain</strong>: The server address or hostname, e.g. <code>api.useutils.com</code>.</li>
-        <li><strong class="text-zinc-200">Port</strong>: Explicit port offsets (such as <code>:443</code> or <code>:8080</code>) if present.</li>
-        <li><strong class="text-zinc-200">Pathname</strong>: The specific folder path or endpoint routing inside the server.</li>
-        <li><strong class="text-zinc-200">Query Parameters</strong>: Key-value parameters separating search tokens, parsed into our interactive editor table.</li>
-        <li><strong class="text-zinc-200">Hash/Anchor</strong>: The target section index on the page (preceded by <code>#</code>).</li>
-      </ul>
-    </div>
+    <!-- Section: Privacy Badge -->
+    <PrivacyBadge />
 
-    <!-- Section: Handling Malformed Sequences -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Handling Decoding Errors & Malformed Input
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Decoding can sometimes fail if an input string does not comply with URI standards. If you encounter a <strong class="text-red-400">Decoding Error</strong>:
-      </p>
-      <p class="leading-relaxed mb-4">
-        1. Check if the string contains standalone percent signs (<code>%</code>) that are part of the raw data rather than an encoding. In standard URLs, literal percents must be encoded as <code>%25</code>.
-      </p>
-      <p class="leading-relaxed">
-        2. Ensure the percent sign is followed by exactly two hexadecimal characters (<code>0-9</code> and <code>A-F</code>). Lowercase characters (<code>a-f</code>) are also fully supported, but non-hex characters like <code>G</code> or <code>Z</code> will cause errors.
-      </p>
-    </div>
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="URL Decoding Functions comparison"
+      headers={["Decode Function", "Translates '+' to Spaces", "Decodes Delimiters (e.g. %2F, %3F)", "Typical Use Case"]}
+      rows={[
+        { label: "decodeURIComponent", values: ["No", "Yes", "Query parameter values"] },
+        { label: "decodeURI", values: ["No", "No", "Complete URL path preservation"] },
+        { label: "Form Decoder (unquote_plus)", values: ["Yes", "Yes", "HTML application/x-www-form-urlencoded inputs"] }
+      ]}
+    />
 
-    <!-- Section: Security -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Local Browser-Only Security Sandbox
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Because URLs often contain sensitive parameters like <strong class="text-zinc-200">access tokens</strong>, <strong class="text-zinc-200">session cookies</strong>, <strong class="text-zinc-200">private emails</strong>, or database IDs, using online decoding tools can be a security risk.
-      </p>
-      <p class="leading-relaxed">
-        useUtils solves this by executing the entire decoding process locally on your device. Absolutely zero data is sent across the network to external servers. Your secure credentials, credentials keys, and payloads are never exposed.
-      </p>
-    </div>
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Common Percent Decoding Examples"
+      description="Observe common percent conversions decoded back to text:"
+      examples={[
+        { label: "Hex character %20", input: "%20", output: " (Space)", badge: "Space" },
+        { label: "Hex character %26", input: "%26", output: "&", badge: "Query Splitter" },
+        { label: "Hex character %2F", input: "%2F", output: "/", badge: "Path Divider" },
+        { label: "Hex character %3D", input: "%3D", output: "=", badge: "Value Association" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic URL Decoding"
+      description="Restore query string parameter values in your application logic using these blocks:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common URL Decoding Pitfalls"
+      description="Avoid these common errors when decoding query data parameters:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="URL Decoding Best Practices"
+      practices={[
+        { title: "Identify Parameter Encodings", description: "Verify whether inputs contain plus signs before choosing a decoder to avoid converting legitimate plus values to spaces." },
+        { title: "Handle Malformed Strings Safely", description: "Use try-catch wrappers around decoding functions to prevent application crashes from invalid percent sequences." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
   </div>
 </ToolPageLayout>

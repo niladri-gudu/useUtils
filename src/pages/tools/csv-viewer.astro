@@ -1,0 +1,229 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { CsvJsonConverter } from '../../components/CsvJsonConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'CSV to JSON', href: '/tools/csv-to-json' },
+  { label: 'JSON to CSV', href: '/tools/json-to-csv' },
+  { label: 'CSV Viewer', href: '/tools/csv-viewer', active: true }
+];
+
+const faqs = [
+  {
+    question: "What is an online CSV viewer?",
+    answer: "An online CSV viewer parses raw Comma-Separated Values text or uploaded files and displays them as an interactive spreadsheet grid, allowing you to view and edit cell contents visually without loading Excel."
+  },
+  {
+    question: "Can I add or delete rows and columns in this editor?",
+    answer: "Yes. In the visual Grid Editor view, you can click 'Add Row' or 'Add Column', or use the inline removal buttons next to each column header and row cell to modify the grid structure."
+  },
+  {
+    question: "Is my uploaded CSV data secure?",
+    answer: "Yes, 100%. Like all tools on useUtils, the grid editor runs entirely in client-side JavaScript. No file buffers, text snippets, or modified tables are uploaded to a server."
+  },
+  {
+    question: "What is the column data type profiler?",
+    answer: "The editor scans cells within a column and determines if they contain integers, decimals, booleans, or strings. It displays this label below the column headers to help check data types."
+  },
+  {
+    question: "Can I edit cells directly like in Excel?",
+    answer: "Yes. Simply double-click any cell in the grid, type your changes, and press Enter. The underlying CSV output adjusts in real-time."
+  },
+  {
+    question: "How do I download the edited CSV file?",
+    answer: "Click the 'Download' button above the output area to save your modified spreadsheet as a local <code>.csv</code> file."
+  },
+  {
+    question: "Does the viewer support TSV (Tab-Separated Values)?",
+    answer: "Yes. The editor auto-detects tabs, semicolons, and pipes as delimiters, or you can select them manually in the configuration sidebar."
+  },
+  {
+    question: "What is RFC 4180?",
+    answer: "It is the standard specification for CSV files, defining how columns are delimited, how headers are specified, and how quotes escape special characters."
+  },
+  {
+    question: "How does the tool handle large CSV files?",
+    answer: "The viewer easily handles files up to 20MB (approx. 200,000 rows) in-browser. For larger files, we recommend chunking to avoid memory limits."
+  },
+  {
+    question: "Can I convert CSV to JSON from this editor?",
+    answer: "Yes. In the output sidebar, select the JSON format to export the visual spreadsheet as an array of JSON objects or 2D arrays instantly."
+  },
+  {
+    question: "How do I load a CSV file into the viewer?",
+    answer: "Click the 'Browse File' button to select a local file, or drag and drop a <code>.csv</code> or <code>.txt</code> file directly into the editor."
+  },
+  {
+    question: "What is an empty cell in a CSV file?",
+    answer: "An empty cell represents a null value and is encoded in raw CSV as consecutive delimiters (e.g. <code>value1,,value3</code>)."
+  },
+  {
+    question: "How does the viewer render line breaks within cells?",
+    answer: "If a CSV cell contains line breaks, it must be wrapped in double quotes. The editor parses these cell values correctly and displays them inline in the cell grid."
+  },
+  {
+    question: "How do I parse CSV programmatically in JavaScript?",
+    answer: "Use standard file APIs and split rows on delimiters. For complex parsing that respects quoted quotes and newlines, libraries like <code>PapaParse</code> are recommended."
+  },
+  {
+    question: "Can I copy-paste cells from Google Sheets?",
+    answer: "Yes. Copying from Sheets outputs tab-delimited text. Paste it directly into the viewer; it auto-detects tab separation and renders the grid."
+  },
+  {
+    question: "Why does my spreadsheet show column type profiling errors?",
+    answer: "If cells in a column contain mixed integers and text strings, the profiler flags it as a <code>Mixed</code> data type, helping you identify data entry errors."
+  },
+  {
+    question: "What is the default delimiter in CSV files?",
+    answer: "The default delimiter is a comma (<code>,</code>). However, regions using commas for decimal points often default to semicolons (<code>;</code>)."
+  },
+  {
+    question: "Does this tool require registration or payments?",
+    answer: "No. This tool is open-source, free to use, and works entirely locally without registration or limits."
+  },
+  {
+    question: "How are headers handled if my CSV lacks a header row?",
+    answer: "Uncheck the 'First row contains headers' option. The editor will generate placeholder headers (e.g. <code>Column 1</code>, <code>Column 2</code>) and treat the first row as data."
+  },
+  {
+    question: "Can I reverse my JSON payload back to a CSV grid?",
+    answer: "Yes. Toggle the 'Conversion Pathway' to JSON → CSV, paste a JSON array, and swap to the Grid tab to view the spreadsheet."
+  }
+];
+
+const references = [
+  { title: "RFC 4180 - Common Format and MIME Type for CSV Files", url: "https://datatracker.ietf.org/doc/html/rfc4180", source: "IETF Standards" },
+  { title: "Papa Parse - The Powerful In-Browser CSV Parser", url: "https://www.papaparse.com/", source: "PapaParse Docs" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript (PapaParse)",
+    code: `// Parse a CSV string into a 2D array or objects
+const Papa = require("papaparse");
+
+const csvString = "id,name\\n1,Alice\\n2,Bob";
+const result = Papa.parse(csvString, {
+  header: true,
+  dynamicTyping: true
+});
+
+console.log(result.data);
+// [ { id: 1, name: 'Alice' }, { id: 2, name: 'Bob' } ]`,
+    note: "PapaParse handles line breaks and quoted values automatically."
+  },
+  {
+    lang: "Python (pandas)",
+    code: `import pandas as pd
+
+# Load CSV file into a DataFrame
+df = pd.read_csv("data.csv")
+
+# Display the first 5 rows in grid format
+print(df.head())
+
+# Edit cell value at Row 0, Column 'name'
+df.at[0, 'name'] = 'Updated Name'
+
+# Export back to CSV file
+df.to_csv("data_modified.csv", index=False)`,
+    note: "Pandas acts as a robust programmatic spreadsheet engine."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Double Quote Mismatch inside Text Fields",
+    description: "Failing to wrap text fields containing commas in double quotes splits them into separate columns.",
+    fix: "Ensure all strings containing delimiters are enclosed in double quotes prior to CSV export."
+  },
+  {
+    title: "Modifying CSV Directly as Text",
+    description: "Adding or deleting cells manually in text editors causes column misalignments.",
+    fix: "Use a visual grid spreadsheet editor to keep rows and columns aligned."
+  }
+];
+---
+
+<ToolPageLayout
+  title="CSV Viewer & Editor Online: Edit spreadsheets in browser"
+  description="Inspect and edit CSV files visually in a spreadsheet grid. Features direct cell editing, row/column addition, and JSON exports. 100% private."
+  keywords="csv viewer, edit csv online, csv grid editor, online spreadsheet editor, inspect csv"
+  toolTitle="CSV Viewer & Grid Editor"
+  toolDescription="Open and modify CSV, TSV, or pipe-delimited spreadsheet files visually. Edit cells directly, manage rows and columns, view column data profiles, and download edited files locally."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <CsvJsonConverter client:load defaultMode="csv-to-json" defaultTab="grid" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Visualizing Tabular Datasets in the Browser
+      </h2>
+      <p class="leading-relaxed mb-4">
+        CSV files are the standard format for database tables and metrics logs. However, reading them as plain text is difficult due to column alignment issues, and loading bulky office suites (like Excel) just to inspect or tweak a few cells is slow and unnecessary.
+      </p>
+      <p class="leading-relaxed">
+        Our **CSV Viewer** renders your files as an interactive spreadsheet. Double-click to edit cell values, add/remove columns, verify schema types, and export clean CSVs or JSON arrays locally.
+      </p>
+    </div>
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="CSV Visual Grid vs Text Editor"
+      headers={["Capability", "Plain Text Editor", "Interactive Grid Viewer"]}
+      rows={[
+        { label: "Column Realignment", values: ["None (requires manual comma alignment tracking)", "Dynamic table grids"] },
+        { label: "Data Quality Audits", values: ["Manual inspections", "Real-time column type confidence profiling"] },
+        { label: "Structural Edits", values: ["Prone to misplaced commas or syntax errors", "Protected buttons to add/remove rows and columns"] },
+        { label: "Excel Compatibility", values: ["Requires manual formatting configuration", "Strict compliance with RFC 4180 guidelines"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Spreadsheet Cell Formatting"
+      description="See how raw CSV lines are rendered in the visual grid:"
+      examples={[
+        { label: "Tabular Ingestion", input: "id,name,active\n101,Jane,true", output: "| id | name | active |\n| 101 | Jane | true |", badge: "Grid View" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="How to Parse and Modify CSV Files"
+      description="Implement programmatic spreadsheet parsing in your codebase:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Spreadsheet Export Errors"
+      description="Avoid these alignment pitfalls when handling CSV datasets:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="CSV Inspection Best Practices"
+      practices={[
+        { title: "Check Column Profilers", description: "Use the built-in type profiles to spot data entries that violate column schema conventions." },
+        { title: "Double-Quote Text Fields", description: "Always double-quote cells that contain formatting spacing or commas to protect data integrity." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

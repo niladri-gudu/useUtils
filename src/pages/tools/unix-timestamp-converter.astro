@@ -1,6 +1,13 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { UnixTimestampConverter as Converter } from '../../components/UnixTimestampConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
 
 const faqs = [
   {
@@ -46,7 +53,173 @@ const faqs = [
   {
     question: "What is a Julian Date and how does it relate to Unix time?",
     answer: "A Julian Date is a continuous count of days since the beginning of the Julian Period (January 1, 4713 BC). While Unix time counts seconds from 1970, Julian Dates count fractional days from a historical astronomical epoch. Julian Dates are primarily used in astronomy to calculate differences between events separated by centuries. Our tool provides real-time translations between Unix epoch and Julian Dates."
+  },
+  {
+    question: "Why does my converted timestamp result in a date in 1970?",
+    answer: "This is a common digits mismatch error. If you pass a millisecond-level timestamp (13 digits) into a system expecting seconds (10 digits), the parser truncates or misinterprets the integer. For example, <code>1718365200000</code> parsed as seconds is interpreted as a date in the far future, while <code>1718365200</code> parsed as milliseconds returns <code>January 20, 1970</code> because it represents only 20 days since the epoch."
+  },
+  {
+    question: "Can Unix timestamps be negative?",
+    answer: "Yes, negative integers represent dates prior to the Unix Epoch. For example, a timestamp of <code>-315360000</code> represents January 1, 1960 (exactly 10 years before the Jan 1, 1970 baseline)."
+  },
+  {
+    question: "How do database systems index Unix timestamps?",
+    answer: "Because timestamps are standard integers, databases index them extremely quickly using standard B-Tree indexing. Integer comparisons are much faster than string comparisons (like standard date strings), which makes query filters like <code>WHERE created_at > 1718365200</code> highly performant."
+  },
+  {
+    question: "What timezone is a Unix timestamp in?",
+    answer: "By definition, Unix timestamps are always in Coordinated Universal Time (UTC). There is no such thing as a timezone-specific Unix timestamp."
+  },
+  {
+    question: "How does GPS time differ from Unix time?",
+    answer: "GPS time counts seconds since its own epoch (January 6, 1980). Unlike Unix time, GPS time is a continuous timescale that is not adjusted for leap seconds. As a result, GPS time is ahead of UTC/Unix time by a number of seconds (currently 18 seconds)."
+  },
+  {
+    question: "How do I format Unix time to ISO 8601 in Go?",
+    answer: "In Go, you can format a timestamp by converting it to a <code>time.Time</code> struct and layout. Use <code>time.Unix(sec, 0).Format(time.RFC3339)</code> to yield a valid ISO 8601 format string."
+  },
+  {
+    question: "Does the Unix Epoch account for leap years?",
+    answer: "Yes. The conversion algorithms that translate seconds to days, months, and years account for leap years (including the leap year rules for centuries) so that the correct calendar representation is always returned."
+  },
+  {
+    question: "How do I write timestamps in SQL Server?",
+    answer: "In SQL Server, the <code>DATETIME2</code> or <code>DATETIMEOFFSET</code> types are preferred for representing dates. You can convert Unix timestamps using <code>DATEADD(s, unix_timestamp, '1970-01-01 00:00:00')</code>."
+  },
+  {
+    question: "What is NTP and why is it important for timestamps?",
+    answer: "The Network Time Protocol (NTP) synchronizes computer system clocks over packet-switched data networks. Without NTP, servers drift over time, which causes them to record slightly different Unix timestamps for the same event, causing logs out of order."
+  },
+  {
+    question: "What is ISO 8601?",
+    answer: "ISO 8601 is an international standard covering the exchange of date- and time-related data. It represents dates in a clear, unambiguous structure (e.g., <code>YYYY-MM-DDTHH:mm:ss.sssZ</code>)."
   }
+];
+
+const headers = ["Resolution Level", "Digits", "Example Value", "Primary Ecosystems", "Storage Size"];
+const rows = [
+  {
+    label: "Seconds (s)",
+    values: ["10 digits", "<code>1718365200</code>", "Unix, Bash, Python, PHP, MySQL", "4 bytes (32-bit) / 8 bytes (64-bit)"]
+  },
+  {
+    label: "Milliseconds (ms)",
+    values: ["13 digits", "<code>1718365200000</code>", "JavaScript (Node.js), Java, MongoDB", "8 bytes"]
+  },
+  {
+    label: "Microseconds (us)",
+    values: ["16 digits", "<code>1718365200000000</code>", "PostgreSQL, Python Datetime micro-ops", "8 bytes"]
+  },
+  {
+    label: "Nanoseconds (ns)",
+    values: ["19 digits", "<code>1718365200000000000</code>", "Go, Rust, Linux Kernel timers", "8 bytes"]
+  }
+];
+
+const practices = [
+  {
+    title: "Always Store Timestamps in 64-Bit Integers",
+    description: "Future-proof your software against the Y2038 bug by declaring date columns as BIGINT (64-bit) in databases and int64 in application schemas."
+  },
+  {
+    title: "Keep the Storage Layer in UTC",
+    description: "Always store timestamps in UTC/Unix time in your database. Apply local timezone translations only in the final UI presentation layer."
+  },
+  {
+    title: "Use ISO 8601 for API Exchange payloads",
+    description: "When passing dates over REST or GraphQL APIs, use ISO 8601 strings (e.g. 2026-06-14T12:00:00Z) to ensure cross-platform compatibility."
+  },
+  {
+    title: "Check Mismatched Digit Counts",
+    description: "Always verify whether an incoming timestamp is in seconds (10 digits) or milliseconds (13 digits) to prevent dates reverting to 1970."
+  }
+];
+
+const mistakes = [
+  {
+    title: "Dividing by 1000 in Floating Point Math",
+    description: "In JavaScript, dividing milliseconds by 1000 without rounding leaves floating points (e.g. 1718365200.123), which can break database column insertion constraints.",
+    fix: "Always use <code>Math.floor()</code> or <code>Math.round()</code> to convert milliseconds to integers."
+  },
+  {
+    title: "Hardcoding Local Timezone Offsets",
+    description: "Hardcoding timezone conversions (e.g. subtracting 5 hours manually for EST) breaks when daylight saving time (DST) shifts occur.",
+    fix: "Leverage standard timezone libraries or native IANA timezone databases (like Intl.DateTimeFormat) to adjust offsets."
+  },
+  {
+    title: "Assuming System Clock Accuracy",
+    description: "Relying on local system clocks for server event ordering without NTP synchronization leads to clock drift and out-of-order databases.",
+    fix: "Configure NTP synchronization on all distributed cloud containers and servers."
+  }
+];
+
+const languages = [
+  {
+    lang: "JavaScript / Node.js",
+    code: `
+// Current seconds epoch
+const sec = Math.floor(Date.now() / 1000);
+console.log('Seconds:', sec);
+
+// Date to Epoch
+const epoch = Math.floor(new Date('2026-06-14T12:00:00Z').getTime() / 1000);
+console.log('Parsed Epoch:', epoch);
+
+// Epoch to Date
+const date = new Date(sec * 1000);
+console.log('Local Date:', date.toString());
+    `,
+    note: "JS Date constructor expects milliseconds, so multiply Unix seconds by 1000."
+  },
+  {
+    lang: "Python 3",
+    code: `
+import time
+from datetime import datetime
+
+# Current seconds epoch
+sec = int(time.time())
+print('Seconds:', sec)
+
+# Date to Epoch
+dt = datetime.fromisoformat('2026-06-14T12:00:00+00:00')
+epoch = int(dt.timestamp())
+print('Parsed Epoch:', epoch)
+
+# Epoch to Date
+local_date = datetime.fromtimestamp(sec)
+print('Date object:', local_date)
+    `,
+    note: "Python's time.time() returns a float representing seconds. Cast to int for standard epochs."
+  },
+  {
+    lang: "Go",
+    code: `
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	// Current seconds epoch
+	sec := time.Now().Unix()
+	fmt.Println("Seconds:", sec)
+
+	// Epoch to Date
+	date := time.Unix(sec, 0)
+	fmt.Println("Date:", date.Format(time.RFC3339))
+}
+    `,
+    note: "Go provides high-precision timers, supporting Unix (seconds) and UnixNano (nanoseconds)."
+  }
+];
+
+const references = [
+  { title: "POSIX.1-2008 General Concepts: Seconds Since the Epoch", url: "https://pubs.opengroup.org/onlinepubs/9699919799/xbd/chap04.html#tag_04_15" },
+  { title: "The Year 2038 Bug Information Center", url: "https://www.unix2038.com/" },
+  { title: "MDN Web Docs: Intl.DateTimeFormat Timezone Parsing", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat" }
 ];
 ---
 
@@ -60,97 +233,39 @@ const faqs = [
 >
   <Converter client:load />
 
-  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
-  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
-    
-    {/* Section 1: Intro */}
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        How to Convert Unix Epoch Timestamps to Dates
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Our Unix Timestamp Converter provides a local developer dashboard to translate epoch numeric codes into formatted human dates. In the left panel, you can type or paste a timestamp in <strong class="text-zinc-200">seconds, milliseconds, microseconds, or nanoseconds</strong>. If the ticking clock is running, you can click "Freeze" to capture the current timestamp or input a value manually.
-      </p>
-      <p class="leading-relaxed">
-        The tool instantly updates standard formats on the right—including your system's <strong class="text-zinc-200">Local Time</strong>, <strong class="text-zinc-200">GMT/UTC</strong>, and <strong class="text-zinc-200">ISO 8601 strings</strong>. You can customize the timezone drop-down to preview how standard times display across international regions without manual offset addition.
-      </p>
-    </div>
+  <div slot="seo-content" class="flex flex-col gap-12 mt-10 max-w-4xl mx-auto w-full">
+    <PrivacyBadge />
 
-    {/* Section 2: Units Breakdown */}
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Epoch Timestamp Subdivisions
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Depending on the platform or database layer, epoch integers represent different resolutions of time:
-      </p>
-      
-      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
-              <th class="p-3">Unit</th>
-              <th class="p-3">Digits</th>
-              <th class="p-3">Example Representation</th>
-              <th class="p-3">Standard Environments</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
-            <tr>
-              <td class="p-3 text-zinc-200">Seconds (s)</td>
-              <td class="p-3">10</td>
-              <td class="p-3"><code>1718365200</code></td>
-              <td class="p-3 text-zinc-350">Unix Shell, PHP, Python <code>time.time()</code>, MySQL</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">Milliseconds (ms)</td>
-              <td class="p-3">13</td>
-              <td class="p-3"><code>1718365200000</code></td>
-              <td class="p-3 text-zinc-350">JavaScript <code>Date.now()</code>, Java, Web APIs, MongoDB</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">Microseconds (us)</td>
-              <td class="p-3">16</td>
-              <td class="p-3"><code>1718365200000000</code></td>
-              <td class="p-3 text-zinc-350">C++, Python <code>datetime</code> micro-ops, PostgreSQL timestamps</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">Nanoseconds (ns)</td>
-              <td class="p-3">19</td>
-              <td class="p-3"><code>1718365200000000000</code></td>
-              <td class="p-3 text-zinc-350">Go <code>time.Now().UnixNano()</code>, Rust system timers, Linux kernels</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <ComparisonTable 
+      headers={headers} 
+      rows={rows} 
+      title="Epoch Metric Resolutions" 
+      description="Compare representation lengths, ecosystems, and memory profiles across timestamp subdivisions:"
+    />
 
-    {/* Section 3: Year 2038 Bug */}
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Understanding the Year 2038 Overflow Threat
-      </h2>
-      <p class="leading-relaxed mb-4">
-        As the digital infrastructure matures, the Year 2038 problem (often abbreviated as Y2K38) presents a significant concern for database integrity. Any application using 32-bit signed integers (which cap at <code>2,147,483,647</code>) to store seconds will fail on January 19, 2038, when the timestamp overflows. 
-      </p>
-      <p class="leading-relaxed">
-        Our built-in <strong class="text-zinc-200">Threat Level Indicator</strong> monitors the inputs in real-time. If the date exceeds the 32-bit limit, the system alerts you and explains the implications. To prepare your codebase, audit schemas to ensure timestamps are defined as 64-bit integers (e.g. <code>BIGINT</code> in SQL or <code>int64</code> in Go), which can record dates safely for over 292 billion years.
-      </p>
-    </div>
+    <BestPractices 
+      practices={practices} 
+      title="Epoch & Timestamp Best Practices" 
+      description="Implement these guidelines to ensure index efficiency and bug-free date conversions in your schemas:"
+    />
 
-    {/* Section 4: Log Scanner utility */}
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Extracting Batch Timestamps from Server Logs
-      </h2>
-      <p class="leading-relaxed">
-        When debugging production logs or API crash reports, timestamps are often scattered across text files as raw digits (e.g., <code>1718365200</code>). Copy-pasting each number into a converter is tedious. The useUtils <strong class="text-zinc-200">Log Timestamp Scanner</strong> lets you paste raw server prints directly. The engine parses the content, highlights all extracted numerical matches, compiles them in a table, and allows you to copy individual dates or timestamps with a single click.
-      </p>
-    </div>
+    <CommonMistakes 
+      mistakes={mistakes} 
+      title="Common Timestamp Pitfalls" 
+      description="Avoid these common errors when writing temporal calculations and API database seed migrations:"
+    />
 
+    <LanguageSupport 
+      languages={languages} 
+      title="Programmatic Epoch Conversion" 
+      description="Translate timestamps and convert epochs programmatically inside your local application stacks:"
+    />
+
+    <OfficialReferences 
+      references={references} 
+      title="Time Standards & Documentation" 
+    />
+
+    <RelatedTools />
   </div>
 </ToolPageLayout>

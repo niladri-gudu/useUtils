@@ -55,12 +55,22 @@ const copyToClipboard = (text: string): boolean => {
 };
 
 
-export const TailwindPicker: React.FC = () => {
+interface TailwindPickerProps {
+  defaultColorSearch?: string;
+}
+
+export const TailwindPicker: React.FC<TailwindPickerProps> = ({ defaultColorSearch }) => {
   // Main Selection State
   const [activeFamily, setActiveFamily] = useState<string>('slate');
   const [activeShadeIndex, setActiveShadeIndex] = useState<number>(5); // Index of shade 500
   const [opacity, setOpacity] = useState<number>(100);
   const [prefix, setPrefix] = useState<'bg' | 'text' | 'border' | 'decoration' | 'from' | 'to' | 'via'>('bg');
+
+  useEffect(() => {
+    if (defaultColorSearch) {
+      handleCustomInputChange(defaultColorSearch);
+    }
+  }, [defaultColorSearch]);
 
   // Reverse Matcher State
   const [customInput, setCustomInput] = useState<string>('');

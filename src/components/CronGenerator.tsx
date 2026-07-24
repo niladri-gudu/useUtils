@@ -81,9 +81,17 @@ const initialTabState = (min: number): TabState => ({
   rangeEnd: min
 });
 
-export const CronGenerator: React.FC = () => {
-  const [cronExpression, setCronExpression] = useState<string>('*/15 9-17 * * 1-5');
-  const [activeTab, setActiveTab] = useState<'presets' | 'minutes' | 'hours' | 'dom' | 'months' | 'dow'>('presets');
+export interface CronGeneratorProps {
+  defaultCronExpression?: string;
+  defaultActiveTab?: 'presets' | 'minutes' | 'hours' | 'dom' | 'months' | 'dow';
+}
+
+export const CronGenerator: React.FC<CronGeneratorProps> = ({
+  defaultCronExpression = '*/15 9-17 * * 1-5',
+  defaultActiveTab = 'presets'
+}) => {
+  const [cronExpression, setCronExpression] = useState<string>(defaultCronExpression);
+  const [activeTab, setActiveTab] = useState<'presets' | 'minutes' | 'hours' | 'dom' | 'months' | 'dow'>(defaultActiveTab);
   const [isUpdatingFromBuilder, setIsUpdatingFromBuilder] = useState<boolean>(false);
   const [copyFeedback, setCopyFeedback] = useState<boolean>(false);
   const [copyDescFeedback, setCopyDescFeedback] = useState<boolean>(false);
@@ -212,8 +220,8 @@ export const CronGenerator: React.FC = () => {
 
   // Load sample on start
   useEffect(() => {
-    syncBuilderFromExpression('*/15 9-17 * * 1-5');
-  }, []);
+    syncBuilderFromExpression(defaultCronExpression);
+  }, [defaultCronExpression]);
 
   // UI helpers for rendering lists
   const toggleSpecificValue = (

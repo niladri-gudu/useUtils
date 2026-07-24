@@ -62,10 +62,16 @@ const SAMPLE_JSON = `{
   "createdAt": "2026-06-13T08:11:41.000Z"
 }`;
 
-export const JsonToTsConverter: React.FC = () => {
+interface JsonToTsConverterProps {
+  defaultOutputFormat?: 'interfaces' | 'types' | 'zod';
+}
+
+export const JsonToTsConverter: React.FC<JsonToTsConverterProps> = ({
+  defaultOutputFormat = 'interfaces'
+}) => {
   const [jsonInput, setJsonInput] = useState<string>('');
   const [rootName, setRootName] = useState<string>('RootObject');
-  const [outputFormat, setOutputFormat] = useState<'interfaces' | 'types' | 'zod'>('interfaces');
+  const [outputFormat, setOutputFormat] = useState<'interfaces' | 'types' | 'zod'>(defaultOutputFormat);
   const [dateTimeDetection, setDateTimeDetection] = useState<boolean>(true);
   const [optionalProperties, setOptionalProperties] = useState<boolean>(false);
   const [readonlyProperties, setReadonlyProperties] = useState<boolean>(false);

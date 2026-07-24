@@ -1,0 +1,211 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { JsonFormatter } from '../../components/JsonFormatter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'JSON Formatter', href: '/tools/json-formatter' },
+  { label: 'JSON Validator', href: '/tools/json-validator' },
+  { label: 'JSON Minifier', href: '/tools/json-minifier' },
+  { label: 'JSON Viewer', href: '/tools/json-viewer', active: true }
+];
+
+const faqs = [
+  {
+    question: "What is a JSON viewer?",
+    answer: "A JSON viewer is a visual utility that parses a raw JSON string and presents it as an interactive, collapsible tree structure. This makes it easy for developers to explore nested objects, expand or collapse specific keys, and analyze complex structures."
+  },
+  {
+    question: "How do I inspect deep nested properties in JSON?",
+    answer: "Paste your payload into the viewer. Expand the nodes sequentially using the arrow triggers, or use the query filter at the top to isolate the exact keypaths you need to examine."
+  },
+  {
+    question: "Does the JSON viewer validate JSON syntax in real-time?",
+    answer: "Yes. If your JSON input has errors (missing comma, bad quoting, etc.), the parser will flag the issue immediately and indicate the exact line number so you can fix it before inspecting."
+  },
+  {
+    question: "Is it safe to view sensitive JSON files online?",
+    answer: "Yes, when using useUtils. The tool runs 100% locally in your web browser. No data, tokens, API responses, or JSON configurations are ever sent to a server."
+  },
+  {
+    question: "How does the 'Copy Path' feature work in the tree view?",
+    answer: "Hover over any node in the visual tree and click the 'Copy Path' button. This copies the exact JavaScript dot notation or array index path (e.g. <code>data.users[0].email</code>) to your clipboard."
+  },
+  {
+    question: "Can I filter JSON properties using standard queries?",
+    answer: "Yes. Use the query search bar at the top of the output panel. Type JavaScript dot expressions to filter out matching nodes (e.g. <code>users.map(u => u.username)</code>)."
+  },
+  {
+    question: "Why should I use a visual tree viewer instead of raw text?",
+    answer: "For huge API payloads (1000+ lines), reading raw text is overwhelming. A collapsible tree allows you to collapse large array lists and focus on specific structural layers instantly."
+  },
+  {
+    question: "Can I convert JSON to YAML or XML from this viewer?",
+    answer: "Yes. Use the utility operation buttons to translate your verified JSON dataset into YAML, XML, or CSV structures with a single click."
+  },
+  {
+    question: "How do I inspect a JSON array?",
+    answer: "Arrays are indicated with bracket symbols (<code>[]</code>) and display their size (e.g., <code>[10 items]</code>). Clicking the node expands it into numbered indices containing elements."
+  },
+  {
+    question: "Does the viewer support searching values inside the tree?",
+    answer: "Yes, typing in the filter query evaluates matching properties and highlights keys or string elements that contain the search term."
+  },
+  {
+    question: "Is there a limit to the size of JSON I can view?",
+    answer: "The viewer easily handles files up to 20MB. Very large payloads (e.g. 100MB+) may slow down DOM rendering in some browser tabs."
+  },
+  {
+    question: "Does the JSON viewer preserve data types?",
+    answer: "Yes. String values are wrapped in quotes, numbers are colored blue, booleans are purple, and nulls are red to represent their exact semantic types."
+  },
+  {
+    question: "What is an abstract syntax tree (AST)?",
+    answer: "An AST is a hierarchical tree representation of structural code. The browser parses the raw JSON characters into a JavaScript AST object, which we then traverse to construct the interactive DOM tree."
+  },
+  {
+    question: "How do I format minified JSON inside the viewer?",
+    answer: "Pasting a minified string will automatically format it in real-time. Swapping between 'Text View' and 'Tree View' tabs toggles between formatted code and the visual tree."
+  },
+  {
+    question: "Can I drag and drop local files into the viewer?",
+    answer: "Yes. Drag and drop any <code>.json</code> or text file into the input text area to load it instantly."
+  },
+  {
+    question: "Why are some keys marked with an @ sign?",
+    answer: "If you converted XML to JSON, tag attributes are prefixed with <code>@</code> by default to distinguish them from standard child nodes."
+  },
+  {
+    question: "Is it possible to edit JSON values directly inside the tree?",
+    answer: "This is a read-only inspector. To edit values, edit the raw text in the left pane; changes are reflected in the visual tree instantly."
+  },
+  {
+    question: "Does this tool support JSON schema checking?",
+    answer: "Yes, we have a dedicated JSON Schema Validator page linked under related tools to validate payloads against formal specifications."
+  },
+  {
+    question: "Why are my JSON keys sorted alphabetically?",
+    answer: "You can toggle the 'Sort keys alphabetically' option on the configuration panel if you want to align object attributes alphabetically."
+  },
+  {
+    question: "Is there a keyboard shortcut to format and view?",
+    answer: "You can press standard clipboard triggers to paste data, and the view updates automatically without requiring clicks."
+  }
+];
+
+const references = [
+  { title: "RFC 8259 - The JavaScript Object Notation (JSON) Data Format", url: "https://datatracker.ietf.org/doc/html/rfc8259", source: "IETF Standards" },
+  { title: "Mozilla Developer Network - Working with JSON", url: "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON", source: "MDN Web Docs" }
+];
+
+const languageCodes = [
+  {
+    lang: "HTML/JS",
+    code: `<!-- Simple client-side rendering container -->
+<pre id="json-renderer"></pre>
+
+<script>
+const data = { name: "Alex", skills: ["JS", "CSS"] };
+
+// Render formatted JSON using HTML pre tag
+document.getElementById('json-renderer').textContent = JSON.stringify(data, null, 2);
+</script>`,
+    note: "Basic HTML preformatting preserves spacing and indentations."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Losing Context in Large JSON Arrays",
+    description: "Browsing huge list structures as text causes scroll fatigue and context loss.",
+    fix: "Use the collapsible <code>Tree View</code> to hide array blocks and focus on individual records."
+  },
+  {
+    title: "Pasting Non-JSON structures",
+    description: "Pasting raw JavaScript object literals containing unquoted keys will crash the standard JSON viewer parser.",
+    fix: "Ensure all object keys are wrapped in double quotes before viewing."
+  }
+];
+---
+
+<ToolPageLayout
+  title="JSON Viewer Online: Inspect Collapsible JSON Trees"
+  description="Inspect and visualize JSON structures online. Features interactive collapsible tree nodes, keypath copying, and query filtering. 100% private."
+  keywords="json viewer, json tree inspector, visualize json online, collapsible json tree, inspect json"
+  toolTitle="JSON Viewer & Tree Inspector"
+  toolDescription="Visualize your JSON documents instantly. Explore nested structures using our interactive collapsible tree, search properties, copy keypaths, and filter payloads locally."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <JsonFormatter client:load defaultMode="format" defaultViewMode="tree" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Exploring JSON Structures Natively
+      </h2>
+      <p class="leading-relaxed mb-4">
+        As APIs return increasingly complex configurations, reading and understanding huge string outputs becomes a massive bottleneck. Finding a single value deep inside a nested structure is tedious and error-prone.
+      </p>
+      <p class="leading-relaxed">
+        Our **JSON Viewer** maps the parsed Abstract Syntax Tree directly into interactive DOM elements. You can drill down into objects, collapse list scopes, filter specific attributes, and copy keypaths instantly to accelerate your development workflow.
+      </p>
+    </div>
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Text View vs Tree View"
+      headers={["Feature Metric", "Text View Editor", "Interactive Tree View"]}
+      rows={[
+        { label: "Collapsible Scope", values: ["No (displays full text height)", "Yes (expand/collapse individual nodes)"] },
+        { label: "Data Type Color Coding", values: ["Plain text or basic tags", "Differentiates strings, numbers, booleans, and nulls"] },
+        { label: "Keypath Copy Action", values: ["Requires manual tracing", "One-click 'Copy Path' hover badge"] },
+        { label: "Search Relevance", values: ["Literal text match highlight", "Isolates and filters matching objects"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Tree Inspector Demonstrations"
+      description="See how nested object layers are structured visually:"
+      examples={[
+        { label: "Nested Object Payload", input: '{"user": {"profile": {"name": "Bob"}}}', output: '▼ "user": {\n  ▼ "profile": {\n    "name": "Bob"\n  }\n}', badge: "Tree Model" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Building Client-Side JSON Views"
+      description="Render formatted object payloads inside your front-end interfaces:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Data Inspection Mistakes"
+      description="Ditch outdated inspection methods to speed up key locating:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Visual Tree Inspection Best Practices"
+      practices={[
+        { title: "Use Path Copying", description: "Use the path-copier to fetch exact syntax references for your TypeScript config models." },
+        { title: "Leverage Filter Queries", description: "Filter out large lists using standard JS dot pathways directly inside the view query bar." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

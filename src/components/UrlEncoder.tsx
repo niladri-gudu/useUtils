@@ -47,9 +47,15 @@ const SAMPLE_TEXT = 'https://api.useutils.com/v1/search?q=developer tools&limit=
 const SAMPLE_RAW = 'name=John Doe&email=john.doe@example.com&skills=React,TypeScript,Astro&status=active!';
 
 
-export const UrlEncoder: React.FC = () => {
+interface UrlEncoderProps {
+  defaultMode?: 'standard' | 'fullUri' | 'rfc3986' | 'formUrl' | 'strictHex';
+}
+
+export const UrlEncoder: React.FC<UrlEncoderProps> = ({
+  defaultMode = 'standard'
+}) => {
   const [input, setInput] = useState<string>('');
-  const [mode, setMode] = useState<'standard' | 'fullUri' | 'rfc3986' | 'formUrl' | 'strictHex'>('standard');
+  const [mode, setMode] = useState<'standard' | 'fullUri' | 'rfc3986' | 'formUrl' | 'strictHex'>(defaultMode);
   const [lineByLine, setLineByLine] = useState<boolean>(false);
   const [trimWhitespace, setTrimWhitespace] = useState<boolean>(false);
   const [showDiff, setShowDiff] = useState<boolean>(false);

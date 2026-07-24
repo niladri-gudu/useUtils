@@ -1,0 +1,195 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { DateCalculator } from '../../components/DateCalculator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "What is a timesheet accumulator?",
+    answer: "A timesheet accumulator is a utility that sums multiple work shifts or time durations into a total hours-and-minutes value, automatically calculating earnings based on an hourly wage rate."
+  },
+  {
+    question: "How do I enter shifts into the accumulator?",
+    answer: "You can input shifts in two ways: select 'Clock Range' to input start and end times (e.g. <code>09:00</code> to <code>17:00</code>), or select 'Raw Hours' to enter duration strings (e.g. <code>3.5h</code> or <code>1h 15m</code>)."
+  },
+  {
+    question: "Does the accumulator support overnight shifts?",
+    answer: "Yes. If the end time is chronologically earlier than the start time (e.g. a night shift from <code>22:00</code> to <code>06:00</code>), the engine assumes the shift crosses midnight and calculates 8 hours of duration."
+  },
+  {
+    question: "Are my timesheet entries secure?",
+    answer: "Yes, 100%. All computations and inputs run locally in your browser sandbox. No dates, task notes, or wage rates are uploaded to any external server."
+  },
+  {
+    question: "How is the total earnings amount calculated?",
+    answer: "The total minutes of all active shifts are summed, divided by 60 to derive fractional hours, and then multiplied by your custom hourly rate."
+  },
+  {
+    question: "What formats of duration strings are recognized?",
+    answer: "The parser reads standard colon formats (<code>1:30</code>), hours only (<code>3.5h</code>), minutes only (<code>45m</code>), and mixed segments (<code>2h 15m</code>)."
+  },
+  {
+    question: "Can I copy the accumulated timesheet details?",
+    answer: "Yes, you can copy the summarized text layout of all shifts, total hours, and earnings using copy buttons or keyboard shortcuts."
+  },
+  {
+    question: "Is this timesheet builder free?",
+    answer: "Yes, useUtils provides all developer tools free with no subscription gates or account registrations."
+  },
+  {
+    question: "How do I delete a shift item?",
+    answer: "Click the '✕' delete button on the right side of any shift card to remove it from the total accumulation."
+  },
+  {
+    question: "Can I run this timesheet builder offline?",
+    answer: "Yes, all calculation logic is processed client-side, allowing complete offline execution."
+  },
+  {
+    question: "What timezone is used for timesheet calculations?",
+    answer: "The calculations rely on local browser time boundaries for daily shift segments."
+  },
+  {
+    question: "How do I calculate timesheet duration in JavaScript?",
+    answer: "In JS, parse start and end times into Date objects, subtract them to get milliseconds, and divide by <code>1000 * 60 * 60</code> for hours."
+  },
+  {
+    question: "How do I calculate timesheet duration in Python?",
+    answer: "In Python, subtract <code>datetime.time</code> values by casting them to datetimes and calculating the <code>timedelta</code>."
+  },
+  {
+    question: "What happens to the decimal points of hours in billing?",
+    answer: "Decimal values are kept fractional (e.g. 1 hour and 15 minutes is 1.25 hours) to ensure billing calculations remain accurate."
+  },
+  {
+    question: "How do I clear the entire timesheet list?",
+    answer: "Click the 'Clear List' button at the top of the inputs panel to clear all shift cards."
+  },
+  {
+    question: "Does this tool support keyboard copy shortcuts?",
+    answer: "Yes. Pressing <code>Command+C</code> (Mac) or <code>Control+C</code> (Windows) copies a formatted text summary of your timesheet."
+  },
+  {
+    question: "Can I log task descriptions for each shift?",
+    answer: "Yes, each shift card includes a 'Note / Task' text field where you can describe the work performed."
+  },
+  {
+    question: "Why should I use local timesheet software?",
+    answer: "Local client-side software ensures that your internal corporate task descriptions and billing rates are not leaked to external servers."
+  },
+  {
+    question: "What is standard work week duration?",
+    answer: "A standard full-time work week is typically 40 hours, representing five 8-hour days."
+  },
+  {
+    question: "What is overtime billing?",
+    answer: "Overtime billing commonly scales hourly wage rates by 1.5x for hours worked beyond the standard 40-hour limit."
+  },
+  {
+    question: "Can I print my timesheet summary?",
+    answer: "Yes. The copied timesheet text summary can be pasted directly into invoicing software or printed."
+  }
+];
+
+const headers = ["Input Type", "Time Format Examples", "Calculation Outcome"];
+const rows = [
+  {
+    label: "Clock Range",
+    values: ["<code>09:00 - 17:00</code>", "Automatically computes elapsed time (handles overnight shifts)"]
+  },
+  {
+    label: "Raw Hours",
+    values: ["<code>2.5h</code>, <code>45m</code>, <code>1h 15m</code>", "Parses and adds durations directly to total time"]
+  }
+];
+
+const practices = [
+  {
+    title: "Double-check Overnight Ranges",
+    description: "Ensure that overnight shifts are entered with the start hour larger than the end hour to trigger the overnight calculation."
+  },
+  {
+    title: "Document Task Notes",
+    description: "Write notes for each shift card to create clear, audit-ready summaries for your clients."
+  }
+];
+
+const mistakes = [
+  {
+    title: "Entering times with AM/PM text in numeric inputs",
+    description: "Inputting text like '9 AM' into 24-hour time selectors can break standard browser inputs.",
+    fix: "Use standard 24-hour formats (e.g. <code>09:00</code> or <code>21:00</code>)."
+  }
+];
+
+const languages = [
+  {
+    lang: "JavaScript",
+    code: `
+function parseTimeToMinutes(timeStr) {
+  const [hrs, mins] = timeStr.split(':').map(Number);
+  return hrs * 60 + mins;
+}
+
+function getShiftDuration(start, end) {
+  let diff = parseTimeToMinutes(end) - parseTimeToMinutes(start);
+  if (diff < 0) diff += 24 * 60; // Overnight shift
+  return diff / 60; // hours
+}
+console.log(getShiftDuration('22:00', '06:00')); // 8 hours
+    `
+  }
+];
+
+const references = [
+  { title: "W3C Time Formats Specification", url: "https://www.w3.org/TR/NOTE-datetime" }
+];
+---
+
+<ToolPageLayout
+  title="Timesheet Accumulator: Sum Work Hours & Calculate Earnings"
+  description="Add up multiple work shifts, clock ranges, and raw hours. Built-in billing calculator to estimate freelance earnings locally."
+  keywords="timesheet accumulator, sum work hours, calculate earnings, hours adder, timesheet builder, freelance billing calculator"
+  toolTitle="Timesheet Hours Accumulator"
+  toolDescription="Add shift time ranges or raw hours, track task descriptions, and calculate project earnings locally in your browser sandbox."
+  faqs={faqs}
+>
+  <DateCalculator client:load defaultActiveSubTab="accumulator" />
+
+  <div slot="seo-content" class="flex flex-col gap-12 mt-10 max-w-4xl mx-auto w-full">
+    <PrivacyBadge />
+
+    <ComparisonTable 
+      headers={headers} 
+      rows={rows} 
+      title="Timesheet Input Methods" 
+      description="Compare shift ingestion options:"
+    />
+
+    <BestPractices 
+      practices={practices} 
+      title="Timesheet Management Best Practices" 
+    />
+
+    <CommonMistakes 
+      mistakes={mistakes} 
+      title="Common Timesheet Pitfalls" 
+    />
+
+    <LanguageSupport 
+      languages={languages} 
+      title="Programmatic Shift Calculations" 
+    />
+
+    <OfficialReferences 
+      references={references} 
+    />
+
+    <RelatedTools />
+  </div>
+</ToolPageLayout>

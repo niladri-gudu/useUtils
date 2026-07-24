@@ -1,6 +1,18 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { CsvJsonConverter } from '../../components/CsvJsonConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'CSV to JSON', href: '/tools/csv-to-json', active: true },
+  { label: 'JSON to CSV', href: '/tools/json-to-csv' },
+  { label: 'CSV Viewer', href: '/tools/csv-viewer' }
+];
 
 const faqs = [
   {
@@ -45,7 +57,91 @@ const faqs = [
   },
   {
     question: "How do I parse a standard CSV string manually in JavaScript?",
-    answer: "A basic comma-split is error-prone because it breaks on commas inside quotes. To parse robust CSV manually, use a regex or a scanner. Here is a simple split line helper: <br /><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto whitespace-pre\">function splitCsvLine(line, delimiter = ',') {\n  const regex = new RegExp(`(\\\"[^\\\"]*\\\"|[^${delimiter}]+)`, 'g');\n  return line.match(regex).map(cell => cell.replace(/^\"|\"$/g, ''));\n}</code>"
+    answer: "A basic comma-split is error-prone because it breaks on commas inside quotes. To parse robust CSV manually, use a regex or a scanner. Here is a simple split line helper: <br /><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto whitespace-pre\">function splitCsvLine(line, delimiter = ',') {\n  const regex = new RegExp(\`(\\\\\"[^\\\\\\\"]*\\\\\"|[^\\\${delimiter}]+)\`, 'g');\n  return line.match(regex).map(cell => cell.replace(/^\"|\"$/g, ''));\n}</code>"
+  },
+  {
+    question: "What is the default delimiter in CSV files?",
+    answer: "The default delimiter is a comma (<code>,</code>). However, in regions where the comma is used as a decimal separator (like Germany or France), the semicolon (<code>;</code>) is widely used."
+  },
+  {
+    question: "How do I convert CSV to JSON in Python?",
+    answer: "You can use Python's built-in <code>csv</code> and <code>json</code> modules, or use <code>pandas.read_csv()</code> for a fast one-line conversion."
+  },
+  {
+    question: "Can I edit CSV cells visually inside this tool?",
+    answer: "Yes, you can swap to the 'CSV Viewer' page or use the visual 'Grid Editor' tab to edit cell contents, add columns, and manage rows like in a spreadsheet."
+  },
+  {
+    question: "How does the tool handle missing headers?",
+    answer: "If the first row does not contain headers, uncheck the 'First row contains headers' option. The engine will generate placeholder headers (e.g. <code>Column 1</code>) and treat all rows as data objects."
+  },
+  {
+    question: "What does the 'Detect cell values types' setting do?",
+    answer: "When active, the parser casts string representations of numbers and booleans (e.g. <code>\"12.5\"</code> or <code>\"true\"</code>) to true numeric and boolean primitives in JSON."
+  },
+  {
+    question: "Can I convert TSV (Tab-Separated Values) files?",
+    answer: "Yes, select 'Tab' as the delimiter in the options panel, and the engine will parse the file using tab characters as delimiters."
+  },
+  {
+    question: "Why does my converted JSON contain unmapped fields?",
+    answer: "Ensure your CSV header count matches the column counts of your data rows. Spurious delimiters at the end of rows can create empty values."
+  },
+  {
+    question: "Is there a command-line tool to convert CSV to JSON?",
+    answer: "Yes, Node libraries like <code>csvtojson</code> can be installed globally and run directly inside your terminal."
+  },
+  {
+    question: "Does the CSV parser support UTF-8 encoding?",
+    answer: "Yes, the browser processes all text as UTF-8, preserving foreign letters, mathematical symbols, and emojis."
+  }
+];
+
+const references = [
+  { title: "RFC 4180 - Common Format and MIME Type for CSV Files", url: "https://datatracker.ietf.org/doc/html/rfc4180", source: "IETF Standards" },
+  { title: "Papa Parse - The Powerful In-Browser CSV Parser", url: "https://www.papaparse.com/", source: "PapaParse Docs" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript (Node)",
+    code: `const csv = require("csvtojson");
+
+const csvData = "id,name\\n1,Niladri\\n2,Gudu";
+
+csv()
+  .fromString(csvData)
+  .then((jsonObj) => {
+    console.log(jsonObj);
+    // [ { id: '1', name: 'Niladri' }, { id: '2', name: 'Gudu' } ]
+  });`,
+    note: "Parses standard CSV strings asynchronously into JSON arrays."
+  },
+  {
+    lang: "Python",
+    code: `import csv
+import json
+
+csv_data = "id,name\\n1,Niladri\\n2,Gudu"
+
+# Split data into lines and parse with DictReader
+reader = csv.DictReader(csv_data.splitlines())
+json_data = json.dumps([row for row in reader], indent=2)
+print(json_data)`,
+    note: "DictReader maps the first line as dictionary keys automatically."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Unescaped Delimiters in Text Fields",
+    description: "Including commas inside text fields without wrapping the entire cell in double quotes splits the cell into multiple columns.",
+    fix: "Ensure all strings containing commas or delimiters are wrapped in double quotes: <code>\"London, UK\"</code>."
+  },
+  {
+    title: "Mismatched Header and Row Lengths",
+    description: "Data lines containing more or fewer delimiters than the header row will cause object properties to become unaligned.",
+    fix: "Check your CSV records to ensure every row has the same number of delimited columns."
   }
 ];
 ---
@@ -60,9 +156,7 @@ const faqs = [
 >
   <CsvJsonConverter client:load />
 
-  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
-    
     <!-- Section: How to use -->
     <div>
       <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
@@ -94,36 +188,52 @@ const faqs = [
       </p>
     </div>
 
-    <!-- Section: JSON Structures Compared -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Choosing the Right JSON Structure
-      </h2>
-      <p class="leading-relaxed mb-4">
-        When transforming CSV arrays, you can output three distinct formats depending on your downstream technology needs:
-      </p>
-      
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <div class="bg-zinc-900/40 border border-border-hairline p-4 rounded-lg flex flex-col gap-2">
-          <h3 class="text-zinc-200 font-semibold text-xs font-mono">1. Array of Objects</h3>
-          <p class="text-[11px] leading-relaxed">
-            Maps every row into a dictionary keypath. Keys are headers. Best for web APIs, document databases, and REST ingestion.
-          </p>
-        </div>
-        <div class="bg-zinc-900/40 border border-border-hairline p-4 rounded-lg flex flex-col gap-2">
-          <h3 class="text-zinc-200 font-semibold text-xs font-mono">2. 2D Array</h3>
-          <p class="text-[11px] leading-relaxed">
-            Splits rows into sub-arrays of pure cell values. This removes duplicate header keys, resulting in smaller payload sizes.
-          </p>
-        </div>
-        <div class="bg-zinc-900/40 border border-border-hairline p-4 rounded-lg flex flex-col gap-2">
-          <h3 class="text-zinc-200 font-semibold text-xs font-mono">3. Keyed Columns</h3>
-          <p class="text-[11px] leading-relaxed">
-            Transposes the grid into vertical lists mapped under column labels. Perfect for graphing utilities and Python pandas datasets.
-          </p>
-        </div>
-      </div>
-    </div>
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="JSON Output Layout Options"
+      headers={["Output Layout Mode", "JSON Schema Structure", "Size footprint", "Primary Use Case"]}
+      rows={[
+        { label: "Array of Objects", values: ["List of key-value maps (headers as keys)", "Verbose (repeats header strings on each row)", "Standard REST APIs, document databases Ingestion"] },
+        { label: "2D Array", values: ["Nested lists of cell values (no header keys)", "Extremely compact (removes text keys)", "Mathematical processing, data analysis grids"] },
+        { label: "Keyed Columns", values: ["Object with header keys pointing to value lists", "Compact", "Python pandas imports, charting data-frames"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="CSV to JSON Translations"
+      description="Compare input CSV with matching object structures:"
+      examples={[
+        { label: "Standard Row Ingestion", input: 'id,role\n1,editor', output: '[\n  {\n    "id": 1,\n    "role": "editor"\n  }\n]', badge: "Objects Array" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="How to Parse CSV Programmatically"
+      description="Implement programmatic spreadsheet parsing inside your application layers:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Tabular Formatting Pitfalls"
+      description="Avoid these data alignment errors during format conversion:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Tabular Data Best Practices"
+      practices={[
+        { title: "Standardize Delimiters", description: "Use commas as the default, but switch to semicolons or tabs if your text fields naturally contain commas." },
+        { title: "Validate Delimiter Matches", description: "Verify that all records contain the same column count to prevent value offsets in your JSON arrays." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
   </div>
 </ToolPageLayout>

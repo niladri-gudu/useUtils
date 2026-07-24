@@ -1,6 +1,12 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
-import { RegexTester } from '../../components/RegexTester';
+import { RegexTester as RegexTesterComponent } from '../../components/RegexTester';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
 
 const faqs = [
   {
@@ -40,8 +46,91 @@ const faqs = [
     answer: "Regex meta-characters that have special syntactical meaning (such as <code>[ ] ( ) { } * + ? . \\ ^ $ |</code>) must be prefixed with a backslash <code>\\</code> to be matched literally. For example, to match a literal period, use <code>\\.</code>."
   },
   {
-    question: "What are non-capturing groups in regex and when should I use them?",
+    question: "What are non-capturing groups in regex?",
     answer: "Non-capturing groups are defined using <code>(?:...)</code>. They allow you to group characters or sub-patterns for alternation or quantifiers without storing the matched substring. This avoids creating unnecessary capture groups, makes references cleaner, and slightly optimizes parsing performance."
+  },
+  {
+    question: "What are regular expression character classes?",
+    answer: "Character classes allow you to match a specific set of characters (e.g. <code>[a-zA-Z]</code> for alphabetic characters or <code>[^0-9]</code> to match non-digits)."
+  },
+  {
+    question: "What does RegExp.prototype.test() return in JavaScript?",
+    answer: "The <code>test()</code> method executes a search match and returns a boolean value (<code>true</code> or <code>false</code>) indicating whether the pattern matches the string."
+  },
+  {
+    question: "How does RegExp.prototype.exec() differ from String.prototype.match()?",
+    answer: "<code>exec()</code> returns detailed match objects (including index and capture groups) one match at a time, keeping track of <code>lastIndex</code> when the global flag is set. <code>match()</code> returns an array of all matching strings at once."
+  },
+  {
+    question: "What is regex Catastrophic Backtracking?",
+    answer: "Catastrophic backtracking occurs when a complex pattern contains nested optional quantifiers (like <code>(a+)+</code>). When matching a failing string, the regex engine calculates billions of combinations, causing CPU freeze (Regular Expression Denial of Service, ReDoS)."
+  },
+  {
+    question: "How do I prevent ReDoS (Catastrophic Backtracking) in code?",
+    answer: "Avoid nesting quantifiers, keep sub-patterns mutually exclusive, and use lookahead assertions or non-backtracking engines where available."
+  },
+  {
+    question: "How to write a regex to validate email addresses?",
+    answer: "A standard RFC-compliant validation regex is: <code>^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$</code>. Avoid extremely complex expressions as they are hard to maintain."
+  },
+  {
+    question: "What is a word boundary (\\b) in regex?",
+    answer: "A word boundary (<code>\\b</code>) matches the zero-width position between a word character (letters, numbers, underscores) and a non-word character (spaces, symbols, start/end of string)."
+  },
+  {
+    question: "Can I use regular expressions in databases?",
+    answer: "Yes, most modern databases support regex queries (e.g. <code>REGEXP_LIKE</code> in SQL, or <code>$regex</code> operators in MongoDB) to filter rows dynamically."
+  },
+  {
+    question: "How do regular expressions handle UTF-8 unicode properties?",
+    answer: "JavaScript supports Unicode property escapes using the <code>u</code> flag, allowing matching of glyphs by properties (e.g. <code>\\p{Emoji}</code> or <code>\\p{L}</code> for letters)."
+  },
+  {
+    question: "Does this tool support regex search and replace?",
+    answer: "Yes, toggle the Substitution/Replace panel to test string replacements, utilizing standard backreferences (like <code>$1</code>) to swap content."
+  }
+];
+
+const references = [
+  { title: "ECMAScript RegExp Specification Reference", url: "https://tc39.es/ecma262/multipage/text-processing.html#sec-regexp-regular-expression-objects", source: "TC39 Standards" },
+  { title: "MDN Web Docs - Regular Expressions Guide", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions", source: "Mozilla Developer Network" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/;
+
+const validateEmail = email => emailPattern.test(email);
+
+console.log(validateEmail("user@useutils.com")); // true
+console.log(validateEmail("invalid-email")); // false`,
+    note: "Validates string with standard JS regular expression literals."
+  },
+  {
+    lang: "Python",
+    code: `import re
+
+email_pattern = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$')
+
+def validate_email(email):
+    return bool(email_pattern.match(email))
+
+print(validate_email("user@useutils.com")) # True`,
+    note: "Compiled pattern increases efficiency when matching in loops."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Catastrophic Backtracking (ReDoS)",
+    description: "Writing patterns containing nested multipliers (e.g., <code>(a+)+</code>) against long failing strings causes CPU processing lockups.",
+    fix: "Keep group conditions mutually exclusive and restrict quantifier bounds."
+  },
+  {
+    title: "Forgetting to Escape Special Meta-Characters",
+    description: "Using characters like <code>.</code>, <code>*</code>, or <code>?</code> literally in patterns without escapes matches everything instead of target punctuation.",
+    fix: "Prepend backslashes before all special operators: <code>\\.</code> or <code>\\?</code>."
   }
 ];
 ---
@@ -54,7 +143,7 @@ const faqs = [
   toolDescription="Test and debug JavaScript regular expressions in real-time. Load common developer presets, inspect captured groups, and configure search flags instantly."
   faqs={faqs}
 >
-  <RegexTester client:load />
+  <RegexTesterComponent client:load />
 
   <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
@@ -72,78 +161,72 @@ const faqs = [
       </p>
     </div>
 
-    <!-- Section: Reference Table -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+    <!-- Section: Cross Links -->
+    <div class="flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight flex items-center gap-2">
         <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Common Regex Syntax Reference
+        Other Text & Parsing Utilities
       </h2>
-      <p class="leading-relaxed mb-4">
-        Here is a quick reference table of standard regular expression tokens and character classes supported by the native JavaScript engine:
-      </p>
-      
-      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
-              <th class="p-3">Token</th>
-              <th class="p-3">Description</th>
-              <th class="p-3">Example Pattern</th>
-              <th class="p-3">Matches</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
-            <tr>
-              <td class="p-3 text-zinc-200"><code>.</code></td>
-              <td class="p-3 font-sans">Any single character except newline</td>
-              <td class="p-3"><code>h.t</code></td>
-              <td class="p-3 text-accent-emerald">"hat", "hot", "hwt"</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200"><code>\d</code></td>
-              <td class="p-3 font-sans">Any digit (equivalent to <code>[0-9]</code>)</td>
-              <td class="p-3"><code>user_\d\d</code></td>
-              <td class="p-3 text-accent-emerald">"user_23", "user_99"</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200"><code>\w</code></td>
-              <td class="p-3 font-sans">Alphanumeric character plus underscore</td>
-              <td class="p-3"><code>\w+</code></td>
-              <td class="p-3 text-accent-emerald">"hello", "code_1"</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200"><code>\s</code></td>
-              <td class="p-3 font-sans">Any whitespace character (space, tab, newline)</td>
-              <td class="p-3"><code>item\s\d</code></td>
-              <td class="p-3 text-accent-emerald">"item 1", "item\t2"</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200"><code>^</code> / <code>$</code></td>
-              <td class="p-3 font-sans">Start / end of string or line (with multiline flag)</td>
-              <td class="p-3"><code>^auth$</code></td>
-              <td class="p-3 text-accent-emerald">"auth" (exact match only)</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200"><code>*</code> / <code>+</code> / <code>?</code></td>
-              <td class="p-3 font-sans">Quantifiers: zero-or-more, one-or-more, zero-or-one</td>
-              <td class="p-3"><code>colou?r</code></td>
-              <td class="p-3 text-accent-emerald">"color", "colour"</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200"><code>[a-z]</code></td>
-              <td class="p-3 font-sans">Character set: match any character inside the brackets</td>
-              <td class="p-3"><code>[c-h]at</code></td>
-              <td class="p-3 text-accent-emerald">"cat", "hat", but not "bat"</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200"><code>(?:...)</code></td>
-              <td class="p-3 font-sans">Non-capturing group (groups without extracting)</td>
-              <td class="p-3"><code>(?:git|hub)</code></td>
-              <td class="p-3 text-accent-emerald">"git" or "hub"</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <a href="/tools/text-inspector" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Text Inspector</a>
+        <a href="/tools/diff-checker" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Diff Checker & Compare</a>
+        <a href="/tools/word-counter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Word Counter</a>
       </div>
     </div>
+
+    <!-- Section: Reference Table -->
+    <ComparisonTable
+      title="Common Regex Syntax Reference"
+      description="Here is a quick reference table of standard regular expression tokens and character classes supported by the native JavaScript engine:"
+      headers={["Token", "Description", "Example Pattern", "Matches"]}
+      rows={[
+        { label: "<code>.</code>", values: ["Any single character except newline", "<code>h.t</code>", '"hat", "hot", "hwt"'] },
+        { label: "<code>\\d</code>", values: ["Any digit (equivalent to <code>[0-9]</code>)", "<code>user_\\d\\d</code>", '"user_23", "user_99"'] },
+        { label: "<code>\\w</code>", values: ["Alphanumeric character plus underscore", "<code>\\w+</code>", '"hello", "code_1"'] },
+        { label: "<code>\\s</code>", values: ["Any whitespace character (space, tab, newline)", "<code>item\\s\\d</code>", '"item 1", "item\\t2"'] },
+        { label: "<code>^</code> / <code>$</code>", values: ["Start / end of string or line", "<code>^auth$</code>", '"auth" (exact match only)'] },
+        { label: "<code>*</code> / <code>+</code> / <code>?</code>", values: ["Quantifiers: zero-or-more, one-or-more, zero-or-one", "<code>colou?r</code>", '"color", "colour"'] },
+        { label: "<code>[a-z]</code>", values: ["Character set: match any character inside the brackets", "<code>[c-h]at</code>", '"cat", "hat", but not "bat"'] },
+        { label: "<code>(?:...)</code>", values: ["Non-capturing group (groups without extracting)", "<code>(?:git|hub)</code>", '"git" or "hub"'] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Regex Validation Examples"
+      description="Inspect standard matching cases for structured formatting patterns:"
+      examples={[
+        { label: "Email Address Pattern Validation", input: "test-user@useutils.com", output: "Matches: 1, Captured: ['test-user', 'useutils.com']", badge: "Regex Match" },
+        { label: "IP Address Configuration Scan", input: "192.168.1.15", output: "Matches: 1, Validated octets", badge: "Regex Match" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Regex Evaluation Snippets"
+      description="Compile and execute regular expressions in your codebase:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Regex Pitfalls"
+      description="Avoid these common validation errors and runtime vulnerabilities:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Regular Expression Guidelines"
+      practices={[
+        { title: "Avoid Greedy Matches", description: "Append a question mark (e.g. *?) to quantifiers when matching tags to execute lazy matches." },
+        { title: "Document Complex Patterns", description: "Use comments or split strings into sub-variables to explain dense regex logic for maintenance." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
   </div>
 </ToolPageLayout>

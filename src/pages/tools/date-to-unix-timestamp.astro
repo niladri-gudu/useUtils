@@ -1,0 +1,202 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { UnixTimestampConverter } from '../../components/UnixTimestampConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "How do I convert a date to a Unix timestamp?",
+    answer: "Enter your calendar date string or ISO 8601 timestamp into the converter. The parsing engine will evaluate the input and output the corresponding numeric Unix time in seconds and milliseconds."
+  },
+  {
+    question: "What is a Unix timestamp?",
+    answer: "A Unix timestamp is an integer representing the total number of seconds that have elapsed since January 1, 1970, at 00:00:00 UTC."
+  },
+  {
+    question: "Does timezone matter when converting a date to a timestamp?",
+    answer: "Yes, absolutely. Because a Unix timestamp measures time in UTC, converting a date string like '2026-06-15 12:00:00' without specifying a timezone will parse it in your local timezone, resulting in different timestamps for users in different regions."
+  },
+  {
+    question: "What is the ISO 8601 date standard?",
+    answer: "ISO 8601 is an international standard for date and time representation. It format dates as <code>YYYY-MM-DDTHH:mm:ssZ</code>, where the 'Z' indicates UTC time."
+  },
+  {
+    question: "How do I get the current timestamp in Javascript?",
+    answer: "You can retrieve the current millisecond timestamp using <code>Date.now()</code>. For seconds, use <code>Math.floor(Date.now() / 1000)</code>."
+  },
+  {
+    question: "How do I get the current timestamp in Python?",
+    answer: "In Python, use the time module: <code>import time; print(int(time.time()))</code>."
+  },
+  {
+    question: "How do I parse a UTC date string in JavaScript?",
+    answer: "You can pass the string to the Date constructor: <code>new Date('2026-06-14T12:00:00Z').getTime()</code>."
+  },
+  {
+    question: "What happens during Daylight Saving Time adjustments?",
+    answer: "Standard Unix timestamps are UTC and offset-free. When parsing a local date string, DST shifts change the offset from UTC, which changes the converted timestamp."
+  },
+  {
+    question: "Can I convert negative timestamps back to dates?",
+    answer: "Yes, negative integers represent dates prior to 1970."
+  },
+  {
+    question: "Is my converted date data secure?",
+    answer: "Yes, 100% of the conversions run in your browser sandbox, keeping your queries private."
+  },
+  {
+    question: "How do I convert a date to a timestamp in SQL?",
+    answer: "In PostgreSQL, use <code>EXTRACT(epoch FROM date_column)</code>. In MySQL, use <code>UNIX_TIMESTAMP(date_column)</code>."
+  },
+  {
+    question: "Why do APIs use Unix timestamps instead of formatted date strings?",
+    answer: "Timestamps are integers, making them language-agnostic, timezone-free, compact to store, and quick to index."
+  },
+  {
+    question: "What is the Year 2038 overflow problem?",
+    answer: "Systems using 32-bit signed integers to store seconds will overflow on January 19, 2038. Modern architectures avoid this by utilizing 64-bit integer values."
+  },
+  {
+    question: "What does the Z stand for in date strings?",
+    answer: "The 'Z' stands for Zulu time, representing Coordinated Universal Time (UTC) with zero offset."
+  },
+  {
+    question: "How do I convert a date in Go?",
+    answer: "In Go, parse a date string using <code>time.Parse</code> and call <code>.Unix()</code> to get the timestamp."
+  },
+  {
+    question: "Does Unix time include leap seconds?",
+    answer: "No, Unix time assumes each day has exactly 86,400 seconds, bypassing leap seconds."
+  },
+  {
+    question: "Can I run this converter offline?",
+    answer: "Yes. All scripts run in your browser thread, requiring no active internet connection."
+  },
+  {
+    question: "What is a Julian Date?",
+    answer: "A Julian Date counts days continuously since January 1, 4713 BC, primarily used in astronomy."
+  },
+  {
+    question: "What is GPS time?",
+    answer: "GPS time counts seconds since January 6, 1980, without accounting for leap seconds."
+  },
+  {
+    question: "Is this converter completely free?",
+    answer: "Yes, useUtils provides all developer tools free without account registrations."
+  },
+  {
+    question: "What is the difference between UTC and GMT?",
+    answer: "UTC is a scientific atomic time standard, while GMT is a historical timezone. Practically, they share the same offset values."
+  }
+];
+
+const headers = ["Standard Format", "Format Structure", "Example Value", "Ecosystems"];
+const rows = [
+  {
+    label: "ISO 8601",
+    values: ["<code>YYYY-MM-DDTHH:mm:ss.sssZ</code>", "<code>2026-06-14T11:53:06.000Z</code>", "Web APIs, JSON payloads, JavaScript"]
+  },
+  {
+    label: "SQL Datetime",
+    values: ["<code>YYYY-MM-DD HH:mm:ss</code>", "<code>2026-06-14 11:53:06</code>", "MySQL, PostgreSQL, SQL Server"]
+  }
+];
+
+const practices = [
+  {
+    title: "Always Specify Timezones",
+    description: "When parsing calendar dates, always declare the timezone offset (like Z or +05:30) to prevent offsets from shifting target values."
+  },
+  {
+    title: "Verify Integer Scales",
+    description: "Ensure that receiving services parse numeric timestamps at the correct resolution (seconds vs milliseconds) to prevent chronological errors."
+  }
+];
+
+const mistakes = [
+  {
+    title: "Parsing local date strings as UTC",
+    description: "Parsing '2026-06-15' as UTC when it was meant for a local timezone shifts the resulting timestamp by several hours.",
+    fix: "Always append local timezone offsets before executing calculations."
+  }
+];
+
+const languages = [
+  {
+    lang: "JavaScript",
+    code: `
+const dateStr = "2026-06-14T11:53:06Z";
+const timestampMs = Date.parse(dateStr);
+const timestampSec = Math.floor(timestampMs / 1000);
+
+console.log("Timestamp (s):", timestampSec);
+console.log("Timestamp (ms):", timestampMs);
+    `
+  },
+  {
+    lang: "Python",
+    code: `
+from datetime import datetime
+
+date_str = "2026-06-14 11:53:06"
+dt = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+timestamp = int(dt.timestamp())
+
+print("Timestamp:", timestamp)
+    `
+  }
+];
+
+const references = [
+  { title: "ISO 8601 Standards", url: "https://www.iso.org/iso-8601-date-and-time-format.html" }
+];
+---
+
+<ToolPageLayout
+  title="Date to Unix Timestamp Converter: Convert Calendar to Epoch"
+  description="Convert calendar dates, ISO 8601, and custom datetime strings to standard Unix timestamps in seconds and milliseconds locally."
+  keywords="date to unix timestamp, convert date to timestamp, human date to epoch, datetime to unix epoch, calendar date parser"
+  toolTitle="Date to Unix Timestamp Converter"
+  toolDescription="Parse calendar dates and datetime strings into numeric Unix timestamps in real-time. Processed 100% locally in your browser sandbox."
+  faqs={faqs}
+>
+  <UnixTimestampConverter client:load defaultActiveTab="single" defaultIsTicking={false} />
+
+  <div slot="seo-content" class="flex flex-col gap-12 mt-10 max-w-4xl mx-auto w-full">
+    <PrivacyBadge />
+
+    <ComparisonTable 
+      headers={headers} 
+      rows={rows} 
+      title="Common Datetime Representations" 
+      description="Compare formatting patterns parsed by the converter:"
+    />
+
+    <BestPractices 
+      practices={practices} 
+      title="Date Parsing Best Practices" 
+    />
+
+    <CommonMistakes 
+      mistakes={mistakes} 
+      title="Common Datetime Pitfalls" 
+    />
+
+    <LanguageSupport 
+      languages={languages} 
+      title="Programmatic Date to Timestamp Code" 
+    />
+
+    <OfficialReferences 
+      references={references} 
+    />
+
+    <RelatedTools />
+  </div>
+</ToolPageLayout>

@@ -314,15 +314,23 @@ const JsonNodeViewer: React.FC<JsonNodeViewerProps> = ({
 // ============================================================================
 // Main JSON Formatter Dashboard
 // ============================================================================
-export const JsonFormatter: React.FC = () => {
+interface JsonFormatterProps {
+  defaultMode?: 'format' | 'minify' | 'toYaml' | 'toXml' | 'toCsv' | 'escape' | 'unescape' | 'yamlToJson' | 'xmlToJson';
+  defaultViewMode?: 'text' | 'tree';
+}
+
+export const JsonFormatter: React.FC<JsonFormatterProps> = ({
+  defaultMode = 'format',
+  defaultViewMode = 'text'
+}) => {
   const [input, setInput] = useState<string>('');
   const [query, setQuery] = useState<string>('');
   const [indent, setIndent] = useState<'2' | '4' | 'tab'>('2');
   const [sortKeys, setSortKeys] = useState<boolean>(false);
   const [mode, setMode] = useState<
     'format' | 'minify' | 'toYaml' | 'toXml' | 'toCsv' | 'escape' | 'unescape' | 'yamlToJson' | 'xmlToJson'
-  >('format');
-  const [viewMode, setViewMode] = useState<'text' | 'tree'>('text');
+  >(defaultMode);
+  const [viewMode, setViewMode] = useState<'text' | 'tree'>(defaultViewMode);
   
   const [copyFeedback, setCopyFeedback] = useState<boolean>(false);
   const [copiedPath, setCopiedPath] = useState<string | null>(null);

@@ -1,0 +1,32 @@
+---
+interface Props {
+  references: Array<{ title: string; url: string; source?: string }>;
+}
+
+const { references = [] } = Astro.props;
+---
+
+{references.length > 0 && (
+  <div class="flex flex-col gap-4 w-full">
+    <h2 class="text-xl font-semibold text-zinc-50 tracking-tight flex items-center gap-2">
+      <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+      Official References & Specifications
+    </h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {references.map((ref) => (
+        <a
+          href={ref.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="flex items-center justify-between p-3.5 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 hover:bg-zinc-900/60 transition-all group"
+        >
+          <div class="flex flex-col gap-0.5 min-w-0 pr-2">
+            <span class="text-xs font-medium text-zinc-200 group-hover:text-accent-emerald transition-colors font-sans truncate">{ref.title}</span>
+            {ref.source && <span class="text-[10px] text-zinc-500 font-mono">{ref.source}</span>}
+          </div>
+          <span class="text-zinc-500 group-hover:text-accent-emerald transition-colors text-[10px] shrink-0 font-mono">[spec] ↗</span>
+        </a>
+      ))}
+    </div>
+  </div>
+)}

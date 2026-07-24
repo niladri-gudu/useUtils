@@ -1,0 +1,231 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { WordCounter as WordCounterComponent } from '../../components/WordCounter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const faqs = [
+  {
+    question: "What is a character counter and what does it measure?",
+    answer: "A character counter counts all letters, numbers, spaces, tabs, punctuation, and newline characters in a string. It provides detailed letter aggregates for copywriters and engineers."
+  },
+  {
+    question: "Does this character counter count spaces?",
+    answer: "Yes. It calculates two separate statistics: total characters including spaces, and characters excluding spaces (letters, numbers, and symbols)."
+  },
+  {
+    question: "How does character counting differ from word counting?",
+    answer: "Character counting counts individual keystrokes (e.g. <code>cat</code> has 3 characters), whereas word counting groups character sequences separated by whitespaces as single words (e.g. <code>cat</code> is 1 word)."
+  },
+  {
+    question: "What is the standard character limit for Twitter (X)?",
+    answer: "Standard Twitter accounts have a limit of 280 characters per tweet. Verified accounts have a larger limit."
+  },
+  {
+    question: "What is the SMS character limit?",
+    answer: "A single standard SMS message is limited to 160 characters. Messages exceeding this are split into multiple parts using GSM-7 encoding."
+  },
+  {
+    question: "How many characters fit in a Google search title tag?",
+    answer: "Google typically displays the first 50 to 60 characters of a page title, or up to 600 pixels. Titles exceeding this are truncated with <code>...</code>."
+  },
+  {
+    question: "What is the character limit for Google meta descriptions?",
+    answer: "Google's meta descriptions are usually truncated after 155 to 160 characters."
+  },
+  {
+    question: "Is my pasted text safe and private?",
+    answer: "Yes. Like all tools on useUtils, the character counter runs entirely locally in your browser using JavaScript. No data is sent to a server."
+  },
+  {
+    question: "How does JavaScript count character length?",
+    answer: "JavaScript's <code>.length</code> property returns the number of UTF-16 code units. This means standard characters count as 1, but complex emojis can count as 2."
+  },
+  {
+    question: "What are surrogate pairs in character counting?",
+    answer: "Unicode characters outside the Basic Multilingual Plane (BMP) require 2 UTF-16 code units (surrogate pairs) to represent in JavaScript, resulting in a length of 2 instead of 1."
+  },
+  {
+    question: "How do I count characters excluding spaces in JavaScript?",
+    answer: "Use regex: <code>const count = str => str.replace(/\\s/g, '').length;</code>."
+  },
+  {
+    question: "How do I count characters in Python?",
+    answer: "Use the <code>len()</code> function: <code>len(my_string)</code>. To ignore spaces, use <code>len(my_string.replace(' ', ''))</code>."
+  },
+  {
+    question: "Why is a character limit enforced on input fields?",
+    answer: "Limits prevent database overflow, maintain consistent page layouts, and restrict payload sizes transmitted over the network."
+  },
+  {
+    question: "What is the character limit for a LinkedIn post?",
+    answer: "LinkedIn posts are limited to 3,000 characters."
+  },
+  {
+    question: "What is the character limit for an Instagram caption?",
+    answer: "Instagram captions allow up to 2,200 characters, though only the first 125 are displayed before the 'More' link."
+  },
+  {
+    question: "Does a line break (newline) count as a character?",
+    answer: "Yes. Line breaks count as characters. Windows CRLF counts as 2 characters (<code>\\r\\n</code>), while Unix/Mac LF counts as 1 (<code>\\n</code>). Our tool normalizes and counts them consistently."
+  },
+  {
+    question: "How do I count letters only, ignoring numbers and symbols?",
+    answer: "You can use regex to strip out numbers and symbols before counting, or use the Text Inspector for detailed Unicode breakdowns."
+  },
+  {
+    question: "Can I use this tool offline?",
+    answer: "Yes, since the code is client-side, the page functions fully without active internet."
+  },
+  {
+    question: "Does it support non-English or Chinese characters?",
+    answer: "Yes, standard UTF-8/Unicode characters are fully supported, counting Chinese characters, accents, and symbols accurately."
+  },
+  {
+    question: "How do I download character frequency tables?",
+    answer: "You can view and export detailed word densities or use the Text Inspector to extract exact letter distributions."
+  }
+];
+
+const references = [
+  { title: "Unicode Standard Casing & Length Specifications", url: "https://www.unicode.org/reports/tr21/", source: "Unicode Consortium" },
+  { title: "MDN Web Docs - JavaScript String.prototype.length", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/length", source: "Mozilla Developer Network Reference" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `const countChars = (str, countSpaces = true) => {
+  return countSpaces ? str.length : str.replace(/\\s/g, '').length;
+};
+
+// UTF-16 safe character array length
+const countUnicodeChars = str => [...str].length;
+
+console.log(countChars("Hello World", false)); // 10
+console.log(countUnicodeChars("👋🚀")); // 2 (str.length would return 4)`,
+    note: "Use the spread operator [...] to correctly count surrogate pair emojis."
+  },
+  {
+    lang: "Python",
+    code: `def count_characters(s, ignore_whitespace=False):
+    if ignore_whitespace:
+        import string
+        # Strip spaces and tabs
+        return len([c for c in s if c not in '\\s\\t\\n\\r'])
+    return len(s)
+
+print(count_characters("👋🚀")) # 2 (Unicode characters matched correctly)`,
+    note: "Python 3 strings are native Unicode, so length corresponds to actual glyph counts."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Surrogate Pair Emoji Length Mismatches",
+    description: "Standard string length properties evaluate surrogate pair emojis (like 👋) as 2 characters, causing false validation bounds.",
+    fix: "Convert the string to an array before counting length: <code>[...str].length</code>."
+  },
+  {
+    title: "CRLF Windows Carriage Returns inflating character lengths",
+    description: "Windows line feeds contain carriage returns (\\r\\n), counting as 2 characters per row instead of 1 in Unix/Mac (\\n).",
+    fix: "Replace carriage returns with standard line breaks: <code>str.replace(/\\r\\n/g, '\\n')</code> before counting."
+  }
+];
+---
+
+<ToolPageLayout
+  title="Character Counter Online: Count Characters and Letters in Text"
+  description="Free online character counter. Count characters with and without spaces, count words, sentences, and paragraphs in real-time. 100% private in-browser analysis."
+  keywords="character counter, count characters, letter counter, character limit checker"
+  toolTitle="Character Counter"
+  toolDescription="Count characters, letters, spaces, words, and lines in your text. Analyzes counts in real-time completely locally inside your browser."
+  faqs={faqs}
+>
+  <WordCounterComponent client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Why is Character Counting Important?
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Writing copy for digital platforms requires strict adherence to length parameters. Social media apps, search engines, database fields, and SMS protocols enforce strict <strong class="text-zinc-200">character limits</strong>. Exceeding these bounds can lead to text truncation, layout breaks, or payload compilation failures.
+      </p>
+      <p class="leading-relaxed">
+        Our <strong>Character Counter</strong> analyzes text synchronously as you type, outputting total character count (including spaces), character count excluding spaces, total words, sentences, and lines.
+      </p>
+    </div>
+
+    <!-- Section: Cross Links -->
+    <div class="flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Other Text Utilities
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <a href="/tools/word-counter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Word Counter & Text Analyzer</a>
+        <a href="/tools/text-inspector" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Text Inspector & Unicode Explorer</a>
+        <a href="/tools/slug-generator" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">URL Slug Generator</a>
+      </div>
+    </div>
+
+    <!-- Section: Comparison of Social Media Limits -->
+    <ComparisonTable
+      title="Standard Digital Platform Character Limits"
+      description="Compare maximum character allocations for popular networks and SEO tags:"
+      headers={["Platform / Medium", "Character Limit", "Metric Standard", "Consequence of Over-Limit"]}
+      rows={[
+        { label: "Twitter (X) Post", values: ["280 characters", "With spaces", "Post blocked/must thread"] },
+        { label: "Google Search Title", values: ["50 - 60 characters", "Width in pixels (approx 600px)", "Truncation with '...' in results"] },
+        { label: "Google Meta Description", values: ["150 - 160 characters", "Width in pixels", "Truncation in search snippets"] },
+        { label: "SMS Message (Standard)", values: ["160 characters", "GSM-7 code points", "Split into multiple billable parts"] },
+        { label: "LinkedIn Post", values: ["3,000 characters", "With spaces", "Post publishing blocked"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Character Counts Examples"
+      description="Inspect character breakdowns for typical text inputs:"
+      examples={[
+        { label: "Short SEO Title Meta Tag", input: "Diff Checker Online: Compare Text side-by-side", output: "Chars: 45 (with spaces), 40 (no spaces)", badge: "SEO Safe" },
+        { label: "Standard SMS Notification", input: "Your auth security token is 4829. Expires in 5 minutes.", output: "Chars: 53 (with spaces), 44 (no spaces)", badge: "1 SMS Block" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Character Counting Snippets"
+      description="Count characters and letters dynamically inside your custom scripts:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Counting Mistakes"
+      description="Avoid these common errors when processing document boundaries and indices:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Character Count Guidelines"
+      practices={[
+        { title: "Normalize Carriage Returns", description: "Convert CRLF to LF line breaks to avoid false 2-character metrics per line." },
+        { title: "Count Unicode Arrays Safely", description: "Use JS spread operator [...] or Array.from() to prevent emoji surrogate pair count distortions." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

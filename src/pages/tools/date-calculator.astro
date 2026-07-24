@@ -1,6 +1,13 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { DateCalculator } from '../../components/DateCalculator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
 
 const faqs = [
   {
@@ -46,7 +53,148 @@ const faqs = [
   {
     question: "How does the tool handle overnight timesheet shifts?",
     answer: "The time range parser handles overnight clock boundaries automatically. If the end time is chronologically earlier than the start time (for example, a night shift from <code>22:00</code> to <code>06:00</code>), the engine assumes the shift spans across midnight and correctly adds 8 hours of duration to your timesheet."
+  },
+  {
+    question: "Can I filter out public holidays automatically?",
+    answer: "Currently, our tool filters standard weekends (Saturdays and Sundays) out of the working days calculation. Public holidays vary widely by national and regional jurisdictions, so they are not automated. You can subtract individual holiday counts using the Date Adjuster."
+  },
+  {
+    question: "How do I calculate the number of weeks between two dates?",
+    answer: "The Date Difference tab computes the division of total days by 7 and returns a detailed weeks-and-remaining-days breakdown (e.g. <code>4 weeks, 2 days</code>) next to total day results."
+  },
+  {
+    question: "What happens when I add 1 month to January 31st?",
+    answer: "The native JavaScript Date engine resolves month overflow by wrapping to the next month. Adding 1 month to January 31st wraps to March 3rd (in standard years) because February has only 28 days. Our calculator handles calendar transitions safely."
+  },
+  {
+    question: "How is the billing amount calculated?",
+    answer: "In the Timesheet Accumulator, we sum the minutes for all shift rows. The total minutes are divided by 60 to derive a fractional hour value, which is then multiplied by your custom hourly rate parameter to display earnings."
+  },
+  {
+    question: "Can I input negative numbers in the Date Adjuster?",
+    answer: "Yes. While the adjuster provides an explicit 'Add' vs 'Subtract' operator toggle, inputting numeric intervals calculates offsets relative to your configuration."
+  },
+  {
+    question: "What is ISO 8601 week numbering?",
+    answer: "ISO 8601 week numbering defines the first week of the year as the week containing the first Thursday of the year, with weeks starting on Mondays. The Date Difference tab provides additional week counts conforming to this standard."
+  },
+  {
+    question: "Can the timesheet parser read '30m' as half an hour?",
+    answer: "Yes, typing <code>30m</code> or <code>30 minutes</code> translates to 0.5 hours or 30 minutes of accumulated duration in the timesheet shift rows."
+  },
+  {
+    question: "How can I calculate how many days are left in the current year?",
+    answer: "Set Date A to the current date and Date B to December 31st of this year. The Date Difference calculator will return the exact days remaining."
+  },
+  {
+    question: "What is the difference between UTC date math and local date math?",
+    answer: "UTC date math calculates time deltas using standard GMT boundaries, ignoring local daylight saving shifts. Local date math accounts for daylight saving transitions (like a 23-hour day when clocks spring forward)."
+  },
+  {
+    question: "Does this tool support keyboard copy shortcuts?",
+    answer: "Yes. Pressing <code>Command+C</code> (Mac) or <code>Control+C</code> (Windows) anywhere on the page copies a formatted text summary of your calculations instantly."
   }
+];
+
+const headers = ["Calculation Feature", "Day Resolution", "Weekend Filtering", "Best Application"];
+const rows = [
+  {
+    label: "Calendar Difference",
+    values: ["Consecutive days", "No (includes Sat/Sun)", "Contract periods, interest cycles, scheduling"]
+  },
+  {
+    label: "Business Difference",
+    values: ["Weekdays only", "Yes (skips Sat/Sun)", "Project milestones, SLA shipping, delivery window checks"]
+  },
+  {
+    label: "Date Offset Adjuster",
+    values: ["Target dates via offsets", "Optional (skips weekends)", "Adding lead time, estimating sprint completion dates"]
+  },
+  {
+    label: "Shift Accumulation",
+    values: ["Summed hours & minutes", "N/A", "Freelance timesheets, contractor billing summaries"]
+  }
+];
+
+const practices = [
+  {
+    title: "Verify Inclusive Flag in Contracts",
+    description: "Always align on whether date ranges are inclusive of both start and end days before signing legal contracts or estimating hosting terms."
+  },
+  {
+    title: "Store Date Math Bounds in UTC",
+    description: "When saving project timelines to a database, store datetime records in UTC. Perform timezone-aware local math only on output interfaces."
+  },
+  {
+    title: "Audit Timesheet Overlap Shifts",
+    description: "Check for duplicate time entries when logging shifts in timesheets to ensure overlapping clock intervals do not double-bill clients."
+  },
+  {
+    title: "Account for Month Length Variations",
+    description: "When programming recurring date math (like billing intervals), check boundaries (e.g. 31st of the month) to prevent missing February cycles."
+  }
+];
+
+const mistakes = [
+  {
+    title: "Adding Days by Multiplying Milliseconds",
+    description: "Adding days to JavaScript dates by doing <code>date.getTime() + 24 * 60 * 60 * 1000</code> fails across daylight saving boundaries where days have 23 or 25 hours.",
+    fix: "Always adjust dates using native setter methods: <code>date.setDate(date.getDate() + offset)</code>."
+  },
+  {
+    title: "Relying on System Timezones on Servers",
+    description: "Calculating differences using server default clocks causes drift bugs if your hosting containers are located in other timezones.",
+    fix: "Standardize all backend execution threads in Coordinated Universal Time (UTC)."
+  },
+  {
+    title: "Double-Counting Dates in Ingestion Ranges",
+    description: "Subtracting two identical calendar dates returns 0, but users often expect an inclusive range to indicate 1 day of work.",
+    fix: "Evaluate whether you need to toggle the inclusive final day parameter for user profiles."
+  }
+];
+
+const languages = [
+  {
+    lang: "JavaScript (Date)",
+    code: `
+const dateA = new Date('2026-06-01');
+const dateB = new Date('2026-06-15');
+
+// Absolute difference in days
+const diffMs = Math.abs(dateB - dateA);
+const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+console.log('Total Days:', diffDays);
+
+// Adjusting a date safely
+const adjusted = new Date(dateA);
+adjusted.setDate(adjusted.getDate() + 90);
+console.log('Adjusted Date:', adjusted.toISOString().split('T')[0]);
+    `,
+    note: "Use setDate() and getDate() natively to ensure JS accounts for DST shifts and month transitions."
+  },
+  {
+    lang: "Python (datetime)",
+    code: `
+from datetime import datetime, timedelta
+
+# Days difference
+date_a = datetime.fromisoformat('2026-06-01')
+date_b = datetime.fromisoformat('2026-06-15')
+delta = date_b - date_a
+print('Days between:', delta.days)
+
+# Date adjuster
+adjusted = date_a + timedelta(days=90)
+print('Adjusted:', adjusted.strftime('%Y-%m-%d'))
+    `,
+    note: "Python's timedelta represents duration differences, making offset math readable and fast."
+  }
+];
+
+const references = [
+  { title: "W3C Date and Time Formats Standard", url: "https://www.w3.org/TR/NOTE-datetime" },
+  { title: "ISO 8601 Calendar Date and Time Representation", url: "https://www.iso.org/iso-8601-date-and-time-format.html" },
+  { title: "Mozilla Developer Docs: Native JS Date API", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" }
 ];
 ---
 
@@ -60,101 +208,39 @@ const faqs = [
 >
   <DateCalculator client:load />
 
-  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
-  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
-    
-    {/* Section 1: Intro */}
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        How to Use the Date & Time Duration Calculator
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Our Date & Time Duration Calculator provides a robust developer workspace to track milestones, adjust schedule offsets, and audit client timesheets. In the left panel, toggle between the three workspaces: <strong class="text-zinc-200">Date Difference</strong>, <strong class="text-zinc-200">Date Adjuster</strong>, and the <strong class="text-zinc-200">Timesheet Accumulator</strong>.
-      </p>
-      <p class="leading-relaxed">
-        The tool instantly updates parsed outputs in the right pane as you edit. You can copy individual date blocks, download the timesheet summaries, or press <kbd class="font-mono bg-zinc-900 border border-zinc-800 px-1 py-0.5 rounded text-[10px] text-zinc-500">⌘ C</kbd> on your keyboard to instantly capture a text summary of your active calculations.
-      </p>
-    </div>
+  <div slot="seo-content" class="flex flex-col gap-12 mt-10 max-w-4xl mx-auto w-full">
+    <PrivacyBadge />
 
-    {/* Section 2: Date Math Reference Table */}
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Overview of Calendar & Workday Math
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Calculating timelines for software projects, financial contracts, or payroll cycles involves different day count standards:
-      </p>
-      
-      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
-              <th class="p-3">Calculation Type</th>
-              <th class="p-3">Methodology</th>
-              <th class="p-3">Inclusions</th>
-              <th class="p-3">Common Application</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
-            <tr>
-              <td class="p-3 text-zinc-200 font-semibold">Calendar Days Difference</td>
-              <td class="p-3">Subtracts start timestamp from end timestamp</td>
-              <td class="p-3 text-zinc-350">Every consecutive day (Mon-Sun)</td>
-              <td class="p-3 text-zinc-350">Subscription periods, interest calculations, hosting terms</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200 font-semibold">Business Days Count</td>
-              <td class="p-3">Iterates days, skipping Saturday & Sunday</td>
-              <td class="p-3 text-accent-emerald font-semibold">Weekdays only (Mon-Fri)</td>
-              <td class="p-3 text-zinc-350">Project deadlines, shipping delivery times, SLA windows</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200 font-semibold">Inclusive Date Span</td>
-              <td class="p-3">Adds 1 day to the final difference result</td>
-              <td class="p-3 text-zinc-350">Both Start and End days counted</td>
-              <td class="p-3 text-zinc-350">Employment contracts, rental agreements, event durations</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200 font-semibold">Shift Accumulation</td>
-              <td class="p-3">Sums time ranges or raw hours into total hours</td>
-              <td class="p-3 text-zinc-350">Supports overnight midnight boundaries</td>
-              <td class="p-3 text-zinc-350">Freelance billing, contractor payroll, software sprint logs</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <ComparisonTable 
+      headers={headers} 
+      rows={rows} 
+      title="Comparing Date Calculations" 
+      description="Choose the most appropriate calculation method based on your project schedule, invoice calculations, or timeline goals:"
+    />
 
-    {/* Section 3: Time Formats */}
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Supported Duration Input Formats
-      </h2>
-      <p class="leading-relaxed mb-4">
-        The Timesheet Accumulator parses a wide range of common developer time formats:
-      </p>
-      <ul class="list-disc list-inside space-y-2 pl-2 text-zinc-400">
-        <li><strong class="text-zinc-200">Colon Formats</strong>: <code>1:30</code> represents 1 hour and 30 minutes.</li>
-        <li><strong class="text-zinc-200">Hours Only</strong>: <code>3.5h</code>, <code>3.5 hours</code>, or <code>3.5 hr</code> represents 3 hours and 30 minutes.</li>
-        <li><strong class="text-zinc-200">Minutes Only</strong>: <code>45m</code>, <code>45 min</code>, or <code>45 minutes</code> represents 45 minutes.</li>
-        <li><strong class="text-zinc-200">Mixed Segments</strong>: <code>2h 15m</code>, <code>1 hour 45 mins</code>, or <code>8h30m</code> are parsed accurately into combined minutes.</li>
-        <li><strong class="text-zinc-200">Raw Integers</strong>: Entering a single number like <code>90</code> defaults to 90 minutes.</li>
-      </ul>
-    </div>
+    <BestPractices 
+      practices={practices} 
+      title="Date Arithmetic Best Practices" 
+      description="Apply these industry guidelines to resolve timezone offsets and maintain project schedule integrity:"
+    />
 
-    {/* Section 4: Privacy-First client processing */}
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Zero Server Transmission Security Model
-      </h2>
-      <p class="leading-relaxed">
-        Many online timesheet trackers or date calculators capture calendar inputs, holiday selections, and hourly pricing parameters to log on remote databases, presenting security risks for private freelancers or corporate development. useUtils guarantees complete sandbox privacy. All date delta math, weekend filtering, shift parsers, and financial estimates compile locally within your browser thread using native JavaScript. No credentials, dates, or calculations are ever uploaded, keeping your data entirely secure.
-      </p>
-    </div>
+    <CommonMistakes 
+      mistakes={mistakes} 
+      title="Common Date Math Misconceptions" 
+      description="Ensure your software algorithms perform date offsets and interval checks reliably by avoiding these bugs:"
+    />
 
+    <LanguageSupport 
+      languages={languages} 
+      title="Programmatic Date Arithmetic" 
+      description="Implement date differences and offset math programmatically using standard utilities:"
+    />
+
+    <OfficialReferences 
+      references={references} 
+      title="Standard Date & Time Specifications" 
+    />
+
+    <RelatedTools />
   </div>
 </ToolPageLayout>

@@ -1,0 +1,49 @@
+---
+interface Props {
+  headers: string[];
+  rows: Array<{ label: string; values: string[] }>;
+  title?: string;
+  description?: string;
+}
+
+const { 
+  headers = [], 
+  rows = [],
+  title,
+  description
+} = Astro.props;
+---
+
+{(headers.length > 0 || rows.length > 0) && (
+  <div class="flex flex-col gap-4 w-full">
+    {title && (
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        {title}
+      </h2>
+    )}
+    {description && <p class="text-zinc-400 text-xs leading-relaxed font-sans">{description}</p>}
+    
+    <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40">
+      <table class="w-full text-left text-xs border-collapse">
+        <thead>
+          <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
+            {headers.map((header) => (
+              <th class="p-3 font-semibold uppercase tracking-wider text-[10px]">{header}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
+          {rows.map((row) => (
+            <tr class="hover:bg-zinc-900/20 transition-colors">
+              <td class="p-3 text-zinc-200 font-medium">{row.label}</td>
+              {row.values.map((val) => (
+                <td class="p-3" set:html={val} />
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}

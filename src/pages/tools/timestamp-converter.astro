@@ -1,0 +1,195 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { UnixTimestampConverter as Converter } from '../../components/UnixTimestampConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "What is a timestamp converter?",
+    answer: "A timestamp converter is a utility that translates numeric Unix timestamps into readable calendar dates and vice versa. It helps developers parse database date indices and track log event timings."
+  },
+  {
+    question: "How do I use this timestamp converter?",
+    answer: "Paste your raw timestamp number into the input box on the left, select the resolution (seconds, milliseconds, etc.), and the translated representations (Local time, UTC, ISO 8601) will populate instantly in the right panel."
+  },
+  {
+    question: "Are Unix timestamps timezone-dependent?",
+    answer: "No. A Unix timestamp measures the elapsed seconds since the epoch in UTC, regardless of geographic location. Timezones are only applied on output for local readability."
+  },
+  {
+    question: "What is the Unix Epoch?",
+    answer: "The Unix Epoch is January 1, 1970, at 00:00:00 UTC. It serves as the baseline for digital clock systems."
+  },
+  {
+    question: "How do I get the current timestamp in JavaScript?",
+    answer: "Retrieve the current millisecond timestamp using <code>Date.now()</code>. Divide by 1000 for seconds."
+  },
+  {
+    question: "What is the Year 2038 overflow bug?",
+    answer: "Systems using 32-bit signed integers to store seconds will overflow on January 19, 2038. Upgrading systems to 64-bit integers resolves this limitation."
+  },
+  {
+    question: "Can Unix timestamps represent dates before 1970?",
+    answer: "Yes, pre-1970 dates are represented by negative integer values."
+  },
+  {
+    question: "How do I convert a timestamp in Python?",
+    answer: "In Python, translate a timestamp using <code>datetime.fromtimestamp(ts)</code>."
+  },
+  {
+    question: "Does Unix time include leap seconds?",
+    answer: "No, Unix time counts each day as exactly 86,400 seconds, ignoring leap seconds."
+  },
+  {
+    question: "Is my pasted log or date secure?",
+    answer: "Yes. All computations execute locally in your browser. No data is ever sent to external servers."
+  },
+  {
+    question: "What is microsecond timestamp resolution?",
+    answer: "Microsecond timestamps are 16 digits long, commonly used in database layers like PostgreSQL."
+  },
+  {
+    question: "What is nanosecond timestamp resolution?",
+    answer: "Nanosecond timestamps are 19 digits long, commonly used in high-precision frameworks like Go and Rust."
+  },
+  {
+    question: "How do I verify if my timestamp is in seconds or milliseconds?",
+    answer: "Generally, 10-digit integers represent seconds, while 13-digit integers represent milliseconds."
+  },
+  {
+    question: "What is the ISO 8601 format?",
+    answer: "ISO 8601 is an international standard for date and time formatting (e.g. <code>YYYY-MM-DDTHH:mm:ss.sssZ</code>)."
+  },
+  {
+    question: "What is a Julian Date?",
+    answer: "A Julian Date counts days continuously since January 1, 4713 BC, primarily used in astronomical math."
+  },
+  {
+    question: "How do I preview a timestamp in a different timezone?",
+    answer: "Select the target timezone from the dropdown list to see the adjusted output instantly."
+  },
+  {
+    question: "Does this page run offline?",
+    answer: "Yes, all conversion logic runs client-side, allowing complete offline execution."
+  },
+  {
+    question: "How do I insert timestamps in MySQL?",
+    answer: "In MySQL, use the <code>FROM_UNIXTIME(timestamp)</code> function to insert or convert numeric values."
+  },
+  {
+    question: "What is GPS time?",
+    answer: "GPS time counts seconds since January 6, 1980, without leap second offsets."
+  },
+  {
+    question: "Is this tool completely free?",
+    answer: "Yes, useUtils provides all developer tools free with no subscription gates or account registrations."
+  },
+  {
+    question: "How do I convert a timestamp in Go?",
+    answer: "In Go, convert seconds using <code>time.Unix(sec, 0)</code>."
+  }
+];
+
+const headers = ["Resolution Scale", "Digits", "Example Value", "Common Ecosystems"];
+const rows = [
+  {
+    label: "Seconds",
+    values: ["10 digits", "<code>1718365200</code>", "Unix, Python, PHP, MySQL"]
+  },
+  {
+    label: "Milliseconds",
+    values: ["13 digits", "<code>1718365200000</code>", "JavaScript, Java, MongoDB"]
+  }
+];
+
+const practices = [
+  {
+    title: "Always Standardize in UTC",
+    description: "Store timestamps in UTC. Apply local timezone conversions only in the presentation layer."
+  },
+  {
+    title: "Verify column types are 64-bit",
+    description: "Future-proof databases by ensuring date integer columns are defined as BIGINT."
+  }
+];
+
+const mistakes = [
+  {
+    title: "Assuming JS Date takes seconds",
+    description: "JS Date constructor expects milliseconds, so passing seconds returns a date in 1970.",
+    fix: "Multiply seconds by 1000 before parsing."
+  }
+];
+
+const languages = [
+  {
+    lang: "JavaScript",
+    code: `
+const seconds = Math.floor(Date.now() / 1000);
+const date = new Date(seconds * 1000);
+console.log(date.toISOString());
+    `
+  },
+  {
+    lang: "Python",
+    code: `
+from datetime import datetime
+dt = datetime.fromtimestamp(1718365200)
+print(dt.isoformat())
+    `
+  }
+];
+
+const references = [
+  { title: "ISO 8601 Specifications", url: "https://www.iso.org/iso-8601-date-and-time-format.html" }
+];
+---
+
+<ToolPageLayout
+  title="Timestamp Converter Online: Convert Unix Epoch & Standard Dates"
+  description="Convert between Unix timestamps and standard calendar dates locally in real-time. Features ticking clocks and timezone adapters."
+  keywords="timestamp converter, convert timestamp, unix timestamp converter, epoch converter, convert epoch date"
+  toolTitle="Timestamp Decoder Converter"
+  toolDescription="Convert Unix timestamps to dates and vice versa in real-time. Processed 100% locally in your browser sandbox."
+  faqs={faqs}
+>
+  <Converter client:load defaultActiveTab="single" />
+
+  <div slot="seo-content" class="flex flex-col gap-12 mt-10 max-w-4xl mx-auto w-full">
+    <PrivacyBadge />
+
+    <ComparisonTable 
+      headers={headers} 
+      rows={rows} 
+      title="Timestamp Resolutions" 
+      description="Compare representation lengths and systems across timestamp scales:"
+    />
+
+    <BestPractices 
+      practices={practices} 
+      title="Timestamp Conversion Best Practices" 
+    />
+
+    <CommonMistakes 
+      mistakes={mistakes} 
+      title="Common Timestamp Pitfalls" 
+    />
+
+    <LanguageSupport 
+      languages={languages} 
+      title="Programmatic Timestamp Conversion" 
+    />
+
+    <OfficialReferences 
+      references={references} 
+    />
+
+    <RelatedTools />
+  </div>
+</ToolPageLayout>

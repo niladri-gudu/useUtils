@@ -1,0 +1,123 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<Layout 
+  title="JavaScript & TypeScript Naming Conventions Guide - useUtils Blog" 
+  description="The definitive guide to naming variables, constants, classes, functions, and files in JavaScript and TypeScript environments."
+  keywords="javascript naming conventions, typescript style guide, camelcase, pascalcase, screaming snake case"
+>
+  <Header />
+
+  <main class="flex-grow w-full max-w-3xl mx-auto px-4 py-12 flex flex-col gap-8">
+    <nav class="flex items-center gap-2 text-[10px] md:text-[11px] font-mono text-zinc-500 select-none" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-accent-emerald transition-colors">home</a>
+      <span class="text-zinc-700">/</span>
+      <a href="/blog" class="hover:text-accent-emerald transition-colors">blog</a>
+      <span class="text-zinc-700">/</span>
+      <span class="text-accent-emerald font-medium">naming-conventions-javascript</span>
+    </nav>
+
+    <!-- Post Header -->
+    <div class="flex flex-col gap-4 border-b border-border-hairline/60 pb-6">
+      <div class="flex items-center gap-3">
+        <span class="text-[10px] font-mono uppercase tracking-wider text-accent-emerald bg-accent-emerald/10 border border-accent-emerald/10 px-2 py-0.5 rounded">
+          JavaScript & TS
+        </span>
+        <span class="text-[10px] font-mono text-zinc-500">July 22, 2026 • 6 min read</span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-zinc-50 font-sans leading-tight">
+        JavaScript & TypeScript Naming Conventions: The Definitive Guide
+      </h1>
+      <p class="text-zinc-400 text-sm leading-relaxed">
+        Understand standard naming patterns in the JavaScript ecosystem for variables, components, types, and constants.
+      </p>
+    </div>
+
+    <!-- Article Content -->
+    <article class="prose prose-invert max-w-none text-zinc-300 text-sm md:text-base leading-relaxed flex flex-col gap-6 font-sans">
+      <p>
+        Consistency inside codebases minimizes cognitive load. When writing JavaScript or TypeScript, developers deal with variables, callbacks, component functions, object types, classes, and environment parameters. Each has a distinct convention governed by community guidelines (like Airbnb, Google, or the TypeScript style team).
+      </p>
+
+      <h2 class="text-lg font-semibold text-zinc-100 mt-4 flex items-center gap-2">
+        <span class="w-1 h-5 bg-accent-emerald rounded-full"></span>
+        1. Variables & Functions: camelCase
+      </h2>
+      <p>
+        In Javascript, all variables (declared using <code>let</code>, <code>const</code>, or <code>var</code>) and function names must be declared in <strong>camelCase</strong>:
+      </p>
+      <pre class="bg-zinc-950 border border-border-hairline p-4 rounded-lg font-mono text-xs text-zinc-400">{`const clientResponseTime = 250;
+function fetchUserData(userId) {
+  // ...
+}`}</pre>
+
+      <h2 class="text-lg font-semibold text-zinc-100 mt-4 flex items-center gap-2">
+        <span class="w-1 h-5 bg-accent-emerald rounded-full"></span>
+        2. Classes, Types, & Interfaces: PascalCase
+      </h2>
+      <p>
+        Constructors, OOP classes, and type definitions (TypeScript interfaces, type aliases, and enums) are named in <strong>PascalCase</strong>. This capitalization of the first letter easily distinguishes instantiation symbols from standard variables:
+      </p>
+      <pre class="bg-zinc-950 border border-border-hairline p-4 rounded-lg font-mono text-xs text-zinc-400">{`class NetworkSocketManager {
+  // ...
+}
+
+interface UserProfileDetails {
+  id: string;
+  email: string;
+}`}</pre>
+
+      <h2 class="text-lg font-semibold text-zinc-100 mt-4 flex items-center gap-2">
+        <span class="w-1 h-5 bg-accent-emerald rounded-full"></span>
+        3. Global Constants: CONSTANT_CASE (Screaming Snake)
+      </h2>
+      <p>
+        Variables that are globally immutable, configuration limits, or environment flags should use uppercase letters with underscores:
+      </p>
+      <pre class="bg-zinc-950 border border-border-hairline p-4 rounded-lg font-mono text-xs text-zinc-400">
+const DEFAULT_TIMEOUT_LIMIT = 5000;
+const API_BASE_URL = "https://api.useutils.com";
+      </pre>
+
+      <h2 class="text-lg font-semibold text-zinc-100 mt-4 flex items-center gap-2">
+        <span class="w-1 h-5 bg-accent-emerald rounded-full"></span>
+        4. UI Components: PascalCase
+      </h2>
+      <p>
+        React, Vue, and Svelte mandate PascalCase for custom element definitions. Since standard elements like <code>&lt;div&gt;</code> and <code>&lt;button&gt;</code> are lowercased, JSX engines require uppercase names to recognize custom definitions:
+      </p>
+      <pre class="bg-zinc-950 border border-border-hairline p-4 rounded-lg font-mono text-xs text-zinc-400">{`export function SidebarNavigationPanel() {
+  return &lt;aside&gt;&lt;nav&gt;&lt;/nav&gt;&lt;/aside&gt;;
+}`}</pre>
+
+      <h2 class="text-lg font-semibold text-zinc-100 mt-4 flex items-center gap-2">
+        <span class="w-1 h-5 bg-accent-emerald rounded-full"></span>
+        Refactoring JS/TS Identifiers
+      </h2>
+      <p>
+        During project migrations or variable mappings, translating schemas between database snake_case and TypeScript camelCase requires fast tools. Access our case formatters to automate this task:
+      </p>
+      <div class="flex flex-wrap gap-4 mt-2">
+        <a 
+          href="/tools/pascal-case-converter"
+          class="flex-grow p-4 bg-panel border border-border-hairline rounded-xl hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald flex items-center justify-between"
+        >
+          <span>PascalCase Converter</span>
+          <span>→</span>
+        </a>
+        <a 
+          href="/tools/case-converter"
+          class="flex-grow p-4 bg-panel border border-border-hairline rounded-xl hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald flex items-center justify-between"
+        >
+          <span>General Case Converter</span>
+          <span>→</span>
+        </a>
+      </div>
+    </article>
+  </main>
+
+  <Footer />
+</Layout>

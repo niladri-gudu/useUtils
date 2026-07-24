@@ -1,0 +1,221 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { UrlEncoder } from '../../components/UrlEncoder';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'URL Encoder', href: '/tools/url-encoder' },
+  { label: 'Hex URL Encoder', href: '/tools/hex-url-encoder', active: true },
+  { label: 'URL Decoder', href: '/tools/url-decoder' }
+];
+
+const faqs = [
+  {
+    question: "What is a Hex URL Encoder?",
+    answer: "A Hex URL Encoder converts characters in a text string or web address into their equivalent hexadecimal character codes prefixing the percent (%) symbol. In strict mode, even standard alphabetic and numerical characters are converted."
+  },
+  {
+    question: "How does strict hex URL encoding differ from standard URL encoding?",
+    answer: "Standard URL encoding (percent-encoding) only encodes unsafe characters like spaces, symbols, and brackets. Strict hex URL encoding encodes every single character (including standard letters and digits) into %XX formats."
+  },
+  {
+    question: "Is strict hex URL encoding valid for web browsers?",
+    answer: "Yes. Web browsers automatically decode percent-encoded hex sequences in URLs when making requests, so a fully hex-encoded domain or path is parsed correctly."
+  },
+  {
+    question: "How to perform Hex URL encoding online?",
+    answer: "Enter your URL or string into the text input area above. The encoder automatically generates the encoded hex URL output in real-time."
+  },
+  {
+    question: "Can I use Hex URL encoding to bypass filters?",
+    answer: "Developers and security analysts use hex URL encoding to test web application firewalls (WAFs) and validation filters against obfuscation vulnerabilities."
+  },
+  {
+    question: "What is the hex URL encoding of 'https'?",
+    answer: "In strict hex encoding, 'https' is converted to <code>%68%74%74%70%73</code>."
+  },
+  {
+    question: "How do I decode a hex-encoded URL?",
+    answer: "You can paste the hex-encoded string into our URL Decoder tool, which automatically reverses percent-encodings back to standard characters."
+  },
+  {
+    question: "How do I encode a string to hex URL encoding in JavaScript?",
+    answer: "You can map each character to its hexadecimal byte code: <br/><code>str.split('').map(c => '%' + c.charCodeAt(0).toString(16).padStart(2, '0')).join('')</code>."
+  },
+  {
+    question: "How do I convert a URL to strict hex in Python?",
+    answer: "Use list comprehensions to format each character code: <br/><code>''.join(f'%{ord(c):02x}' for c in url)</code>."
+  },
+  {
+    question: "What is the ASCII value of percent symbol (%) in URLs?",
+    answer: "The percent symbol is represented as <code>%25</code>. If you encode an already encoded URL, all existing percent signs are converted to <code>%25</code>."
+  },
+  {
+    question: "Why do browsers use percent-encoding?",
+    answer: "URLs must be sent using the limited US-ASCII character set. Characters outside this set, or characters with special routing meanings (like spaces), must be escaped using percent-encoding."
+  },
+  {
+    question: "Does Hex URL encoding secure query parameters?",
+    answer: "No, hex URL encoding is only an obfuscation technique. It does not encrypt data, as any decoder can instantly reverse the characters back to plain text."
+  },
+  {
+    question: "What RFC standard defines URL percent-encoding?",
+    answer: "URL percent-encoding is defined in RFC 3986, which details specifications for Uniform Resource Identifiers (URIs)."
+  },
+  {
+    question: "Does strict hex encoding increase URL size?",
+    answer: "Yes, substantially. Each standard ASCII character is expanded from 1 byte to 3 bytes (e.g. 'A' becomes '%41')."
+  },
+  {
+    question: "How are spaces handled in strict hex URL encoding?",
+    answer: "Spaces are encoded as <code>%20</code> (standard hexadecimal byte code for spaces), rather than the <code>+</code> sign used in application/x-www-form-urlencoded systems."
+  },
+  {
+    question: "Can I encode non-ASCII characters (like UTF-8 emojis)?",
+    answer: "Yes. UTF-8 characters are split into separate bytes first, and then each byte is encoded into %XX hexadecimal blocks."
+  },
+  {
+    question: "What is the hex URL code for a slash (/) character?",
+    answer: "The forward slash is represented as <code>%2F</code>."
+  },
+  {
+    question: "What is the hex URL code for an ampersand (&) character?",
+    answer: "The ampersand character, used to separate query parameters, is represented as <code>%26</code>."
+  },
+  {
+    question: "Is this hex URL encoder run offline?",
+    answer: "Yes. The conversion is calculated completely client-side in your browser. None of your inputs are transmitted to external servers."
+  },
+  {
+    question: "Can hex URL encoding cause 404 page errors?",
+    answer: "If you encode characters that the web server relies on for routing (like domain names or slash delimiters), some servers might not decode them before routing, leading to errors."
+  }
+];
+
+const references = [
+  { title: "RFC 3986 - Uniform Resource Identifier (URI) Standard", url: "https://datatracker.ietf.org/doc/html/rfc3986", source: "IETF Standards" },
+  { title: "W3C HTML URL Encoding Guide Reference", url: "https://www.w3schools.com/tags/ref_urlencode.ASP", source: "W3C Web Specs" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `function strictHexEncode(str) {
+  return str
+    .split('')
+    .map(char => '%' + char.charCodeAt(0).toString(16).toUpperCase().padStart(2, '0'))
+    .join('');
+}
+
+const encoded = strictHexEncode("https://example.com");
+console.log(encoded); // Output: %68%74%74%70%73%3A%2F%2F...`,
+    note: "Transforms every character into %XX format."
+  },
+  {
+    lang: "Python",
+    code: `def strict_hex_encode(url_str):
+    return ''.join(f'%{ord(c):02X}' for c in url_str)
+
+encoded = strict_hex_encode("https://example.com")
+print(encoded)`,
+    note: "Formats ordinal numbers into uppercase hexadecimal strings."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Obfuscating Domain Protocol Names",
+    description: "Encoding the protocol scheme (e.g. <code>https://</code>) into hex inside a browser address bar can prevent browsers from resolving the DNS protocol properly.",
+    fix: "Only obfuscate paths, folders, file names, or query parameter keys and values, keeping the host name in standard plain text."
+  },
+  {
+    title: "Double Hex Encoding",
+    description: "Encoding an already hex-encoded URL converts the percent signs to %25, breaking standard URL decoding engines.",
+    fix: "Always decode your input string first or ensure it is raw text before encoding."
+  }
+];
+---
+
+<ToolPageLayout
+  title="Hex URL Encoder Online: Obfuscate Web Addresses"
+  description="Convert web addresses and strings to strict %XX hexadecimal percent-encoding. Protect parameters, bypass filter limits, and secure links locally."
+  keywords="hex url encoder, percent encoder online, URL hex obfuscator, encode query params to hex, strict hex encoding"
+  toolTitle="Hex URL Encoder"
+  toolDescription="Convert strings and URLs into strict %XX hexadecimal percent-encoding. Convert every character (alphabetic and numeric) into hex byte representation locally in your browser."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <UrlEncoder client:load defaultMode="strictHex" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Strict Hex URL Obfuscation Explained
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Under standard RFC 3986 specifications, web application routes only encode "reserved" characters like spaces and brackets. However, security testing and routing bypass validations often require **strict hex encoding**, which converts *every* character in the URL into a percent-sign hex code.
+      </p>
+      <p class="leading-relaxed">
+        Our **Hex URL Encoder** handles this instantly. By using strict hex mode, standard characters like <code>h</code>, <code>t</code>, and <code>p</code> are converted (to <code>%68</code>, <code>%74</code>, and <code>%70</code>). This provides an offline mechanism to build and verify payload obfuscation.
+      </p>
+    </div>
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="URL Encoding Levels"
+      headers={["Mode", "Target Characters", "Example Input", "Encoded Output"]}
+      rows={[
+        { label: "Standard Encoding", values: ["Only reserved characters", "hello world!", "hello%20world%21"] },
+        { label: "Strict Hex Mode", values: ["All characters encoded", "hello", "%68%65%6c%6c%6f"] },
+        { label: "Form Parameter Mode", values: ["Query formatted (spaces as +)", "hello world", "hello+world"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Common Hex Conversions"
+      description="Inspect how typical web characters translate in strict hex URL format:"
+      examples={[
+        { label: "Slash character", input: "/", output: "%2F", badge: "Slash" },
+        { label: "Colon character", input: ":", output: "%3A", badge: "Colon" },
+        { label: "Query divider", input: "?", output: "%3F", badge: "Question" },
+        { label: "Equal sign", input: "=", output: "%3D", badge: "Equal" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Hex Encoding Snippets"
+      description="Implement strict hex URL encoding in your application backend using these blocks:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common URL Hex Pitfalls"
+      description="Avoid these common errors when handling obfuscated link payloads:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Hex URL Encoding Best Practices"
+      practices={[
+        { title: "Avoid Double Encoding", description: "Be careful not to run the encoder twice, which formats % characters into %25, corrupting the routing destination." },
+        { title: "Verify Browser Support", description: "Test your destination application router to ensure it properly decodes hex blocks before processing queries." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

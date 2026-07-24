@@ -1,10 +1,17 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { JwtEncoder } from '../../components/JwtEncoder';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
 
 const tabs = [
-  { label: 'Decoder', href: '/tools/jwt-decoder' },
-  { label: 'Encoder', href: '/tools/jwt-encoder', active: true }
+  { label: 'JWT Decoder', href: '/tools/jwt-decoder' },
+  { label: 'JWT Encoder', href: '/tools/jwt-encoder', active: true }
 ];
 
 const faqs = [
@@ -47,6 +54,97 @@ const faqs = [
   {
     question: "How do I generate a JWT in Node.js?",
     answer: "In Node.js, you can generate a token using the popular <code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-1\">jsonwebtoken</code> library. Import it and call the sign method with a payload, key, and options:<br /><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto whitespace-pre\">const token = jwt.sign({ userId: 123 }, 'secret-key', { expiresIn: '1h' });</code>"
+  },
+  {
+    question: "How do I encode a JWT in Python?",
+    answer: "Use the PyJWT library: <br/><code>import jwt; token = jwt.encode({'sub': '123'}, 'secret', algorithm='HS256')</code>."
+  },
+  {
+    question: "How do I encode a JWT in Go?",
+    answer: "Use golang-jwt library: <br/><code>token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims); tokenString, _ := token.SignedString(mySigningKey)</code>."
+  },
+  {
+    question: "How do I encode a JWT in Java?",
+    answer: "Use Auth0's java-jwt library: <br/><code>String token = JWT.create().withSubject(\"123\").sign(Algorithm.HMAC256(\"secret\"));</code>."
+  },
+  {
+    question: "What is the 'none' algorithm vulnerability?",
+    answer: "The 'none' algorithm is a legacy option that allows tokens to be accepted without any signature validation. Attackers can exploit this by changing the header algorithm to 'none' and stripping the signature block, bypassing verification on insecure servers."
+  },
+  {
+    question: "What is a JTI claim?",
+    answer: "The 'jti' (JWT ID) claim provides a unique identifier for the JWT. It is used to prevent replay attacks by ensuring a token can only be used once."
+  },
+  {
+    question: "What is the 'nbf' claim?",
+    answer: "The 'nbf' (Not Before) claim identifies the time before which the token must not be accepted for processing."
+  },
+  {
+    question: "What is the 'iat' claim?",
+    answer: "The 'iat' (Issued At) claim identifies the time at which the JWT was generated, useful for measuring the age of a token."
+  },
+  {
+    question: "Can I use multiple audiences in 'aud'?",
+    answer: "Yes, the 'aud' claim can be a single string or an array of strings representing multiple target services."
+  },
+  {
+    question: "How to generate RSA private keys for JWT?",
+    answer: "You can generate RSA private keys in terminal: <br/><code>openssl genpkey -algorithm RSA -out private.pem -pkeyopt rsa_keygen_bits:2048</code>."
+  },
+  {
+    question: "Does the JWT encoder validate expiration timestamps?",
+    answer: "Yes, the tool validates the structure of your JSON payload and provides warnings if dates or timestamps are formatted incorrectly."
+  }
+];
+
+const references = [
+  { title: "RFC 7519 - JSON Web Token (JWT) Standard", url: "https://datatracker.ietf.org/doc/html/rfc7519", source: "IETF Standards" },
+  { title: "JWT.io Introduction and Standards Guide", url: "https://jwt.io/introduction", source: "Auth0 Resources" }
+];
+
+const languageCodes = [
+  {
+    lang: "Node.js (jsonwebtoken)",
+    code: `const jwt = require('jsonwebtoken');
+
+const payload = { sub: 'user_123', role: 'admin' };
+const secretKey = 'my-super-secret-key-value';
+
+// Sign token with HS256 symmetric algorithm (expires in 2 hours)
+const token = jwt.sign(payload, secretKey, { algorithm: 'HS256', expiresIn: '2h' });
+
+console.log(token);`,
+    note: "Generates standard dot-separated base64 encoded JWT token."
+  },
+  {
+    lang: "Python (PyJWT)",
+    code: `import jwt
+import time
+
+payload = {
+    "sub": "user_123",
+    "role": "admin",
+    "exp": int(time.time()) + 7200 # Expires in 2 hours
+}
+secret = "my-super-secret-key-value"
+
+# Sign token using symmetric HS256 algorithm
+token = jwt.encode(payload, secret, algorithm="HS256")
+print(token)`,
+    note: "Automates timestamp formatting and hashing rounds."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Using Weak Secret Keys",
+    description: "Using short or dictionary words (like <code>mysecret</code>) as signing keys allows attackers to brute-force sign tokens using GPU dictionaries.",
+    fix: "Use high-entropy random keys of at least 256 bits (32 bytes)."
+  },
+  {
+    title: "Trusting JWT headers blindly",
+    description: "Failing to restrict the allowed signing algorithms list on your verification servers enables attackers to bypass signatures via 'none' or public key attacks.",
+    fix: "Explicitly declare the allowed algorithms (e.g. <code>['HS256']</code>) inside your verification methods."
   }
 ];
 ---
@@ -62,79 +160,72 @@ const faqs = [
 >
   <JwtEncoder client:load />
 
-  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
-  <div slot="seo-content" class="flex flex-col gap-8">
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
     <!-- Section: Intro -->
     <div>
       <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
         <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        What is a JSON Web Token (JWT) and Why Do Developers Encode Them?
+        JWT Generation Mechanics
       </h2>
-      <p class="text-zinc-400 text-sm leading-relaxed font-sans mb-4">
-        A <strong class="text-zinc-200">JSON Web Token (JWT)</strong> is an open standard (<a href="https://tools.ietf.org/html/rfc7519" target="_blank" rel="noopener noreferrer" class="text-accent-emerald hover:underline">RFC 7519</a>) that defines a compact and self-contained way for securely transmitting information between parties as a JSON object. This information can be verified and trusted because it is digitally signed. JWTs can be signed using a secret (with the HMAC algorithm) or a public/private key pair using RSA or ECDSA.
+      <p class="leading-relaxed mb-4">
+        JSON Web Tokens represent a signed protocol standard. Unlike encryption methods that hide payloads, JWT signing guarantees data integrity, ensuring that any modification to token contents results in validation failures at backend gateways.
       </p>
-      <p class="text-zinc-400 text-sm leading-relaxed font-sans">
-        Developers frequently need to <strong class="text-zinc-200">encode jwt</strong> tokens during the development, testing, and debugging phases of web applications. When building APIs, microservices, or decentralized authorization systems (like OAuth 2.0 or OpenID Connect), authentication tokens must be generated to simulate user log-ins, test edge cases (such as token expiration), and verify that API gateways correctly validate claims. Using a reliable <strong class="text-zinc-200">jwt generator online</strong> allows developers to quickly craft custom payloads, apply cryptographic signatures, and produce valid token strings without writing temporary code in their application.
+      <p class="leading-relaxed">
+        Our **JWT Encoder** simplifies testing. Developers can edit headers, customize claims payloads, add expiry timestamps, and sign tokens using symmetric secrets or asymmetric private key certificates completely client-side in their browsers.
       </p>
     </div>
 
-    <!-- Section: How to Use -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        How to Use the Online JWT Encoder
-      </h2>
-      <p class="text-zinc-400 text-sm leading-relaxed font-sans mb-4">
-        Generating a token with our <strong class="text-zinc-200">online jwt encoder</strong> is straightforward and takes only a few seconds:
-      </p>
-      <ol class="list-decimal list-inside text-zinc-400 text-sm space-y-3 pl-2">
-        <li>
-          <strong class="text-zinc-200">Configure the Header</strong>: Define the token metadata in the Header JSON editor. This includes specifying the token type (<code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">"typ": "JWT"</code>) and the signing algorithm (<code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">"alg"</code>), such as HS256 or RS256.
-        </li>
-        <li>
-          <strong class="text-zinc-200">Define the Payload Claims</strong>: Edit the Payload JSON block to insert your target claims. You can use standard registered claims like <code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">sub</code> (subject), <code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">iss</code> (issuer), <code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">aud</code> (audience), and <code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">exp</code> (expiration time), or inject custom authorization roles and claims.
-        </li>
-        <li>
-          <strong class="text-zinc-200">Select Your Signing Algorithm & Key</strong>: Choose your cryptographic algorithm from the dropdown. For symmetric algorithms (HS256, HS384, HS512), input your secret key. For asymmetric algorithms (RS256, ES256), paste your private key.
-        </li>
-        <li>
-          <strong class="text-zinc-200">Generate & Copy</strong>: The token is encoded dynamically in real-time. Copy the final token string with a single click and use it in your Authorization headers (<code class="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 rounded px-1.5 py-0.5">Bearer &lt;token&gt;</code>).
-        </li>
-      </ol>
-    </div>
+    <!-- Section: Privacy Badge -->
+    <PrivacyBadge />
 
-    <!-- Section: Features -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Core Features of Our JWT Encoder
-      </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <h3 class="font-mono text-xs font-semibold text-accent-emerald uppercase tracking-wider mb-2">Instant Local Generation</h3>
-          <p class="text-zinc-400 text-xs leading-relaxed">
-            Our tool acts as a high-performance <strong class="text-zinc-300">jwt encoder online</strong> that compiles your JSON structures and signs them in real-time as you type, providing an instant output stream.
-          </p>
-        </div>
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <h3 class="font-mono text-xs font-semibold text-accent-emerald uppercase tracking-wider mb-2">100% Client-Side Security</h3>
-          <p class="text-zinc-400 text-xs leading-relaxed">
-            Privacy is our highest priority. All cryptographic operations, signing, and JSON formatting are executed completely inside your browser via local JavaScript. No secret keys, payloads, or credentials are ever sent to a server.
-          </p>
-        </div>
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <h3 class="font-mono text-xs font-semibold text-accent-emerald uppercase tracking-wider mb-2">Algorithmic Support</h3>
-          <p class="text-zinc-400 text-xs leading-relaxed">
-            Easily generate tokens using symmetric signature schemes (HMAC SHA-256, SHA-384, SHA-512) or asymmetric key pairs (RSA, ECDSA) to match your backend configurations.
-          </p>
-        </div>
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <h3 class="font-mono text-xs font-semibold text-accent-emerald uppercase tracking-wider mb-2">Interactive JSON Checks</h3>
-          <p class="text-zinc-400 text-xs leading-relaxed">
-            Avoid formatting issues with built-in, real-time validation that highlights malformed JSON objects before encoding.
-          </p>
-        </div>
-      </div>
-    </div>
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Symmetric vs Asymmetric JWT Algorithms"
+      headers={["Feature", "Symmetric (HMAC - e.g. HS256)", "Asymmetric (RSA/ECDSA - e.g. RS256)"]}
+      rows={[
+        { label: "Keys Used", values: ["Single Shared Secret Key", "Private/Public Key Pair"] },
+        { label: "Token Signing", values: ["Signed with Shared Secret Key", "Signed with Private Key"] },
+        { label: "Token Verification", values: ["Verified with Shared Secret Key", "Verified with Public Key"] },
+        { label: "Best Suited For", values: ["Internal monolithic apps, direct database routing", "Microservices architecture, third-party authentication"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Sample Token Envelope Structure"
+      description="Inspect how the three segments are composed:"
+      examples={[
+        { label: "Header block (Base64Url)", input: '{"alg": "HS256", "typ": "JWT"}', output: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9", badge: "Header" },
+        { label: "Payload block (Base64Url)", input: '{"sub": "12345", "name": "Admin"}', output: "eyJzdWIiOiIxMjM0NSIsIm5hbWUiOiJBZG1pbiJ9", badge: "Payload" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic JWT Hashing & Encoding"
+      description="Sign tokens securely in your backend architectures using these standard snippets:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common JWT Generation Pitfalls"
+      description="Avoid these common security oversights when creating token-based architectures:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="JWT Signing Best Practices"
+      practices={[
+        { title: "Enforce HS256 Key Lengths", description: "Verify your HMAC keys are at least 32 characters long to match SHA-256 byte boundaries." },
+        { title: "Avoid 'none' Algorithm", description: "Explicitly disable the 'none' algorithm header verification on all authentication servers." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
   </div>
 </ToolPageLayout>

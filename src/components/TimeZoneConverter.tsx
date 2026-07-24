@@ -13,7 +13,17 @@ import {
   type LogMatch
 } from '../utils-engine/timezone';
 
-export function TimeZoneConverter() {
+export interface TimeZoneConverterProps {
+  defaultBaseZone?: string;
+  defaultTargetZones?: string[];
+  defaultActiveTab?: 'planner' | 'logs';
+}
+
+export function TimeZoneConverter({
+  defaultBaseZone,
+  defaultTargetZones,
+  defaultActiveTab
+}: TimeZoneConverterProps = {}) {
   // --------------------------------------------------------------------------
   // State variables
   // --------------------------------------------------------------------------
@@ -25,7 +35,7 @@ export function TimeZoneConverter() {
   const [showSearchDropdown, setShowSearchDropdown] = useState<boolean>(false);
   const [workStart, setWorkStart] = useState<number>(9);
   const [workEnd, setWorkEnd] = useState<number>(18);
-  const [activeTab, setActiveTab] = useState<'planner' | 'logs'>('planner');
+  const [activeTab, setActiveTab] = useState<'planner' | 'logs'>(defaultActiveTab || 'planner');
 
   // Meeting Details
   const [meetingTitle, setMeetingTitle] = useState<string>('Sync Meeting');
@@ -56,12 +66,13 @@ export function TimeZoneConverter() {
     // Set default base timezone from user system (mapping legacy Asia/Calcutta to Asia/Kolkata)
     const resolvedZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
     const systemZone = resolvedZone === 'Asia/Calcutta' ? 'Asia/Kolkata' : resolvedZone;
-    setBaseZone(systemZone);
-    setLogTargetZone(systemZone);
+    const finalBaseZone = defaultBaseZone || systemZone;
+    setBaseZone(finalBaseZone);
+    setLogTargetZone(finalBaseZone);
 
     // Default target timezones
-    const defaults = ['UTC', 'America/New_York', 'Europe/London', 'Asia/Kolkata'];
-    const filteredDefaults = defaults.filter(d => d !== systemZone);
+    const defaults = defaultTargetZones || ['UTC', 'America/New_York', 'Europe/London', 'Asia/Kolkata'];
+    const filteredDefaults = defaults.filter(d => d !== finalBaseZone);
     setTargetZones(filteredDefaults);
 
     // Read URL parameters
@@ -98,7 +109,7 @@ export function TimeZoneConverter() {
         setActiveTab('logs');
       }
     }
-  }, [ianaTimeZones]);
+  }, [ianaTimeZones, defaultBaseZone, defaultTargetZones, defaultActiveTab]);
 
   // --------------------------------------------------------------------------
   // Live ticking clock loop

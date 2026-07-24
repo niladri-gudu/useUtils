@@ -1,6 +1,12 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { SlugGenerator } from '../../components/SlugGenerator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
 
 const faqs = [
   {
@@ -42,6 +48,98 @@ const faqs = [
   {
     question: "Is my data safe when using this online slug generator?",
     answer: "Absolutely. Like all tools on useUtils, our URL Slug Generator processes your input text completely inside your browser's local sandbox using JavaScript. No text, slugs, names, or settings are ever uploaded to, processed by, or stored on a server, ensuring 100% privacy and security for your draft titles and codebases."
+  },
+  {
+    question: "Should slugs contain uppercase letters?",
+    answer: "No. Capital letters in URLs can cause duplicate content issues on web servers (e.g. Apache or IIS might treat <code>/page</code> and <code>/Page</code> as different, or fold them). Standard practice is to force all characters to lowercase."
+  },
+  {
+    question: "How does Google index spaces in URLs?",
+    answer: "Spaces in URLs are percent-encoded to <code>%20</code>. This looks unreadable and spammy in search browser displays. Converting spaces to hyphens (<code>-</code>) ensures the URL remains descriptive and clean."
+  },
+  {
+    question: "What is a slug vs a permalink?",
+    answer: "A slug is only the specific page identifier segment (e.g., <code>slug-generator</code>). A permalink is the complete, permanent URL containing the domain, subfolders, and slug (e.g., <code>https://useutils.com/tools/slug-generator</code>)."
+  },
+  {
+    question: "What is a slug vs a filename?",
+    answer: "A slug points to a virtual database-driven route on a website (handled by dynamic routers). A filename refers to a literal file residing on a web server file system (e.g. <code>index.html</code> or <code>image.jpg</code>)."
+  },
+  {
+    question: "What is the maximum slug length for SEO?",
+    answer: "Google handles URLs up to 2,000 characters. However, for SEO readability, keep slugs short, typically between 3 and 5 words (under 60 characters)."
+  },
+  {
+    question: "How to convert text to slugs in JavaScript?",
+    answer: "You can convert text to slugs using a regular expression: <code>const slugify = str => str.toLowerCase().replace(/[^a-z0-9\\s-]/g, '').replace(/\\s+/g, '-').trim();</code>."
+  },
+  {
+    question: "How to slugify text in Python?",
+    answer: "In Python, you can use the <code>python-slugify</code> library or write a custom regex: <code>import re; slug = re.sub(r'[^a-z0-9\\s-]', '', text.lower()).strip().replace(' ', '-')</code>."
+  },
+  {
+    question: "Why does WordPress automatically strip special characters from slugs?",
+    answer: "WordPress sanitizes slugs to prevent security exploits (like SQL Injection or XSS via URL variables) and to guarantee compatibility across all hosting web server specifications."
+  },
+  {
+    question: "How do I prevent duplicate slug issues in databases?",
+    answer: "Search database records before inserting new rows. If the slug exists, append an incremental index (e.g. <code>-1</code>, <code>-2</code>) or a unique random hash suffix."
+  },
+  {
+    question: "Does this tool support bulk slugification?",
+    answer: "Yes. Toggle 'Bulk Mode' under settings, paste your list of titles, and view or download the complete converted list as a CSV or JSON payload."
+  }
+];
+
+const references = [
+  { title: "RFC 3986 - Uniform Resource Identifier (URI): Generic Syntax", url: "https://datatracker.ietf.org/doc/html/rfc3986", source: "IETF Standards" },
+  { title: "Google Search Central - Keep URL Structures Simple", url: "https://developers.google.com/search/docs/crawling-indexing/url-structure", source: "Google SEO Guidelines" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `const slugify = text => {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\\s+/g, '-')           // Replace spaces with -
+    .replace(/[^\\w\\-]+/g, '')       // Remove all non-word chars (except -)
+    .replace(/\\-\\-+/g, '-')         // Replace multiple - with single -
+    .replace(/^-+/, '')              // Trim - from start
+    .replace(/-+$/, '');             // Trim - from end
+};
+
+console.log(slugify("Hello World! useUtils API")); // "hello-world-useutils-api"`,
+    note: "Safe URL-compliant regex slugifier."
+  },
+  {
+    lang: "Python",
+    code: `import re
+import unicodedata
+
+def slugify(value):
+    # Normalize unicode accents
+    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('ascii')
+    value = re.sub(r'[^\\w\\s-]', '', value).strip().lower()
+    return re.sub(r'[-\\s]+', '-', value)
+
+print(slugify("Hello World! useUtils API")) # "hello-world-useutils-api"`,
+    note: "PEP 8 compliant, handles Unicode normalization (e.g. converting é to e)."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Using Underscores instead of Hyphens",
+    description: "Search engine crawlers do not index underscores as word breaks. Utilizing my_article_slug forces Google to index it as a single word, breaking search visibility.",
+    fix: "Always replace spaces and underscores with hyphens: <code>replace(/_/g, '-')</code>."
+  },
+  {
+    title: "Percent-Encoding Accented Characters in Slugs",
+    description: "Failing to transliterate non-Latin accents (like ö, é, or Cyrillic characters) turns slugs into unreadable code paths (e.g., %C3%B6).",
+    fix: "Apply Unicode normalization or transliterate characters into standard Latin equivalents before generating the slug."
   }
 ];
 ---
@@ -56,7 +154,6 @@ const faqs = [
 >
   <SlugGenerator client:load />
 
-  <!-- Explanatory content slots for layout standard conformity -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
     <!-- Section: Intro -->
     <div>
@@ -72,88 +169,70 @@ const faqs = [
       </p>
     </div>
 
-    <!-- Section: URL Safe Reference -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+    <!-- Section: Cross Links -->
+    <div class="flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight flex items-center gap-2">
         <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        URL Character Classification Rules
+        Other URL & String Utilities
       </h2>
-      <p class="leading-relaxed mb-4">
-        Not all characters are safe to use in URL paths. According to RFC 3986, characters are classified into reserved, unreserved, and unsafe characters:
-      </p>
-      
-      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
-              <th class="p-3">Character Class</th>
-              <th class="p-3">Examples</th>
-              <th class="p-3">URL Status</th>
-              <th class="p-3">Generator Action</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
-            <tr>
-              <td class="p-3 text-zinc-200">Unreserved Characters</td>
-              <td class="p-3"><code>a-z</code>, <code>A-Z</code>, <code>0-9</code>, <code>-</code>, <code>_</code>, <code>.</code>, <code>~</code></td>
-              <td class="p-3 text-emerald-400">100% Safe</td>
-              <td class="p-3">Preserved (and lowercase applied)</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">Reserved Characters</td>
-              <td class="p-3"><code>?</code>, <code>&amp;</code>, <code>#</code>, <code>/</code>, <code>:</code>, <code>@</code>, <code>+</code>, <code>=</code></td>
-              <td class="p-3 text-yellow-500">Requires Encoding</td>
-              <td class="p-3">Stripped, or expanded (e.g. &amp; → and, @ → at)</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">Whitespace &amp; Accents</td>
-              <td class="p-3">Spaces, tabs, <code>é</code>, <code>ö</code>, <code>ç</code>, <code>й</code></td>
-              <td class="p-3 text-red-400">Unsafe / Percent-encoded</td>
-              <td class="p-3">Replaced with separator, or transliterated</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">Control Characters</td>
-              <td class="p-3">Newlines, backspaces, binary bytes</td>
-              <td class="p-3 text-red-500">Illegal in URLs</td>
-              <td class="p-3">Always stripped completely</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <a href="/tools/url-slug-generator" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">URL Slug Generator</a>
+        <a href="/tools/case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Case Converter</a>
+        <a href="/tools/url-encoder" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">URL Encoder</a>
       </div>
     </div>
 
-    <!-- Section: Features -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Advanced SEO Slug Generation Features
-      </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Cyrillic &amp; Accent Transliteration</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            Automatically convert accented characters (like <code>é</code> or <code>ñ</code>), German Umlauts (like <code>ä</code> to <code>ä</code>), or Russian/Ukrainian Cyrillic strings into standard Latin strings to maintain human-readable URL architectures.
-          </p>
-        </div>
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Pre-configured Engine Presets</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            One-click selectors to format slugs for specific frameworks. Includes WordPress Slugs, Shopify product URLs, Next.js dynamic routes, or SQL Database columns.
-          </p>
-        </div>
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Bulk Conversion Excel Grid</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            Convert hundreds of titles simultaneously by toggling Bulk Mode. Instantly view side-by-side matches and download the list as formatted JSON or a standard CSV file ready to seed.
-          </p>
-        </div>
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Local Browser Processing</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            No API keys, databases, or third-party servers are involved. Text normalization is performed locally within the client sandbox to guarantee absolute data privacy for confidential project structures.
-          </p>
-        </div>
-      </div>
-    </div>
+    <!-- Section: URL Safe Reference -->
+    <ComparisonTable
+      title="URL Character Classification Rules"
+      description="Not all characters are safe to use in URL paths. According to RFC 3986, characters are classified into reserved, unreserved, and unsafe characters:"
+      headers={["Character Class", "Examples", "URL Status", "Generator Action"]}
+      rows={[
+        { label: "Unreserved Characters", values: ["<code>a-z</code>, <code>A-Z</code>, <code>0-9</code>, <code>-</code>, <code>_</code>, <code>.</code>, <code>~</code>", "100% Safe", "Preserved (and lowercase applied)"] },
+        { label: "Reserved Characters", values: ["<code>?</code>, <code>&amp;</code>, <code>#</code>, <code>/</code>, <code>:</code>, <code>@</code>, <code>+</code>, <code>=</code>", "Requires Encoding", "Stripped, or expanded (e.g. &amp; → and, @ → at)"] },
+        { label: "Whitespace &amp; Accents", values: ["Spaces, tabs, <code>é</code>, <code>ö</code>, <code>ç</code>, <code>й</code>", "Unsafe / Percent-encoded", "Replaced with separator, or transliterated"] },
+        { label: "Control Characters", values: ["Newlines, backspaces, binary bytes", "Illegal in URLs", "Always stripped completely"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="URL Slug Conversion Examples"
+      description="Compare title strings and their converted URL-safe slug formats:"
+      examples={[
+        { label: "SEO Article Heading", input: "How to Build a React App in 2026!", output: "how-to-build-a-react-app-in-2026", badge: "Slugify" },
+        { label: "Accented Multilingual Title", input: "Café und Frédéric en Montréal", output: "cafe-und-frederic-en-montreal", badge: "Transliterated" },
+        { label: "Config Path Node", input: "database://user:pass@localhost:5432/db", output: "database-user-pass-localhost-5432-db", badge: "Sanitized" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Slug Generation Snippets"
+      description="Sanitize paths and titles dynamically inside your custom scripts:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Slug Generation Pitfalls"
+      description="Avoid these common errors when transforming variables and URL paths:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="URL Slug Best Practices"
+      practices={[
+        { title: "Use Hyphens for SEO", description: "Enforce hyphens as separators, as Google treats underscores as joiners rather than word boundaries." },
+        { title: "Strip Minor Stop Words", description: "Remove conjunctions ('and', 'the', 'in') to keep URL paths short and highlight core keywords." },
+        { title: "Prevent Suffix Collision", description: "Append short random indices or ID hashes to prevent duplicate database route collisions." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
   </div>
 </ToolPageLayout>

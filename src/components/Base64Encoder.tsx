@@ -55,12 +55,20 @@ const SAMPLE_TEXT = `// Sample configuration structure
   ]
 }`;
 
-export const Base64Encoder: React.FC = () => {
+interface Base64EncoderProps {
+  defaultMode?: 'text' | 'file';
+  defaultOutputFormat?: 'raw' | 'uri' | 'css' | 'html';
+}
+
+export const Base64Encoder: React.FC<Base64EncoderProps> = ({
+  defaultMode = 'text',
+  defaultOutputFormat = 'raw'
+}) => {
   const [input, setInput] = useState<string>('');
-  const [mode, setMode] = useState<'text' | 'file'>('text');
+  const [mode, setMode] = useState<'text' | 'file'>(defaultMode);
   const [encoding, setEncoding] = useState<'utf-8' | 'ascii'>('utf-8');
   const [lineWrap, setLineWrap] = useState<'none' | '64' | '76'>('none');
-  const [outputFormat, setOutputFormat] = useState<'raw' | 'uri' | 'css' | 'html'>('raw');
+  const [outputFormat, setOutputFormat] = useState<'raw' | 'uri' | 'css' | 'html'>(defaultOutputFormat);
   
   // File upload states
   const [file, setFile] = useState<File | null>(null);

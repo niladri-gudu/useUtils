@@ -1,0 +1,224 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { Base64Encoder } from '../../components/Base64Encoder';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'Base64 Encoder', href: '/tools/base64-encoder' },
+  { label: 'Image to Base64', href: '/tools/image-to-base64', active: true },
+  { label: 'Base64 Decoder', href: '/tools/base64-decoder' }
+];
+
+const faqs = [
+  {
+    question: "How do I convert an image to Base64 online?",
+    answer: "Select the File Drop tab in the tool above, drag and drop your image file (PNG, JPEG, SVG, WebP, etc.), or click to browse. The converter generates the raw Base64 string and wrapped codes instantly in your browser."
+  },
+  {
+    question: "Is this image to Base64 encoder secure?",
+    answer: "Yes, 100%. Like all tools on useUtils, the conversion runs entirely in client-side JavaScript. No file buffers, pixel datasets, or metadata are ever uploaded to any external server."
+  },
+  {
+    question: "What is the file size overhead of Base64 images?",
+    answer: "Converting an image to Base64 increases the character byte size by exactly 33.3%. This is because Base64 represents 3 bytes of raw binary using 4 ASCII characters. We recommend keeping embedded images under 10-20KB."
+  },
+  {
+    question: "How do I inline a Base64 image in HTML?",
+    answer: "Use the Data URI wrapper format inside the src attribute of an image tag: <br/><code>&lt;img src=\"data:image/png;base64,iVBORw0...\" alt=\"Embedded Image\" /&gt;</code>."
+  },
+  {
+    question: "How do I embed a Base64 image in a CSS stylesheet?",
+    answer: "You can set it as a background-image property: <br/><code>background-image: url(\"data:image/png;base64,iVBORw0...\");</code>."
+  },
+  {
+    question: "Can I convert SVG files to Base64?",
+    answer: "Yes. SVG files are XML text but can be encoded into Base64 to prevent rendering breaks. Alternatively, you can use URL-encoding for SVG inline vectors."
+  },
+  {
+    question: "How do I convert an image to Base64 in JavaScript?",
+    answer: "In client-side JS, read the file using the <code>FileReader</code> API and call the <code>readAsDataURL()</code> method, which returns the Base64 Data URI directly."
+  },
+  {
+    question: "How to convert an image to Base64 in Node.js?",
+    answer: "Use the built-in <code>fs</code> module to read the file into a buffer, then serialize it with base64 encoding: <br/><code>fs.readFileSync('image.png').toString('base64')</code>."
+  },
+  {
+    question: "How do I convert an image to Base64 in Python?",
+    answer: "Use the built-in <code>base64</code> module: <br/><code>base64.b64encode(open('image.png', 'rb').read()).decode('utf-8')</code>."
+  },
+  {
+    question: "Which image formats are supported by the encoder?",
+    answer: "Any image formats recognized by your system (including PNG, JPEG, SVG, WebP, GIF, ICO, and BMP) can be parsed and converted locally."
+  },
+  {
+    question: "Does embedding images in CSS improve page load speed?",
+    answer: "Yes, for small assets like icons. It reduces the number of separate HTTP requests the browser must make. However, it blocks parallel stylesheets loading if payloads are too large."
+  },
+  {
+    question: "Can I convert PDF files to Base64?",
+    answer: "Yes. The encoder supports any binary files, including PDFs, which can be encoded and loaded in iframes or object tags via Data URIs."
+  },
+  {
+    question: "What is a Data URI schema?",
+    answer: "A Data URI schema is a uniform resource identifier scheme that allows content creators to embed small files inline in web documents using the format <code>data:[mediatype];base64,[data]</code>."
+  },
+  {
+    question: "How does the browser parse Base64 images?",
+    answer: "The browser's layout engine decodes the ASCII characters back to original binary bytes on the fly, rendering the image data directly in memory without fetching a remote URL."
+  },
+  {
+    question: "Why is the equals sign (=) used in Base64?",
+    answer: "The equals sign is used as padding to make the encoded character count a multiple of 4. A string can end with one or two padding characters."
+  },
+  {
+    question: "Does caching work for inline Base64 images?",
+    answer: "Inline Base64 images in HTML are not cached separately; they are cached as part of the HTML document. However, if embedded in a CSS stylesheet, they are cached when the CSS file is cached."
+  },
+  {
+    question: "Can I download the raw binary file from a Base64 string?",
+    answer: "Yes. Using our Base64 Decoder page, you can paste the Base64 string or Data URI and download the reconstructed image file locally."
+  },
+  {
+    question: "What is the difference between standard Base64 and Base64URL?",
+    answer: "Standard Base64 contains '+' and '/' characters. Base64URL replaces them with '-' and '_' to prevent URL query parameter breaks."
+  },
+  {
+    question: "Does Base64 encoding strip image EXIF metadata?",
+    answer: "No. Standard Base64 converts the entire binary stream, including EXIF metadata. To strip metadata, compress or re-save the image before encoding."
+  },
+  {
+    question: "Can Base64 images be indexed by Google Images?",
+    answer: "Generally, Google can parse and index inline Data URI images inside HTML, but standard external URL links are preferred for SEO rankings."
+  }
+];
+
+const references = [
+  { title: "RFC 4648 - The Base16, Base32, and Base64 Data Encodings", url: "https://datatracker.ietf.org/doc/html/rfc4648", source: "IETF Standards" },
+  { title: "Mozilla Developer Network - Data URIs Guide", url: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs", source: "MDN Web Docs" }
+];
+
+const languageCodes = [
+  {
+    lang: "Node.js",
+    code: `const fs = require('fs');
+
+// Read image file into binary buffer
+const imageBuffer = fs.readFileSync('icon.png');
+
+// Convert buffer to Base64 string
+const base64String = imageBuffer.toString('base64');
+
+// Wrap in Data URI format
+const dataUri = \`data:image/png;base64,\${base64String}\`;
+console.log(dataUri);`,
+    note: "Node.js buffers natively support base64 serialization."
+  },
+  {
+    lang: "Python",
+    code: `import base64
+
+with open("icon.png", "rb") as image_file:
+    # Encode binary bytes and decode to UTF-8 text string
+    encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+    
+data_uri = f"data:image/png;base64,{encoded_string}"
+print(data_uri)`,
+    note: "Reads image in binary mode ('rb') before encoding."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Embedding Large Image Payloads",
+    description: "Inlining Base64 images larger than 50KB increases HTML/CSS sizes significantly, bloating transfer times and delaying page rendering.",
+    fix: "Only use Base64 inline embeddings for small graphics (under 10KB) like loading spinners or SVG vectors."
+  },
+  {
+    title: "Omitting MIME Type Headers in Data URIs",
+    description: "Failing to define the correct image media type (e.g. <code>image/webp</code>) can cause browser rendering failures.",
+    fix: "Ensure your Data URI is properly formatted: <code>data:image/png;base64,[data]</code>."
+  }
+];
+---
+
+<ToolPageLayout
+  title="Image to Base64 Converter Online: Encode Images locally"
+  description="Convert PNG, JPEG, WebP, SVG, and GIFs to Base64 online. Generate HTML img tags, CSS background-image rules, or Data URIs. 100% private, browser-based."
+  keywords="image to base64, convert image to base64, base64 image generator, png to base64, svg to base64, data uri image generator"
+  toolTitle="Image to Base64 Converter"
+  toolDescription="Convert images and vector assets into Base64 characters instantly. Drag and drop files to output standard Base64 string outputs, Data URIs, HTML embed tags, or CSS backgrounds."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <Base64Encoder client:load defaultMode="file" defaultOutputFormat="uri" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Why Encode Images to Base64?
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Web performance relies heavily on optimizing assets. When a web page contains dozens of small icons, logos, or loading indicators, fetching them requires separate HTTP requests, adding latency and delay to the initial render.
+      </p>
+      <p class="leading-relaxed">
+        Our **Image to Base64 Converter** solves this by letting you inline binary assets directly into your HTML, stylesheets, or database configurations. By converting pixels to text, you consolidate asset transport and eliminate request overhead.
+      </p>
+    </div>
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Asset Delivery Comparison"
+      headers={["Delivery Method", "HTTP requests Count", "Cached State", "Best For"]}
+      rows={[
+        { label: "External URL Link", values: ["1 request per image", "Cached independently by browser", "Large photos, user content, high-res images"] },
+        { label: "Base64 Inline HTML", values: ["0 additional requests", "Cached as part of HTML file", "Tiny loading indicators, placeholders"] },
+        { label: "Base64 Inline CSS", values: ["0 additional requests", "Cached as part of stylesheet file", "Small UI icons, background patterns"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Image Embed Syntaxes"
+      description="Inspect how images are formatted for markup and style scripts:"
+      examples={[
+        { label: "HTML Embed Tag", input: "icon.png (Base64)", output: '<img src="data:image/png;base64,iVBORw0KGgo..." alt="Embedded Icon" />', badge: "HTML" },
+        { label: "CSS Background Rule", input: "pattern.svg (Base64)", output: 'background-image: url("data:image/svg+xml;base64,PHN2Zy...");', badge: "CSS" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Image Encoding Snippets"
+      description="Convert local image files to Base64 in your application logic:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Image Encoding Pitfalls"
+      description="Avoid these issues when converting graphic assets to text strings:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Image Encoding Best Practices"
+      practices={[
+        { title: "Optimize Before Encoding", description: "Always run images through compression tools (like tinypng) before converting to keep base64 strings small." },
+        { title: "Avoid Large Formats", description: "Do not encode large photographs. Keep inline base64 files below 10KB to preserve bandwidth." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

@@ -1,0 +1,229 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { ColorConverter } from '../../components/ColorConverter';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "What is RGB to HEX conversion?",
+    answer: "RGB to HEX conversion translates decimal Red, Green, and Blue values (0 to 255) into a 6-character base-16 hexadecimal string."
+  },
+  {
+    question: "How do I convert RGB to HEX mathematically?",
+    answer: "Divide each color channel value by 16. The quotient becomes the first hex digit, and the remainder becomes the second hex digit (remap remainders 10-15 to A-F). Concatenate the values in R-G-B order to get the final hex code."
+  },
+  {
+    question: "How does transparency translate from RGBA to HEX?",
+    answer: "RGBA alpha value (0.0 to 1.0) is multiplied by 255, rounded to the nearest integer, and converted to a 2-character hex code. Append this suffix to the 6-character hex code to get an 8-character HEXA string."
+  },
+  {
+    question: "Why use HEX instead of RGB in web styling?",
+    answer: "HEX codes are shorter, easier to read, copy, and paste into style variables. They are standard in web style definitions."
+  },
+  {
+    question: "What does RGB stand for?",
+    answer: "RGB stands for Red, Green, and Blue, which are the primary colors of light used in digital screens."
+  },
+  {
+    question: "What is the hex code for pure white?",
+    answer: "#FFFFFF, which is rgb(255, 255, 255)."
+  },
+  {
+    question: "What is the hex code for pure black?",
+    answer: "#000000, which is rgb(0, 0, 0)."
+  },
+  {
+    question: "How do I represent RGB colors with CSS custom properties?",
+    answer: "You can define channels as raw numbers: `--color-primary: 52 211 153;` and render them in stylesheets as `rgb(var(--color-primary))` or `rgba(var(--color-primary), 0.5)`."
+  },
+  {
+    question: "What are the valid ranges for RGB values?",
+    answer: "Each color channel must be an integer between 0 and 255. Values outside this range are clamped by browser render engines."
+  },
+  {
+    question: "How does this converter handle values outside the 0-255 range?",
+    answer: "Our parser automatically validates inputs and clamps numeric channels to stay between 0 and 255, avoiding syntax errors."
+  },
+  {
+    question: "What does HEXA mean?",
+    answer: "HEXA stands for Hexadecimal Alpha, which is an 8-character color code representing transparency values."
+  },
+  {
+    question: "Is HEX case-sensitive?",
+    answer: "No, hex strings are case-insensitive. `#34d399` and `#34D399` represent the exact same color."
+  },
+  {
+    question: "Can I convert RGB to HSL on this page?",
+    answer: "Yes. Paste an RGB color like `rgb(52, 211, 153)` into the command input, and the page will translate it to HSL automatically."
+  },
+  {
+    question: "What is relative luminance?",
+    answer: "Relative luminance represents the perceived brightness of a color relative to pure white. It is used to calculate WCAG accessibility contrast."
+  },
+  {
+    question: "What is color depth?",
+    answer: "Color depth represents the number of bits used to indicate the color of a single pixel. An 8-bit channel depth gives 256 intensities per channel, creating 16.7 million colors in 24-bit RGB space."
+  },
+  {
+    question: "Can I use RGB colors inside Tailwind CSS?",
+    answer: "Yes, you can use arbitrary values: `bg-[rgb(52,211,153)]` or register your RGB custom properties in tailwind configurations."
+  },
+  {
+    question: "Do you support CSS Named Colors like 'red' or 'blue'?",
+    answer: "Yes, our smart detection matches CSS Named Colors and outputs their corresponding HEX and RGB values."
+  },
+  {
+    question: "Is there a contrast checker built-in?",
+    answer: "Yes, our page checks contrast ratios against standard backgrounds to ensure design accessibility."
+  },
+  {
+    question: "Does this converter transmit design data online?",
+    answer: "No. The converter runs 100% locally in your web browser. No color inputs or images are sent to any remote servers."
+  },
+  {
+    question: "Why does my converted color look slightly different on mobile?",
+    answer: "This is due to display hardware variations. Mobile screens use different panel profiles (like OLED vs IPS) which calibrate color balance differently."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "TypeScript",
+    code: `
+function rgbToHex(r: number, g: number, b: number, a?: number): string {
+  const clamp = (val: number) => Math.max(0, Math.min(255, Math.round(val)));
+  const toHex = (val: number) => clamp(val).toString(16).padStart(2, '0').toUpperCase();
+  
+  let hex = \`#\${toHex(r)}\${toHex(g)}\${toHex(b)}\`;
+  if (a !== undefined && a >= 0 && a <= 1) {
+    hex += toHex(a * 255);
+  }
+  return hex;
+}
+    `,
+    note: "Clamps inputs to valid 0-255 ranges and appends alpha if provided."
+  },
+  {
+    lang: "Python",
+    code: `
+def rgb_to_hex(r, g, b, a=None):
+    clamp = lambda x: max(0, min(255, int(round(x))))
+    hex_str = f"#{clamp(r):02X}{clamp(g):02X}{clamp(b):02X}"
+    if a is not None and 0.0 <= a <= 1.0:
+        hex_str += f"{clamp(a * 255):02X}"
+    return hex_str
+    `,
+    note: "Returns upper-case formatted Hex strings."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Wrong Number Ranges",
+    description: "Passing values greater than 255 or negative integers. Ensure values remain inside 0-255 limits."
+  },
+  {
+    title: "Incorrect Formatting",
+    description: "Omitting commas in standard css statements like rgb(52 211 153) without modern spacing protocols."
+  },
+  {
+    title: "Decimal Precision Errors",
+    description: "Forgetting to scale alpha parameters (which are 0 to 1) when converting into hex pairs (00 to FF)."
+  }
+];
+
+const references = [
+  {
+    title: "W3C CSS Color Module Standard",
+    url: "https://www.w3.org/TR/css-color-4/"
+  },
+  {
+    title: "sRGB Specification",
+    url: "https://www.w3.org/Graphics/Color/sRGB.html"
+  }
+];
+---
+
+<ToolPageLayout
+  title="RGB to HEX Color Converter | Real-time Hex Code Translation"
+  description="Convert decimal RGB and RGBA coordinates to hexadecimal and HEXA codes instantly. Features a live color preview square, native color picker, and WCAG accessibility checker."
+  keywords="rgb to hex, rgba to hex, color converter, rgb color, hex code, css color channels, web accessibility color"
+  toolTitle="RGB to HEX Converter"
+  toolDescription="Convert decimal Red, Green, and Blue coordinates to hexadecimal notation. Adjust alpha values, preview color harmonies, and verify accessibility rating."
+  faqs={faqs}
+>
+  <ColorConverter defaultColor="rgb(52, 211, 153)" defaultInputMode="rgb" client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <PrivacyBadge />
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Translating RGB Color Data to HEX Format
+      </h2>
+      <p class="leading-relaxed mb-3">
+        Modern UI designs specify color coordinates using the decimal sRGB space. However, hexadecimal strings are frequently preferred in configuration systems and static stylesheets due to their concise length and ease of reading.
+      </p>
+      <p class="leading-relaxed">
+        Our translator handles standard CSS syntax inputs, parses each component, maps them to base-16 strings, and pads shorthand notations to prevent display output errors.
+      </p>
+    </div>
+
+    <ComparisonTable
+      title="RGB and HEX Color Models"
+      description="Compare how colors and transparency states are represented:"
+      headers={["Color Spec", "Decimal Style", "Hexadecimal Representation", "Alpha Opacity Support"]}
+      rows={[
+        { label: "Standard RGB", values: ["rgb(52, 211, 153)", "#34D399", "No"] },
+        { label: "Transparent RGB", values: ["rgba(52, 211, 153, 0.5)", "#34D39980", "Yes"] },
+        { label: "Shorthand Color", values: ["rgb(255, 0, 0)", "#F00 / #FF0000", "No"] }
+      ]}
+    />
+
+    <ExampleCard
+      title="RGB to HEX Conversion Examples"
+      description="Observe standard color mappings:"
+      examples={[
+        { label: "Emerald Green", input: "rgb(52, 211, 153)", output: "#34D399", badge: "RGB" },
+        { label: "Royal Blue", input: "rgb(66, 135, 245)", output: "#4287F5", badge: "RGB" },
+        { label: "Coral Red", input: "rgb(245, 108, 66)", output: "#F56C42", badge: "RGB" }
+      ]}
+    />
+
+    <LanguageSupport
+      languages={languageCodes}
+      title="RGB to HEX Code Templates"
+      description="Apply these language snippets in your projects:"
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common RGB Formatting Mistakes"
+    />
+
+    <BestPractices
+      title="RGB to HEX Conversion Best Practices"
+      practices={[
+        { title: "Normalize Input Values", description: "Scale custom color levels between 0 and 255 before generating hex code output." },
+        { title: "Preserve Uppercase", description: "Use uppercase letters in hex codes when generating values for design specs to make them easier to read." }
+      ]}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+
+    <RelatedTools
+      currentToolUrl="/tools/rgb-to-hex"
+      category="css"
+    />
+  </div>
+</ToolPageLayout>

@@ -1,0 +1,223 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { BoxShadowGenerator } from '../../components/BoxShadowGenerator';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "What is an Inset Shadow?",
+    answer: "An Inset Shadow is a CSS box-shadow effect rendered inside the element's border rather than outside, creating a recessed, sunken, or hollow 3D visual appearance."
+  },
+  {
+    question: "How do I create an inset shadow in CSS?",
+    answer: "Add the `inset` keyword to your `box-shadow` property value. For example: `box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.15);`."
+  },
+  {
+    question: "How do I declare an inset shadow in Tailwind CSS?",
+    answer: "Use the `shadow-inner` class for standard inset shadows, or write custom values inside arbitrary brackets: `shadow-[inset_0_4px_6px_rgba(0,0,0,0.15)]`."
+  },
+  {
+    question: "Can I combine inset and outset shadows in a single CSS rule?",
+    answer: "Yes. Separate each shadow declaration with a comma, specifying the `inset` keyword only for the inner layers: `box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.05);`."
+  },
+  {
+    question: "Why use inset shadows in user interface design?",
+    answer: "Inset shadows are excellent for styling form inputs, active button states, and wells, helping signify recessed interactions."
+  },
+  {
+    question: "Does border-radius clip inset shadows?",
+    answer: "Yes, standard browser engines automatically clip inset shadows to follow the element's rounded corner boundaries."
+  },
+  {
+    question: "What does the spread parameter do in an inset shadow?",
+    answer: "In an inset shadow, increasing the spread value expands the shadow inward from the element's edges toward the center."
+  },
+  {
+    question: "How do I create a soft inner glow using inset shadows?",
+    answer: "Set horizontal and vertical offsets to 0, use a high blur value (e.g. 20px), and set a subtle semi-transparent color: `box-shadow: inset 0 0 20px rgba(52, 211, 153, 0.2);`."
+  },
+  {
+    question: "Is there a performance cost to using inset shadows?",
+    answer: "No, browser rendering engines compile inset shadow declarations to GPU-accelerated drawing operations, resulting in smooth execution speeds."
+  },
+  {
+    question: "What happens if a box has overflow hidden and an inset shadow?",
+    answer: "The inner shadow renders normally because it sits inside the element's content border box."
+  },
+  {
+    question: "Can I use inset shadows on text?",
+    answer: "No, `box-shadow` only applies to the element box. To style inner text shadows, developers combine clipping masks or use SVG filters."
+  },
+  {
+    question: "What is the difference between inset shadow and border?",
+    answer: "Borders occupy physical layout space and push adjacent elements. Inset shadows render on a paint layer inside the box boundaries without modifying element width or layout flow."
+  },
+  {
+    question: "Can I animate inset shadows using CSS transitions?",
+    answer: "Yes, browser engines smoothly interpolate offsets, blur, spread, and color coordinates during transition rules."
+  },
+  {
+    question: "Does this generator run locally in my browser?",
+    answer: "Yes, all shadow computations and rendering operations execute purely client-side, ensuring complete privacy."
+  },
+  {
+    question: "What are the accessibility requirements for inset shadows?",
+    answer: "Ensure inner shadows on interactive elements (like input fields) maintain a 3:1 contrast ratio to remain recognizable."
+  },
+  {
+    question: "How does the alpha channel affect inner shadows?",
+    answer: "The alpha channel controls transparency, letting the background color show through for a softer blend."
+  },
+  {
+    question: "Can I export shadows as Tailwind v4 variables?",
+    answer: "Yes, our tool provides a Tailwind v4 theme export tab for easy configuration."
+  },
+  {
+    question: "How does screen resolution affect CSS shadows?",
+    answer: "CSS shadows are vector elements drawn programmatically by the browser, meaning they scale smoothly to high-density displays."
+  },
+  {
+    question: "Can I copy the code as standard SCSS variables?",
+    answer: "Yes, the export panel includes a SCSS tab to copy variables directly."
+  },
+  {
+    question: "Does using CSS shadows affect site speed?",
+    answer: "No, using CSS shadows is significantly faster and uses less bandwidth than loading pre-rendered image files."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "CSS",
+    code: `
+/* Soft Inner Glow */
+.glow-card {
+  box-shadow: inset 0 0 15px rgba(52, 211, 153, 0.3);
+}
+
+/* Hard Inset Shadow */
+.inset-box {
+  box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+    `,
+    note: "Modern CSS declarations using standard inset properties."
+  },
+  {
+    lang: "Tailwind CSS",
+    code: `
+<!-- Soft Inner Glow -->
+<div class="shadow-[inset_0_0_15px_rgba(52,211,153,0.3)] h-32 w-full rounded-xl bg-zinc-800"></div>
+    `,
+    note: "Tailwind arbitrary bracket utility syntax."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Wrong Keyword Placement",
+    description: "Placing the `inset` keyword at the end of the `box-shadow` values in older legacy environments. Standard practice is to declare it first: `box-shadow: inset ...`."
+  },
+  {
+    title: "Applying Inset to Invisible Boxes",
+    description: "Forgetting that inner shadows won't render visibly if the box element has a width or height of 0."
+  },
+  {
+    title: "Over-Saturating Colored Shadows",
+    description: "Using fully opaque color values for shadows, which creates harsh, unrealistic edges."
+  }
+];
+
+const references = [
+  {
+    title: "W3C CSS Backgrounds and Borders Module Level 3",
+    url: "https://www.w3.org/TR/css-backgrounds-3/#box-shadow"
+  },
+  {
+    title: "MDN Web Docs: box-shadow property",
+    url: "https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow"
+  }
+];
+---
+
+<ToolPageLayout
+  title="Inset Shadow Generator | Visual Inner Box Shadow Designer"
+  description="Generate custom CSS inset box shadows visually. Configure inner offsets, blur, and spread, and copy clean CSS or Tailwind classes."
+  keywords="inset shadow generator, inner box shadow, css inset shadow, tailwind inner shadow, visual shadow generator"
+  toolTitle="Inset Shadow Generator"
+  toolDescription="Design custom inset shadows. Configure inner offsets, blur, and spread, and copy clean CSS or Tailwind classes."
+  faqs={faqs}
+>
+  <BoxShadowGenerator defaultPresetKey="inset" client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <PrivacyBadge />
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Visualizing and Designing Inset Shadows
+      </h2>
+      <p class="leading-relaxed mb-3">
+        Inset shadows render inside the element's border box, creating a recessed, sunken, or hollow 3D visual appearance.
+      </p>
+      <p class="leading-relaxed">
+        Our Inset Shadow Generator provides an interactive timeline to adjust color coordinates, customize transparency levels, and copy responsive class utilities.
+      </p>
+    </div>
+
+    <ComparisonTable
+      title="Inset and Outset Shadows Comparison"
+      description="Compare styling parameters and offsets:"
+      headers={["Shadow Type", "CSS Declaration Example", "Visual Effect", "Standard UI Role"]}
+      rows={[
+        { label: "Inset Shadow", values: ["box-shadow: inset 0 2px 4px rgba(0,0,0,0.1)", "Recessed / sunken", "Active buttons and input fields"] },
+        { label: "Outset Shadow", values: ["box-shadow: 0 4px 6px rgba(0,0,0,0.1)", "Elevated / raised", "App cards and modal overlays"] }
+      ]}
+    />
+
+    <ExampleCard
+      title="Popular Inset Shadow Presets"
+      description="Frequently used design coordinates:"
+      examples={[
+        { label: "Standard Inner", input: "box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.06)", output: "Copied!", badge: "CSS" },
+        { label: "Soft Inner Glow", input: "box-shadow: inset 0 0 15px rgba(52, 211, 153, 0.3)", output: "Copied!", badge: "CSS" },
+        { label: "Deep Sunken Well", input: "box-shadow: inset 0 10px 20px rgba(0, 0, 0, 0.2)", output: "Copied!", badge: "CSS" }
+      ]}
+    />
+
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Inset Shadow Integration"
+      description="Apply these styles in your markup code:"
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Inset Shadow Pitfalls"
+    />
+
+    <BestPractices
+      title="Inset Shadow Best Practices"
+      practices={[
+        { title: "Define a Theme Property", description: "Save repeating custom shadows as theme variables in your config to maintain stylesheet consistency." },
+        { title: "Optimize Contrast Compliance", description: "Ensure background color values have adequate contrast against text overlays." }
+      ]}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+
+    <RelatedTools
+      currentToolUrl="/tools/inset-shadow-generator"
+      category="css"
+    />
+  </div>
+</ToolPageLayout>

@@ -1,0 +1,199 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { DateCalculator } from '../../components/DateCalculator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "How do I add days to a specific date?",
+    answer: "Enter your starting date in the adjuster panel, select the 'Add' offset parameter, input the number of days, and the engine will immediately display the target date, day of the week, and remaining calendar details."
+  },
+  {
+    question: "How does the date calculator handle month boundaries?",
+    answer: "The date math engine automatically adjusts for varying month lengths (e.g. 28, 30, or 31 days) when rolling over boundaries. For example, adding 5 days to October 28th correctly yields November 2nd."
+  },
+  {
+    question: "Does this calculator account for leap years?",
+    answer: "Yes, leap year logic is fully integrated. If you add days across February in a leap year (such as 2024 or 2028), the engine automatically includes February 29th in the calendar calculation."
+  },
+  {
+    question: "Can I add weeks or months instead of days?",
+    answer: "Yes, the Date Adjuster panel supports adding days, weeks, months, or years. You can customize the scale using the unit dropdown selector."
+  },
+  {
+    question: "Is my calendar data kept secure and private?",
+    answer: "Yes. All computations are performed locally in your browser sandbox using JavaScript. No dates, notes, or offset variables are ever uploaded to a server."
+  },
+  {
+    question: "How do I add days to a date in JavaScript?",
+    answer: "You can add days to a JS Date object using the <code>setDate()</code> method: <code>const date = new Date('2026-06-15'); date.setDate(date.getDate() + 30); console.log(date);</code>."
+  },
+  {
+    question: "How do I add days to a date in Python?",
+    answer: "In Python, use the <code>timedelta</code> class from the datetime module: <code>from datetime import datetime, timedelta; new_date = datetime.now() + timedelta(days=30)</code>."
+  },
+  {
+    question: "What happens when I add months to a date that doesn't exist in the target month?",
+    answer: "If you add 1 month to January 31st, standard JS Date rolls over to March 3rd (in standard years) because February has only 28 days. Our calculator handles this wrap-around logic naturally using the native JS date system."
+  },
+  {
+    question: "Does daylight saving time affect adding days to a date?",
+    answer: "Since the calculator rolls full calendar days rather than exact millisecond intervals, it ignores standard 1-hour DST offset shifts, delivering the correct calendar day."
+  },
+  {
+    question: "How do I add days to a date in SQL?",
+    answer: "In PostgreSQL, use <code>date_column + INTERVAL '30 days'</code>. In MySQL, use the <code>DATE_ADD(date_column, INTERVAL 30 DAY)</code> function."
+  },
+  {
+    question: "Can I add business days (excluding weekends) with this tool?",
+    answer: "Yes. The main Date Calculator has full options to filter weekends. To calculate business day offsets, you can use the Date Difference tab or input your adjustments directly."
+  },
+  {
+    question: "What is the ISO 8601 representation of a date?",
+    answer: "ISO 8601 represents calendar dates as <code>YYYY-MM-DD</code>, ensuring consistent alphabetical sorting and database ingestion."
+  },
+  {
+    question: "Can I run this Date Adjuster offline?",
+    answer: "Yes. The entire application runs client-side, allowing complete offline execution once the page has loaded."
+  },
+  {
+    question: "How do I add business days in Python?",
+    answer: "In Python, use the numpy library's <code>busday_offset</code> or iterate day-by-day while skipping weekends."
+  },
+  {
+    question: "What is a Julian Day?",
+    answer: "A Julian Day is a continuous count of days since the beginning of the Julian period, primarily used in astronomy."
+  },
+  {
+    question: "Is this calculator free to use?",
+    answer: "Yes, all developer tools on useUtils are free, without subscription gates or account registrations."
+  },
+  {
+    question: "What timezone is used for calculations?",
+    answer: "The calculations run in your local web browser's timezone, ensuring the final dates align with your calendar."
+  },
+  {
+    question: "How do I subtract days using this adjuster?",
+    answer: "You can toggle the operation selector to 'Subtract' or enter a negative value (e.g. <code>-30</code>) to calculate backward in time."
+  },
+  {
+    question: "What is the leap year formula?",
+    answer: "A year is a leap year if it is divisible by 4, except for end-of-century years which must also be divisible by 400."
+  },
+  {
+    question: "How do I add days to a date in Go?",
+    answer: "In Go, use the <code>AddDate</code> method: <code>newTime := oldTime.AddDate(0, 0, 30)</code>."
+  },
+  {
+    question: "How does this tool help during project management?",
+    answer: "It allows developers and PMs to quickly calculate task deadlines, sprint milestones, and SLA windows by adding offsets to starting dates."
+  }
+];
+
+const headers = ["Offset Value", "Calendar Days Output", "Business Days Only", "Common Application"];
+const rows = [
+  {
+    label: "30 Days",
+    values: ["4.28 weeks", "Filters out ~8 weekend days", "Invoice payment terms, basic calendar scheduling"]
+  },
+  {
+    label: "90 Days",
+    values: ["12.85 weeks", "Filters out ~26 weekend days", "Quarterly projections, system logging expirations"]
+  }
+];
+
+const practices = [
+  {
+    title: "Verify Month Overflow Behaviors",
+    description: "Always account for variations in month durations (28, 30, 31) when coding manual calendar math systems."
+  },
+  {
+    title: "Enforce Standard Formats",
+    description: "Store outputs in databases as standard <code>YYYY-MM-DD</code> strings to ensure timezone compatibility."
+  }
+];
+
+const mistakes = [
+  {
+    title: "Adding raw milliseconds to dates",
+    description: "Adding <code>30 * 24 * 60 * 60 * 1000</code> milliseconds fails to account for DST changes (spring forward/fall back), resulting in 23-hour or 25-hour days.",
+    fix: "Use calendar-aware Date APIs (like <code>setMonth</code> or <code>setDate</code>) instead of millisecond addition."
+  }
+];
+
+const languages = [
+  {
+    lang: "JavaScript",
+    code: `
+const date = new Date('2026-06-15');
+date.setDate(date.getDate() + 30);
+
+console.log("New Date:", date.toISOString().split('T')[0]);
+    `
+  },
+  {
+    lang: "Python",
+    code: `
+from datetime import datetime, timedelta
+
+start_date = datetime.strptime("2026-06-15", "%Y-%m-%d")
+new_date = start_date + timedelta(days=30)
+
+print("New Date:", new_date.strftime("%Y-%m-%d"))
+    `
+  }
+];
+
+const references = [
+  { title: "W3C Date Formats", url: "https://www.w3.org/TR/NOTE-datetime" }
+];
+---
+
+<ToolPageLayout
+  title="Add Days to Date Calculator: Calculate Future Dates Online"
+  description="Add days, weeks, months, or years to any calendar starting date. Built-in business days option with 100% offline security."
+  keywords="add days to date, date offset calculator, calculate future date, add weeks to date, calendar offset tool"
+  toolTitle="Add Days to Date Calculator"
+  toolDescription="Add calendar offsets (days, weeks, months, years) to any starting date. Processed 100% locally in your browser sandbox."
+  faqs={faqs}
+>
+  <DateCalculator client:load defaultActiveSubTab="adjuster" />
+
+  <div slot="seo-content" class="flex flex-col gap-12 mt-10 max-w-4xl mx-auto w-full">
+    <PrivacyBadge />
+
+    <ComparisonTable 
+      headers={headers} 
+      rows={rows} 
+      title="Common Date Offsets" 
+      description="Compare calendar offsets and business day representations:"
+    />
+
+    <BestPractices 
+      practices={practices} 
+      title="Date Adjuster Best Practices" 
+    />
+
+    <CommonMistakes 
+      mistakes={mistakes} 
+      title="Common Date Math Pitfalls" 
+    />
+
+    <LanguageSupport 
+      languages={languages} 
+      title="Programmatic Date Additions" 
+    />
+
+    <OfficialReferences 
+      references={references} 
+    />
+
+    <RelatedTools />
+  </div>
+</ToolPageLayout>

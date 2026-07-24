@@ -1,6 +1,12 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
-import { TextInspector } from '../../components/TextInspector';
+import { TextInspector as TextInspectorComponent } from '../../components/TextInspector';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
 
 const faqs = [
   {
@@ -46,6 +52,100 @@ const faqs = [
   {
     question: "How can I convert tabs to spaces or collapse excess spaces?",
     answer: "You can convert tab characters to spaces by checking the 'Tabs to Spaces' option in the cleaning panel and selecting your preferred indentation size (2, 4, or 8 spaces). Additionally, check 'Flatten Spaces & Trim' to collapse multiple consecutive spaces into a single space and remove leading/trailing line whitespace, then click <b>Execute Cleaning Operations</b>."
+  },
+  {
+    question: "What is a Byte Order Mark (BOM) and how is it detected?",
+    answer: "A Byte Order Mark (BOM, code point U+FEFF) is a Unicode character placed at the beginning of a text file to indicate its byte order (big-endian vs little-endian). When parsed by JSON compilers, it causes parsing errors. The Text Inspector flags it immediately in the Warnings panel."
+  },
+  {
+    question: "How does UTF-8 encoding differ from UTF-16?",
+    answer: "UTF-8 is variable-width (1 to 4 bytes) and backwards-compatible with ASCII. UTF-16 uses 2 or 4 bytes per character. Web technologies (HTML, JSON) standardise on UTF-8, while internal Windows/Java runtimes prefer UTF-16."
+  },
+  {
+    question: "What is the difference between Unicode Code Points and UTF-16 Code Units?",
+    answer: "A Unicode Code Point is a unique numerical value assigned to a character (e.g. U+1F600 for 😀). UTF-16 represents this code point using two 16-bit code units (surrogate pairs: 0xD83D and 0xDE00)."
+  },
+  {
+    question: "What are combined characters (Combining Diacritical Marks)?",
+    answer: "Combined characters compose composite symbols by overlaying combining marks onto base glyphs (e.g. <code>a</code> + <code>◌̄</code> = <code>ā</code>). Our tool isolates these combining diacritics in the inspection grid."
+  },
+  {
+    question: "How to normalize Unicode strings programmatically in JavaScript?",
+    answer: "Use JavaScript's native <code>String.prototype.normalize()</code>: <code>const normalized = str.normalize('NFC');</code>."
+  },
+  {
+    question: "How to normalize Unicode strings in Python?",
+    answer: "In Python, import <code>unicodedata</code> and call: <code>unicodedata.normalize('NFC', text)</code>."
+  },
+  {
+    question: "What is a Null Byte (\\0) and why is it dangerous in text inputs?",
+    answer: "A Null Byte (code point U+0000) terminates strings in C/C++. If passed into database fields or system utilities compiled in C/C++, it can lead to SQL injection vulnerabilities or buffer overflow exploits by truncating string fields prematurely."
+  },
+  {
+    question: "Why do some characters display as a replacement character () or blank rectangles?",
+    answer: "The replacement character (, U+FFFD) is displayed when a parser encounters byte sequences that do not represent valid UTF-8 configurations, or when the system font lacks glyph support for a specific character code point."
+  },
+  {
+    question: "Does this tool support Unicode 15.0 specifications?",
+    answer: "Yes, the local engine matches the browser's JavaScript runtime Unicode support tables, enabling indexing of modern emojis and international character sets."
+  },
+  {
+    question: "How does this tool help in debugging SEO title tags?",
+    answer: "Hidden space markers or percent-encoded characters inflate title widths. The inspector highlights all invisible characters and counts literal lengths to optimize SEO metadata sizes."
+  },
+  {
+    question: "What are the C0 and C1 control character blocks?",
+    answer: "C0 control codes represent U+0000 to U+001F (like carriage return, backspace, tab). C1 control codes represent U+007F to U+009F. They are non-printable characters formatting system command routes."
+  }
+];
+
+const references = [
+  { title: "Unicode Consortium Official Specifications Documentation", url: "https://www.unicode.org/versions/latest/", source: "Unicode Consortium" },
+  { title: "W3C Character Model for the World Wide Web", url: "https://www.w3.org/TR/charmod/", source: "W3C Standards" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `// Detect hidden zero-width characters in a string
+const hasHiddenChars = str => /[\\u200B-\\u200D\\uFEFF]/.test(str);
+
+// Unicode safe character counting
+const getLength = str => [...str].length;
+
+// Normalize unicode to composition format (NFC)
+const normalizeString = str => str.normalize('NFC');
+
+const userText = "Cafe\\u0301"; // "Café" decomposed (NFD)
+console.log(getLength(userText)); // 5
+console.log(getLength(normalizeString(userText))); // 4`,
+    note: "Works in all JavaScript engines, safe for Node.js and browser DOM environments."
+  },
+  {
+    lang: "Python",
+    code: `import unicodedata
+
+# Detect and normalize accents to NFC
+text_nfd = "Cafe\\u0301"
+text_nfc = unicodedata.normalize('NFC', text_nfd)
+
+print(len(text_nfd))  # 5
+print(len(text_nfc))  # 4
+print(text_nfd == text_nfc) # False`,
+    note: "Uses standard library unicodedata module."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Pasting Hidden Slack or PDF Formatting Characters",
+    description: "Copying text from chat clients or formatted books often carries invisible zero-width spaces (ZWSP, U+200B) or Directional Marks (BOM, U+FEFF). This throws compilation errors like 'invalid character' in JS or YAML parsers.",
+    fix: "Analyze strings inside our warnings scanner to identify code point locations and click <code>Strip All</code> to clean the text."
+  },
+  {
+    title: "Mismatched String Comparisons from Accent Encoding Differences",
+    description: "Two strings that look visually identical (like 'café' using precomposed U+00E9 vs decomposed U+0065 + U+0301) will return false when compared with <code>===</code>.",
+    fix: "Always normalize database keys and compared identifiers to NFC format: <code>str.normalize('NFC')</code>."
   }
 ];
 ---
@@ -58,7 +158,7 @@ const faqs = [
   toolDescription="Inspect and debug character strings in real-time. Identify invisible zero-width characters, trace surrogate pairs (emojis), analyze UTF-8/16 byte structures, explore unicode blocks, and normalize text compositions locally."
   faqs={faqs}
 >
-  <TextInspector client:load />
+  <TextInspectorComponent client:load />
 
   <!-- Rich SEO Article Content Slot -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
@@ -76,98 +176,69 @@ const faqs = [
       </p>
     </div>
 
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+    <!-- Sibling Cross Links -->
+    <div class="flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight flex items-center gap-2">
         <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Unicode Normalization Form Comparison (NFC vs NFD)
+        Related Text Analysis Utilities
       </h2>
-      <p class="leading-relaxed mb-4">
-        Linguistic symbols can often be represented by different code point structures. Below is a structural comparison showing how composite and decomposed characters are registered by Unicode standards:
-      </p>
-      
-      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-4">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="border-b border-[#2c2c2e] bg-zinc-950 font-mono text-zinc-350">
-              <th class="p-3">Character</th>
-              <th class="p-3">NFC (Composition)</th>
-              <th class="p-3">NFD (Decomposition)</th>
-              <th class="p-3">Length (NFC vs NFD)</th>
-              <th class="p-3">Linguistic Explanation</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-[#2c2c2e]/60 text-zinc-400 font-mono">
-            <tr>
-              <td class="p-3 text-zinc-100 font-bold">é</td>
-              <td class="p-3 text-[#34d399]">U+00E9</td>
-              <td class="p-3">U+0065 + U+0301</td>
-              <td class="p-3">1 vs 2 code points</td>
-              <td class="p-3 text-zinc-350">NFC uses a precomposed accented letter; NFD decomposes it into standard 'e' and a combining mark.</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-100 font-bold">ü</td>
-              <td class="p-3 text-[#34d399]">U+00FC</td>
-              <td class="p-3">U+0075 + U+0308</td>
-              <td class="p-3">1 vs 2 code points</td>
-              <td class="p-3 text-zinc-350">NFC represents 'u' with umlaut as one character; NFD splits it into 'u' + combining diaeresis.</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-100 font-bold">ñ</td>
-              <td class="p-3 text-[#34d399]">U+00F1</td>
-              <td class="p-3">U+006E + U+0303</td>
-              <td class="p-3">1 vs 2 code points</td>
-              <td class="p-3 text-zinc-350">NFC combines 'n' + tilde; NFD separates them. Common cause of filesystem mismatch bugs.</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-100 font-bold">Ω</td>
-              <td class="p-3 text-[#34d399]">U+03A9</td>
-              <td class="p-3">U+03A9</td>
-              <td class="p-3">1 vs 1 code point</td>
-              <td class="p-3 text-zinc-350">Greek Omega. NFKC/NFKD converts ohms symbol (U+2126) to standard Greek Omega (U+03A9) for search normalization.</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <a href="/tools/character-counter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Character Counter</a>
+        <a href="/tools/word-counter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Word Counter & Text Analyzer</a>
+        <a href="/tools/regex-tester" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Regex Tester & Visualizer</a>
       </div>
     </div>
 
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Core Components of the Unicode Explorer Panel
-      </h2>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Interactive Character Flow Matrix</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            A modular map representing each character. Colored badges call out standard text, emojis, whitespace, and hidden anomalies, offering deep inspection details on click.
-          </p>
-        </div>
+    <!-- Section: Comparison of Unicode Forms -->
+    <ComparisonTable
+      title="Unicode Normalization Form Comparison (NFC vs NFD)"
+      description="Linguistic symbols can often be represented by different code point structures. Below is a structural comparison showing how composite and decomposed characters are registered by Unicode standards:"
+      headers={["Character", "NFC (Composition)", "NFD (Decomposition)", "Length (NFC vs NFD)", "Linguistic Explanation"]}
+      rows={[
+        { label: "é", values: ["<code>U+00E9</code>", "<code>U+0065 + U+0301</code>", "1 vs 2 code points", "NFC uses a precomposed accented letter; NFD decomposes it into standard 'e' and a combining mark."] },
+        { label: "ü", values: ["<code>U+00FC</code>", "<code>U+0075 + U+0308</code>", "1 vs 2 code points", "NFC represents 'u' with umlaut as one character; NFD splits it into 'u' + combining diaeresis."] },
+        { label: "ñ", values: ["<code>U+00F1</code>", "<code>U+006E + U+0303</code>", "1 vs 2 code points", "NFC combines 'n' + tilde; NFD separates them. Common cause of filesystem mismatch bugs."] },
+        { label: "Ω", values: ["<code>U+03A9</code>", "<code>U+03A9</code>", "1 vs 1 code point", "Greek Omega. NFKC/NFKD converts ohms symbol (U+2126) to standard Greek Omega (U+03A9) for search normalization."] }
+      ]}
+    />
 
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Zero-Width & Hidden Scanner Warnings</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            A dedicated system health check that isolates zero-width spaces, word joiners, and system control codes, explaining their impact and providing one-click strip capabilities.
-          </p>
-        </div>
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Invisible Character & Normalization Examples"
+      description="Compare how string bugs manifest under Unicode parsing layers:"
+      examples={[
+        { label: "Zero-Width Space Code Point Injection", input: "const token = \"auth\\u200BToken\";", output: "Character length: 10 (visually looks like 9 'authToken')", badge: "Invisible Bug" },
+        { label: "BOM Byte Order Mark", input: "\\uFEFF{\"id\": 1}", output: "Character length: 9 (causes standard JSON.parse compiler failure)", badge: "BOM Indicator" }
+      ]}
+    />
 
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">UTF-8 Hex Core Dump Viewer</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            An interactive hex dump displaying offset columns, hex bytes, and printable ASCII representation of UTF-8 text, simulating standard UNIX console outputs.
-          </p>
-        </div>
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Unicode Debugging Snippets"
+      description="Detect hidden characters and normalize strings inside your applications:"
+    />
 
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Unicode Normalization Composition</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            Convert strings between NFC, NFD, NFKC, and NFKD representations in one click. Flat space spacing, convert tabs, and strip problematic control signals instantly.
-          </p>
-        </div>
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Unicode Pitfalls"
+      description="Avoid these common errors when processing document boundaries and indices:"
+    />
 
-      </div>
-    </div>
+    <!-- Section: Core Advantages -->
+    <BestPractices
+      title="Text Inspection Guidelines"
+      practices={[
+        { title: "Normalize Input Strings", description: "Convert incoming variables to NFC composition format to prevent string comparison inequalities." },
+        { title: "Strip Zero-Width Characters", description: "Filter out U+200B and other invisible placeholders from configuration files to prevent build failures." },
+        { title: "Analyze Byte Count Sizes", description: "Understand UTF-8 width scaling (e.g. 1 byte ASCII to 4 bytes Emojis) when planning DB column limits." }
+      ]}
+    />
 
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
   </div>
 </ToolPageLayout>

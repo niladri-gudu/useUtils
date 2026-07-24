@@ -1,6 +1,17 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { XmlJsonConverter } from '../../components/XmlJsonConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'XML to JSON', href: '/tools/xml-to-json', active: true },
+  { label: 'JSON to XML', href: '/tools/json-to-xml' }
+];
 
 const faqs = [
   {
@@ -50,6 +61,80 @@ const faqs = [
   {
     question: "Is there a limit on the file size I can convert with this offline tool?",
     answer: "Because all calculations and translations occur entirely inside your browser's memory, the limit is determined by your system's RAM and CPU. The tool is highly optimized and easily processes XML payloads up to 30MB (approximately 300,000 lines) within a couple of seconds. For larger files, we recommend parsing in chunks to prevent the browser tab from freezing."
+  },
+  {
+    question: "What is the BadgerFish convention for XML/JSON translations?",
+    answer: "BadgerFish is a strict convention that translates XML namespaces as properties, maps element values under a <code>$</code> key, prefixes attributes with <code>@</code>, and wraps lists in arrays."
+  },
+  {
+    question: "What does the 'Force Array Keys' configuration do?",
+    answer: "It accepts a comma-separated list of tag names. If a matching tag is encountered during XML parsing, it is forced to compile as a JSON array, even if only one child tag exists."
+  },
+  {
+    question: "How are XML comments handled during JSON conversion?",
+    answer: "By default, comments are ignored by standard parsers. If comments contain critical data, they should be mapped to XML elements prior to parsing."
+  },
+  {
+    question: "Can I download the converted JSON file?",
+    answer: "Yes, click the 'Download' button above the output area to save the converted JSON output directly as a local file."
+  },
+  {
+    question: "Why does the tool show 'Mismatched closing tag'?",
+    answer: "In XML, tag casing must match exactly (e.g. <code>&lt;Item&gt;&lt;/Item&gt;</code> is valid, but <code>&lt;Item&gt;&lt;/item&gt;</code> is invalid)."
+  },
+  {
+    question: "Does the converter support SOAP payloads?",
+    answer: "Yes, SOAP requests are valid XML documents. Our converter handles SOAP envelopes, headers, and namespaces cleanly, and you can strip namespaces to extract the underlying JSON keys."
+  },
+  {
+    question: "How to copy specific paths from the XML DOM tree?",
+    answer: "Swap to the 'Tree View' tab in the output pane. Hovering over a key reveals 'JSON Path' and 'XPath' copy buttons, enabling you to copy selectors to your clipboard."
+  },
+  {
+    question: "What is XPath?",
+    answer: "XPath (XML Path Language) is a query language used to select and navigate nodes in an XML document tree model."
+  }
+];
+
+const references = [
+  { title: "W3C XML 1.0 Specification Standard", url: "https://www.w3.org/TR/xml/", source: "W3C Official Specs" },
+  { title: "BadgerFish XML-JSON Mapping Convention Specs", url: "http://www.sklar.com/badgerfish/", source: "Sklar Org" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript (DOMParser)",
+    code: `const parser = new DOMParser();
+const xml = "<user id='1'><name>Niladri</name></user>";
+const doc = parser.parseFromString(xml, "application/xml");
+
+const name = doc.getElementsByTagName("name")[0].textContent;
+console.log(name); // Niladri`,
+    note: "Parses standard XML strings into queryable DOM documents in the browser."
+  },
+  {
+    lang: "Python",
+    code: `import xml.etree.ElementTree as ET
+
+xml_data = "<user><name>Niladri</name></user>"
+root = ET.fromstring(xml_data)
+
+name = root.find("name").text
+print(name) # Niladri`,
+    note: "ElementTree is Python's standard light XML DOM parsing engine."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Mismatched Closing Tag Names",
+    description: "XML is strictly case-sensitive. Having mismatched tags like <code>&lt;user&gt;&lt;/User&gt;</code> will fail parsing.",
+    fix: "Ensure all tag names match their casing exactly."
+  },
+  {
+    title: "Mismatched Data Types in Arrays",
+    description: "Without array key forcing, single elements are parsed as objects, whereas multiple siblings are grouped into arrays, causing schema violations in downstream code.",
+    fix: "Define list tags under the <code>Force Array Keys</code> setting to enforce arrays consistently."
   }
 ];
 ---
@@ -64,7 +149,6 @@ const faqs = [
 >
   <XmlJsonConverter client:load />
 
-  <!-- SEO Content Section -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
     
     <div>
@@ -101,28 +185,52 @@ const faqs = [
       </ol>
     </div>
 
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        XML ⇄ JSON Schema Translation Standards
-      </h2>
-      <p class="leading-relaxed mb-4">
-        There are several academic standards for mapping XML nodes to JSON models. Our converter implements options inspired by the two most common standard specifications:
-      </p>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div class="bg-zinc-900/40 border border-[#2c2c2e] p-4 rounded-lg flex flex-col gap-2">
-          <h3 class="text-zinc-200 font-semibold text-xs font-mono">BadgerFish Convention</h3>
-          <p class="text-[11px] leading-relaxed">
-            Uses a strict translation mapping where tag attributes are prefixed with <code>@</code>, nested text values are wrapped under a <code>#text</code> key, and namespaces are mapped explicitly. Best for full schema round-trips without losing structure.
-          </p>
-        </div>
-        <div class="bg-zinc-900/40 border border-[#2c2c2e] p-4 rounded-lg flex flex-col gap-2">
-          <h3 class="text-zinc-200 font-semibold text-xs font-mono">Parker Rule</h3>
-          <p class="text-[11px] leading-relaxed">
-            A simpler translation convention that discards all attributes, discards namespaces, and simply turns element names into keys, and text nodes into direct string value values. Ideal for translating simple web responses.
-          </p>
-        </div>
-      </div>
-    </div>
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="XML badgerfish vs Parker Rules"
+      headers={["Conversion Parameter", "BadgerFish Convention", "Parker Convention"]}
+      rows={[
+        { label: "Attribute Handling", values: ["Preserves attributes (prefixes keys with @)", "Discards tag attributes completely"] },
+        { label: "Namespace Mapping", values: ["Preserves XML namespaces as JSON properties", "Strips out namespaces automatically"] },
+        { label: "Text Elements Representation", values: ["Places raw tag text values under a #text key", "Translates elements directly to plain text strings"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="XML to JSON Conversions"
+      description="Compare XML node structures with their corresponding JSON representation:"
+      examples={[
+        { label: "Standard XML Tag List", input: '<users>\n  <user>Niladri</user>\n  <user>Gudu</user>\n</users>', output: '{\n  "users": {\n    "user": [\n      "Niladri",\n      "Gudu"\n    ]\n  }\n}', badge: "JSON Objects" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Parsing Implementations"
+      description="Validate and parse XML files programmatically inside your backend services:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common XML Conversion Errors"
+      description="Avoid these common pitfalls to preserve data structures during compilation:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="XML Schema Best Practices"
+      practices={[
+        { title: "Define Singular List Tags", description: "Be consistent with naming arrays; define tags in singular forms (e.g. <item>) to build cleaner JSON lists." },
+        { title: "Strip SOAP Envelopes", description: "Use namespace-stripping features when integrating SOAP microservices to keep JSON payloads clean." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
   </div>
 </ToolPageLayout>

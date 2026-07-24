@@ -1,0 +1,258 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { CaseConverter } from '../../components/CaseConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const faqs = [
+  {
+    question: "What is snake_case?",
+    answer: "<code>snake_case</code> is a writing convention where words are separated by underscores (<code>_</code>) instead of spaces, and all letters are in lowercase. For example, <code>my_variable_name</code>. It is a dominant standard in programming for variable declarations, file names, and database fields."
+  },
+  {
+    question: "Why is snake_case popular in Python?",
+    answer: "Python's official style guide, <strong>PEP 8</strong>, explicitly mandates <code>snake_case</code> for function names, method names, and variable names (e.g., <code>calculate_total_price</code>). Python developer culture highly values readability, and snake_case is believed to resemble natural text flow more closely than camelCase."
+  },
+  {
+    question: "When should I use snake_case vs camelCase?",
+    answer: "Use <code>snake_case</code> for Python, Rust, Ruby, PHP, SQL database column names, and JSON APIs that follow backend naming conventions. Use <code>camelCase</code> for JavaScript, TypeScript, Java, Swift, and Kotlin variable names."
+  },
+  {
+    question: "What is CONSTANT_CASE or Screaming Snake Case?",
+    answer: "<code>CONSTANT_CASE</code> (also known as screaming_snake_case) is similar to snake_case but uses all-uppercase letters (e.g., <code>MAX_BUFFER_SIZE</code>). It is the universal standard across almost all programming languages for declaring global constants or environment variables."
+  },
+  {
+    question: "Does this tool upload my variable names to a server?",
+    answer: "No. The snake_case converter works entirely locally inside your browser using JavaScript. No data is ever transmitted to a server, guaranteeing full privacy for database schemas and proprietary variable listings."
+  },
+  {
+    question: "Why does SQL prefer snake_case columns?",
+    answer: "Most SQL databases (PostgreSQL, MySQL, SQLite) are case-insensitive by default. Utilizing snake_case (e.g. <code>created_at</code>) allows readable separation of words without requiring quotes, which would be mandatory if camelCase (e.g. <code>createdAt</code>) were used."
+  },
+  {
+    question: "How to convert text to snake_case in JavaScript?",
+    answer: "Use regular expressions: <code>const toSnake = str => str.replace(/([a-z])([A-Z])/g, '$1_$2').replace(/\\s+/g, '_').toLowerCase();</code>."
+  },
+  {
+    question: "How to convert text to snake_case in Python?",
+    answer: "Use regex: <code>import re; snake = re.sub(r'(?<!^)(?=[A-Z])', '_', s).lower()</code>."
+  },
+  {
+    question: "What is CamelSnakeCase?",
+    answer: "<code>CamelSnakeCase</code> combines both cases, separating capitalized words with underscores (e.g., <code>User_Profile_Data</code>). It is rare and generally considered an anti-pattern."
+  },
+  {
+    question: "Can I convert multiple lines to snake_case in bulk?",
+    answer: "Yes. Paste your raw variables or database list, check 'Treat each line independently', and copy the converted results instantly."
+  },
+  {
+    question: "What happens to spaces and hyphens in snake_case?",
+    answer: "All whitespace characters, hyphens, and slashes are replaced with a single underscore, and consecutive underscores are collapsed to keep the variable clean."
+  },
+  {
+    question: "Why do configuration files use snake_case?",
+    answer: "System files (like YAML, INI, and Docker configurations) use snake_case for parameter keys because system shells handle underscore characters safely compared to hyphens or dot notation."
+  },
+  {
+    question: "How do you configure Lodash to output snake_case?",
+    answer: "Use <code>_.snakeCase('someString')</code>. It parses camelCase, PascalCase, or normal strings into lowercase underscore segments."
+  },
+  {
+    question: "Does snake_case support special characters?",
+    answer: "Non-alphanumeric characters (like punctuation) are removed entirely during the process, leaving only numbers, letters, and underscores."
+  },
+  {
+    question: "What is the difference between kebab-case and snake_case?",
+    answer: "Kebab-case uses hyphens (<code>user-profile</code>) while snake_case uses underscores (<code>user_profile</code>). Kebab-case is standard in HTML/CSS, while snake_case is standard in backend databases and Python."
+  },
+  {
+    question: "How do environment variables use CONSTANT_CASE?",
+    answer: "Environment variables (e.g. <code>DATABASE_CONN_URL</code>) are written in Screaming Snake Case to distinguish them from standard code variables."
+  },
+  {
+    question: "Why do files use snake_case naming conventions?",
+    answer: "Using snake_case for filenames (e.g. <code>config_parser.py</code>) ensures compatibility across Unix/Linux environments, where spaces in filenames require terminal escaping."
+  },
+  {
+    question: "Does database ORM handle snake_case conversion?",
+    answer: "Yes, ORMs like Hibernate, Sequelize, and Prisma can be configured with naming strategies to automatically map model properties (camelCase) to database columns (snake_case)."
+  },
+  {
+    question: "Can I use numbers in snake_case identifiers?",
+    answer: "Yes, numbers are allowed and are kept intact (e.g., <code>api_v1_controller</code>)."
+  },
+  {
+    question: "Is snake_case easier to read than camelCase?",
+    answer: "Readability studies indicate that underscores acting as spaces make snake_case slightly faster to read and parse for human eyes than joined camelCase strings."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `const toSnakeCase = str => 
+  str.replace(/([a-z])([A-Z])/g, '$1_$2')
+     .replace(/[\\s-]+/g, '_')
+     .toLowerCase();
+
+console.log(toSnakeCase("UserProfileData")); // "user_profile_data"`,
+    note: "Recursively matches and transforms spaces, hyphens, and casing bounds."
+  },
+  {
+    lang: "Python",
+    code: `import re
+
+def to_snake_case(s):
+    # Matches uppercase characters and prefixes with underscore
+    return re.sub(r'(?<!^)(?=[A-Z])', '_', s).lower()
+
+print(to_snake_case("UserProfileData")) # "user_profile_data"`,
+    note: "PEP 8 compliant transformation."
+  },
+  {
+    lang: "Go",
+    code: `package main
+
+import (
+	"fmt"
+	"regexp"
+	"strings"
+)
+
+func ToSnakeCase(str string) string {
+	var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
+	var matchAllCap   = regexp.MustCompile("([a-z0-9])([A-Z])")
+	
+	snake := matchFirstCap.ReplaceAllString(str, "\${1}_\${2}")
+	snake = matchAllCap.ReplaceAllString(snake, "\${1}_\${2}")
+	return strings.ToLower(snake)
+}
+
+func main() {
+	fmt.Println(ToSnakeCase("UserProfileData")) // "user_profile_data"
+}`,
+    note: "Standard library implementation."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Double Underscores (__) from Hyphen/Space Conversions",
+    description: "Naive conversions of 'user-profile-data' or 'user  profile' can result in consecutive underscores ('user__profile__data').",
+    fix: "Ensure your conversion engine collapses multiple underscores: <code>str.replace(/_+/g, '_')</code>."
+  },
+  {
+    title: "Splitting Numeric bounds (e.g. v_1 instead of v1)",
+    description: "Sometimes converters isolate numbers unnecessarily, converting 'apiVersion1' to 'api_version_1' instead of 'api_version_v1'.",
+    fix: "Adjust regex bounds to avoid splitting numbers from their preceding alphabetical symbols if they belong to the same segment."
+  }
+];
+
+const references = [
+  { title: "PEP 8 Naming Conventions - Python Standards", url: "https://peps.python.org/pep-0008/#naming-conventions", source: "Python Software Foundation" },
+  { title: "PostgreSQL Identifier Casing Case-Insensitivity rules", url: "https://www.postgresql.org/docs/current/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS", source: "PostgreSQL Docs" }
+];
+---
+
+<ToolPageLayout
+  title="snake_case Converter - Convert Text to Snake Case Online"
+  description="Convert variable names, config properties, or lists of text to snake_case format in real-time. Free online converter for Python, Rust, SQL, and database fields."
+  keywords="snake_case converter, snake case, convert to snake case, screaming snake case, developer tools, case converter"
+  toolTitle="snake_case Converter"
+  toolDescription="Convert variable names and text strings to snake_case (e.g. user_id) or CONSTANT_CASE (e.g. USER_ID) instantly in your browser."
+  faqs={faqs}
+>
+  <CaseConverter client:load defaultCaseId="snake" defaultInput={`user-profile-image\nUserProfileImage\napi.gateway.url\ndatabasePoolSize`} />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        What is snake_case and Why Use It?
+      </h2>
+      <p class="leading-relaxed mb-4">
+        In computer science, naming conventions ensure developers can quickly scan and interpret codebases. <strong class="text-zinc-250 font-mono">snake_case</strong> is one of the most readable formats because the underscore character functions as a visual separator, mimicking standard whitespace without causing compilation syntax errors.
+      </p>
+      <p class="leading-relaxed mb-4">
+        It is widely used in:
+      </p>
+      <ul class="list-disc pl-5 space-y-1.5 text-xs text-zinc-400 mb-4">
+        <li><strong class="text-zinc-300">Python:</strong> Mandated by PEP 8 style guidelines.</li>
+        <li><strong class="text-zinc-300">Rust & Ruby:</strong> Standard naming conventions for variables and methods.</li>
+        <li><strong class="text-zinc-300">Database Schema:</strong> Standard for PostgreSQL, MySQL, and SQLite column/table names.</li>
+        <li><strong class="text-zinc-300">REST APIs:</strong> Common JSON key notation format.</li>
+      </ul>
+    </div>
+
+    <!-- Section: Cross Links -->
+    <div class="flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Other Casing Converters
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <a href="/tools/case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">All-in-One Case Converter</a>
+        <a href="/tools/camelcase-to-snake-case" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">camelCase to snake_case</a>
+        <a href="/tools/pascal-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">PascalCase Converter</a>
+        <a href="/tools/kebab-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">kebab-case Converter</a>
+        <a href="/tools/title-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Title Case Converter</a>
+      </div>
+    </div>
+
+    <!-- Section: Case Style Comparison -->
+    <ComparisonTable
+      title="Snake Case vs Other Naming Conventions"
+      headers={["Style Name", "Example Output", "Separators", "Common Usage"]}
+      rows={[
+        { label: "snake_case", values: ["<code>user_profile_data</code>", "Underscore (lowercase)", "Python variables, SQL columns"] },
+        { label: "CONSTANT_CASE", values: ["<code>USER_PROFILE_DATA</code>", "Underscore (uppercase)", "Global constants, environment variables"] },
+        { label: "camelCase", values: ["<code>userProfileData</code>", "Capital letters (mixed)", "JS/TS variables, JSON keys"] },
+        { label: "kebab-case", values: ["<code>user-profile-data</code>", "Hyphen (lowercase)", "CSS classes, URL slugs"] }
+      ]}
+    />
+
+    <!-- Section: Conversion Examples -->
+    <ExampleCard
+      title="snake_case Conversion Examples"
+      description="Study the raw inputs and conversion results for common programming names:"
+      examples={[
+        { label: "PascalCase Component Name", input: "UserProfileCard", output: "user_profile_card", badge: "snake_case" },
+        { label: "JSON camelCase Variable", input: "dbConnectionPort", output: "db_connection_port", badge: "snake_case" },
+        { label: "Hierarchical Dot Casing", input: "auth.user.login.status", output: "auth_user_login_status", badge: "snake_case" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Variable Mapping Snippets"
+      description="Convert naming formats dynamically in your custom modules:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Conversion Pitfalls"
+      description="Avoid these common errors when transforming cases in variables and columns:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="snake_case Recommendations"
+      practices={[
+        { title: "Enforce Lowercase Formatting", description: "Standard snake_case should be entirely lowercased to prevent Postgres case folding parser bugs." },
+        { title: "Avoid Double Underscores", description: "Strip double spaces or hyphens properly so that no consecutive underscores are generated." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

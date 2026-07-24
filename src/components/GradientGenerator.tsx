@@ -48,7 +48,12 @@ const copyToClipboard = (text: string): boolean => {
   }
 };
 
-export const GradientGenerator: React.FC = () => {
+interface GradientGeneratorProps {
+  defaultType?: GradientType;
+  defaultActiveCodeTab?: 'css' | 'tailwind' | 'svg' | 'canvas' | 'react';
+}
+
+export const GradientGenerator: React.FC<GradientGeneratorProps> = ({ defaultType, defaultActiveCodeTab }) => {
   // State variables
   const [type, setType] = useState<GradientType>('linear');
   const [direction, setDirection] = useState<string | number>(135);
@@ -68,6 +73,18 @@ export const GradientGenerator: React.FC = () => {
   const [activePreviewMode, setActivePreviewMode] = useState<'card' | 'button' | 'text' | 'shape'>('card');
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [activeCodeTab, setActiveCodeTab] = useState<'css' | 'tailwind' | 'svg' | 'canvas' | 'react'>('css');
+
+  useEffect(() => {
+    if (defaultType) {
+      setType(defaultType);
+      if (defaultType === 'linear') setDirection(135);
+      else if (defaultType === 'radial') setDirection('circle at center');
+      else setDirection('from 0deg at center');
+    }
+    if (defaultActiveCodeTab) {
+      setActiveCodeTab(defaultActiveCodeTab);
+    }
+  }, [defaultType, defaultActiveCodeTab]);
 
   // Image color extractor states
   const [imageSrc, setImageSrc] = useState<string | null>(null);

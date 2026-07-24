@@ -2,69 +2,23 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { ALL_TOOLS } from '../components/ToolsList';
 
-const workspaces = [
-  {
-    id: "tools",
-    key: "1",
-    name: "Developer Tools",
-    subtitle: "Offline Micro-Utilities",
-    description: "Search and filter through 100+ local-first utilities. Format JSON, encode Base64, decode JWT tokens, configure cron expressions, or test regex.",
-    icon: "🛠️",
-    href: "/tools",
-    status: "23 Active Tools",
-    isActive: true
-  },
-  {
-    id: "playground",
-    key: "2",
-    name: "Interactive Runtimes",
-    subtitle: "WASM & Sandboxed Frames",
-    description: "Write and evaluate code in sandboxed client-side environments. Visual regex compilers, local SQL databases, and live frontend frameworks.",
-    icon: "🎮",
-    href: "/playground",
-    status: "Coming soon",
-    isActive: false
-  },
-  {
-    id: "cheatsheets",
-    key: "3",
-    name: "High-Density References",
-    subtitle: "Developer Cheat Sheets",
-    description: "Quick-reference cards designed for second monitor display. Copy syntax configurations for Git workflows, CSS layouts, Markdown, and regex.",
-    icon: "📚",
-    href: "/cheatsheets",
-    status: "Coming Soon",
-    isActive: false
-  },
-  {
-    id: "labs",
-    key: "4",
-    name: "Experimental & P2P",
-    subtitle: "Real-Time WebRTC Apps",
-    description: "Collaborative developer experiments and serverless P2P tools. Share large files securely or collaborate on design canvases directly between browsers.",
-    icon: "🔬",
-    href: "/labs",
-    status: "Coming Soon",
-    isActive: false
-  },
-  {
-    id: "configs",
-    key: "5",
-    name: "Boilerplate Builders",
-    subtitle: "Visual Config Scaffolding",
-    description: "Build project configurations visually through interactive checklists. Export copy-pasteable configs for Docker, TypeScript, ESLint, or GitHub Actions.",
-    icon: "⚙️",
-    href: "/configs",
-    status: "Coming Soon",
-    isActive: false
-  }
+const activeTools = ALL_TOOLS.filter(t => t.isActive);
+
+const categories = [
+  { id: 'all', name: 'All Categories', icon: '📁' },
+  { id: 'text', name: 'Text Utilities', icon: '📝' },
+  { id: 'json', name: 'Data & JSON', icon: '{ }' },
+  { id: 'encoding', name: 'Crypto & Encode', icon: '🔐' },
+  { id: 'css', name: 'CSS & Design', icon: '🎨' },
+  { id: 'generators', name: 'Generators & Time', icon: '⚡' }
 ];
 ---
 
 <Layout 
-  title="useUtils - Premium Local-First Developer Workspaces" 
-  description="A suite of local-first developer utilities, visual config builders, interactive runtimes, cheatsheets, and WebRTC experiments. 100% private."
+  title="useUtils - Premium Local-First Developer Workspace Suite" 
+  description="A secure browser sandbox of local-first developer tools, interactive WASM runtimes, cheatsheets, configuration builders, and WebRTC experiments. 100% private."
 >
   <Header />
 
@@ -82,82 +36,210 @@ const workspaces = [
           useUtils
         </h1>
         <p class="text-zinc-300 font-mono text-sm md:text-base tracking-wider uppercase">
-          The Offline-First Developer Workspace Suite
+          The Local-First Developer Workspace Suite
         </p>
         <p class="text-zinc-400 text-xs md:text-sm max-w-xl mx-auto leading-relaxed mt-1">
-          A secure sandbox of offline developer tools, visual compilers, configuration builders, and WebRTC network environments running entirely in your browser.
+          A secure browser sandbox of offline developer tools, interactive WASM runtimes, cheatsheet references, configuration builders, and WebRTC experiments. 100% private.
         </p>
       </div>
 
       <!-- Local Transmission Pill -->
-      <div class="inline-flex items-center gap-2 bg-zinc-900 border border-border-hairline rounded-full px-3 py-1.5 text-xs text-accent-emerald font-mono">
+      <div class="inline-flex items-center gap-2 bg-zinc-900/60 border border-border-hairline rounded-full px-3 py-1.5 text-xs text-accent-emerald font-mono">
         <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-ping"></span>
         Processed locally in browser. Zero server transmission.
       </div>
     </section>
 
-    <!-- Workspace Hub Grid -->
-    <section class="flex flex-col gap-4">
-      <div class="flex items-center justify-between border-b border-border-hairline/60 pb-2">
-        <span class="text-sm font-semibold text-zinc-300 font-mono tracking-wider uppercase">Select Workspace Hub</span>
-        <span class="text-[11px] text-zinc-500 font-mono hidden sm:inline">Use hotkeys <kbd class="bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-zinc-400">1</kbd> - <kbd class="bg-zinc-800 px-1 py-0.5 rounded border border-zinc-700 text-zinc-400">5</kbd> to jump</span>
-      </div>
+    <!-- Workspace Selector segmentation tabs -->
+    <div class="flex flex-wrap items-center gap-1.5 bg-zinc-900/60 border border-border-hairline p-1.5 rounded-xl mx-auto justify-center shadow-inner">
+      <button data-workspace-tab="tools" class="workspace-tab px-4 py-2 text-xs font-mono rounded-lg transition-all cursor-pointer bg-zinc-800 text-accent-emerald border border-zinc-700/60 font-semibold shadow-sm">
+        🛠️ Developer Tools
+      </button>
+      <button data-workspace-tab="playground" class="workspace-tab px-4 py-2 text-xs font-mono rounded-lg transition-all cursor-pointer border border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40">
+        🎮 Playgrounds
+      </button>
+      <button data-workspace-tab="cheatsheets" class="workspace-tab px-4 py-2 text-xs font-mono rounded-lg transition-all cursor-pointer border border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40">
+        📚 Cheat Sheets
+      </button>
+      <button data-workspace-tab="labs" class="workspace-tab px-4 py-2 text-xs font-mono rounded-lg transition-all cursor-pointer border border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40">
+        🔬 P2P Labs
+      </button>
+      <button data-workspace-tab="configs" class="workspace-tab px-4 py-2 text-xs font-mono rounded-lg transition-all cursor-pointer border border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40">
+        ⚙️ Config Builders
+      </button>
+    </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2">
-        {workspaces.map((ws) => (
-          <a
-            href={ws.href}
-            class={`flex flex-col justify-between bg-panel border rounded-xl p-6 gap-6 transition-all duration-300 ease-out group hover:-translate-y-1 ${
-              ws.isActive 
-                ? 'border-accent-emerald/20 hover:border-accent-emerald/50 hover:shadow-[0_8px_30px_rgba(52,211,153,0.06)] hover:bg-zinc-900/40' 
-                : 'border-border-hairline hover:border-zinc-700 hover:shadow-[0_8px_30px_rgba(255,255,255,0.015)] hover:bg-zinc-900/30'
-            }`}
-          >
-            <div class="flex flex-col gap-4">
-              <!-- Card Top -->
-              <div class="flex items-center justify-between">
-                <span class="w-10 h-10 rounded-xl bg-zinc-900 border border-border-hairline flex items-center justify-center text-lg group-hover:border-accent-emerald/30 group-hover:text-accent-emerald transition-colors">
-                  {ws.icon}
-                </span>
-                <div class="flex items-center gap-2">
-                  <span class={`text-[9px] font-mono border px-2 py-0.5 rounded tracking-wide uppercase font-semibold ${
-                    ws.isActive 
-                      ? 'bg-accent-emerald/10 border-accent-emerald/20 text-accent-emerald' 
-                      : 'bg-zinc-900 border-border-hairline text-zinc-500'
-                  }`}>
-                    {ws.status}
+    <!-- Active Tools Workspace Area -->
+    <div id="workspace-tools-content" class="workspace-content flex gap-8 w-full">
+      
+      <!-- Left Categories Sidebar - Hidden on mobile, sticky on desktop -->
+      <aside class="hidden lg:block w-64 shrink-0">
+        <div class="sticky top-20 flex flex-col gap-1.5 max-h-[calc(100vh-120px)] overflow-y-auto pr-2">
+          <div class="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-500 px-3 mb-2 select-none">
+            Categories
+          </div>
+          
+          {categories.map((cat) => (
+            <button
+              data-category-tab={cat.id}
+              class={`category-tab relative flex items-center justify-between pl-4 pr-3 py-2 rounded-lg text-sm select-none border transition-colors duration-100 cursor-pointer ${
+                cat.id === 'all'
+                  ? 'bg-panel border-border-hairline text-accent-emerald font-medium shadow-sm before:absolute before:left-0 before:top-2.5 before:bottom-2.5 before:w-1 before:bg-accent-emerald before:rounded-r'
+                  : 'border-transparent text-zinc-400 hover:bg-panel/50 hover:text-zinc-200'
+              }`}
+            >
+              <span class="flex items-center gap-2 truncate">
+                <span>{cat.icon}</span>
+                <span class="truncate">{cat.name}</span>
+              </span>
+            </button>
+          ))}
+        </div>
+      </aside>
+
+      <!-- Right Content Area (Search and Grid) -->
+      <div class="flex-grow flex flex-col gap-6">
+        
+        <!-- Search Input -->
+        <div class="relative w-full max-w-xl">
+          <input
+            id="homepage-search"
+            type="text"
+            placeholder="Search tools... (e.g., JSON, Base64, JWT, CSS)"
+            class="w-full bg-panel border border-border-hairline hover:border-zinc-700 focus:border-accent-emerald focus:ring-1 focus:ring-accent-emerald/30 rounded-xl py-3 pl-11 pr-20 text-sm font-mono text-zinc-100 placeholder-zinc-500 outline-none transition-all"
+          />
+          <div class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <div class="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none select-none">
+            <kbd class="font-mono bg-zinc-800/80 px-1.5 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">⌘ K</kbd>
+            <kbd class="font-mono bg-zinc-800/80 px-1.5 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400">/</kbd>
+          </div>
+        </div>
+
+        <!-- Tools Grid -->
+        <div id="homepage-tools-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-2">
+          {activeTools.map((tool) => (
+            <a
+              href={tool.href}
+              data-tool-name={tool.name.toLowerCase()}
+              data-tool-desc={tool.description.toLowerCase()}
+              data-tool-cat={tool.category}
+              class="homepage-tool-card flex flex-col justify-between bg-panel border border-border-hairline hover:border-accent-emerald/40 hover:bg-zinc-900/40 rounded-xl p-5 gap-4 transition-all duration-300 ease-out group select-none hover:-translate-y-0.5"
+            >
+              <div class="flex flex-col gap-2.5">
+                <div class="flex items-center justify-between">
+                  <span class="w-8 h-8 rounded-lg bg-zinc-900 border border-border-hairline flex items-center justify-center text-sm font-mono font-semibold select-none group-hover:border-accent-emerald/30 group-hover:text-accent-emerald transition-colors">
+                    {tool.icon}
                   </span>
-                  <kbd class="font-mono bg-zinc-800/80 px-1.5 py-0.5 rounded border border-zinc-700 text-[10px] text-zinc-400 shadow-sm">
-                    {ws.key}
-                  </kbd>
+                  <div class="flex items-center gap-1.5">
+                    {tool.isPopular && (
+                      <span class="text-[9px] font-mono bg-zinc-800 border border-zinc-700 text-zinc-400 px-1.5 py-0.5 rounded tracking-wide uppercase">
+                        Popular
+                      </span>
+                    )}
+                    <span class="text-[9px] font-mono bg-accent-emerald/10 border border-accent-emerald/20 text-accent-emerald px-1.5 py-0.5 rounded tracking-wide uppercase font-semibold">
+                      Active
+                    </span>
+                  </div>
                 </div>
-              </div>
 
-              <!-- Card Content -->
-              <div class="flex flex-col gap-1.5">
-                <span class="text-xs font-mono text-zinc-500 uppercase tracking-wider">
-                  {ws.subtitle}
-                </span>
-                <h3 class="text-lg font-bold text-zinc-50 group-hover:text-accent-emerald transition-colors font-sans">
-                  {ws.name}
+                <h3 class="text-base font-semibold text-zinc-50 group-hover:text-accent-emerald transition-colors font-sans mt-1">
+                  {tool.name}
                 </h3>
-                <p class="text-xs text-zinc-400 leading-relaxed font-sans mt-1">
-                  {ws.description}
+                <p class="text-xs text-zinc-400 leading-relaxed font-sans line-clamp-2">
+                  {tool.description}
                 </p>
               </div>
-            </div>
 
-            <!-- Card Action Footer -->
-            <div class="pt-2">
-              <span class="inline-flex items-center justify-between w-full bg-zinc-900 border border-border-hairline group-hover:bg-accent-emerald group-hover:text-zinc-950 group-hover:border-accent-emerald text-zinc-300 font-mono text-xs font-semibold py-2.5 px-4 rounded-lg transition-all duration-200">
-                <span>Enter Workspace</span>
-                <span>→</span>
-              </span>
-            </div>
+              <div class="pt-2">
+                <div class="inline-flex items-center justify-between w-full bg-zinc-900 border border-border-hairline group-hover:bg-accent-emerald group-hover:text-zinc-950 group-hover:border-accent-emerald text-zinc-300 font-mono text-xs font-semibold py-2 px-3.5 rounded-lg transition-all duration-200">
+                  <span>Open Tool</span>
+                  <span>→</span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+
+        <!-- No Results State -->
+        <div id="no-results-state" class="hidden w-full flex flex-col items-center justify-center py-20 text-center gap-4 bg-panel border border-border-hairline border-dashed rounded-xl">
+          <span class="text-4xl text-zinc-650">🔍</span>
+          <div class="flex flex-col gap-1">
+            <h3 class="text-base font-semibold text-zinc-50">
+              No tools found
+            </h3>
+            <p class="text-xs text-zinc-500 max-w-sm">
+              We couldn't find any utilities matching your query. Let us know what developer tool you need!
+            </p>
+          </div>
+          <a
+            href="/tools"
+            class="px-4 py-2 bg-accent-emerald hover:bg-emerald-400 text-zinc-950 font-mono text-xs font-semibold rounded-lg transition-all cursor-pointer shadow-md"
+          >
+            Go to Tool Pipeline
           </a>
-        ))}
+        </div>
       </div>
-    </section>
+    </div>
+
+    <!-- Playground Workspace Placeholder -->
+    <div id="workspace-playground-content" class="workspace-content hidden flex flex-col gap-6 max-w-3xl mx-auto w-full animate-in fade-in duration-200">
+      <div class="bg-panel border border-border-hairline rounded-xl p-8 flex flex-col gap-5 text-center items-center">
+        <span class="w-12 h-12 rounded-xl bg-zinc-900 border border-border-hairline flex items-center justify-center text-2xl">🎮</span>
+        <div class="flex flex-col gap-2">
+          <h3 class="text-lg font-bold text-zinc-50 font-sans">Interactive Runtimes & Playgrounds</h3>
+          <span class="text-[9px] font-mono bg-zinc-900 border border-border-hairline text-zinc-500 px-2 py-0.5 rounded uppercase self-center tracking-wider font-semibold">Coming Soon / Under Development</span>
+        </div>
+        <p class="text-xs text-zinc-400 max-w-md leading-relaxed font-sans">
+          Write and evaluate code in sandboxed client-side environments. Compile regex rules visually, query local SQL databases, and run full-stack code frames inside secure WebAssembly runtimes.
+        </p>
+      </div>
+    </div>
+
+    <!-- Cheatsheets Workspace Placeholder -->
+    <div id="workspace-cheatsheets-content" class="workspace-content hidden flex flex-col gap-6 max-w-3xl mx-auto w-full animate-in fade-in duration-200">
+      <div class="bg-panel border border-border-hairline rounded-xl p-8 flex flex-col gap-5 text-center items-center">
+        <span class="w-12 h-12 rounded-xl bg-zinc-900 border border-border-hairline flex items-center justify-center text-2xl">📚</span>
+        <div class="flex flex-col gap-2">
+          <h3 class="text-lg font-bold text-zinc-50 font-sans">High-Density Reference Cheat Sheets</h3>
+          <span class="text-[9px] font-mono bg-zinc-900 border border-border-hairline text-zinc-500 px-2 py-0.5 rounded uppercase self-center tracking-wider font-semibold">Coming Soon</span>
+        </div>
+        <p class="text-xs text-zinc-400 max-w-md leading-relaxed font-sans">
+          Quick-reference cards designed for second monitor display. Copy syntax configurations, layouts, and shortcuts for Git, CSS grid/flexbox, markdown, and regular expressions.
+        </p>
+      </div>
+    </div>
+
+    <!-- Labs Workspace Placeholder -->
+    <div id="workspace-labs-content" class="workspace-content hidden flex flex-col gap-6 max-w-3xl mx-auto w-full animate-in fade-in duration-200">
+      <div class="bg-panel border border-border-hairline rounded-xl p-8 flex flex-col gap-5 text-center items-center">
+        <span class="w-12 h-12 rounded-xl bg-zinc-900 border border-border-hairline flex items-center justify-center text-2xl">🔬</span>
+        <div class="flex flex-col gap-2">
+          <h3 class="text-lg font-bold text-zinc-50 font-sans">Experimental & P2P WebRTC Apps</h3>
+          <span class="text-[9px] font-mono bg-zinc-900 border border-border-hairline text-zinc-500 px-2 py-0.5 rounded uppercase self-center tracking-wider font-semibold">Coming Soon</span>
+        </div>
+        <p class="text-xs text-zinc-400 max-w-md leading-relaxed font-sans">
+          Serverless point-to-point experiments. Share massive files securely or collaborate on design templates with zero network staging and direct browser connectivity.
+        </p>
+      </div>
+    </div>
+
+    <!-- Configs Workspace Placeholder -->
+    <div id="workspace-configs-content" class="workspace-content hidden flex flex-col gap-6 max-w-3xl mx-auto w-full animate-in fade-in duration-200">
+      <div class="bg-panel border border-border-hairline rounded-xl p-8 flex flex-col gap-5 text-center items-center">
+        <span class="w-12 h-12 rounded-xl bg-zinc-900 border border-border-hairline flex items-center justify-center text-2xl">⚙️</span>
+        <div class="flex flex-col gap-2">
+          <h3 class="text-lg font-bold text-zinc-50 font-sans">Visual Boilerplate Config Builders</h3>
+          <span class="text-[9px] font-mono bg-zinc-900 border border-border-hairline text-zinc-500 px-2 py-0.5 rounded uppercase self-center tracking-wider font-semibold">Coming Soon</span>
+        </div>
+        <p class="text-xs text-zinc-400 max-w-md leading-relaxed font-sans">
+          Construct standard config templates visually. Export valid boilerplate checklists for Docker, TypeScript tsconfig, ESLint rules, or GitHub Actions workflows.
+        </p>
+      </div>
+    </div>
 
     <!-- Sandbox Technical Metrics -->
     <section class="mt-4 border-t border-border-hairline/60 pt-10">
@@ -209,25 +291,96 @@ const workspaces = [
 </Layout>
 
 <script is:inline>
-  document.addEventListener('keydown', (e) => {
-    // Prevent routing if user is typing in form controls
-    const active = document.activeElement;
-    if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) {
-      return;
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('homepage-search');
+    const toolCards = document.querySelectorAll('.homepage-tool-card');
+    const categoryTabs = document.querySelectorAll('.category-tab');
+    const noResults = document.getElementById('no-results-state');
+    
+    let currentCategory = 'all';
+
+    function filterTools() {
+      const query = (searchInput.value || '').toLowerCase().trim();
+      let visibleCount = 0;
+
+      toolCards.forEach(card => {
+        const name = card.getAttribute('data-tool-name') || '';
+        const desc = card.getAttribute('data-tool-desc') || '';
+        const cat = card.getAttribute('data-tool-cat') || '';
+        
+        const matchesQuery = name.includes(query) || desc.includes(query) || cat.includes(query);
+        const matchesCategory = currentCategory === 'all' || cat === currentCategory;
+
+        if (matchesQuery && matchesCategory) {
+          card.style.display = 'flex';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      if (visibleCount === 0) {
+        noResults.classList.remove('hidden');
+      } else {
+        noResults.classList.add('hidden');
+      }
     }
 
-    // Map hotkeys to paths
-    const routeMap = {
-      '1': '/tools',
-      '2': '/playground',
-      '3': '/cheatsheets',
-      '4': '/labs',
-      '5': '/configs'
-    };
+    searchInput?.addEventListener('input', filterTools);
 
-    if (routeMap[e.key]) {
-      e.preventDefault();
-      window.location.href = routeMap[e.key];
-    }
+    categoryTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        categoryTabs.forEach(t => {
+          t.classList.remove('bg-panel', 'border-border-hairline', 'text-accent-emerald', 'font-medium', 'shadow-sm', 'before:absolute', 'before:left-0', 'before:top-2.5', 'before:bottom-2.5', 'before:w-1', 'before:bg-accent-emerald', 'before:rounded-r');
+          t.classList.add('border-transparent', 'text-zinc-400', 'hover:bg-panel/50', 'hover:text-zinc-200');
+        });
+        
+        tab.classList.remove('border-transparent', 'text-zinc-400', 'hover:bg-panel/50', 'hover:text-zinc-200');
+        tab.classList.add('bg-panel', 'border-border-hairline', 'text-accent-emerald', 'font-medium', 'shadow-sm', 'before:absolute', 'before:left-0', 'before:top-2.5', 'before:bottom-2.5', 'before:w-1', 'before:bg-accent-emerald', 'before:rounded-r');
+        
+        currentCategory = tab.getAttribute('data-category-tab') || 'all';
+        filterTools();
+      });
+    });
+
+    // Workspace tab switcher logic
+    const workspaceTabs = document.querySelectorAll('.workspace-tab');
+    const workspaceContents = document.querySelectorAll('.workspace-content');
+
+    workspaceTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        workspaceTabs.forEach(t => {
+          t.classList.remove('bg-zinc-800', 'text-accent-emerald', 'border-zinc-700/60', 'font-semibold', 'shadow-sm');
+          t.classList.add('border-transparent', 'text-zinc-400', 'hover:text-zinc-200', 'hover:bg-zinc-800/40');
+        });
+
+        tab.classList.remove('border-transparent', 'text-zinc-400', 'hover:text-zinc-200', 'hover:bg-zinc-800/40');
+        tab.classList.add('bg-zinc-800', 'text-accent-emerald', 'border-zinc-700/60', 'font-semibold', 'shadow-sm');
+
+        const targetTab = tab.getAttribute('data-workspace-tab');
+        workspaceContents.forEach(content => {
+          if (content.id === `workspace-${targetTab}-content`) {
+            content.classList.remove('hidden');
+            // If tools tab is reopened, restore layout display
+            if (targetTab === 'tools') {
+              content.style.display = 'flex';
+            }
+          } else {
+            content.classList.add('hidden');
+            content.style.display = '';
+          }
+        });
+      });
+    });
+
+    // Global keyboard listener
+    document.addEventListener('keydown', (e) => {
+      // Focus search on CMD+K / Ctrl+K / /
+      if (((e.metaKey || e.ctrlKey) && e.key === 'k') || (e.key === '/' && document.activeElement !== searchInput)) {
+        e.preventDefault();
+        searchInput?.focus();
+        return;
+      }
+    });
   });
 </script>

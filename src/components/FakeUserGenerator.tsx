@@ -157,13 +157,26 @@ const PRESETS: Record<string, { label: string; schema: MockSchema }> = {
   }
 };
 
-export const FakeUserGenerator: React.FC = () => {
+export interface FakeUserGeneratorProps {
+  defaultPresetKey?: 'users' | 'products' | 'telemetry' | 'blog';
+  defaultActiveTab?: 'json' | 'csv' | 'yaml' | 'sql' | 'ts';
+}
+
+export const FakeUserGenerator: React.FC<FakeUserGeneratorProps> = ({
+  defaultPresetKey = 'users',
+  defaultActiveTab = 'json'
+}) => {
   // Config States
   const [count, setCount] = useState<number>(10);
-  const [schema, setSchema] = useState<MockSchema>(PRESETS.users.schema);
-  const [activeTab, setActiveTab] = useState<'json' | 'csv' | 'yaml' | 'sql' | 'ts'>('json');
-  const [sqlTableName, setSqlTableName] = useState<string>('users');
-  const [presetKey, setPresetKey] = useState<string>('users');
+  const [schema, setSchema] = useState<MockSchema>(() => PRESETS[defaultPresetKey]?.schema || PRESETS.users.schema);
+  const [activeTab, setActiveTab] = useState<'json' | 'csv' | 'yaml' | 'sql' | 'ts'>(defaultActiveTab);
+  const [sqlTableName, setSqlTableName] = useState<string>(() => {
+    if (defaultPresetKey === 'products') return 'products';
+    if (defaultPresetKey === 'telemetry') return 'iot_telemetry';
+    if (defaultPresetKey === 'blog') return 'posts';
+    return 'users';
+  });
+  const [presetKey, setPresetKey] = useState<string>(defaultPresetKey);
   
   // Generation triggers & results
   const [mockData, setMockData] = useState<any[]>([]);

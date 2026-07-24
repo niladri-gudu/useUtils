@@ -1,47 +1,142 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { ClampGenerator } from '../../components/ClampGenerator';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
 
 const faqs = [
   {
     question: "What is the CSS clamp() function?",
-    answer: "The <code>clamp()</code> function is a CSS comparison function that limits a value between an upper and lower bound. It accepts three parameters in order: a minimum value, a preferred value (typically using viewport units like <code>vw</code>), and a maximum value. For example: <code>font-size: clamp(1rem, 2.5vw + 0.5rem, 3rem);</code> ensures that the font size dynamically scales with the viewport, but never shrinks below <code>1rem</code> or grows beyond <code>3rem</code>."
+    answer: "The `clamp()` function is a CSS comparison function that limits a value between an upper and lower bound. It accepts three parameters in order: a minimum value, a preferred value (typically using viewport units like `vw`), and a maximum value. For example: `font-size: clamp(1rem, 2.5vw + 0.5rem, 3rem);` ensures that the font size dynamically scales with the viewport, but never shrinks below `1rem` or grows beyond `3rem`."
   },
   {
     question: "How do you calculate fluid typography using clamp()?",
-    answer: "Fluid typography is calculated by establishing a linear scaling rate between a minimum size (at a minimum screen size, e.g., 320px) and a maximum size (at a maximum screen size, e.g., 1200px). The math calculates the slope of this line and its y-axis intercept. The resulting formula combines a fixed unit (such as <code>rem</code>) and a viewport unit (such as <code>vw</code>) to create the preferred middle argument of the <code>clamp()</code> function."
+    answer: "Fluid typography is calculated by establishing a linear scaling rate between a minimum size (at a minimum screen size, e.g., 320px) and a maximum size (at a maximum screen size, e.g., 1200px). The math calculates the slope of this line and its y-axis intercept. The resulting formula combines a fixed unit (such as `rem`) and a viewport unit (such as `vw`) to create the preferred middle argument of the `clamp()` function."
   },
   {
     question: "Why is fluid typography better than CSS media queries?",
-    answer: "Traditional responsive design relies on CSS media queries to change font sizes abruptly at specific screen widths (breakpoints). This creates stepped jumps in size that can break layouts or look unpolished. Fluid typography using <code>clamp()</code> continuously interpolates sizes smoothly across all viewport widths, guaranteeing a perfect fit on any device size (including custom resizes) without layout shifts or bloated CSS query files."
+    answer: "Traditional responsive design relies on CSS media queries to change font sizes abruptly at specific screen widths (breakpoints). This creates stepped jumps in size that can break layouts or look unpolished. Fluid typography using `clamp()` continuously interpolates sizes smoothly across all viewport widths, guaranteeing a perfect fit on any device size (including custom resizes) without layout shifts or bloated CSS query files."
   },
   {
     question: "Is CSS clamp() fully supported by modern browsers?",
-    answer: "Yes, CSS <code>clamp()</code> has exceptional browser support, covering over 97% of global users. It is natively supported in all modern versions of Google Chrome, Apple Safari, Mozilla Firefox, Microsoft Edge, and Opera since early 2020. For legacy browsers, you can include a fallback size declaration directly before the <code>clamp()</code> rule: <code>font-size: 24px; font-size: clamp(1rem, 1.5rem + 1vw, 2.5rem);</code>."
+    answer: "Yes, CSS `clamp()` has exceptional browser support, covering over 97% of global users. It is natively supported in all modern versions of Google Chrome, Apple Safari, Mozilla Firefox, Microsoft Edge, and Opera since early 2020. For legacy browsers, you can include a fallback size declaration directly before the `clamp()` rule: `font-size: 24px; font-size: clamp(1rem, 1.5rem + 1vw, 2.5rem);`."
   },
   {
     question: "How does CSS clamp() affect web accessibility (WCAG)?",
-    answer: "To comply with WCAG Success Criterion 1.4.4 (Resize Text), fluid sizes should always use relative units (like <code>rem</code> or <code>em</code>) rather than absolute units (like <code>px</code>). If you define a preferred size using viewport units alone (e.g. <code>font-size: 4vw;</code>), the text will fail to scale when users zoom in or out using browser settings. By using a hybrid formula (e.g. <code>0.5rem + 2vw</code>), browser scaling is fully respected, maintaining complete accessibility."
+    answer: "To comply with WCAG Success Criterion 1.4.4 (Resize Text), fluid sizes should always use relative units (like `rem` or `em`) rather than absolute units (like `px`). If you define a preferred size using viewport units alone (e.g. `font-size: 4vw;`), the text will fail to scale when users zoom in or out using browser settings. By using a hybrid formula (e.g. `0.5rem + 2vw`), browser scaling is fully respected, maintaining complete accessibility."
   },
   {
     question: "How do I configure fluid typography in Tailwind CSS?",
-    answer: "In Tailwind CSS v4, you can declare fluid font sizes directly inside your CSS entry point's <code>@theme</code> directive, for example: <code>--font-size-h1: clamp(2rem, 1.5rem + 3vw, 4rem);</code>. In Tailwind CSS v3, you can add clamp rules inside <code>tailwind.config.js</code> under <code>theme.extend.fontSize</code>, or apply them inline using arbitrary class brackets: <code>text-[clamp(1rem,0.6rem+2vw,3rem)]</code> (note that spaces must be replaced with underscores <code>_</code> inside the brackets)."
+    answer: "In Tailwind CSS v4, you can declare fluid font sizes directly inside your CSS entry point's `@theme` directive, for example: `--font-size-h1: clamp(2rem, 1.5rem + 3vw, 4rem);`. In Tailwind CSS v3, you can add clamp rules inside `tailwind.config.js` under `theme.extend.fontSize`, or apply them inline using arbitrary class brackets: `text-[clamp(1rem,0.6rem+2vw,3rem)]` (note that spaces must be replaced with underscores `_` inside the brackets)."
   },
   {
     question: "What is a modular scale in typography?",
-    answer: "A modular scale is a sequence of values that scale in harmony based on a consistent mathematical ratio, such as the Golden Ratio (1.618), Perfect Fifth (1.5), or Perfect Fourth (1.333). In design, applying a modular scale keeps layouts balanced. Our CSS Clamp Generator lets you input different ratios for mobile and desktop screen sizes, generating a fully responsive, proportional fluid scale system from <code>xs</code> up to <code>7xl</code>."
+    answer: "A modular scale is a sequence of values that scale in harmony based on a consistent mathematical ratio, such as the Golden Ratio (1.618), Perfect Fifth (1.5), or Perfect Fourth (1.333). In design, applying a modular scale keeps layouts balanced. Our CSS Clamp Generator lets you input different ratios for mobile and desktop screen sizes, generating a fully responsive, proportional fluid scale system from `xs` up to `7xl`."
   },
   {
     question: "What is the root font size and how does it impact clamp()?",
-    answer: "The root font size is the font size declared on the document's <code>&lt;html&gt;</code> element. By default, major browsers set this to <code>16px</code>. In clamp calculations, the root size serves as the base divisor when converting pixel values to accessibility-compliant <code>rem</code> units. For example, if your root size is 16px, a target font size of 24px compiles to <code>1.5rem</code>."
+    answer: "The root font size is the font size declared on the document's `<html>` element. By default, major browsers set this to `16px`. In clamp calculations, the root size serves as the base divisor when converting pixel values to accessibility-compliant `rem` units. For example, if your root size is 16px, a target font size of 24px compiles to `1.5rem`."
   },
   {
     question: "Can I use CSS clamp() for properties other than font-size?",
-    answer: "Yes! The CSS <code>clamp()</code> function is extremely versatile and works for any property that accepts length units. It is highly recommended for layout padding, section margins, CSS Grid gaps, flexbox gaps, border-radii, and element widths. Creating fluid spacing scales (e.g., <code>--spacing-md: clamp(1rem, 0.8rem + 1vw, 2rem)</code>) keeps columns and margins clean across phone, tablet, and widescreen layouts."
+    answer: "Yes! The CSS `clamp()` function is extremely versatile and works for any property that accepts length units. It is highly recommended for layout padding, section margins, CSS Grid gaps, flexbox gaps, border-radii, and element widths. Creating fluid spacing scales (e.g., `--spacing-md: clamp(1rem, 0.8rem + 1vw, 2rem)`) keeps columns and margins clean across phone, tablet, and widescreen layouts."
   },
   {
     question: "How does the calculator handle negative viewport intersections?",
-    answer: "During calculation, if a font size scales rapidly over a narrow viewport range, the linear line equation can yield a negative y-intercept. This is mathematically correct and fully parsed by browsers as <code>clamp(1rem, 4vw - 0.5rem, 3rem)</code>. Our generator automatically identifies negative intersections and formats the output string using clean subtraction (e.g., <code>4vw - 0.5rem</code>) for maximum readable code cleanliness."
+    answer: "During calculation, if a font size scales rapidly over a narrow viewport range, the linear line equation can yield a negative y-intercept. This is mathematically correct and fully parsed by browsers as `clamp(1rem, 4vw - 0.5rem, 3rem)`. Our generator automatically identifies negative intersections and formats the output string using clean subtraction (e.g., `4vw - 0.5rem`) for maximum readable code cleanliness."
+  },
+  {
+    question: "What are viewport units?",
+    answer: "Viewport units represent a percentage of the browser window size: `vw` is viewport width and `vh` is viewport height. In fluid typography, `vw` is the standard unit used to scale text sizes."
+  },
+  {
+    question: "How does screen zoom interact with clamp()?",
+    answer: "Browser zoom changes the root font size. If your `clamp()` preferred value contains relative units (like `rem`), the text will scale normally, preserving readability."
+  },
+  {
+    question: "How does the decimal precision setting work?",
+    answer: "Rounding precision determines the decimal places calculated in the CSS output. Using 4 decimal places ensures accurate rendering across browser engines."
+  },
+  {
+    question: "Can I use clamp() for borders and rounded corners?",
+    answer: "Yes, you can apply fluid scaling to any length unit, including borders, border-radii, and layout margins: `border-radius: clamp(8px, 2vw, 16px);`."
+  },
+  {
+    question: "Is there a performance cost to using clamp()?",
+    answer: "No, browser layout engines calculate `clamp()` rules natively, resulting in identical rendering speeds compared to media queries."
+  },
+  {
+    question: "Are fluid typography scales supported in Tailwind v4?",
+    answer: "Yes, Tailwind v4 supports arbitrary text utilities and theme properties."
+  },
+  {
+    question: "What is the relative luminance threshold?",
+    answer: "Luminance calculations evaluate screen brightness levels. Comparing text luminance against background luminance gives the contrast ratio."
+  },
+  {
+    question: "Does this page feature a contrast accessibility check?",
+    answer: "Yes. The page evaluates contrast ratios against white and black backgrounds in real-time."
+  },
+  {
+    question: "How can I extract color palettes from an image?",
+    answer: "Drag and drop any image into our sandbox to sample the dominant colors and map them to gradient stops."
+  },
+  {
+    question: "Why do colors look different in print?",
+    answer: "Screens emit RGB light, whereas print ink absorbs CMYK light. This difference in color models results in varying color ranges."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "CSS",
+    code: `
+/* Responsive Fluid H1 */
+h1 {
+  font-size: clamp(1.5rem, 4vw + 1rem, 3.5rem);
+}
+    `,
+    note: "Modern CSS declarations using standard clamp properties."
+  },
+  {
+    lang: "Tailwind CSS",
+    code: `
+<!-- Arbitrary Fluid Text Class -->
+<h1 class="text-[clamp(1.5rem,4vw+1rem,3.5rem)] font-bold">Fluid Heading</h1>
+    `,
+    note: "Tailwind arbitrary bracket utility syntax."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Using Pure Viewport Units",
+    description: "Declaring only `vw` units as the preferred value (e.g. `clamp(1rem, 5vw, 3rem)`). This prevents text from scaling when the user zooms in or out, violating accessibility standards."
+  },
+  {
+    title: "Omitting Unit Labels",
+    description: "Omitting unit markers (like `px` or `rem`) inside the mathematical calculations, which causes the browser to reject the CSS declaration."
+  },
+  {
+    title: "Wrong Min/Max Order",
+    description: "Declaring the maximum value first. The parameters must follow the strict order: `clamp(minimum, preferred, maximum)`."
+  }
+];
+
+const references = [
+  {
+    title: "MDN Web Docs: clamp() function",
+    url: "https://developer.mozilla.org/en-US/docs/Web/CSS/clamp"
+  },
+  {
+    title: "W3C CSS Values and Units Module Level 4",
+    url: "https://www.w3.org/TR/css-values-4/#funcdef-clamp"
   }
 ];
 ---
@@ -56,18 +151,19 @@ const faqs = [
 >
   <ClampGenerator client:load />
 
-  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <PrivacyBadge />
+
     <div>
       <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
         <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
         The Mathematics and Logic of CSS clamp()
       </h2>
       <p class="leading-relaxed mb-4">
-        The CSS <code>clamp()</code> function takes three expressions: a minimum boundary, a preferred scaling value, and a maximum boundary. When the browser evaluates this function, it computes the preferred value, but ensures it stays strictly within the specified limits.
+        The CSS `clamp()` function takes three expressions: a minimum boundary, a preferred scaling value, and a maximum boundary. When the browser evaluates this function, it computes the preferred value, but ensures it stays strictly within the specified limits.
       </p>
       <p class="leading-relaxed mb-4">
-        To make typography fluid, we express the preferred value as a linear function of the viewport width. The formula uses two coordinate points: <code>(minViewport, minSize)</code> and <code>(maxViewport, maxSize)</code>.
+        To make typography fluid, we express the preferred value as a linear function of the viewport width. The formula uses two coordinate points: `(minViewport, minSize)` and `(maxViewport, maxSize)`.
       </p>
       <div className="bg-zinc-950 border border-border-hairline/60 rounded-lg p-4 font-mono text-xs text-zinc-300 my-4">
         <div className="text-zinc-500">// Calculating the slope of the line</div>
@@ -78,37 +174,56 @@ const faqs = [
         <div>Intersection = minSize - (minViewport * Slope)</div>
       </div>
       <p class="leading-relaxed">
-        The final combined value is represented in CSS as <code>clamp(minSize, intersection + slope_vw, maxSize)</code>. Our tool calculates this math instantly on the client side, ensuring no delay and maximum efficiency.
-      </p>
-    </div>
-    
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Designing Accessible Fluid Type Scales
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Web accessibility guidelines (such as WCAG 2.1) require that users must be able to resize text to at least 200% without breaking layouts. This is critical for users with visual impairments.
-      </p>
-      <p class="leading-relaxed mb-4">
-        If a developer implements fluid typography using only viewport units (e.g. <code>font-size: 5vw;</code>), the text is tied directly to the browser window size. When the user selects "Zoom In" in their browser, the viewport size does not change, which means the text size remains static. The site fails accessibility compliance.
-      </p>
-      <p class="leading-relaxed">
-        By introducing a relative unit like <code>rem</code> or <code>em</code> into the preferred value equation (e.g., <code>clamp(1rem, 0.75rem + 1.5vw, 2.5rem)</code>), the text is tied partially to the root font-size. When the user zooms in, the browser scales the base root size, which multiplies the relative <code>rem</code> portion, ensuring text scales cleanly and maintains accessibility.
+        The final combined value is represented in CSS as `clamp(minSize, intersection + slope_vw, maxSize)`. Our tool calculates this math instantly on the client side, ensuring no delay and maximum efficiency.
       </p>
     </div>
 
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Generating Harmonious Systems with Modular Scales
-      </h2>
-      <p class="leading-relaxed mb-4">
-        A single fluid size is helpful for headlines, but modern web applications require a comprehensive system. A typographic scale defines a structured relationship between body copy, subheadings, and titles.
-      </p>
-      <p class="leading-relaxed">
-        Our CSS Clamp Generator features a built-in **Fluid Type Scale Generator** that computes values for eleven standard sizes from <code>xs</code> to <code>7xl</code>. You can configure standard scale ratios (like the Perfect Fourth <code>1.333</code> for mobile devices, and the Golden Ratio <code>1.618</code> for spacious desktop layouts). The tool automatically interpolates baseline sizes and calculates individual clamp formulas for the entire scale. You can review, customize individual pixel borders in the interactive matrix, and export the entire configuration in CSS, Tailwind v4 theme variables, Tailwind v3 configs, or SCSS declarations.
-      </p>
-    </div>
+    <ComparisonTable
+      title="Fluid Typography Syntax Comparison"
+      description="Compare responsive typography methods:"
+      headers={["Layout Strategy", "CSS Implementation Example", "Visual Transition", "Accessibility Status"]}
+      rows={[
+        { label: "Fluid Clamp", values: ["font-size: clamp(1rem, 2vw + 1rem, 2rem)", "Smooth, continuous scaling", "Excellent (respects browser zoom settings)"] },
+        { label: "Media Queries", values: ["@media (min-width: 768px) { font-size: 1.5rem; }", "Stepped, layout jumps", "Good"] }
+      ]}
+    />
+
+    <ExampleCard
+      title="Popular Typography clamp() Presets"
+      description="Frequently used design coordinates:"
+      examples={[
+        { label: "Fluid Body Text", input: "font-size: clamp(1rem, 0.5vw + 0.875rem, 1.25rem)", output: "Copied!", badge: "CSS" },
+        { label: "Fluid H1 Heading", input: "font-size: clamp(1.75rem, 3vw + 1.25rem, 3.5rem)", output: "Copied!", badge: "CSS" },
+        { label: "Fluid Subtitle", input: "font-size: clamp(1.25rem, 1vw + 1.1rem, 1.75rem)", output: "Copied!", badge: "CSS" }
+      ]}
+    />
+
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Fluid Typography Integration"
+      description="Apply these styles in your markup code:"
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Fluid Typography Pitfalls"
+    />
+
+    <BestPractices
+      title="Fluid Typography Best Practices"
+      practices={[
+        { title: "Define a Theme Property", description: "Save repeating custom font sizes as theme variables in your config to maintain stylesheet consistency." },
+        { title: "Always Include Relative Rem Coordinates", description: "Combine viewport units with rem values to ensure text scales properly when users adjust browser zoom preferences." }
+      ]}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+
+    <RelatedTools
+      currentToolUrl="/tools/clamp-generator"
+      category="css"
+    />
   </div>
 </ToolPageLayout>

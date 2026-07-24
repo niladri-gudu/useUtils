@@ -8,45 +8,67 @@ const isLinkActive = (path: string) => {
 ---
 
 <footer class="w-full bg-canvas border-t border-border-hairline mt-auto">
-  <div class="max-w-7xl mx-auto px-4 py-8 flex flex-col md:flex-row items-center justify-between gap-6 text-xs">
-    <!-- Copyright & Main Navigation Links -->
-    <div class="flex flex-col md:flex-row items-center gap-3 md:gap-6 text-zinc-500">
-      <span>© 2026 useUtils.com</span>
-      <span class="hidden md:inline text-zinc-800">•</span>
-      <nav class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 md:gap-5" aria-label="Footer Navigation">
-        <a 
-          href="/about" 
-          class={`transition-colors duration-150 hover:text-accent-emerald ${isLinkActive('/about') ? 'text-accent-emerald font-semibold' : 'text-zinc-400'}`}
-        >
-          About Us
-        </a>
-        <span class="hidden sm:inline text-zinc-850 select-none">•</span>
-        <a 
-          href="/privacy" 
-          class={`transition-colors duration-150 hover:text-accent-emerald ${isLinkActive('/privacy') ? 'text-accent-emerald font-semibold' : 'text-zinc-400'}`}
-        >
-          Privacy Policy
-        </a>
-        <span class="hidden sm:inline text-zinc-850 select-none">•</span>
-        <a 
-          href="/terms" 
-          class={`transition-colors duration-150 hover:text-accent-emerald ${isLinkActive('/terms') ? 'text-accent-emerald font-semibold' : 'text-zinc-400'}`}
-        >
-          Terms & Conditions
-        </a>
-        <span class="hidden sm:inline text-zinc-850 select-none">•</span>
-        <a 
-          href="/contact" 
-          class={`transition-colors duration-150 hover:text-accent-emerald ${isLinkActive('/contact') ? 'text-accent-emerald font-semibold' : 'text-zinc-400'}`}
-        >
-          Contact Us
-        </a>
+  <!-- Multi-column Link Directory for SEO crawling -->
+  <div class="max-w-7xl mx-auto px-4 pt-12 pb-8 grid grid-cols-2 md:grid-cols-4 gap-8 text-xs border-b border-border-hairline/40">
+    <!-- Hubs Column -->
+    <div class="flex flex-col gap-3">
+      <span class="font-mono text-zinc-300 font-semibold uppercase tracking-wider select-none">Workspaces</span>
+      <nav class="flex flex-col gap-2.5 text-zinc-400" aria-label="Footer Workspaces Navigation">
+        <a href="/tools" class="hover:text-accent-emerald transition-colors">Developer Tools</a>
+        <a href="/playground" class="hover:text-accent-emerald transition-colors">Interactive Playground</a>
+        <a href="/cheatsheets" class="hover:text-accent-emerald transition-colors">Cheat Sheets</a>
+        <a href="/labs" class="hover:text-accent-emerald transition-colors">Labs &amp; P2P Experiments</a>
+        <a href="/configs" class="hover:text-accent-emerald transition-colors">Config Scaffolding</a>
       </nav>
+    </div>
+
+    <!-- Categories Column -->
+    <div class="flex flex-col gap-3">
+      <span class="font-mono text-zinc-300 font-semibold uppercase tracking-wider select-none">Tool Categories</span>
+      <nav class="flex flex-col gap-2.5 text-zinc-400" aria-label="Footer Categories Navigation">
+        <a href="/tools?category=text" class="hover:text-accent-emerald transition-colors">Text Utilities</a>
+        <a href="/tools?category=json" class="hover:text-accent-emerald transition-colors">Data &amp; JSON Formatter</a>
+        <a href="/tools?category=encoding" class="hover:text-accent-emerald transition-colors">Cryptography &amp; Encode</a>
+        <a href="/tools?category=css" class="hover:text-accent-emerald transition-colors">CSS &amp; Graphic Design</a>
+        <a href="/tools?category=generators" class="hover:text-accent-emerald transition-colors">Generators &amp; Epoch Time</a>
+      </nav>
+    </div>
+
+    <!-- Popular Utilities Column -->
+    <div class="flex flex-col gap-3">
+      <span class="font-mono text-zinc-300 font-semibold uppercase tracking-wider select-none">Popular Tools</span>
+      <nav class="flex flex-col gap-2.5 text-zinc-400" aria-label="Footer Popular Tools Navigation">
+        <a href="/tools/json-formatter" class="hover:text-accent-emerald transition-colors">JSON Formatter</a>
+        <a href="/tools/case-converter" class="hover:text-accent-emerald transition-colors">Case Converter</a>
+        <a href="/tools/jwt-decoder" class="hover:text-accent-emerald transition-colors">JWT Token Decoder</a>
+        <a href="/tools/uuid-generator" class="hover:text-accent-emerald transition-colors">UUID Generator (v4/v7)</a>
+        <a href="/tools/diff-checker" class="hover:text-accent-emerald transition-colors">Diff Checker</a>
+      </nav>
+    </div>
+
+    <!-- Legal & About Column -->
+    <div class="flex flex-col gap-3">
+      <span class="font-mono text-zinc-300 font-semibold uppercase tracking-wider select-none">Company</span>
+      <nav class="flex flex-col gap-2.5 text-zinc-400" aria-label="Footer Company Navigation">
+        <a href="/about" class={`hover:text-accent-emerald transition-colors ${isLinkActive('/about') ? 'text-accent-emerald font-semibold' : ''}`}>About Us</a>
+        <a href="/contact" class={`hover:text-accent-emerald transition-colors ${isLinkActive('/contact') ? 'text-accent-emerald font-semibold' : ''}`}>Contact Support</a>
+        <a href="/privacy" class={`hover:text-accent-emerald transition-colors ${isLinkActive('/privacy') ? 'text-accent-emerald font-semibold' : ''}`}>Privacy Policy</a>
+        <a href="/terms" class={`hover:text-accent-emerald transition-colors ${isLinkActive('/terms') ? 'text-accent-emerald font-semibold' : ''}`}>Terms of Service</a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Bottom Bar with Copyright -->
+  <div class="max-w-7xl mx-auto px-4 py-8 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-zinc-500">
+    <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+      <span>© 2026 useUtils.com</span>
+      <span class="text-zinc-800">•</span>
+      <span>All calculations performed strictly on the client side.</span>
     </div>
 
     <!-- Security Pill -->
     <div class="flex items-center gap-4">
-      <span class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900 border border-border-hairline font-mono text-[10px] text-zinc-400">
+      <span class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900 border border-border-hairline font-mono text-[10px] text-zinc-400 select-none">
         <span class="relative flex h-2 w-2">
           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
           <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>

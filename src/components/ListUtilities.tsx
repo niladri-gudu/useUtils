@@ -79,7 +79,15 @@ GET /api/v1/admin/settings
 POST /api/v1/admin/settings
 GET /api/v1/users`;
 
-export const ListUtilities: React.FC = () => {
+interface ListUtilitiesProps {
+  defaultTab?: 'sort' | 'dedupe' | 'prefix' | 'filter' | 'clean' | 'split-join';
+  defaultDedupeEnabled?: boolean;
+}
+
+export const ListUtilities: React.FC<ListUtilitiesProps> = ({
+  defaultTab = 'sort',
+  defaultDedupeEnabled = false
+}) => {
   // 1. Raw Text and Split/Join Configuration
   const [rawText, setRawText] = useState<string>(INITIAL_SAMPLE);
   const [splitJoin, setSplitJoin] = useState<SplitJoinOptions>({
@@ -97,7 +105,7 @@ export const ListUtilities: React.FC = () => {
   });
 
   const [dedupeOpts, setDedupeOpts] = useState<DedupeOptions & { enabled: boolean }>({
-    enabled: false,
+    enabled: defaultDedupeEnabled,
     policy: 'keep-first',
     caseSensitive: false
   });
@@ -127,7 +135,7 @@ export const ListUtilities: React.FC = () => {
   const [caseType, setCaseType] = useState<string>('none');
 
   // UI Tabs / Views
-  const [activeTab, setActiveTab] = useState<'sort' | 'dedupe' | 'prefix' | 'filter' | 'clean' | 'split-join'>('sort');
+  const [activeTab, setActiveTab] = useState<'sort' | 'dedupe' | 'prefix' | 'filter' | 'clean' | 'split-join'>(defaultTab);
   const [rightViewMode, setRightViewMode] = useState<'preview' | 'sandbox' | 'duplicates'>('preview');
 
   // Copy Feedback

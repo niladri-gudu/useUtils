@@ -121,9 +121,15 @@ const PRESETS = {
   }
 };
 
-export const JsonSchemaValidator: React.FC = () => {
+interface JsonSchemaValidatorProps {
+  defaultTab?: 'generate' | 'validate';
+}
+
+export const JsonSchemaValidator: React.FC<JsonSchemaValidatorProps> = ({
+  defaultTab = 'generate'
+}) => {
   // Tabs: 'generate' | 'validate'
-  const [activeTab, setActiveTab] = useState<'generate' | 'validate'>('generate');
+  const [activeTab, setActiveTab] = useState<'generate' | 'validate'>(defaultTab);
 
   // Schema Generator State
   const [genInput, setGenInput] = useState<string>('');

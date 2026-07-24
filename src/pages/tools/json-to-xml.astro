@@ -1,0 +1,234 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { XmlJsonConverter } from '../../components/XmlJsonConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'XML to JSON', href: '/tools/xml-to-json' },
+  { label: 'JSON to XML', href: '/tools/json-to-xml', active: true }
+];
+
+const faqs = [
+  {
+    question: "How do I convert JSON to XML?",
+    answer: "Paste your valid JSON string into the editor. Delineate a root tag name (defaulting to <code>root</code>) in the settings. The converter parses the JSON keys and serializes them into nested XML tags instantly."
+  },
+  {
+    question: "Why does XML require a root element?",
+    answer: "The XML specification mandates that every valid XML document must contain exactly one parent element that wraps all other child elements. JSON, however, can represent flat arrays or multiple root elements, requiring a root wrapper (e.g. <code>&lt;root&gt;</code>) during translation."
+  },
+  {
+    question: "Is this JSON to XML converter private?",
+    answer: "Yes, 100% private. All conversions, parsing, and serialization run client-side inside your browser memory. No data is sent to external servers."
+  },
+  {
+    question: "How are JSON object keys mapped to XML tags?",
+    answer: "JSON keys become XML tag names (e.g., <code>{\"name\": \"John\"}</code> translates to <code>&lt;name&gt;John&lt;/name&gt;</code>). Mapped tag names must be valid XML identifiers (cannot start with digits or contain spaces)."
+  },
+  {
+    question: "How are JSON arrays translated to XML?",
+    answer: "JSON arrays are translated by duplicating the tag name for each item in the list. For example, <code>{\"items\": [1, 2]}</code> translates to <code>&lt;items&gt;1&lt;/items&gt;&lt;items&gt;2&lt;/items&gt;</code>."
+  },
+  {
+    question: "How do I represent XML tag attributes inside JSON?",
+    answer: "By default, JSON properties prefixed with an <code>@</code> character are translated into XML attributes on their parent element. For example, <code>{\"user\": {\"@id\": \"101\", \"name\": \"Alex\"}}</code> becomes <code>&lt;user id=\"101\"&gt;&lt;name&gt;Alex&lt;/name&gt;&lt;/user&gt;</code>."
+  },
+  {
+    question: "What is the #text key used for?",
+    answer: "If a JSON object contains both attributes (prefixed with <code>@</code>) and raw text values, the text value is mapped under a dedicated key, defaulting to <code>#text</code>."
+  },
+  {
+    question: "Does the converter support XML namespaces?",
+    answer: "Yes. Namespaces are translated literally as keys (e.g., <code>soapenv:Body</code>), and attribute schemas like <code>xmlns:web</code> are mapped onto tags correctly."
+  },
+  {
+    question: "How are special characters escaped in XML output?",
+    answer: "Special characters are automatically escaped to prevent parsing breaks. Specifically: <code>&amp;</code> becomes <code>&amp;amp;</code>, <code>&lt;</code> becomes <code>&amp;lt;</code>, <code>&gt;</code> becomes <code>&amp;gt;</code>, <code>\"</code> becomes <code>&amp;quot;</code>, and <code>'</code> becomes <code>&amp;apos;</code>."
+  },
+  {
+    question: "How do I convert JSON to XML in Node.js programmatically?",
+    answer: "You can use libraries like <code>xml2js</code> or <code>fast-xml-parser</code> to serialize JavaScript objects to XML."
+  },
+  {
+    question: "Can I minify the generated XML?",
+    answer: "Yes. Toggle the 'Minify XML' option in the settings. This strips out all indentation spacing and newlines, resulting in a single-line string to reduce payload sizes."
+  },
+  {
+    question: "How to convert JSON to XML in Python?",
+    answer: "You can parse the JSON string into a Python dictionary, and then build an XML tree using the standard library's <code>xml.etree.ElementTree</code> module."
+  },
+  {
+    question: "What is standard indentation for XML files?",
+    answer: "The standard indentation is 2 spaces or 4 spaces. Our tool supports both indent configurations, as well as tabs."
+  },
+  {
+    question: "How are JSON null values represented in XML?",
+    answer: "Null values are translated into empty, self-closing XML tags (e.g. <code>&lt;notes/&gt;</code>) or omitted depending on the settings."
+  },
+  {
+    question: "Why do numeric values in JSON become strings in XML?",
+    answer: "Unlike JSON, XML lacks native data types—all cell values are stored as plain text. Therefore, numbers (e.g. <code>42</code>) and booleans (<code>true</code>) render as text nodes."
+  },
+  {
+    question: "How do I load a sample JSON to try it out?",
+    answer: "Click the 'Sample JSON' button above the input editor to load a pre-made book database structure."
+  },
+  {
+    question: "Can I download the compiled XML file?",
+    answer: "Yes, click the 'Download' button above the output window to save your translated data as an XML document."
+  },
+  {
+    question: "Is XML case-sensitive?",
+    answer: "Yes, XML tags are case-sensitive. The opening and closing tag names must match casing exactly (e.g., <code>&lt;Item&gt;...&lt;/Item&gt;</code>)."
+  },
+  {
+    question: "Can I write comments inside JSON to be converted?",
+    answer: "No, standard JSON does not support comments. If you need to embed comments, use YAML or XML directly."
+  },
+  {
+    question: "Why should I convert my JSON data to XML?",
+    answer: "Many legacy enterprise systems, SOAP web services, and configuration parsers (like Java or Android layout modules) only accept XML data."
+  }
+];
+
+const references = [
+  { title: "W3C XML 1.0 Specification Standard", url: "https://www.w3.org/TR/xml/", source: "W3C Official Specs" },
+  { title: "NPM xml2js Package Documentation", url: "https://www.npmjs.com/package/xml2js", source: "NPM Registry" }
+];
+
+const languageCodes = [
+  {
+    lang: "Node.js (xml2js)",
+    code: `const xml2js = require("xml2js");
+
+const builder = new xml2js.Builder({
+  rootName: "root",
+  xmldec: { version: "1.0", encoding: "UTF-8" }
+});
+
+const data = {
+  user: {
+    name: "Alex",
+    role: "Developer"
+  }
+};
+
+const xml = builder.buildObject(data);
+console.log(xml);`,
+    note: "The Builder class formats and builds valid XML elements recursively."
+  },
+  {
+    lang: "Python (ElementTree)",
+    code: `import xml.etree.ElementTree as ET
+import json
+
+json_data = '{"name": "Alex", "role": "Developer"}'
+data = json.loads(json_data)
+
+root = ET.Element("root")
+for key, val in data.items():
+    child = ET.SubElement(root, key)
+    child.text = str(val)
+
+# Compile tree and export as string bytes
+xml_str = ET.tostring(root, encoding="utf-8").decode("utf-8")
+print(xml_str)`,
+    note: "Builds a standard XML DOM tree model programmatically."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Invalid XML Tag Names in JSON Keys",
+    description: "Using JSON keys that contain spaces or start with numbers (e.g., \"first name\" or \"1stField\") creates invalid XML tag names.",
+    fix: "Ensure all JSON keys follow XML naming rules: no spaces, cannot start with digits, and use hyphens or camelCase."
+  },
+  {
+    title: "Missing Root Element for JSON Arrays",
+    description: "Exporting a flat JSON array directly to XML causes multiple root tags, violating the XML specification.",
+    fix: "Always wrap arrays inside a parent key or define a root element tag wrapper (like <code>&lt;root&gt;</code>) during compilation."
+  }
+];
+---
+
+<ToolPageLayout
+  title="JSON to XML Converter Online - 100% Offline"
+  description="Convert JSON payloads to XML documents in real-time. Supports attribute mapping, custom root elements, and minification. 100% private."
+  keywords="json to xml, convert json to xml online, json to xml converter, serialize json to xml"
+  toolTitle="JSON to XML Converter"
+  toolDescription="Convert JSON payloads into clean, semantic XML tag structures. Define custom root nodes, map attributes with prefixes, configure indentation styles, and export results locally."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <XmlJsonConverter client:load defaultPathway="json-to-xml" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Translating JavaScript Objects to XML Trees
+      </h2>
+      <p class="leading-relaxed mb-4">
+        XML remains the backbone of enterprise configuration (like Maven or Android schemas) and traditional web protocols (such as SOAP or RSS feeds). Integrating these systems requires converting standard JSON payloads into XML structures.
+      </p>
+      <p class="leading-relaxed">
+        Our **JSON to XML Converter** manages this translation. The serialization engine processes object properties recursively, handles list duplicates, maps attributes (prefixed with <code>@</code>), escapes characters, and generates clean tag structures.
+      </p>
+    </div>
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="JSON vs XML Structures"
+      headers={["Property", "JSON Specification", "XML Specification"]}
+      rows={[
+        { label: "Document Wrappers", values: ["Allows multiple keys or flat arrays at root", "Requires exactly one parent root element"] },
+        { label: "Inline Attributes", values: ["No support (represented as keys)", "Supported natively inside tags (e.g. <tag attr=\"val\">)"] },
+        { label: "Comment Support", values: ["Not supported", "Supported natively (e.g. <!-- comment -->)"] },
+        { label: "Data Typing", values: ["Supports objects, lists, strings, numbers, booleans", "Only stores string characters (requires type coercion)"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="JSON to XML Serialization"
+      description="See how keys and properties are translated into tags:"
+      examples={[
+        { label: "JSON Ingestion with Attributes", input: '{\n  "user": {\n    "@id": "1",\n    "name": "Jane"\n  }\n}', output: '<root>\n  <user id="1">\n    <name>Jane</name>\n  </user>\n</root>', badge: "XML Output" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic JSON to XML Helpers"
+      description="Integrate serialization engines into your codebase:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common XML Serialization Pitfalls"
+      description="Avoid these syntax mismatches to ensure valid XML outputs:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="XML Structure Design Best Practices"
+      practices={[
+        { title: "Define a Clean Root Element", description: "Always enclose child elements within a descriptive, singular root tag to satisfy XML validation parsers." },
+        { title: "Standardize Attributes", description: "Use attributes for metadata (like IDs or categories) and child elements for primary data contents." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

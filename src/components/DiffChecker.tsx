@@ -65,8 +65,8 @@ function calculateTotal(price, taxRate = 0.08, discount = 0) {
   }
 };
 
-export function DiffChecker() {
-  const [activeTab, setActiveTab] = useState<'text' | 'json' | 'file'>('text');
+export function DiffChecker({ defaultTab = 'text' }: { defaultTab?: 'text' | 'json' | 'file' } = {}) {
+  const [activeTab, setActiveTab] = useState<'text' | 'json' | 'file'>(defaultTab);
   const [originalText, setOriginalText] = useState('');
   const [modifiedText, setModifiedText] = useState('');
   

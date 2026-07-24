@@ -47,10 +47,15 @@ const copyToClipboard = (text: string): boolean => {
   }
 };
 
-export const BoxShadowGenerator: React.FC = () => {
+interface BoxShadowGeneratorProps {
+  defaultPresetKey?: string;
+  defaultCanvasBg?: 'dark' | 'light' | 'grid' | 'accent';
+}
+
+export const BoxShadowGenerator: React.FC<BoxShadowGeneratorProps> = ({ defaultPresetKey, defaultCanvasBg }) => {
   // State variables
   const [layers, setLayers] = useState<ShadowLayer[]>(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && !defaultPresetKey) {
       const saved = localStorage.getItem('useutils_boxshadow_layers');
       if (saved) {
         try {
@@ -72,6 +77,28 @@ export const BoxShadowGenerator: React.FC = () => {
   const [boxRadius, setBoxRadius] = useState<number>(16);
   const [boxSize, setBoxSize] = useState<number>(180);
   const [canvasBg, setCanvasBg] = useState<'dark' | 'light' | 'grid' | 'accent'>('light');
+
+  useEffect(() => {
+    if (defaultPresetKey && PRESETS[defaultPresetKey]) {
+      const preset = PRESETS[defaultPresetKey];
+      const newLayers = preset.layers.map((l, i) => ({
+        ...l,
+        id: String(Date.now() + i)
+      }));
+      setLayers(newLayers);
+      if (newLayers.length > 0) {
+        setSelectedId(newLayers[0].id);
+      }
+      if (defaultPresetKey === 'neon') {
+        setCanvasBg('dark');
+      } else {
+        setCanvasBg('light');
+      }
+    }
+    if (defaultCanvasBg) {
+      setCanvasBg(defaultCanvasBg);
+    }
+  }, [defaultPresetKey, defaultCanvasBg]);
 
   // Clipboard copy feedbacks
   const [copiedFormat, setCopiedFormat] = useState<'css' | 'tailwind' | null>(null);

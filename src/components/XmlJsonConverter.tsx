@@ -294,9 +294,15 @@ const TreeNode: React.FC<TreeNodeProps> = ({
   );
 };
 
-export function XmlJsonConverter() {
+interface XmlJsonConverterProps {
+  defaultPathway?: 'xml-to-json' | 'json-to-xml';
+}
+
+export function XmlJsonConverter({
+  defaultPathway = 'xml-to-json'
+}: XmlJsonConverterProps = {}) {
   const [input, setInput] = useState<string>('');
-  const [pathway, setPathway] = useState<'xml-to-json' | 'json-to-xml'>('xml-to-json');
+  const [pathway, setPathway] = useState<'xml-to-json' | 'json-to-xml'>(defaultPathway);
   const [activeTab, setActiveTab] = useState<'text' | 'tree' | 'codegen'>('text');
   
   // XML -> JSON options
@@ -331,9 +337,13 @@ export function XmlJsonConverter() {
       const mode = params.get('mode');
       if (mode === 'json-to-xml') {
         setPathway('json-to-xml');
+      } else if (mode === 'xml-to-json') {
+        setPathway('xml-to-json');
+      } else {
+        setPathway(defaultPathway);
       }
     }
-  }, []);
+  }, [defaultPathway]);
 
   // Sync sample inputs when switching pathways
   const handlePathwayChange = (newPathway: 'xml-to-json' | 'json-to-xml') => {

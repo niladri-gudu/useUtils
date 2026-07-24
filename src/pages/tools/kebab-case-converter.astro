@@ -1,0 +1,255 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { CaseConverter } from '../../components/CaseConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const faqs = [
+  {
+    question: "What is kebab-case?",
+    answer: "<code>kebab-case</code> (sometimes referred to as dash-case or spinal-case) joins lowercase words using hyphens (<code>-</code>). For example, <code>my-css-class-name</code>. The name comes from resembling pieces of meat impaled on a skewer."
+  },
+  {
+    question: "When should I use kebab-case?",
+    answer: "Use <code>kebab-case</code> for CSS class names, HTML element selectors, URL slugs (for SEO friendliness), package names in <code>package.json</code>, and property file structures like YAML or JSON."
+  },
+  {
+    question: "Why is kebab-case invalid in programming variable declarations?",
+    answer: "Most programming languages parse the hyphen (<code>-</code>) as a subtraction operator. Therefore, writing <code>first-name = 'John'</code> is parsed as trying to subtract <code>name</code> from <code>first</code>, resulting in a syntax or compilation error. Use camelCase or snake_case for variables instead."
+  },
+  {
+    question: "Is my text data safe?",
+    answer: "Absolutely. All processing occurs inside your browser using client-side JavaScript. No text is sent across the network, ensuring absolute safety for configuration strings and code snippets."
+  },
+  {
+    question: "What is the difference between kebab-case and snake_case?",
+    answer: "Kebab-case uses hyphens (<code>user-profile</code>) while snake_case uses underscores (<code>user_profile</code>). Kebab-case is standard for HTML and URLs, while snake_case is standard for backend databases and Python."
+  },
+  {
+    question: "Why does Google recommend hyphens instead of underscores in URL slugs?",
+    answer: "Google's search indexing algorithms treat hyphens (<code>-</code>) as word separators (splitting 'word-one' into 'word' and 'one'). Underscores (<code>_</code>) are treated as joiners (grouping 'word_one' as a single continuous search token), making hyphens much more SEO-friendly."
+  },
+  {
+    question: "How to convert text to kebab-case in JavaScript?",
+    answer: "Use regex: <code>const toKebab = str => str.replace(/([a-z])([A-Z])/g, '$1-$2').replace(/[\\s_]+/g, '-').toLowerCase();</code>."
+  },
+  {
+    question: "How to convert text to kebab-case in Python?",
+    answer: "In Python: <code>import re; kebab = re.sub(r'(?<!^)(?=[A-Z])', '-', s).replace('_', '-').lower()</code>."
+  },
+  {
+    question: "What is Train-Case and how does it compare?",
+    answer: "<code>Train-Case</code> is capitalized kebab-case (e.g. <code>Content-Type</code>). It is standard in HTTP headers."
+  },
+  {
+    question: "Does kebab-case support numbers?",
+    answer: "Yes, numbers are preserved and separated with hyphens where boundaries exist (e.g. <code>api-v1-setup</code>)."
+  },
+  {
+    question: "Why do NPM packages use kebab-case?",
+    answer: "NPM registry naming conventions mandate lowercase URL-safe names, making kebab-case the standard for packages (e.g. <code>create-react-app</code>)."
+  },
+  {
+    question: "How do I convert camelCase to kebab-case?",
+    answer: "Insert a hyphen before every uppercase letter and convert the entire string to lowercase."
+  },
+  {
+    question: "What happens to dots and underscores when converting to kebab-case?",
+    answer: "Punctuation characters are replaced with a single hyphen, and consecutive hyphens are collapsed to maintain a clean structure."
+  },
+  {
+    question: "Why are CSS class names written in kebab-case?",
+    answer: "CSS selectors are case-insensitive in some older browsers. Using lowercase hyphens avoids case mismatch bugs and is standard in modern frameworks like Tailwind."
+  },
+  {
+    question: "Can I use kebab-case in JSON keys?",
+    answer: "Yes, but developers must access them using bracket notation in JavaScript (e.g., <code>data['user-id']</code>) rather than dot notation (e.g. <code>data.user-id</code>, which parses as subtraction)."
+  },
+  {
+    question: "How does kebab-case handle acronyms?",
+    answer: "Acronyms are lowercased and grouped into the preceding or succeeding word segment (e.g. <code>fetch-xml-data</code>)."
+  },
+  {
+    question: "What is Screaming Kebab Case?",
+    answer: "<code>Screaming Kebab Case</code> (e.g., <code>USER-PROFILE-DATA</code>) is kebab-case in all caps, which is rarely used."
+  },
+  {
+    question: "Can I convert multiple lines to kebab-case in bulk?",
+    answer: "Yes. Check 'Treat each line independently', paste your list, and the tool will transform each line individually."
+  },
+  {
+    question: "Does kebab-case support special characters or accents?",
+    answer: "Special symbols are removed. Accent characters are converted to their standard ASCII base characters where possible."
+  },
+  {
+    question: "How do you write a kebab-case converter in Go?",
+    answer: "Identify boundaries using regex and replace spaces/underscores with hyphens: <code>strings.ToLower(regexp.MustCompile(\"([a-z0-9])([A-Z])\").ReplaceAllString(s, \"\${1}-\${2}\"))</code>."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `const toKebabCase = str => 
+  str.replace(/([a-z])([A-Z])/g, '$1-$2')
+     .replace(/[\\s_]+/g, '-')
+     .toLowerCase();
+
+console.log(toKebabCase("user_profile_image")); // "user-profile-image"`,
+    note: "Works in Node.js and all modern web browsers."
+  },
+  {
+    lang: "Python",
+    code: `import re
+
+def to_kebab_case(s):
+    # Prefixes uppercase letters and replaces underscores/spaces
+    s = re.sub(r'(?<!^)(?=[A-Z])', '-', s).replace('_', '-')
+    return re.sub(r'[-\\s]+', '-', s).lower()
+
+print(to_kebab_case("user_profile_image")) # "user-profile-image"`,
+    note: "Safe Python parser, merges consecutive hyphens."
+  },
+  {
+    lang: "Go",
+    code: `package main
+
+import (
+	"fmt"
+	"regexp"
+	"strings"
+)
+
+func ToKebabCase(str string) string {
+	var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
+	kebab := matchAllCap.ReplaceAllString(str, "\${1}-\${2}")
+	kebab = strings.ReplaceAll(strings.ReplaceAll(kebab, "_", "-"), " ", "-")
+	return strings.ToLower(kebab)
+}
+
+func main() {
+	fmt.Println(ToKebabCase("user_profile_image")) // "user-profile-image"
+}`,
+    note: "Replaces underscores and spaces efficiently."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Accidental Subtraction Bugs in JS",
+    description: "Using kebab-cased keys in JS expressions without quoting (e.g. data.user-id) throws NaN or compilation errors.",
+    fix: "Always wrap keys containing hyphens in quotes and access them via brackets: <code>data['user-id']</code>."
+  },
+  {
+    title: "Double Hyphens (--) in URL Slugs",
+    description: "Inputting spaced strings with hyphens can generate consecutive hyphens (e.g., 'user--profile').",
+    fix: "Ensure your regex collapses consecutive hyphens: <code>replace(/-+/g, '-')</code>."
+  }
+];
+
+const references = [
+  { title: "Google Search Central - URL Structure Guide", url: "https://developers.google.com/search/docs/crawling-indexing/url-structure", source: "Google SEO Docs" },
+  { title: "W3C CSS Selectors Level 4 Specification", url: "https://www.w3.org/TR/selectors-4/", source: "W3C Standards" }
+];
+---
+
+<ToolPageLayout
+  title="kebab-case Converter - Convert Text to Dash Case Online"
+  description="Convert variable names, config properties, or lists of text to kebab-case format in real-time. Free online converter for CSS classes, HTML selectors, and URL slugs."
+  keywords="kebab-case converter, kebab case, convert to kebab case, dash case converter, developer tools"
+  toolTitle="kebab-case Converter"
+  toolDescription="Convert variable names and text strings to kebab-case (e.g. user-profile-image) instantly in your browser."
+  faqs={faqs}
+>
+  <CaseConverter client:load defaultCaseId="kebab" defaultInput={`user_profile_image\nUserProfileImage\napi.gateway.url\ndatabasePoolSize`} />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        When should you use kebab-case?
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Different programming conventions structure filenames and styles differently. <strong class="text-zinc-250 font-mono">kebab-case</strong> is the standard for web layouts and assets where readability is important and syntax constraints allow hyphens.
+      </p>
+      <p class="leading-relaxed">
+        Common use cases include:
+      </p>
+      <ul class="list-disc pl-5 space-y-1.5 text-xs text-zinc-400 mb-4">
+        <li><strong class="text-zinc-300">CSS Class Names:</strong> Enforced by popular styling guides (e.g., <code>.btn-primary-active</code>).</li>
+        <li><strong class="text-zinc-300">URL Slugs:</strong> Search engines like Google recommend separating terms in URLs using hyphens (<code>-</code>) instead of underscores (<code>_</code>) for optimal indexing.</li>
+        <li><strong class="text-zinc-300">Project Configurations:</strong> Standard for NPM package names, YAML nodes, and environment file directories.</li>
+      </ul>
+    </div>
+
+    <!-- Section: Cross Links -->
+    <div class="flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Other Casing Converters
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <a href="/tools/case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">All-in-One Case Converter</a>
+        <a href="/tools/camelcase-to-snake-case" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">camelCase to snake_case</a>
+        <a href="/tools/snake-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">snake_case Converter</a>
+        <a href="/tools/pascal-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">PascalCase Converter</a>
+        <a href="/tools/title-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Title Case Converter</a>
+      </div>
+    </div>
+
+    <!-- Section: Case Comparison Table -->
+    <ComparisonTable
+      title="Kebab Case Comparison Chart"
+      headers={["Case Name", "Example Format", "Word Separator", "Typical Usage"]}
+      rows={[
+        { label: "kebab-case", values: ["<code>user-settings-page</code>", "Hyphen (lowercase)", "CSS, URLs, package names"] },
+        { label: "Train-Case", values: ["<code>User-Settings-Page</code>", "Hyphen (capitalized)", "HTTP headers"] },
+        { label: "snake_case", values: ["<code>user_settings_page</code>", "Underscore (lowercase)", "Python variables, DB fields"] }
+      ]}
+    />
+
+    <!-- Section: Conversion Examples -->
+    <ExampleCard
+      title="kebab-case Conversion Examples"
+      description="Study the raw inputs and conversion results for common programming names:"
+      examples={[
+        { label: "camelCase Variable Name", input: "userDetailsPayload", output: "user-details-payload", badge: "kebab-case" },
+        { label: "snake_case Database Column", input: "user_session_expiry", output: "user-session-expiry", badge: "kebab-case" },
+        { label: "Spaced Paragraph Text", input: "main page layout styles", output: "main-page-layout-styles", badge: "kebab-case" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Variable Mapping Snippets"
+      description="Convert naming formats dynamically in your custom modules:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Conversion Pitfalls"
+      description="Avoid these common errors when transforming cases in variables and columns:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="kebab-case Recommendations"
+      practices={[
+        { title: "Use for URL Optimization", description: "Google explicitly prefers kebab-case in URLs to correctly segment words for index optimization." },
+        { title: "Avoid Variables Declarations", description: "Never declare variables in kebab-case to avoid subtraction operator parser bugs." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

@@ -1,0 +1,218 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { BinaryConverter } from '../../components/BinaryConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'Binary Converter', href: '/tools/binary-converter' },
+  { label: 'Text to Binary', href: '/tools/text-to-binary', active: true },
+  { label: 'Binary to Text', href: '/tools/binary-to-text' }
+];
+
+const faqs = [
+  {
+    question: "How do I convert text to binary online?",
+    answer: "Type or paste your text into the Plain Text area in the dashboard above. The converter instantly translates each character into its corresponding 8-bit binary representation in real-time."
+  },
+  {
+    question: "What is binary representation?",
+    answer: "Binary is a base-2 numeral system that uses only two symbols: 0 and 1. In computers, characters are represented by 8-bit sequences (bytes) corresponding to their numerical ASCII or UTF-8 values."
+  },
+  {
+    question: "How is a single letter converted to binary?",
+    answer: "First, the character is mapped to its numerical ASCII code (e.g. 'A' is 65). Then, that number is converted to base-2 binary format (65 in binary is <code>01000001</code>)."
+  },
+  {
+    question: "Is this text to binary converter secure?",
+    answer: "Yes, entirely. The conversion runs inside your browser using client-side JavaScript. No text inputs or parsed values are transmitted to any server."
+  },
+  {
+    question: "What is the difference between ASCII and UTF-8 binary conversion?",
+    answer: "ASCII only supports 128 standard English characters, using exactly 1 byte (8 bits) per character. UTF-8 is a variable-width encoding that represents emojis and special characters using 1 to 4 bytes."
+  },
+  {
+    question: "How to convert text to binary in JavaScript?",
+    answer: "Map over each character, fetch its char code, convert it to base 2, and pad it to 8 digits: <br/><code>char.charCodeAt(0).toString(2).padStart(8, '0')</code>."
+  },
+  {
+    question: "How do I convert a string to binary in Python?",
+    answer: "Join formatted binary values from the character ordinals: <br/><code>' '.join(format(ord(c), '08b') for c in text)</code>."
+  },
+  {
+    question: "Can I adjust the space separators between binary bytes?",
+    answer: "Yes. Use the Delimiter option at the top of the dashboard to choose between Space, Comma, Colon, No delimiter, or Array formatting."
+  },
+  {
+    question: "What is the binary representation of a space character?",
+    answer: "The space character has an ASCII value of 32, which converts to <code>00100000</code> in binary."
+  },
+  {
+    question: "Can I toggle individual bits to modify the text?",
+    answer: "Yes. Toggle to the 'Bit Sandbox' tab, click any bit node, and watch the plain text automatically update as you flip bits between 0 and 1."
+  },
+  {
+    question: "Why do we use 8 bits for a byte?",
+    answer: "An 8-bit byte became the computing standard because it provides 256 unique combinations, which is sufficient to cover uppercase/lowercase English letters, numbers, punctuation, and control characters."
+  },
+  {
+    question: "What is the most significant bit (MSB)?",
+    answer: "The most significant bit (MSB) is the leftmost bit in a binary sequence, representing the highest positional value (128 in an 8-bit byte)."
+  },
+  {
+    question: "What is the binary code for 'hello'?",
+    answer: "'hello' in binary (standard ASCII) is: <br/><code>01101000 01100101 01101100 01101100 01101111</code>."
+  },
+  {
+    question: "Can I convert large text files to binary?",
+    answer: "Yes, you can paste large amounts of text into the input field. For file explorations, you can use our 'Hex Dump Explorer' tab to view binary configurations of files."
+  },
+  {
+    question: "How do I download the binary results?",
+    answer: "Click the Copy button above the Binary output area to copy the complete binary stream to your clipboard."
+  },
+  {
+    question: "How do emojis convert to binary?",
+    answer: "Emojis use multiple bytes in UTF-8. For example, the 🚀 emoji is represented by 4 bytes, yielding four 8-bit binary blocks."
+  },
+  {
+    question: "What is a bit flipper?",
+    answer: "A bit flipper allows developers to manually toggle bits inside a byte stream, useful for testing error detection, parity checking, and memory corruption states."
+  },
+  {
+    question: "Is there a binary conversion command in Linux shell?",
+    answer: "Yes, you can use perl or od utilities: <br/><code>echo -n \"A\" | od -An -t b1</code>."
+  },
+  {
+    question: "What is the difference between binary and hexadecimal?",
+    answer: "Binary is base-2 (uses 0-1) and is hard for humans to read. Hexadecimal is base-16 (uses 0-9 and a-f), grouping 4 binary bits into a single character for readability."
+  },
+  {
+    question: "Does the tool support offline operations?",
+    answer: "Yes. Once the web page loads, it runs completely offline. You can disconnect your internet and continue converting text to binary."
+  }
+];
+
+const references = [
+  { title: "ANSI X3.4 - American Standard Code for Information Interchange (ASCII)", url: "https://www.iso.org/standard/4747.html", source: "ISO Standards" },
+  { title: "RFC 3629 - UTF-8, a transformation format of ISO 10646", url: "https://datatracker.ietf.org/doc/html/rfc3629", source: "IETF Standards" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `function textToBinary(text) {
+  return text
+    .split('')
+    .map(char => char.charCodeAt(0).toString(2).padStart(8, '0'))
+    .join(' ');
+}
+
+console.log(textToBinary("Hi")); // Output: 01001000 01101001`,
+    note: "Pads binary codes with leading zeros to maintain 8-bit bytes."
+  },
+  {
+    lang: "Python",
+    code: `def text_to_binary(text):
+    return ' '.join(f'{ord(c):08b}' for c in text)
+
+binary = text_to_binary("Hi")
+print(binary) # Output: 01001000 01101001`,
+    note: "Uses Python format specifiers to generate 8-digit binary values."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Assuming UTF-8 Characters fit in 8 bits",
+    description: "UTF-8 characters (like accent marks or international symbols) can span multiple bytes. Restricting binary conversions to 8-bit ASCII clips these values, corrupting the text.",
+    fix: "Ensure your conversion engine processes multi-byte arrays using TextEncoder bytes rather than character index points."
+  },
+  {
+    title: "Omitting Padding Zeros",
+    description: "Omitting leading zeros (e.g. writing 65 as <code>1000001</code> instead of <code>01000001</code>) causes bytes to run together, making decryption impossible.",
+    fix: "Always pad binary codes to exactly 8 bits per character byte."
+  }
+];
+---
+
+<ToolPageLayout
+  title="Text to Binary Converter Online: Convert Strings to Bits"
+  description="Convert plain text, strings, and ASCII characters to 8-bit binary streams. Real-time conversions, bit sandbox, and custom delimiter options."
+  keywords="text to binary, convert text to binary, ascii to binary, string to binary online, binary translator, bit flipper"
+  toolTitle="Text to Binary Converter"
+  toolDescription="Translate characters and strings into binary bytes (0s and 1s) instantly. Features customizable byte separators, UTF-8 unicode encoding support, and interactive bit flippers."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <BinaryConverter client:load defaultActiveTab="converter" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How Text is Translated into Binary Bytes
+      </h2>
+      <p class="leading-relaxed mb-4">
+        At the lowest hardware level, computers store all instructions and assets as electric states (on or off), represented mathematically as **binary digits (bits)**. For humans to interact with files, systems map text characters to numbers using encoding tables.
+      </p>
+      <p class="leading-relaxed">
+        Our **Text to Binary Converter** automates this mapping. By encoding text using ASCII or UTF-8 parameters, the converter generates the raw byte list, outputs the 8-bit binary stream, and provides a sandbox to toggle individual bits visually.
+      </p>
+    </div>
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Common Character Codes"
+      headers={["Character", "ASCII Decimal Value", "Hexadecimal Code", "Binary Representation"]}
+      rows={[
+        { label: "A (Uppercase)", values: ["65", "41", "01000001"] },
+        { label: "a (Lowercase)", values: ["97", "61", "01100001"] },
+        { label: "0 (Digit)", values: ["48", "30", "00110000"] },
+        { label: "Space", values: ["32", "20", "00100000"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Text to Binary Conversion Examples"
+      description="Inspect how standard words translate into binary formats:"
+      examples={[
+        { label: "Convert 'Ok'", input: "Ok", output: "01001111 01101011", badge: "2 Bytes" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Binary Conversions"
+      description="Calculate binary streams from plain text using these code blocks:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Binary Conversion Mistakes"
+      description="Avoid these common errors when encoding strings into bitwise data formats:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Binary Hashing & Conversion Best Practices"
+      practices={[
+        { title: "Standardize Delimiters", description: "Use space delimiters when displaying binary strings to humans, but strip delimiters when passing streams to code scripts." },
+        { title: "Use UTF-8 Encoders", description: "Always decode strings using UTF-8 rather than simple ASCII arrays to support international languages and emojis." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

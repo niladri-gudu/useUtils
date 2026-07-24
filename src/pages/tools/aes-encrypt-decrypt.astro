@@ -1,6 +1,19 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { AesEncryptDecrypt } from '../../components/AesEncryptDecrypt';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+
+const tabs = [
+  { label: 'AES Encrypt & Decrypt', href: '/tools/aes-encrypt-decrypt', active: true },
+  { label: 'AES Encryption', href: '/tools/aes-encryption' },
+  { label: 'AES Decryption', href: '/tools/aes-decryption' }
+];
 
 const faqs = [
   {
@@ -46,6 +59,95 @@ const faqs = [
   {
     question: "How can I perform AES-GCM decryption programmatically in Node.js?",
     answer: "Here is a simple example of how to decrypt an AES-GCM ciphertext using Node.js's built-in `crypto` module:<br/><code class='font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-350 rounded px-2.5 py-1.5 block mt-2 overflow-x-auto whitespace-pre'>const crypto = require('crypto');\n\nfunction decrypt(ciphertextBase64, rawKeyHex, ivHex) {\n  const key = Buffer.from(rawKeyHex, 'hex');\n  const iv = Buffer.from(ivHex, 'hex');\n  const encrypted = Buffer.from(ciphertextBase64, 'base64');\n\n  // Extract tag from the end (AES-GCM puts tag at the end of ciphertext in Web Crypto)\n  const tag = encrypted.subarray(encrypted.length - 16);\n  const data = encrypted.subarray(0, encrypted.length - 16);\n\n  const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);\n  decipher.setAuthTag(tag);\n  \n  let decrypted = decipher.update(data, 'binary', 'utf8');\n  decrypted += decipher.final('utf8');\n  return decrypted;\n}</code>"
+  },
+  {
+    question: "What is authenticated encryption (AEAD)?",
+    answer: "Authenticated Encryption with Associated Data (AEAD) is a form of encryption which simultaneously assures the confidentiality and authenticity of data, protecting against active attacks like ciphertext tampering."
+  },
+  {
+    question: "How does GCM detect tampering?",
+    answer: "GCM computes a Galois authentication tag over the ciphertext and optional associated data. If any bit of the ciphertext or IV is altered, the tag calculation will yield a mismatch and decipher validation will fail."
+  },
+  {
+    question: "Can I choose different key derivation algorithms?",
+    answer: "Our tool utilizes PBKDF2 with SHA-256 for key derivation, which is widely supported and standardized across browsers."
+  },
+  {
+    question: "What is PKCS#7 padding?",
+    answer: "PKCS#7 padding is a method to pad plaintext bytes to a multiple of the block size (16 bytes for AES) before encryption in CBC mode, by appending bytes containing the padding length."
+  },
+  {
+    question: "What is a side-channel attack?",
+    answer: "A side-channel attack is any attack based on information gained from the physical implementation of a cryptosystem, rather than brute-force or theoretical weaknesses (e.g., timing measurements, power consumption)."
+  },
+  {
+    question: "Does GCM mode require padding?",
+    answer: "No, GCM mode operates as a stream cipher under the hood (using counter mode), which does not require padding block alignment."
+  },
+  {
+    question: "What is key stretching?",
+    answer: "Key stretching techniques make a weak key (like a user password) much more secure by running it through a derivation function that requires significant CPU/memory resources, slowing down brute force attempts."
+  },
+  {
+    question: "How do I secure an AES key in transit?",
+    answer: "Never send AES keys over insecure networks. Use asymmetric algorithms like RSA or Diffie-Hellman Key Exchange to negotiate symmetric keys safely."
+  },
+  {
+    question: "Does the AES tool save passphrases in cookies?",
+    answer: "No, all keys and passphrases are processed in memory and are discarded immediately upon refreshing the page."
+  }
+];
+
+const references = [
+  { title: "NIST FIPS 197 - Advanced Encryption Standard Specification", url: "https://csrc.nist.gov/publications/detail/fips/197/final", source: "NIST Publications" },
+  { title: "W3C Web Cryptography API specifications", url: "https://www.w3.org/TR/WebCryptoAPI/", source: "W3C Web Cryptography Working Group" }
+];
+
+const languageCodes = [
+  {
+    lang: "Node.js (AES-GCM)",
+    code: `const crypto = require('crypto');
+
+// Generate cryptographically secure random key & IV
+const key = crypto.randomBytes(32); // 256-bit key
+const iv = crypto.randomBytes(12); // 96-bit nonce for GCM
+
+const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+let encrypted = cipher.update('Plain Text Data', 'utf8', 'hex');
+encrypted += cipher.final('hex');
+
+// Retrieve authentication tag
+const authTag = cipher.getAuthTag().toString('hex');
+console.log({ encrypted, authTag });`,
+    note: "Always store and verify the authentication tag alongside the ciphertext in GCM mode."
+  },
+  {
+    lang: "Python (AES-GCM)",
+    code: `from Crypto.Cipher import AES
+import os
+
+key = os.urandom(32) # 256-bit symmetric key
+nonce = os.urandom(12) # 96-bit IV nonce
+
+cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+ciphertext, tag = cipher.encrypt_and_digest(b"Plain Text Data")
+
+print(f"Ciphertext: {ciphertext.hex()}")
+print(f"Auth Tag: {tag.hex()}")`,
+    note: "Requires PyCryptodome package to support GCM cipher operations."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Reusing Nonces (IVs) in GCM Mode",
+    description: "Encrypting two different payloads using the exact same key and IV nonce combo in GCM mode destroys the cryptographic security, allowing attackers to reconstruct the plain text.",
+    fix: "Generate a new cryptographically secure random IV for every single encryption transaction."
+  },
+  {
+    title: "Deriving Keys Without Salts",
+    description: "Using static or hardcoded salts in PBKDF2 allows attackers to pre-compute key databases, rendering salt benefits useless.",
+    fix: "Always generate a random salt for each key derivation call and pack it with the ciphertext."
   }
 ];
 ---
@@ -56,53 +158,76 @@ const faqs = [
   keywords="aes encryption online, aes decryption, aes gcm online, aes cbc tool, encrypt files online, client side encryption, secure password generator, pbkdf2 key derivation"
   toolTitle="AES Encryption & Decryption Studio"
   toolDescription="Encrypt and decrypt sensitive logs, JSON objects, passwords, or small files locally in your browser. Configure AES-GCM or AES-CBC modes, customize PBKDF2 key derivation iterations, generate secure passwords, and share configs safely."
+  tabs={tabs}
   faqs={faqs}
 >
   <AesEncryptDecrypt client:load />
 
-  <!-- SEO Content Section -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
-    
+    <!-- Section: Intro -->
     <div>
-      <h2 class="text-xl font-semibold text-[#34d399] tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-[#34d399] rounded-full"></span>
-        Symmetric Cryptography: The Core of Data Security
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Symmetric Key Cryptography Standard
       </h2>
       <p class="leading-relaxed mb-4">
-        Symmetric encryption is the cornerstone of modern security systems, securing everything from Wi-Fi traffic (WPA3) to TLS connections and database storage. The Advanced Encryption Standard (AES) is the most widely adopted symmetric algorithm globally. Because symmetric encryption relies on a single key shared between the sender and receiver, it is exceptionally fast and efficient, making it suitable for encrypting large amounts of data, streaming files, or securing API traffic.
+        Symmetric-key cryptography uses the same key material to secure and recover digital messages. The **Advanced Encryption Standard (AES)** is a highly optimized block cipher that operates on 128-bit block groups, processing data through Substitution-Permutation Networks (SPN) across multiple mathematical rounds.
       </p>
-      <p class="leading-relaxed mb-4">
-        Unlike public-key cryptography (asymmetric algorithms like RSA or ECC), which use a keypair for identity verification and small data wrapping, symmetric ciphers swap data quickly. However, the security of symmetric encryption depends entirely on keeping the key secure. If a key is leaked or derived from a weak password, the entire protection system collapses.
+      <p class="leading-relaxed">
+        Our **AES Encryption & Decryption Studio** provides a secure local environment. Derive strong keys using PBKDF2 key derivation parameters, encrypt document structures, decrypt secure cipher blocks, or build sharing links completely offline in browser memory.
       </p>
     </div>
 
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-[#34d399] rounded-full"></span>
-        Why Local Browser-Based Encryption is Necessary
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Many online developers need to quickly encrypt configurations or decrypt log files during troubleshooting. Unfortunately, standard online web tools require you to paste your database keys, passwords, or proprietary logs into their text boxes and submit them to a remote server. This exposes your keys to logging, server compromise, or transmission interception.
-      </p>
-      <p class="leading-relaxed mb-4">
-        Our AES Encryption Studio resolves this by running **100% on the client side**. Your data is processed inside the local memory space of your browser using Web Crypto APIs. There are no API requests, server endpoints, or analytics scripts capturing your keys.
-      </p>
-    </div>
+    <!-- Section: Privacy Badge -->
+    <PrivacyBadge />
 
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-[#34d399] rounded-full"></span>
-        Understanding the Crypto Blueprint
-      </h2>
-      <p class="leading-relaxed mb-4">
-        To help developers understand the cryptographic pipeline, our tool displays an interactive blueprint of the execution workflow:
-      </p>
-      <ul class="list-disc pl-5 space-y-2 mb-4 leading-relaxed">
-        <li><strong class="text-zinc-200">Key Derivation (PBKDF2):</strong> If you use a password, the system generates a random salt and runs PBKDF2 with SHA-256 for 100,000 rounds to derive a cryptographically sound key.</li>
-        <li><strong class="text-zinc-200">IV Vector Selection:</strong> The system selects a unique, cryptographically random initialization vector (IV) to randomize the block structure of the cipher.</li>
-        <li><strong class="text-zinc-200">AES Execution:</strong> The selected block mode (AES-GCM or AES-CBC) executes the encryption or decryption using the derived key.</li>
-        <li><strong class="text-zinc-200">Concatenated Serialization:</strong> To keep payloads easy to copy, we pack the salt size, IV size, actual salt, actual IV, and ciphertext into a single Base64 or Hex block.</li>
-      </ul>
-    </div>
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="AES Key Sizes Comparison"
+      headers={["Key Size", "Rounds Count", "Security Level", "Quantum Resistance Status"]}
+      rows={[
+        { label: "AES-128", values: ["10 rounds", "High", "Vulnerable to Grover's quantum search algorithm"] },
+        { label: "AES-192", values: ["12 rounds", "Very High", "Strongly Resistant"] },
+        { label: "AES-256", values: ["14 rounds", "Extremely High (Military Grade)", "Fully Quantum-Resistant"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Sample AES Envelope Structure"
+      description="Inspect the payload formats handled by the tool:"
+      examples={[
+        { label: "Concatenated Format", input: "Plaintext", output: "[1 byte salt size][1 byte IV size][salt bytes][IV bytes][ciphertext bytes]", badge: "Concatenated" },
+        { label: "JSON Envelope Format", input: "Plaintext", output: '{"mode": "AES-GCM", "keySize": 256, "iv": "...", "ciphertext": "...", "salt": "..."}', badge: "Structured JSON" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic AES Encrypt & Decrypt"
+      description="Implement secure cryptographic algorithms in your application codebases:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common AES Implementation Mistakes"
+      description="Avoid these common validation errors when integrating encryption standards:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="AES Encryption Best Practices"
+      practices={[
+        { title: "Prefer GCM over CBC", description: "Always select GCM mode for symmetric encryptions to get built-in payload integrity and tamper detection." },
+        { title: "Tune PBKDF2 Iterations", description: "Ensure PBKDF2 key derivation uses at least 100,000 hash iterations to protect passphrases against hardware dictionary checks." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
   </div>
 </ToolPageLayout>

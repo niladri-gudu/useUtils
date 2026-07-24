@@ -1,6 +1,14 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { ColorConverter } from '../../components/ColorConverter';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
 
 const faqs = [
   {
@@ -17,7 +25,7 @@ const faqs = [
   },
   {
     question: "How do I convert RGB to HSL?",
-    answer: "First, divide the RGB values by 255 to normalize them to a 0–1 range. Find the maximum (max) and minimum (min) values of these channels. Lightness (L) is calculated as <code>(max + min) / 2</code>. Saturation (S) and Hue (H) are then calculated using relative formulas based on the difference (chroma) between the max and min channels."
+    answer: "First, divide the RGB values by 255 to normalize them to a 0–1 range. Find the maximum (max) and minimum (min) values of these channels. Lightness (L) is calculated as `(max + min) / 2`. Saturation (S) and Hue (H) are then calculated using relative formulas based on the difference (chroma) between the max and min channels."
   },
   {
     question: "How do I convert HSL to RGB?",
@@ -25,7 +33,7 @@ const faqs = [
   },
   {
     question: "What does HSL stand for in color?",
-    answer: "HSL stands for <strong>Hue, Saturation, and Lightness</strong>. It is a cylindrical-coordinate representation of colors that describes them in a way that is much closer to how the human eye perceives color properties compared to standard RGB."
+    answer: "HSL stands for Hue, Saturation, and Lightness. It is a cylindrical-coordinate representation of colors that describes them in a way that is much closer to how the human eye perceives color properties compared to standard RGB."
   },
   {
     question: "Is HSL better than RGB for web design?",
@@ -33,7 +41,7 @@ const faqs = [
   },
   {
     question: "What does HEX stand for in colors?",
-    answer: "HEX stands for <strong>hexadecimal</strong>, which is a base-16 numerical system. In web development, HEX color codes are used to represent colors using a combination of numbers (0–9) and letters (A–F) for Red, Green, and Blue values."
+    answer: "HEX stands for hexadecimal, which is a base-16 numerical system. In web development, HEX color codes are used to represent colors using a combination of numbers (0–9) and letters (A–F) for Red, Green, and Blue values."
   },
   {
     question: "How do I convert RGBA to HSLA?",
@@ -42,6 +50,99 @@ const faqs = [
   {
     question: "Can you convert HEX to HSL directly?",
     answer: "Yes, though the direct conversion requires first converting the HEX code characters into their decimal Red, Green, and Blue (RGB) equivalents, and then applying the standard RGB-to-HSL formulas to compute the Hue, Saturation, and Lightness values."
+  },
+  {
+    question: "What is the difference between HEXA, RGBA, and HSLA?",
+    answer: "The 'A' in HEXA, RGBA, and HSLA stands for Alpha, which represents the transparency level of a color. HEXA uses a two-character hex code for alpha, while RGBA and HSLA use decimal values between 0.0 (fully transparent) and 1.0 (fully opaque)."
+  },
+  {
+    question: "Why do colors look different on different monitors?",
+    answer: "Monitors use different display panel technologies (like IPS, VA, or OLED), backlighting systems, and color profiles (like sRGB or DCI-P3) which can cause the same color coordinates to render with varying levels of brightness and saturation."
+  },
+  {
+    question: "What is WCAG 2.1 contrast ratio?",
+    answer: "The WCAG 2.1 contrast ratio measures the difference in relative luminance between a foreground color and its background color to ensure text is legible for users with low vision or color blindness."
+  },
+  {
+    question: "How is relative luminance calculated?",
+    answer: "Relative luminance is calculated by applying weight factors to the linearized Red, Green, and Blue channels: `L = 0.2126 * R + 0.7152 * G + 0.0722 * B`."
+  },
+  {
+    question: "What are the minimum contrast ratios for web accessibility?",
+    answer: "WCAG Level AA requires a contrast ratio of at least 4.5:1 for normal text and 3:1 for large text. Level AAA requires a ratio of at least 7:1 for normal text and 4.5:1 for large text."
+  },
+  {
+    question: "How does the alpha channel affect color rendering?",
+    answer: "The alpha channel defines color transparency. When rendered, the browser blends the transparent foreground color with the background color behind it, yielding a flattened solid color value."
+  },
+  {
+    question: "What are CSS Named Colors?",
+    answer: "CSS Named Colors are 148 predefined keywords (like `aliceblue`, `coral`, or `darkgreen`) that represent specific color coordinates."
+  },
+  {
+    question: "What is color gamut?",
+    answer: "Color gamut represents the range of colors a display hardware or color model can reproduce. Wider gamuts like Display P3 support more saturated colors than standard sRGB."
+  },
+  {
+    question: "What is the difference between sRGB and Display P3?",
+    answer: "Display P3 is a wide color gamut developed by Apple that offers 25% larger color range than standard sRGB, particularly in the green and red spectrums."
+  },
+  {
+    question: "How do CSS Color Variables work?",
+    answer: "CSS variables let you declare reuseable color coordinates: `--color-primary: #34d399;` which can then be applied in styles as `color: var(--color-primary);`."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "TypeScript",
+    code: `
+function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+  const cleaned = hex.replace(/^#/, '');
+  if (cleaned.length !== 6) return null;
+  return {
+    r: parseInt(cleaned.slice(0, 2), 16),
+    g: parseInt(cleaned.slice(2, 4), 16),
+    b: parseInt(cleaned.slice(4, 6), 16)
+  };
+}
+    `,
+    note: "Parses standard 6-character hexadecimal codes."
+  },
+  {
+    lang: "Python",
+    code: `
+def hex_to_rgb(hex_str):
+    cleaned = hex_str.lstrip('#')
+    return tuple(int(cleaned[i:i+2], 16) for i in (0, 2, 4))
+    `,
+    note: "Translates hex strings using list comprehension."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Wrong Hex Characters",
+    description: "Using non-hexadecimal characters like 'G' or 'H'. Hex codes only support digits 0-9 and letters A-F."
+  },
+  {
+    title: "Shorthand Confusion",
+    description: "Forgetting that shorthand codes repeat characters. #345 becomes #334455, not #304050."
+  },
+  {
+    title: "Forgetting Alpha Range",
+    description: "Forgetting that RGB alpha accepts decimal numbers between 0 and 1, while Hex alpha accepts hex pairs between 00 and FF."
+  }
+];
+
+const references = [
+  {
+    title: "W3C CSS Color Module Standard",
+    url: "https://www.w3.org/TR/css-color-4/"
+  },
+  {
+    title: "MDN Web Docs: CSS <color> values",
+    url: "https://developer.mozilla.org/en-US/docs/Web/CSS/color_value"
   }
 ];
 ---
@@ -56,9 +157,9 @@ const faqs = [
 >
   <ColorConverter client:load />
 
-  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
-    <!-- Section: Intro -->
+    <PrivacyBadge />
+
     <div>
       <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
         <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
@@ -72,55 +173,54 @@ const faqs = [
       </p>
     </div>
 
-    <!-- Section: Accessibility -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Ensuring WCAG Color Contrast Compliance
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Web accessibility requires that text remains readable against its background. The integrated <strong class="text-zinc-200">WCAG Contrast Checker</strong> computes the relative luminance of your chosen color in real-time.
-      </p>
-      <p class="leading-relaxed">
-        It automatically tests the color against pure white and pure black text, showing exact contrast ratios and indicating whether they pass Level AA (minimum contrast of 4.5:1) or Level AAA (enhanced contrast of 7:1) guidelines. This is indispensable for selecting readable button states, body text, or navigation links.
-      </p>
-    </div>
+    <ComparisonTable
+      title="Color Syntax Formatting Comparison"
+      description="Review how hexadecimals and decimal color notations are represented in standard web layouts:"
+      headers={["Format Style", "Example String", "Transparency Support", "Ideal Application"]}
+      rows={[
+        { label: "HEX (6-char)", values: ["#34d399", "No", "Standard CSS stylesheets"] },
+        { label: "HEXA (8-char)", values: ["#34d39980", "Yes (Alpha hex pair)", "Modern CSS layouts"] },
+        { label: "RGB (Decimal)", values: ["rgb(52, 211, 153)", "No", "Canvas 2D contexts"] },
+        { label: "RGBA (Decimal)", values: ["rgba(52, 211, 153, 0.5)", "Yes (0.0 to 1.0)", "Opacity transitions"] }
+      ]}
+    />
 
-    <!-- Section: Color Harmonies -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Exploring Harmonious Color Palettes
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Finding matching colors is easier with our automatic palette generator. The tool calculates four classic color harmonies based on your current coordinates:
-      </p>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Complementary</strong>
-          <p class="text-xs leading-relaxed">
-            The color directly opposite on the HSL color wheel (shifted 180°). Creates maximum contrast and high-impact visual interest.
-          </p>
-        </div>
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Analogous</strong>
-          <p class="text-xs leading-relaxed">
-            Colors sitting next to each other on the color wheel (shifted +/- 30°). Creates peaceful, comfortable, and unified designs.
-          </p>
-        </div>
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Triadic</strong>
-          <p class="text-xs leading-relaxed">
-            Three colors evenly spaced around the wheel (shifted 120° and 240°). Offers vibrant, balanced visual contrast.
-          </p>
-        </div>
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Monochromatic</strong>
-          <p class="text-xs leading-relaxed">
-            Shades and tints of the same hue, adjusted by lightness. Ideal for constructing clean, minimalist UI interfaces or gradients.
-          </p>
-        </div>
-      </div>
-    </div>
+    <ExampleCard
+      title="Common Color Conversions"
+      description="Frequently used design coordinates:"
+      examples={[
+        { label: "Emerald (Brand Primary)", input: "#34D399", output: "rgb(52, 211, 153)", badge: "HEX" },
+        { label: "Pure Black", input: "#000000", output: "rgb(0, 0, 0)", badge: "HEX" },
+        { label: "Pure White", input: "#FFFFFF", output: "rgb(255, 255, 255)", badge: "HEX" }
+      ]}
+    />
+
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Conversion Snippets"
+      description="Parse color strings in your scripts with these robust code samples:"
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Color String Formatting Mistakes"
+    />
+
+    <BestPractices
+      title="HEX & RGB Best Practices"
+      practices={[
+        { title: "Provide Fallbacks", description: "When using modern colors or transparency, ensure you set suitable color fallbacks for legacy environments." },
+        { title: "Maintain Consistent Cases", description: "Keep hex colors lowercase in CSS files for better code compression and minification." }
+      ]}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+
+    <RelatedTools
+      currentToolUrl="/tools/color-converter"
+      category="css"
+    />
   </div>
 </ToolPageLayout>

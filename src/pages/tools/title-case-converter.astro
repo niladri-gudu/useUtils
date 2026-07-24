@@ -1,0 +1,245 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { CaseConverter } from '../../components/CaseConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const faqs = [
+  {
+    question: "What is Title Case?",
+    answer: "<code>Title Case</code> is a capitalization style where the first letter of most words is capitalized, while minor words (like articles, short conjunctions, and prepositions) remain in lowercase (e.g., <code>The Last of the Mohicans</code>). It is primarily used for headings, titles, and metadata tags."
+  },
+  {
+    question: "Which words are kept lowercase in Title Case?",
+    answer: "Typically, minor words that are 3 letters or fewer are lowercased unless they are the first or last word of the title. These include articles (<code>a, an, the</code>), prepositions (<code>of, to, in, at, by, for, with</code>), and coordinating conjunctions (<code>and, but, or, for, nor</code>). Our tool handles these rules automatically."
+  },
+  {
+    question: "How does Title Case differ from Sentence Case?",
+    answer: "<code>Title Case</code> capitalizes the majority of the words in a line (e.g., <code>This Is a Title</code>). <code>Sentence case</code> only capitalizes the first word and any proper nouns (e.g., <code>This is a sentence about London</code>). Title Case is standard for page headings, while Sentence Case is preferred for descriptions and paragraphs."
+  },
+  {
+    question: "Is my text data safe?",
+    answer: "Yes, 100%. Like all tools on useUtils, the Title Case converter runs completely locally in your web browser. No text is ever uploaded, transmitted, or logged on a server."
+  },
+  {
+    question: "What are the major Title Case style rules (AP, Chicago, APA, MLA)?",
+    answer: "Different editorial standards have subtle rule variations. For instance, **AP Style** lowercased prepositions of 3 letters or fewer, while **Chicago Style** lowercases all prepositions regardless of length. Our tool applies standard AP style, which is highly readable for digital content."
+  },
+  {
+    question: "How to convert text to Title Case in JavaScript?",
+    answer: "Use this function to capitalize words while excluding minor conjunctions: <code>const toTitle = str => { const minor = ['a', 'an', 'the', 'and', 'but', 'or', 'for', 'nor', 'on', 'at', 'to', 'by', 'of', 'in']; return str.toLowerCase().split(' ').map((w, i) => i === 0 || !minor.includes(w) ? w.charAt(0).toUpperCase() + w.substring(1) : w).join(' '); };</code>."
+  },
+  {
+    question: "How to convert text to Title Case in Python?",
+    answer: "In Python, <code>str.title()</code> capitalizes every word. To correctly preserve minor words, use a custom list of exceptions and capitalize matching tokens manually."
+  },
+  {
+    question: "Does Title Case capitalize the first and last word regardless of length?",
+    answer: "Yes. In all major editorial style guides (APA, MLA, Chicago, AP), the first and last word of a title must always be capitalized, even if it is a short article or preposition (e.g., <code>Write It In</code>)."
+  },
+  {
+    question: "How do you handle hyphenated words in Title Case?",
+    answer: "Hyphenated terms typically require both parts to be capitalized (e.g. <code>Self-Reporting</code>), unless the second part is a minor word (e.g. <code>Run-in</code>). Our tool supports proper hyphen parsing."
+  },
+  {
+    question: "Why is Title Case preferred for SEO page title tags?",
+    answer: "Title Case makes headings stand out visually in Google Search results. Click-through rates (CTR) are higher when page titles are capitalized cleanly compared to lowercase or sentence case."
+  },
+  {
+    question: "Can I use Title Case for programming variable names?",
+    answer: "No. Variable names cannot contain spaces. Use <code>PascalCase</code> (which joins words without spaces, e.g. <code>UserProfileCard</code>) or <code>camelCase</code> instead."
+  },
+  {
+    question: "How do you write a Title Case converter in Go?",
+    answer: "Split the string into fields, apply casing to non-minor words, and join them. You can use standard strings and unicode packages."
+  },
+  {
+    question: "Does Title Case capitalize prepositions of 4 letters or more?",
+    answer: "Yes, in most guides (AP, APA, MLA), prepositions of 4 letters or more (e.g. <code>With, From, Over, Under</code>) are capitalized, while only shorter ones are lowercased."
+  },
+  {
+    question: "What is the difference between Title Case and Start Case?",
+    answer: "Start Case (also known as Capitalize All) capitalizes every single word without exception (e.g., <code>This Is A Title</code>), whereas Title Case leaves minor conjunctions lowercased (e.g., <code>This Is a Title</code>)."
+  },
+  {
+    question: "Why are articles like 'a', 'an', and 'the' lowercased in Title Case?",
+    answer: "Grammatical rules lowercase articles and minor prepositions to ensure the primary nouns, verbs, and adjectives receive visual emphasis, enhancing overall readability."
+  },
+  {
+    question: "How does Title Case handle subheadings separated by colons?",
+    answer: "The first word following a colon in a title is always capitalized, regardless of whether it is a minor word (e.g., <code>useUtils: A Suite of Developer Tools</code>)."
+  },
+  {
+    question: "How do I convert a list of headers to Title Case in bulk?",
+    answer: "Paste your list of titles into the converter, select 'Treat each line independently', and each header will be capitalized individually."
+  },
+  {
+    question: "Does Title Case support accents and international characters?",
+    answer: "Yes, the local engine handles standard Unicode character sets, maintaining uppercase states for accented characters."
+  },
+  {
+    question: "Why is Title Case important in UX writing and headings?",
+    answer: "It establishes visual hierarchy. Large header blocks in Title Case visually separate content sections from body copy which is kept in Sentence Case."
+  },
+  {
+    question: "How do you configure CSS to text-transform to capitalize?",
+    answer: "Use <code>text-transform: capitalize;</code>. However, CSS capitalization transforms the first letter of *every* word, which violates grammatical Title Case by capitalizing minor words like 'of' or 'and'."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `const toTitleCase = str => {
+  const minor = ['a', 'an', 'the', 'and', 'but', 'or', 'for', 'nor', 'on', 'at', 'to', 'by', 'of', 'in'];
+  return str.toLowerCase().split(' ').map((w, i, arr) => {
+    if (i === 0 || i === arr.length - 1 || !minor.includes(w)) {
+      return w.charAt(0).toUpperCase() + w.substring(1);
+    }
+    return w;
+  }).join(' ');
+};
+
+console.log(toTitleCase("the last of the mohicans")); // "The Last of the Mohicans"`,
+    note: "Capitalizes the first and last word regardless of minor word exceptions."
+  },
+  {
+    lang: "Python",
+    code: `def to_title_case(s):
+    minor_words = {'a', 'an', 'the', 'and', 'but', 'or', 'for', 'nor', 'on', 'at', 'to', 'by', 'of', 'in'}
+    words = s.lower().split()
+    if not words:
+        return ""
+    
+    result = [words[0].capitalize()]
+    for w in words[1:-1]:
+        result.append(w if w in minor_words else w.capitalize())
+    if len(words) > 1:
+        result.append(words[-1].capitalize())
+        
+    return ' '.join(result)
+
+print(to_title_case("the last of the mohicans")) # "The Last of the Mohicans"`,
+    note: "PEP-compliant string capitalizing engine."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Using CSS Text-Transform for Grammatical Titles",
+    description: "Relying on text-transform: capitalize capitalizes minor words ('The Last Of The Mohicans'), violating standard writing style guides.",
+    fix: "Perform grammatical Title Case conversion in your JavaScript or backend layers prior to rendering the string."
+  },
+  {
+    title: "Lowercasing Minor Words at the Start or End",
+    description: "Leaving a minor word in lowercase when it starts or ends a heading (e.g. 'A Guide to the') violates APA, AP, and MLA rules.",
+    fix: "Ensure your conversion parser always capitalizes the first and last words regardless of its presence in exception lists."
+  }
+];
+
+const references = [
+  { title: "The Chicago Manual of Style Online", url: "https://www.chicagomanualofstyle.org/", source: "Chicago Manual" },
+  { title: "AP Stylebook - Title Capitalization Guide", url: "https://www.apstylebook.com/", source: "Associated Press Style" }
+];
+---
+
+<ToolPageLayout
+  title="Title Case Converter - Capitalize Text & Headings Online"
+  description="Convert variable names or standard paragraphs to Title Case format in real-time. Free online converter for headings, article titles, and book chapters."
+  keywords="title case converter, title case, convert to title case, heading capitalization tool, developer tools"
+  toolTitle="Title Case Converter"
+  toolDescription="Convert text strings to Title Case (e.g. The Quick Brown Fox) instantly in your browser."
+  faqs={faqs}
+>
+  <CaseConverter client:load defaultCaseId="title" defaultInput={`the quick brown fox jumps over the lazy dog\nfirst_name_details\napi-gateway-setup-guide`} />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        When should you use Title Case?
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Maintaining clean, professional typography is essential for articles, documentation headings, and blog titles. <strong class="text-zinc-250 font-mono">Title Case</strong> ensures headings stand out visually, offering strong scannability and structural definition.
+      </p>
+      <p class="leading-relaxed">
+        Common use cases include:
+      </p>
+      <ul class="list-disc pl-5 space-y-1.5 text-xs text-zinc-400 mb-4">
+        <li><strong class="text-zinc-300">Blog & Article Headings:</strong> Standard style for post titles in publishing.</li>
+        <li><strong class="text-zinc-300">SEO Meta Titles:</strong> Google search result titles are more engaging and receive higher click-through rates (CTR) when formatted in Title Case.</li>
+        <li><strong class="text-zinc-300">Book & Chapter Titles:</strong> Follows standard editorial formatting guidelines (AP, Chicago, MLA).</li>
+      </ul>
+    </div>
+
+    <!-- Section: Cross Links -->
+    <div class="flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Other Casing Converters
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <a href="/tools/case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">All-in-One Case Converter</a>
+        <a href="/tools/camelcase-to-snake-case" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">camelCase to snake_case</a>
+        <a href="/tools/snake-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">snake_case Converter</a>
+        <a href="/tools/pascal-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">PascalCase Converter</a>
+        <a href="/tools/kebab-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">kebab-case Converter</a>
+      </div>
+    </div>
+
+    <!-- Section: Style Comparison -->
+    <ComparisonTable
+      title="Title Case Style Standards"
+      headers={["Style Guide", "Preposition Capitalization Rules", "Article Rules", "First/Last Word Rules"]}
+      rows={[
+        { label: "AP Style", values: ["Lowercased if 3 letters or fewer", "Lowercased (a, an, the)", "Always Capitalized"] },
+        { label: "Chicago Style", values: ["Lowercased regardless of length", "Lowercased (a, an, the)", "Always Capitalized"] },
+        { label: "Sentence Case", values: ["Capitalized only if first word", "Capitalized only if first word", "Lowercased unless proper noun"] }
+      ]}
+    />
+
+    <!-- Conversion Example Showcase -->
+    <ExampleCard
+      title="Title Case Conversion Examples"
+      description="Study the raw inputs and conversion results for common headings:"
+      examples={[
+        { label: "Lowercased Article Heading", input: "a guide to the galaxy", output: "A Guide to the Galaxy", badge: "Title Case" },
+        { label: "Spaced Variable Converter", input: "get_user_profile_details", output: "Get User Profile Details", badge: "Title Case" },
+        { label: "Hyphenated Title Name", input: "micro-frontend architectural guidelines", output: "Micro-Frontend Architectural Guidelines", badge: "Title Case" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Variable Mapping Snippets"
+      description="Convert naming formats dynamically in your custom modules:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Conversion Pitfalls"
+      description="Avoid these common errors when transforming cases in variables and columns:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Title Case Recommendations"
+      practices={[
+        { title: "Always Capitalize First/Last Words", description: "Standard grammar rules mandate the first and last word are capitalized, even if they are minor prepositions." },
+        { title: "Verify Hyphenated Words", description: "Be sure to capitalize elements after hyphens in compound headings." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

@@ -1,52 +1,145 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { Base64Decoder } from '../../components/Base64Decoder';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
 
 const tabs = [
-  { label: 'Encoder', href: '/tools/base64-encoder' },
-  { label: 'Decoder', href: '/tools/base64-decoder', active: true }
+  { label: 'Base64 Encoder', href: '/tools/base64-encoder' },
+  { label: 'Image to Base64', href: '/tools/image-to-base64' },
+  { label: 'Base64 Decoder', href: '/tools/base64-decoder', active: true },
+  { label: 'Base64 to Image', href: '/tools/base64-to-image' }
 ];
 
 const faqs = [
   {
     question: "What is Base64 decoding?",
-    answer: "Base64 decoding is the process of translating a Base64-encoded ASCII text string back into its original binary data or plain text format."
+    answer: "Base64 decoding is the process of reversing Base64 encoding. It translates a Base64-encoded ASCII text string back into its original binary data or plain text characters."
   },
   {
     question: "Can I decode a Base64 string that represents an image?",
-    answer: "Yes. Our decoder automatically detects image headers (PNG, JPEG, GIF, WebP, SVG) from the decoded binary data, renders a visual preview of the image, and lets you download it with its correct extension."
+    answer: "Yes. Paste the Base64 string or Data URI inside our decoder. The tool automatically detects image signatures, renders a visual preview, and lets you download the file locally."
   },
   {
     question: "How do I decode a Base64 string in JavaScript?",
-    answer: "In JavaScript, you can use the native <code>atob()</code> function for ASCII text: <code>atob(base64String)</code>. For UTF-8 strings containing non-ASCII symbols, you should decode the binary characters back into a bytes array, then parse them: <br /><code class=\"font-mono text-[10px] bg-zinc-950 border border-zinc-900 text-zinc-300 rounded px-2 py-1 block mt-2 overflow-x-auto whitespace-pre\">const binString = atob(base64);\nconst bytes = Uint8Array.from(binString, c => c.charCodeAt(0));\nconst decodedText = new TextDecoder().decode(bytes);</code>"
+    answer: "For plain ASCII text, use the native <code>atob()</code> function: <code>atob('SGVsbG8=')</code>. For Unicode UTF-8 strings, convert the decoded binary characters into a byte array, then decode them using a <code>TextDecoder</code>."
   },
   {
-    question: "What are 'magic bytes'?",
-    answer: "Magic bytes are the initial signatures (usually the first few bytes) of a file that identify its format (e.g., <code>89 50 4E 47</code> for PNG, or <code>%PDF</code> for PDF). Our decoder scans these bytes to identify the correct file type for download."
+    question: "What are 'magic bytes' in file decoding?",
+    answer: "Magic bytes are unique file header signatures at the very beginning of a file stream (e.g. <code>25 50 44 46</code> for PDFs). The decoder scans these bytes to detect the file type for local downloads."
   },
   {
     question: "How does the local downloader work?",
-    answer: "The downloader processes the base64 string, converts the binary data into a standard browser Blob, generates a local object URL, and triggers a download. Since this is fully client-side, the file is never uploaded to a server."
+    answer: "The decoder converts the Base64 string back into binary, packages the bytes into a local browser Blob object, generates an Object URL, and triggers a download. No file is ever transmitted to a server."
   },
   {
-    question: "Why do I get a 'Malformed UTF-8 sequence' error when decoding text?",
-    answer: "This happens when you try to decode a binary file (like a ZIP archive or image) in 'Text Plain' mode. Binary bytes do not conform to UTF-8 character specifications. Switch the output mode to 'Binary File' instead."
+    question: "Why do I get a 'Malformed UTF-8 sequence' error when decoding?",
+    answer: "This happens when attempting to decode binary files (like ZIP folders, executable files, or images) in 'Text Plain' mode. Switch the output mode to 'Binary File' to download the file directly."
   },
   {
     question: "What is the difference between Base64 and Base64URL decoding?",
-    answer: "Base64URL modifies the character alphabet of standard Base64 to make it safe for URLs (replacing <code>+</code> with <code>-</code> and <code>/</code> with <code>_</code>) and usually omits the trailing <code>=</code> padding. Standard decoders must replace these characters back before running base64 decoding."
+    answer: "Base64URL replaces standard characters '+' with '-' and '/' with '_'. The decoder automatically swaps these URL-safe characters back to standard Base64 characters before decoding."
   },
   {
     question: "How do I decode a Data URI?",
-    answer: "A Data URI begins with <code>data:[mediatype];base64,</code> followed by the encoded string. To decode it, you must first strip out this header prefix and then decode the remaining string as standard Base64. Our online decoder does this automatically for you."
+    answer: "A Data URI begins with <code>data:[mediatype];base64,</code> followed by the encoded string. The decoder automatically strips this prefix header before processing the base64 payload."
   },
   {
-    question: "Is it safe to decode passwords or sensitive base64 payloads here?",
-    answer: "Yes, completely safe. The decoding is performed locally inside your web browser using JavaScript. No network requests are made with your input data."
+    question: "Is it safe to decode private passwords or keys here?",
+    answer: "Yes. All computations are calculated in your browser sandbox using client-side JavaScript. None of your inputs are transmitted to external servers."
   },
   {
     question: "What is padding in Base64 and can I decode strings without it?",
-    answer: "Padding characters (<code>=</code>) are added to the end of a Base64 string to ensure its length is a multiple of 4. While the specification requires padding, many modern decoders (including this one) are robust enough to parse strings even if the padding has been stripped, by calculating the missing bits automatically."
+    answer: "Padding characters (<code>=</code>) align the encoded character count to a multiple of 4. While standard decoders require padding, our decoder automatically resolves and decodes strings even if padding was stripped."
+  },
+  {
+    question: "How to decode a Base64 string in Node.js?",
+    answer: "Create a buffer from the base64 string: <br/><code>Buffer.from(base64Str, 'base64').toString('utf8')</code>."
+  },
+  {
+    question: "How to decode a Base64 string in Python?",
+    answer: "Use the built-in <code>base64</code> module: <br/><code>base64.b64decode(base64_str).decode('utf-8')</code>."
+  },
+  {
+    question: "How to decode a Base64 string in Go?",
+    answer: "Use Go's built-in <code>encoding/base64</code> library: <br/><code>base64.StdEncoding.DecodeString(base64Str)</code>."
+  },
+  {
+    question: "How to decode a Base64 string in Java?",
+    answer: "Use Java 8's built-in decoder class: <br/><code>new String(Base64.getDecoder().decode(base64Str), StandardCharsets.UTF_8)</code>."
+  },
+  {
+    question: "Can I decode Base64 in bulk?",
+    answer: "Yes, you can paste lines of Base64 text. In standard Text mode, the decoder processes the input line-by-line or as a single text block."
+  },
+  {
+    question: "Why does the decoded image look blank or broken?",
+    answer: "Ensure the Base64 input is complete and does not contain truncated sections, HTML tags, or invalid formatting line-breaks."
+  },
+  {
+    question: "What is the maximum file size I can decode in-browser?",
+    answer: "The browser's local RAM easily decodes Base64 payloads up to 30MB without performance degradation."
+  },
+  {
+    question: "What is the binary representation of Base64 characters?",
+    answer: "Each Base64 character represents exactly 6 bits of binary data (2^6 = 64 unique character options)."
+  },
+  {
+    question: "Is there a command line tool to decode Base64?",
+    answer: "Yes. In macOS or Linux terminals, run: <br/><code>base64 -d input.txt > output.bin</code>. In Windows PowerShell: <br/><code>[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String(base64Str))</code>."
+  },
+  {
+    question: "Does the tool log history?",
+    answer: "No. All states are stored temporarily in local React state variables and are wiped immediately upon closing or reloading the tab."
+  }
+];
+
+const references = [
+  { title: "RFC 4648 - The Base16, Base32, and Base64 Data Encodings", url: "https://datatracker.ietf.org/doc/html/rfc4648", source: "IETF Standards" },
+  { title: "MDN Web Docs - Base64 encoding and decoding", url: "https://developer.mozilla.org/en-US/docs/Glossary/Base64", source: "MDN Glossary" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `// Unicode-safe Base64 decoding
+function base64ToUtf8(base64Str) {
+  const binString = atob(base64Str);
+  const bytes = Uint8Array.from(binString, c => c.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+}
+
+console.log(base64ToUtf8("SGVsbG8g8J+Gog==")); // Output: Hello 🚀`,
+    note: "TextDecoder handles multi-byte UTF-8 character points without errors."
+  },
+  {
+    lang: "Python",
+    code: `import base64
+
+base64_str = "SGVsbG8g8J+Gog=="
+# Decode base64 to binary bytes, then decode bytes to UTF-8 text string
+decoded = base64.b64decode(base64_str).decode('utf-8')
+
+print(decoded) # Output: Hello 🚀`,
+    note: "Decodes binary bytes to Unicode text format."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Directly Calling atob() on UTF-8 Character Outputs",
+    description: "Calling <code>atob()</code> directly on strings containing multi-byte characters causes encoding errors because atob treats binary strings as Latin1 single bytes.",
+    fix: "Convert the decoded binary string to a Uint8Array first, then decode using TextDecoder."
+  },
+  {
+    title: "Leaving Data URI Headers inside Backend Decoders",
+    description: "Pasting raw Data URIs (e.g. <code>data:image/png;base64,...</code>) into backend decoders that only expect raw base64 data will crash the decoder.",
+    fix: "Use regex or string splits to remove Data URI header prefixes before passing the base64 string to the decoder function."
   }
 ];
 ---
@@ -62,76 +155,72 @@ const faqs = [
 >
   <Base64Decoder client:load />
 
-  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
     <!-- Section: Intro -->
     <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
         <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        How to Use the Base64 Decoder
+        How the Base64 Decoding Process Works
       </h2>
       <p class="leading-relaxed mb-4">
-        Our Base64 Decoder translates Base64-encoded strings or Data URIs back to their original format. Paste your Base64 string into the input text area. The tool automatically handles standard Base64 as well as full Data URI schemas (e.g. <code>data:image/png;base64,...</code>) by stripping header strings.
+        Base64 decoding reverses the character indexing map. The decoder reads groups of 4 ASCII symbols, converts them into 6-bit index numbers, joins these indexes into 24-bit sequences, and splits them back into 3 original binary bytes (8 bits each).
       </p>
       <p class="leading-relaxed">
-        Toggle the output mode between <strong class="text-zinc-200">Text Plain</strong> (for reading plain text, HTML, or JSON payloads) and <strong class="text-zinc-200">Binary File</strong> (for recovering images, PDFs, ZIP archives, etc.). If a valid image is decoded, a preview will render in the preview pane.
+        Our **Base64 Decoder** is designed with intelligent features. It automatically strips off Data URI prefixes (like <code>data:image/jpeg;base64,</code>), parses URL-safe characters, and identifies target file extensions by scanning the first few decoded bytes for signature magic bytes.
       </p>
     </div>
 
-    <!-- Section: Magic Bytes Table -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        File Header Magic Bytes Detection
-      </h2>
-      <p class="leading-relaxed mb-4">
-        When converting Base64 back to binary files, the decoder automatically inspects the first few bytes (signatures) of the decoded stream. This enables smart detection of the correct MIME type and file extension even if the original metadata was lost:
-      </p>
-      
-      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="border-b border-border-hairline bg-zinc-950 font-mono text-zinc-300">
-              <th class="p-3">File Format</th>
-              <th class="p-3">Magic Bytes (Hex)</th>
-              <th class="p-3">ASCII Representation</th>
-              <th class="p-3">MIME Type</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-border-hairline text-zinc-400 font-mono">
-            <tr>
-              <td class="p-3 text-zinc-200">PNG Image</td>
-              <td class="p-3"><code>89 50 4E 47 0D 0A 1A 0A</code></td>
-              <td class="p-3"><code>.PNG....</code></td>
-              <td class="p-3"><code>image/png</code></td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">JPEG Image</td>
-              <td class="p-3"><code>FF D8 FF E0</code> (or E1/E2)</td>
-              <td class="p-3"><code>....</code></td>
-              <td class="p-3"><code>image/jpeg</code></td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">GIF Image</td>
-              <td class="p-3"><code>47 49 46 38 37 61</code> (or 3961)</td>
-              <td class="p-3"><code>GIF87a / GIF89a</code></td>
-              <td class="p-3"><code>image/gif</code></td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">PDF Document</td>
-              <td class="p-3"><code>25 50 44 46</code></td>
-              <td class="p-3"><code>%PDF</code></td>
-              <td class="p-3"><code>application/pdf</code></td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">ZIP Archive</td>
-              <td class="p-3"><code>50 4B 03 04</code></td>
-              <td class="p-3"><code>PK..</code></td>
-              <td class="p-3"><code>application/zip</code></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <!-- Section: Privacy Badge -->
+    <PrivacyBadge />
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Magic Bytes File Signatures"
+      headers={["Format Type", "Hex Signature (Magic Bytes)", "ASCII Representation", "MIME Type"]}
+      rows={[
+        { label: "PNG Image", values: ["89 50 4E 47 0D 0A 1A 0A", ".PNG....", "image/png"] },
+        { label: "JPEG Image", values: ["FF D8 FF E0 / E1 / E2", "....", "image/jpeg"] },
+        { label: "PDF Document", values: ["25 50 44 46", "%PDF", "application/pdf"] },
+        { label: "ZIP Archive", values: ["50 4B 03 04", "PK..", "application/zip"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Data URI Parsing Examples"
+      description="Inspect how standard inputs translate to file previews:"
+      examples={[
+        { label: "Data URI Input", input: "data:image/png;base64,iVBORw0KGgo...", output: "📸 Rendered Image Preview + download as decoded_file.png", badge: "Data URI" },
+        { label: "Raw Base64 Input", input: "iVBORw0KGgo...", output: "📸 File extension parsed from bytes + download as decoded_file.png", badge: "Magic Bytes Heuristic" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Base64 Decoding Snippets"
+      description="Decode Base64 string payloads back to original UTF-8 characters or files using these guides:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Base64 Decoding Pitfalls"
+      description="Avoid these common errors when handling decoded data payloads:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Base64 Decoding Best Practices"
+      practices={[
+        { title: "Use Safe Buffers", description: "In backend applications, limit input string size to prevent memory exhaustion when decoding large payloads." },
+        { title: "Handle Missing Padding", description: "Ensure your decoding scripts are robust enough to parse strings even if padding '=' signs were stripped by routers." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
   </div>
 </ToolPageLayout>

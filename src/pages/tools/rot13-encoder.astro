@@ -1,6 +1,19 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { Rot13Encoder } from '../../components/Rot13Encoder';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+
+const tabs = [
+  { label: 'ROT13 Encoder', href: '/tools/rot13-encoder', active: true },
+  { label: 'Caesar Cipher', href: '/tools/caesar-cipher' },
+  { label: 'Vigenere Cipher', href: '/tools/vigenere-cipher' }
+];
 
 const faqs = [
   {
@@ -46,6 +59,88 @@ const faqs = [
   {
     question: "Why is the Vigenère cipher historically called 'le chiffre indéchiffrable'?",
     answer: "Historically, Vigenère was called the \"indecipherable cipher\" because polyalphabetic ciphers resist simple letter frequency analysis. By shifting the same letter differently depending on its position relative to the keyword, the standard frequency peaks are flattened. It was considered unbreakable for over 300 years until systematic cracking methods like the Kasiski examination were developed in the 19th century."
+  },
+  {
+    question: "How do I encode ROT13 in JavaScript?",
+    answer: "Replace characters using code offsets: <br/><code>str.replace(/[a-zA-Z]/g, c => String.fromCharCode(c.charCodeAt(0) + (c.toLowerCase() < 'n' ? 13 : -13)))</code>."
+  },
+  {
+    question: "How to run ROT13 in Python?",
+    answer: "Use the built-in codecs library: <br/><code>import codecs; codecs.encode(text, 'rot_13')</code>."
+  },
+  {
+    question: "What is ROT18?",
+    answer: "ROT18 is a combination of ROT13 (shifting letters A-Z by 13 positions) and ROT5 (shifting digits 0-9 by 5 positions)."
+  },
+  {
+    question: "What is the Kasiski method for Vigenère ciphers?",
+    answer: "Kasiski examination identifies repeating sequences of characters in the ciphertext to estimate the length of the Vigenère secret keyword."
+  },
+  {
+    question: "Is Atbash a symmetric cipher?",
+    answer: "Yes, because mirroring the alphabet twice returns the original letters (A maps to Z and Z maps to A)."
+  },
+  {
+    question: "Does ROT13 shift punctuation?",
+    answer: "No. Classical ROT13 only shifts standard Latin alphabet letters (a-z and A-Z), leaving special characters, digits, and spaces untouched."
+  },
+  {
+    question: "Why do forums use ROT13?",
+    answer: "ROT13 is widely used online to hide spoilers, answers to puzzles, movie summaries, or offensive jokes from casual viewing."
+  },
+  {
+    question: "Can I convert large text files with ROT13?",
+    answer: "Yes, you can upload files in the file upload area, and they will be shifted instantly in your local browser."
+  },
+  {
+    question: "Does this tool support offline usage?",
+    answer: "Yes. Once the page has loaded, all cipher shifts and frequency analysis graphs are calculated completely offline."
+  }
+];
+
+const references = [
+  { title: "ROT13 self-reciprocal substitution cipher specification", url: "https://en.wikipedia.org/wiki/ROT13", source: "Wikipedia Cryptography Library" },
+  { title: "Standard English Letter Frequency Distribution Data", url: "https://www.math.cornell.edu/~mec/2003-2004/cryptography/subs/frequencies.html", source: "Cornell University Mathematics" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `function rot13(str) {
+  return str.replace(/[a-zA-Z]/g, char => {
+    const code = char.charCodeAt(0);
+    const isLower = code >= 97;
+    const base = isLower ? 97 : 65;
+    return String.fromCharCode(((code - base + 13) % 26) + base);
+  });
+}
+
+console.log(rot13("Hello World!")); // Output: Uryyb Jbeyq!`,
+    note: "Symmetric: passing the output back to the function decrypts it."
+  },
+  {
+    lang: "Python",
+    code: `import codecs
+
+text = "Hello World!"
+# ROT13 is natively supported by codecs library
+encoded = codecs.encode(text, 'rot_13')
+
+print(encoded) # Output: Uryyb Jbeyq!`,
+    note: "Uses standard library codecs module."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Using Classical Ciphers for Application Security",
+    description: "Relying on ciphers like ROT13, Caesar, or Vigenère to protect sensitive tokens or passwords in modern web applications. They can be cracked instantly.",
+    fix: "Use standard cryptographically secure algorithms like AES-256-GCM for any sensitive data encryption."
+  },
+  {
+    title: "Mismatched character sets in ROT47",
+    description: "Assuming ROT47 shifts only alphabetic characters. ROT47 shifts all printable ASCII characters (including spaces, digits, and brackets), which can lead to unexpected outputs.",
+    fix: "Verify character codes match the expected 33-126 range before applying ROT47 shifts."
   }
 ];
 ---
@@ -56,63 +151,77 @@ const faqs = [
   keywords="rot13 encoder, caesar cipher decoder, vigenere cipher online, atbash cipher, rot13 decoder, classical ciphers, brute force caesar cipher, letter frequency analysis"
   toolTitle="ROT13 & Caesar Cipher Studio"
   toolDescription="Analyze, encrypt, and decrypt classical substitution ciphers in real-time. Explore letter frequency distributions, run brute-force cracking simulations, and process plaintext inputs locally."
+  tabs={tabs}
   faqs={faqs}
 >
   <Rot13Encoder client:load />
 
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
-    <!-- Introduction -->
+    <!-- Section: Intro -->
     <div>
       <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
         <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Getting Started with the Classical Cipher Studio
+        Introduction to Symmetric Classical Ciphers
       </h2>
       <p class="leading-relaxed mb-4">
-        Our ROT13 &amp; Caesar Cipher Studio is an interactive, local-first cryptanalysis sandbox designed for developers, students, and cryptography enthusiasts. It supports a comprehensive range of historical ciphers under a unified interface:
+        Symmetric substitution ciphers are the ancestors of modern cryptography. **ROT13** rotates alphabetic characters by 13 positions, which is exactly half of the English alphabet. This makes it self-reciprocal (symmetric): applying the transformation twice yields the original plaintext.
       </p>
-      <ul class="list-disc pl-5 flex flex-col gap-2 mb-4 text-zinc-450">
-        <li><strong class="text-zinc-200">ROT13, ROT5, and ROT18:</strong> Standard alphabetic, numeric, and alphanumeric rotation ciphers widely used for spoiler obfuscation.</li>
-        <li><strong class="text-zinc-200">Caesar Cipher:</strong> Monolithic alphabet shift cipher with custom key sliders (0-25).</li>
-        <li><strong class="text-zinc-200">ROT47:</strong> Full ASCII symbol translation covering letters, numbers, spaces, and punctuation.</li>
-        <li><strong class="text-zinc-200">Vigenère Cipher:</strong> Polyalphabetic substitution cipher leveraging customizable secret keywords to cycle shifts.</li>
-        <li><strong class="text-zinc-200">Atbash Cipher:</strong> Reflective monoalphabetic cipher that mirrors letters from A to Z.</li>
-      </ul>
       <p class="leading-relaxed">
-        Everything runs completely offline inside your browser. This offline validation guarantees that secret keys, configurations, or logs are never transmitted outside your computer.
+        Our **ROT13 & Caesar Cipher Studio** is an interactive cryptanalysis environment. Examine letter frequency curves comparing inputs to standard English distributions, execute automated Caesar brute-force solvers, and test classical substitution algorithms completely offline.
       </p>
     </div>
 
-    <!-- Letter Frequency Analysis Section -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Understanding Letter Frequency Analysis
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Unlike modern symmetric and asymmetric algorithms (like AES or RSA), classical substitution ciphers do not hide the statistical properties of the language. In English, certain letters (like 'E', 'T', 'A', and 'O') appear much more frequently than others (like 'Q', 'X', and 'Z').
-      </p>
-      <p class="leading-relaxed mb-4">
-        When using a monoalphabetic substitution cipher like Caesar or Atbash, this frequency distribution is simply shifted or mirrored. By checking the <strong class="text-zinc-200">Frequency Analysis</strong> tab, you can visually inspect how:
-      </p>
-      <ul class="list-disc pl-5 flex flex-col gap-2 mb-4 text-zinc-450">
-        <li>A Caesar cipher shifts the entire frequency graph horizontally. The relative heights of the peaks and valleys remain identical, enabling instant decryption.</li>
-        <li>An Atbash cipher mirrors the distribution graph from left to right.</li>
-        <li>A polyalphabetic Vigenère cipher flattens the frequency distribution. Because a single letter in the ciphertext represents multiple different plaintext letters, the peaks diffuse, illustrating why polyalphabetic encryption resisted cryptanalysis for centuries.</li>
-      </ul>
-    </div>
+    <!-- Section: Privacy Badge -->
+    <PrivacyBadge />
 
-    <!-- Brute Force Decryption Section -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Automated Caesar Cipher Cracking (Brute Force)
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Since a Caesar cipher only has 25 possible shifts, decrypting a message without knowing the key is trivial. The <strong class="text-zinc-200">Caesar Brute Force</strong> tab simulates all 25 shift variants simultaneously.
-      </p>
-      <p class="leading-relaxed">
-        For each shift, the engine calculates a "likeness score" based on the chi-squared distribution of letters compared to typical English language texts, boosted by matches against common English dictionary words. The result is sorted dynamically so that the most readable, coherent English text is instantly loaded at the top. Simply click the row to apply the shift and load it into the main converter.
-      </p>
-    </div>
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Classical Ciphers Comparison"
+      headers={["Cipher Type", "Shift Mechanism", "Key Space Size", "Symmetric", "Cryptographic Security Status"]}
+      rows={[
+        { label: "ROT13", values: ["Fixed rotation (+13)", "1 key (Fixed)", "Yes", "Zero (Easily decoded)"] },
+        { label: "Caesar Cipher", values: ["Custom shift offset (0-25)", "25 keys", "Yes (with offset complement)", "Zero (Cracked in microseconds)"] },
+        { label: "Atbash Cipher", values: ["Reflective letter swap", "1 key (Fixed)", "Yes", "Zero"] },
+        { label: "Vigenère Cipher", values: ["Variable shift sequence from keyword", "26^KeyLength combinations", "Yes (via complement word)", "Zero (Solved using Kasiski examinations)"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="ROT13 Encoding Examples"
+      description="Observe standard word translations:"
+      examples={[
+        { label: "Symmetric check (hello)", input: "hello", output: "uryyb", badge: "Encode" },
+        { label: "Symmetric check (uryyb)", input: "uryyb", output: "hello", badge: "Decode (Identical function)" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Substitution Ciphers"
+      description="Implement ROT13 letter rotation in your code scripts using these standard templates:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Classical Cryptography Pitfalls"
+      description="Avoid these common security oversights when studying cipher history:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Classical Cryptography Best Practices"
+      practices={[
+        { title: "Use for Obfuscation Only", description: "Use ROT13 solely to hide game answers or spoilers from casual readers, never to secure passwords." },
+        { title: "Understand Frequency Curves", description: "Examine letter frequency graphs to see how simple shifts leave character peaks and valleys intact, making them easy to solve." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
   </div>
 </ToolPageLayout>

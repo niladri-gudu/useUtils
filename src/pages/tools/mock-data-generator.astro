@@ -1,0 +1,197 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { FakeUserGenerator } from '../../components/FakeUserGenerator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "What is a mock data generator?",
+    answer: "A mock data generator is a software tool used by developers to fabricate structured datasets (like mock users, product listings, or transaction histories). This dummy data mimics real-world databases and APIs, making it perfect for prototyping, seed script preparation, and test suite verification."
+  },
+  {
+    question: "Why should I use mock data instead of production datasets?",
+    answer: "Reusing production data in staging or testing environments is a major compliance risk that violates standards like GDPR and HIPAA. Mock data is synthetic, contains no personal information (PII), and can be distributed safely to developers, contractors, or public repositories."
+  },
+  {
+    question: "How does this tool process data generation?",
+    answer: "All mock generation executes client-side inside your browser thread. The tool is built using pure JavaScript, meaning zero bytes of your schemas, names, or values are uploaded to a backend. The tool works 100% offline."
+  },
+  {
+    question: "What formats can I export the mock data to?",
+    answer: "Our visual designer exports to JSON arrays, CSV spreadsheets, YAML keys, SQL insert scripts, and TypeScript type-safe interfaces."
+  },
+  {
+    question: "Can I generate randomized coordinates (lat/long)?",
+    answer: "Yes, selecting the location data types allows you to generate mock geographical values, which is excellent for testing mapping integrations or spatial databases."
+  },
+  {
+    question: "How do I create custom list selections?",
+    answer: "Select the 'Custom List Picker' data type and type comma-separated options (e.g. <code>Draft, Published, Archived</code>). The generator will randomly pick one value for each row."
+  },
+  {
+    question: "Can I generate decimal values (e.g. product pricing)?",
+    answer: "Yes, you can choose the 'Random Decimal' type, specify the minimum and maximum boundaries, and the generator will output realistic float values."
+  },
+  {
+    question: "Is there a row generation limit?",
+    answer: "The visual slider supports generating up to 200 rows to maintain high performance in browser environments. This yields plenty of data for sandbox seeding and testing."
+  },
+  {
+    question: "How is the SQL insert script generated?",
+    answer: "The SQL output compiles records into standard <code>INSERT INTO `table`</code> queries, escaping quotes correctly so that they run seamlessly in database clients."
+  },
+  {
+    question: "Does the mock database support unique UUID fields?",
+    answer: "Yes, the generator supports UUID strings, which are commonly used for database primary keys."
+  },
+  {
+    question: "How do I import the CSV file into Excel?",
+    answer: "Open Excel, choose 'Data' -> 'From Text/CSV', select comma separation, and import the downloaded CSV to align columns and headers."
+  },
+  {
+    question: "What is seed-based data generation?",
+    answer: "Seed-based generation uses a fixed baseline value to construct random data. It ensures that regenerating the dataset returns identical records, maintaining consistency."
+  },
+  {
+    question: "Are the email addresses real?",
+    answer: "No, emails are fabricated using lowercase names and dummy domains (like <code>@example.com</code>) to prevent sending messages to real accounts."
+  },
+  {
+    question: "Can I simulate IoT temperature signals?",
+    answer: "Yes, you can model telemetry data by creating fields for status, temperature values, and dates."
+  },
+  {
+    question: "What is Shannon Entropy?",
+    answer: "Shannon Entropy measures unpredictability. The generator ensures high entropy across unique strings to avoid repetitive patterns."
+  },
+  {
+    question: "How do I generate mock dates in the past or future?",
+    answer: "Selecting the Date type generates ISO timestamps within a randomized range."
+  },
+  {
+    question: "Can I generate paragraphs for blog summaries?",
+    answer: "Yes, you can select the Paragraph or Sentence data types to populate text blocks with Lorem Ipsum descriptions."
+  },
+  {
+    question: "Is the TypeScript export type-safe?",
+    answer: "Yes. The TypeScript compiler tab creates interface declarations mapping keys to <code>string</code>, <code>number</code>, or <code>boolean</code>."
+  },
+  {
+    question: "Can I generate mock phone numbers?",
+    answer: "Yes, the tool outputs standard US format strings (e.g. <code>555-XXX-XXXX</code>) to pass basic input validation checks."
+  },
+  {
+    question: "Is this tool completely free?",
+    answer: "Yes. All developer tools on useUtils are free, lightweight, and compile without account registrations or watermarks."
+  },
+  {
+    question: "What standards are used for address listings?",
+    answer: "Street addresses and countries are randomized from standard geographic dictionaries to mimic authentic shipping records."
+  }
+];
+
+const headers = ["Target Format", "Export Style", "Best Application"];
+const rows = [
+  {
+    label: "JSON",
+    values: ["Formatted array of objects", "REST API mocks, web app seeds, MongoDB ingestion tests"]
+  },
+  {
+    label: "CSV",
+    values: ["Comma-separated values", "Importing into Excel, uploading to BigQuery, Pandas data analysis"]
+  },
+  {
+    label: "SQL",
+    values: ["Raw INSERT statements", "Direct seeding of relational databases (PostgreSQL, MySQL, SQLite)"]
+  }
+];
+
+const practices = [
+  {
+    title: "Sanitize Production Seeds",
+    description: "Never migrate PII to testing servers. Use mock generators to establish safe database seeds."
+  },
+  {
+    title: "Verify Constraint Limits",
+    description: "Model long text blocks and large decimals in your mock rows to test UI boundaries and page layouts."
+  }
+];
+
+const mistakes = [
+  {
+    title: "Using real user emails for dev notification tests",
+    description: "If notification scripts are triggered during testing, real users could receive dummy emails.",
+    fix: "Ensure all mock emails use domains like <code>@example.com</code> or <code>@testmail.org</code>."
+  }
+];
+
+const languages = [
+  {
+    lang: "Node.js (Faker)",
+    code: `
+import { faker } from '@faker-js/faker';
+
+const makeProducts = () => Array.from({ length: 5 }, () => ({
+  id: faker.string.uuid(),
+  name: faker.commerce.productName(),
+  price: parseFloat(faker.commerce.price()),
+  inStock: faker.datatype.boolean()
+}));
+console.log(makeProducts());
+    `
+  }
+];
+
+const references = [
+  { title: "JSON Standard specification", url: "https://www.json.org/json-en.html" }
+];
+---
+
+<ToolPageLayout
+  title="Mock Data Generator Online: Visually Build JSON & CSV Test Data"
+  description="Design custom schemas and generate mock data records locally. Export to JSON, CSV, YAML, SQL, and TypeScript interfaces with 100% browser privacy."
+  keywords="mock data generator, test data generator, schema builder, dummy data generator, json generator, csv data creator"
+  toolTitle="Mock Data Schema Generator"
+  toolDescription="Design database schemas visually. Customize data properties for names, prices, and locations, then export to JSON, CSV, or SQL inserts instantly."
+  faqs={faqs}
+>
+  <FakeUserGenerator client:load defaultPresetKey="products" defaultActiveTab="json" />
+
+  <div slot="seo-content" class="flex flex-col gap-12 mt-10 max-w-4xl mx-auto w-full">
+    <PrivacyBadge />
+
+    <ComparisonTable 
+      headers={headers} 
+      rows={rows} 
+      title="Common Seeding Formats" 
+      description="Compare formatting representations and target uses across available mock formats:"
+    />
+
+    <BestPractices 
+      practices={practices} 
+      title="Mock Seeding Best Practices" 
+    />
+
+    <CommonMistakes 
+      mistakes={mistakes} 
+      title="Common Data Mocking Pitfalls" 
+    />
+
+    <LanguageSupport 
+      languages={languages} 
+      title="Programmatic Mock Data Seeding" 
+    />
+
+    <OfficialReferences 
+      references={references} 
+    />
+
+    <RelatedTools />
+  </div>
+</ToolPageLayout>

@@ -1,0 +1,218 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { ClampGenerator } from '../../components/ClampGenerator';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "What is Fluid Typography?",
+    answer: "Fluid Typography is a responsive design technique where font sizes scale smoothly between a minimum and maximum value based on the viewport width, instead of jumping between fixed values at media query breakpoints."
+  },
+  {
+    question: "How do I create fluid typography in CSS?",
+    answer: "Use the CSS `clamp()` function. It takes three parameters: a minimum value, a preferred value (typically calculated using viewport units), and a maximum value. For example: `font-size: clamp(1rem, 2.5vw + 0.5rem, 3rem);`."
+  },
+  {
+    question: "What is the formula for fluid typography?",
+    answer: "The preferred value formula is: `y - x / (maxWidth - minWidth) * 100`. Add the remainder to the root size in rem to ensure readability if the user changes browser font size preferences."
+  },
+  {
+    question: "Why use clamp() instead of media queries for text?",
+    answer: "Using `clamp()` eliminates layout jumps when resizing the browser and simplifies stylesheets by replacing multiple media queries with a single line of CSS code."
+  },
+  {
+    question: "What is the difference between pixels and rems in fluid typography?",
+    answer: "Pixels (`px`) are absolute units. Rems (`rem`) are relative to the root font size. Using rems is critical for web accessibility, as it respects user-defined browser font scale adjustments."
+  },
+  {
+    question: "How does screen resolution affect fluid typography?",
+    answer: "Since fluid typography uses viewport units (like `vw`), it automatically scales according to screen width coordinates."
+  },
+  {
+    question: "Is clamp() supported by all modern browsers?",
+    answer: "Yes, CSS `clamp()` is fully supported in all modern evergreen browsers. It was finalized across major browser engines around 2020."
+  },
+  {
+    question: "What is a Modular Scale in typography?",
+    answer: "A modular scale is a sequence of font sizes that relate to one another through a fixed ratio (like the Golden Ratio 1.618 or Perfect Fourth 1.333), creating visual harmony."
+  },
+  {
+    question: "How do I calculate fluid font size using Tailwind?",
+    answer: "You can write custom classes using arbitrary brackets (e.g. `text-[clamp(1rem,2vw+0.5rem,2.5rem)]`) or register fluid font sizes as theme variables."
+  },
+  {
+    question: "Does this typography generator run locally?",
+    answer: "Yes. All computations are performed client-side in your browser, keeping your styling inputs completely private."
+  },
+  {
+    question: "How does zoom affect fluid typography?",
+    answer: "If the preferred value in `clamp()` contains a relative unit (like `rem`), browser zoom operations scale the text normally, preserving layout readability."
+  },
+  {
+    question: "What is the viewport range setting?",
+    answer: "The viewport range defines the lower viewport boundary (mobile, e.g. 320px) and upper viewport boundary (desktop, e.g. 1200px) between which font sizes scale."
+  },
+  {
+    question: "How does the rounding precision setting work?",
+    answer: "Rounding precision determines the decimal places calculated in the CSS output. Using 4 decimal places ensures accurate rendering across browser engines."
+  },
+  {
+    question: "Can I use fluid values for padding and margin?",
+    answer: "Yes, the calculated `clamp()` output works perfectly for `padding`, `margin`, and `gap` properties to build responsive spacing systems."
+  },
+  {
+    question: "Is there a performance cost to using clamp()?",
+    answer: "No, browser layout engines calculate `clamp()` rules natively, resulting in identical rendering speeds compared to media queries."
+  },
+  {
+    question: "Are fluid typography scales supported in Tailwind v4?",
+    answer: "Yes, Tailwind v4 supports arbitrary text utilities and theme properties."
+  },
+  {
+    question: "What is the relative luminance threshold?",
+    answer: "Luminance calculations evaluate screen brightness levels. Comparing text luminance against background luminance gives the contrast ratio."
+  },
+  {
+    question: "Does this page feature a contrast accessibility check?",
+    answer: "Yes. The page evaluates contrast ratios against white and black backgrounds in real-time."
+  },
+  {
+    question: "How can I extract color palettes from an image?",
+    answer: "Drag and drop any image into our sandbox to sample the dominant colors and map them to gradient stops."
+  },
+  {
+    question: "Why do colors look different in print?",
+    answer: "Screens emit RGB light, whereas print ink absorbs CMYK light. This difference in color models results in varying color ranges."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "CSS",
+    code: `
+/* Responsive Fluid H1 */
+h1 {
+  font-size: clamp(1.5rem, 4vw + 1rem, 3.5rem);
+}
+    `,
+    note: "Modern CSS declarations using standard clamp properties."
+  },
+  {
+    lang: "Tailwind CSS",
+    code: `
+<!-- Arbitrary Fluid Text Class -->
+<h1 class="text-[clamp(1.5rem,4vw+1rem,3.5rem)] font-bold">Fluid Heading</h1>
+    `,
+    note: "Tailwind arbitrary bracket utility syntax."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Using Pure Viewport Units",
+    description: "Declaring only `vw` units as the preferred value (e.g. `clamp(1rem, 5vw, 3rem)`). This prevents text from scaling when the user zooms in or out, violating accessibility standards."
+  },
+  {
+    title: "Omitting Unit Labels",
+    description: "Omitting unit markers (like `px` or `rem`) inside the mathematical calculations, which causes the browser to reject the CSS declaration."
+  },
+  {
+    title: "Wrong Min/Max Order",
+    description: "Declaring the maximum value first. The parameters must follow the strict order: `clamp(minimum, preferred, maximum)`."
+  }
+];
+
+const references = [
+  {
+    title: "MDN Web Docs: clamp() function",
+    url: "https://developer.mozilla.org/en-US/docs/Web/CSS/clamp"
+  },
+  {
+    title: "W3C CSS Values and Units Module Level 4",
+    url: "https://www.w3.org/TR/css-values-4/#funcdef-clamp"
+  }
+];
+---
+
+<ToolPageLayout
+  title="Fluid Typography Generator | Visual CSS clamp() Designer"
+  description="Generate responsive fluid typography scales visually. Configure font limits and viewport ranges, and copy clean CSS clamp code."
+  keywords="fluid typography generator, css clamp generator, font scale maker, responsive text size generator, css clamp text"
+  toolTitle="Fluid Typography Generator"
+  toolDescription="Design custom fluid typography. Configure font limits and viewport ranges, and copy clean CSS clamp code."
+  faqs={faqs}
+>
+  <ClampGenerator defaultMode="single" client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <PrivacyBadge />
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Visualizing and Styling Fluid Typography
+      </h2>
+      <p class="leading-relaxed mb-3">
+        Fluid typography scales smoothly between minimum and maximum viewport sizes, eliminating layout jumps.
+      </p>
+      <p class="leading-relaxed">
+        Our Fluid Typography Generator provides an interactive timeline to adjust viewport constraints, preview responsive scaling, and copy standard clamp CSS rules.
+      </p>
+    </div>
+
+    <ComparisonTable
+      title="Fluid Typography Syntax Comparison"
+      description="Compare responsive typography methods:"
+      headers={["Layout Strategy", "CSS Implementation Example", "Visual Transition", "Accessibility Status"]}
+      rows={[
+        { label: "Fluid Clamp", values: ["font-size: clamp(1rem, 2vw + 1rem, 2rem)", "Smooth, continuous scaling", "Excellent (respects browser zoom settings)"] },
+        { label: "Media Queries", values: ["@media (min-width: 768px) { font-size: 1.5rem; }", "Stepped, layout jumps", "Good"] }
+      ]}
+    />
+
+    <ExampleCard
+      title="Popular Typography clamp() Presets"
+      description="Frequently used design coordinates:"
+      examples={[
+        { label: "Fluid Body Text", input: "font-size: clamp(1rem, 0.5vw + 0.875rem, 1.25rem)", output: "Copied!", badge: "CSS" },
+        { label: "Fluid H1 Heading", input: "font-size: clamp(1.75rem, 3vw + 1.25rem, 3.5rem)", output: "Copied!", badge: "CSS" },
+        { label: "Fluid Subtitle", input: "font-size: clamp(1.25rem, 1vw + 1.1rem, 1.75rem)", output: "Copied!", badge: "CSS" }
+      ]}
+    />
+
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Fluid Typography Integration"
+      description="Apply these styles in your markup code:"
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Fluid Typography Pitfalls"
+    />
+
+    <BestPractices
+      title="Fluid Typography Best Practices"
+      practices={[
+        { title: "Define a Theme Property", description: "Save repeating custom font sizes as theme variables in your config to maintain stylesheet consistency." },
+        { title: "Always Include Relative Rem Coordinates", description: "Combine viewport units with rem values to ensure text scales properly when users adjust browser zoom preferences." }
+      ]}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+
+    <RelatedTools
+      currentToolUrl="/tools/fluid-typography-generator"
+      category="css"
+    />
+  </div>
+</ToolPageLayout>

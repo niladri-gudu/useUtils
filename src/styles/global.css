@@ -40,8 +40,8 @@
   --zinc-100: #27272a;
   --zinc-200: #3f3f46;
   --zinc-300: #52525b;
-  --zinc-400: #71717a;
-  --zinc-500: #a1a1aa;
+  --zinc-400: #3f3f46;
+  --zinc-500: #52525b;
   --zinc-650: #d4d4d8;
   --zinc-750: #e4e4e7;
   --zinc-800: #f4f4f5;
@@ -120,4 +120,54 @@ body {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* 
+  AdSense Layout Safety & CLS Prevention
+  Protects interactive tool panels from auto-inserted ads breaking flexbox layouts,
+  while defining standard styles for designated horizontal ad slots.
+*/
+.tool-workspace-container > ins.adsbygoogle,
+.tool-workspace-container > iframe {
+  display: none !important;
+}
+
+.ad-zone-horizontal {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 90px;
+  margin: 20px 0;
+  background-color: rgba(0, 0, 0, 0.08);
+  border: 1px dashed var(--color-border-hairline);
+  border-radius: 8px;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-zinc-500);
+  user-select: none;
+  pointer-events: none;
+}
+
+.ad-zone-horizontal::after {
+  content: "sponsored ad link";
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 9px;
+  color: var(--color-zinc-500);
+  opacity: 0.7;
+}
+
+/* Site-wide keyboard accessibility focus styles */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent-emerald) !important;
+  outline-offset: 2px !important;
 }

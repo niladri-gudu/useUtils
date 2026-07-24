@@ -1,0 +1,195 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { FakeUserGenerator } from '../../components/FakeUserGenerator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "What is a schema data generator?",
+    answer: "A schema data generator is a development tool that compiles mock values while strictly adhering to structural models or database constraints. It helps developers test database schemas, verify API models, and produce type-safe interfaces."
+  },
+  {
+    question: "How does the TypeScript export work?",
+    answer: "Our visual designer maps data columns (like integers, text strings, and coordinates) into valid TypeScript types (<code>number</code>, <code>string</code>, <code>boolean</code>) and exports a copyable, type-safe interface declaration instantly."
+  },
+  {
+    question: "Why is type safety important in mock data?",
+    answer: "Type safety prevents runtime syntax issues. Matching your mock data fields to your typescript interface declarations ensures that frontend templates read data correctly without compiler warnings."
+  },
+  {
+    question: "Can I generate database schema inserts?",
+    answer: "Yes, you can generate raw SQL inserts. Selecting the SQL tab compiles each record into an <code>INSERT INTO `table`</code> statement conforming to your visual column names."
+  },
+  {
+    question: "Are there pre-configured schema presets available?",
+    answer: "Yes. The builder features four common schema presets: Users, Products, Telemetry, and Blog posts. You can select one from the presets dropdown to load it immediately."
+  },
+  {
+    question: "Does the generator support relational fields (like foreign keys)?",
+    answer: "You can specify UUID columns or custom lists to model foreign key indices, enabling structural joins in relational systems."
+  },
+  {
+    question: "Can I define custom text patterns?",
+    answer: "Yes. You can select standard text categories (Names, Emails, Usernames) or select sentence structures to generate mock descriptive text."
+  },
+  {
+    question: "What is the maximum quantity of generated records?",
+    answer: "The quantities slider supports generating up to 200 records in a single batch, maintaining performance in browser environments."
+  },
+  {
+    question: "Is my schema data secure on this site?",
+    answer: "Yes. The builder operates entirely client-side using JavaScript. No database structures, schemas, or field names are ever uploaded to a backend."
+  },
+  {
+    question: "What is the difference between SQL insert generation and JSON generation?",
+    answer: "JSON formats data as JavaScript objects, which is standard for REST API payloads. SQL formats data as queries, which is standard for database updates."
+  },
+  {
+    question: "How do I format generated coordinates?",
+    answer: "Selecting geographic columns yields numeric latitude and longitude values matching global GPS coordinate formats."
+  },
+  {
+    question: "Can I model Boolean flags?",
+    answer: "Yes, the Boolean data type randomly outputs <code>true</code> or <code>false</code> flags, which is excellent for active status checks."
+  },
+  {
+    question: "How do I download the schema data?",
+    answer: "Click the Download button at the top of the output panel. The browser compiles the active format into a local file and saves it."
+  },
+  {
+    question: "Can I run this tool offline?",
+    answer: "Yes. All scripts run in your local browser sandbox, requiring no internet connectivity once the page is open."
+  },
+  {
+    question: "What are some use cases for telemetry schemas?",
+    answer: "Telemetry schemas let you simulate IoT device streams (like sensor IDs, temperature readouts, and status) to test analytics systems."
+  },
+  {
+    question: "How are custom lists handled?",
+    answer: "The custom list picker accepts comma-separated options and randomly selects one value for each row in the dataset."
+  },
+  {
+    question: "Why should I use standard types for emails and phones?",
+    answer: "Using standard mock formatting filters ensures your data parses correctly in email validation scripts and regex matching expressions."
+  },
+  {
+    question: "What is a database seed script?",
+    answer: "A database seed script is a program or SQL file that populates a database with default rows, enabling immediate development testing."
+  },
+  {
+    question: "Does this generator support YAML configurations?",
+    answer: "Yes, you can toggle the YAML tab to copy structured key-value configurations for deployments and system parameters."
+  },
+  {
+    question: "Is this utility free to use?",
+    answer: "Yes, useUtils provides all developer utilities completely free, without ad banners, paywalls, or account login gates."
+  },
+  {
+    question: "How do I add new columns to the schema?",
+    answer: "Click the '+ Add Field' button in the builder, choose a data type from the dropdown, and specify your custom key name."
+  }
+];
+
+const headers = ["Data Type", "TS Representation", "SQL Column Mapping", "Mock Value Example"];
+const rows = [
+  {
+    label: "UUID",
+    values: ["<code>string</code>", "<code>VARCHAR(36)</code> / <code>UUID</code>", "<code>'f47ac10b-58cc-4372-a567-0e02b2c3d479'</code>"]
+  },
+  {
+    label: "Random Integer",
+    values: ["<code>number</code>", "<code>INTEGER</code> / <code>BIGINT</code>", "<code>42</code>"]
+  },
+  {
+    label: "Boolean",
+    values: ["<code>boolean</code>", "<code>BOOLEAN</code> / <code>TINYINT(1)</code>", "<code>true</code>"]
+  }
+];
+
+const practices = [
+  {
+    title: "Enforce Strict Types in Schemas",
+    description: "Export TS interfaces from your schemas to maintain strong type compliance between APIs and databases."
+  },
+  {
+    title: "Keep Database Seeds Lightweight",
+    description: "Seed staging databases with lightweight mock datasets (10-100 rows) to keep migration execution fast."
+  }
+];
+
+const mistakes = [
+  {
+    title: "Mismatched Key Names",
+    description: "Mismatching mock keys with production columns (e.g. <code>userId</code> vs <code>user_id</code>) breaks database migrations.",
+    fix: "Ensure visual schema field keys match your target schema names."
+  }
+];
+
+const languages = [
+  {
+    lang: "TypeScript",
+    code: `
+export interface MockUser {
+  id: string;
+  name: string;
+  email: string;
+  isActive: boolean;
+  score: number;
+}
+    `
+  }
+];
+
+const references = [
+  { title: "TypeScript Official Docs on Interface Models", url: "https://www.typescriptlang.org/" }
+];
+---
+
+<ToolPageLayout
+  title="Schema Data Generator Online: Visual DB & TS Mock Builder"
+  description="Generate mock data records matching TypeScript interfaces, SQL schemas, or JSON structures. Custom visual schema builder with zero server logging."
+  keywords="schema data generator, ts interface generator, sql table seeder, database dummy data, visual schema builder"
+  toolTitle="Schema Mock Data Builder"
+  toolDescription="Design structured column tables and export values directly into type-safe TypeScript models, YAML nodes, or SQL inserts locally."
+  faqs={faqs}
+>
+  <FakeUserGenerator client:load defaultPresetKey="users" defaultActiveTab="ts" />
+
+  <div slot="seo-content" class="flex flex-col gap-12 mt-10 max-w-4xl mx-auto w-full">
+    <PrivacyBadge />
+
+    <ComparisonTable 
+      headers={headers} 
+      rows={rows} 
+      title="Schema Field Configurations" 
+      description="Compare database and application type structures across common columns:"
+    />
+
+    <BestPractices 
+      practices={practices} 
+      title="Schema Design Best Practices" 
+    />
+
+    <CommonMistakes 
+      mistakes={mistakes} 
+      title="Common Schema Mapping Pitfalls" 
+    />
+
+    <LanguageSupport 
+      languages={languages} 
+      title="TypeScript Interface Representation" 
+    />
+
+    <OfficialReferences 
+      references={references} 
+    />
+
+    <RelatedTools />
+  </div>
+</ToolPageLayout>

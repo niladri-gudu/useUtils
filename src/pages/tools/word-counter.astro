@@ -1,6 +1,12 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
-import { WordCounter } from '../../components/WordCounter';
+import { WordCounter as WordCounterComponent } from '../../components/WordCounter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
 
 const faqs = [
   {
@@ -46,6 +52,106 @@ const faqs = [
   {
     question: "What are the quick text cleaners and how do they work?",
     answer: "Below the text input pane, the tool provides one-click clean utilities: <b>Trim Lines</b> removes leading/trailing spaces; <b>Flat Spaces</b> collapses multiple spaces/tabs; <b>Strip Empty Rows</b> deletes empty lines; <b>Deduplicate Lines</b> retains only unique lines; <b>Strip HTML Tags</b> removes HTML elements; and <b>Strip Special Chars</b> filters symbols while keeping letters, numbers, and spaces."
+  },
+  {
+    question: "How do word count rules differ on platforms like Twitter, SMS, or Google Search?",
+    answer: "Twitter enforces a 280-character limit, SMS has a 160-character boundary, and Google Search title tags are restricted to approx. 60 characters (600px). Our tool displays character metrics in real-time to prevent text truncation on these platforms."
+  },
+  {
+    question: "Why is keyword density important in SEO copywriting?",
+    answer: "Keyword density represents the percentage of times a keyword appears compared to the total words. Maintaining a healthy density (typically 1-2%) prevents keyword stuffing penalties from search engine algorithms while ensuring topical relevance."
+  },
+  {
+    question: "What are 'stop words' in natural language processing (NLP)?",
+    answer: "Stop words are common grammatical words (e.g. <code>the, is, at, which, on</code>) that carry little lexical meaning. Filtering them out from frequency dictionaries reveals the core terms and topics inside a document."
+  },
+  {
+    question: "How does the Flesch Reading Ease score map to school grade levels?",
+    answer: "A Flesch Ease score of 90-100 matches 5th-grade level, 60-70 is standard 8th to 9th grade, and 0-30 represents academic journals or college graduate level. Aim for 60-70 for general consumer articles."
+  },
+  {
+    question: "How is speaking time calculated for speech writing?",
+    answer: "Speaking rates average 130 to 150 words per minute (WPM). The speaking time estimator divides total words by WPM to help you plan scripts for videos, presentations, or podcasts."
+  },
+  {
+    question: "What is the difference between character count with spaces and character count without spaces?",
+    answer: "Character count with spaces includes spaces, tabs, and paragraph returns. Character count without spaces measures only visible alphabetical, numeric, and symbolic characters, which is required by some academic publishers."
+  },
+  {
+    question: "Can I use this word counter in offline mode?",
+    answer: "Yes. Since the page compiles statically and the word count engine runs entirely inside browser memory via client-side JavaScript, the tool functions perfectly without internet access."
+  },
+  {
+    question: "How to count words programmatically in JavaScript?",
+    answer: "Use regex: <code>const count = str => str.trim().split(/\\s+/).filter(Boolean).length;</code>. This splits on whitespace segments while ignoring empty spaces."
+  },
+  {
+    question: "How do you count words in Python?",
+    answer: "In Python, use <code>len(text.split())</code>. For advanced parsing containing punctuation, use standard library regex matches."
+  },
+  {
+    question: "Does the counter support non-English character sets (Unicode)?",
+    answer: "Yes, the tool is Unicode-compliant and parses accents, non-Latin scripts (Cyrillic, Arabic, Hebrew, CJK), and symbols properly."
+  },
+  {
+    question: "How does paragraph counting identify segments?",
+    answer: "Paragraphs are identified by scanning for double carriage returns (<code>\\n\\n</code>), which signifies editorial breaks in plain text documents."
+  }
+];
+
+const references = [
+  { title: "The Flesch Reading Ease Formula - Wikipedia", url: "https://en.wikipedia.org/wiki/Flesch%E2%80%93Kincaid_readability_tests#Flesch_reading_ease", source: "Online Encyclopedia" },
+  { title: "Automated Readability Index (ARI) - Detailed Math", url: "https://en.wikipedia.org/wiki/Automated_readability_index", source: "Linguistics Research" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `const countWords = text => {
+  const clean = text.trim();
+  if (!clean) return 0;
+  return clean.split(/\\s+/).filter(Boolean).length;
+};
+
+const countChars = (text, keepSpaces = true) => {
+  if (keepSpaces) return text.length;
+  return text.replace(/\\s/g, '').length;
+};
+
+console.log(countWords("Hello world from useUtils")); // 4
+console.log(countChars("Hello world", false)); // 10`,
+    note: "Safe regex splits, handles multiple consecutive spaces correctly."
+  },
+  {
+    lang: "Python",
+    code: `def analyze_text(text):
+    words = text.split()
+    word_count = len(words)
+    char_count_with_spaces = len(text)
+    char_count_no_spaces = len(text.replace(" ", "").replace("\\n", ""))
+    
+    return {
+        "words": word_count,
+        "chars_with_spaces": char_count_with_spaces,
+        "chars_no_spaces": char_count_no_spaces
+    }
+
+print(analyze_text("Hello world")) 
+# {'words': 2, 'chars_with_spaces': 11, 'chars_no_spaces': 10}`,
+    note: "Python split() natively collapses consecutive spaces."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Counting Punctuation as Words",
+    description: "Naive splitting algorithms split on spaces, counting stand-alone characters like '-' or '...' as full words.",
+    fix: "Use word boundary check regex sequences (e.g. <code>\\b</code>) to ignore symbolic strings from word aggregates."
+  },
+  {
+    title: "Ignoring Unicode Segment Boundaries",
+    description: "Standard string length indexes counts emoji icons (e.g. 🚀) as 2 characters due to UTF-16 surrogate pairs.",
+    fix: "Utilize array parsing methods like <code>[...str].length</code> or <code>Intl.Segmenter</code> to count unicode characters accurately."
   }
 ];
 ---
@@ -58,7 +164,7 @@ const faqs = [
   toolDescription="Analyze your content, articles, or logs in real-time. Calculate precise counts, readability indices, character metrics, reading rates, word density frequencies with stop-word filters, and extract patterns locally."
   faqs={faqs}
 >
-  <WordCounter client:load />
+  <WordCounterComponent client:load />
 
   <!-- SEO Content Slot -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
@@ -77,100 +183,70 @@ const faqs = [
       </p>
     </div>
 
-    <!-- Section: Comparison of Readability Indexes -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+    <!-- Sibling Cross Links -->
+    <div class="flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight flex items-center gap-2">
         <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Understanding Readability Formula Scales
+        Other Text Analyzers
       </h2>
-      <p class="leading-relaxed mb-4">
-        Readability scores evaluate text complexity using linguistic variables like sentence length (ratio of words to sentences) and word difficulty (syllables per word). Below is a comparison table of standard scores and their corresponding target audiences:
-      </p>
-      
-      <div class="overflow-x-auto border border-border-hairline rounded-lg bg-zinc-900/40 mb-6">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="border-b border-[#2c2c2e] bg-zinc-950 font-mono text-zinc-300">
-              <th class="p-3">Flesch Ease Score</th>
-              <th class="p-3">ARI Score</th>
-              <th class="p-3">Grade Level Equivalent</th>
-              <th class="p-3">Audience Readability Description</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-[#2c2c2e]/60 text-zinc-400 font-mono">
-            <tr>
-              <td class="p-3 text-[#34d399] font-bold">90 – 100</td>
-              <td class="p-3">1 – 4</td>
-              <td class="p-3">5th to 6th Grade</td>
-              <td class="p-3 text-zinc-350">Very easy to read. Conversational language suitable for 11-year-olds.</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-[#34d399]/85 font-bold">80 – 89</td>
-              <td class="p-3">5 – 6</td>
-              <td class="p-3">6th to 7th Grade</td>
-              <td class="p-3 text-zinc-350">Easy to read. Standard conversational copy.</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-zinc-200">60 – 69</td>
-              <td class="p-3">8 – 9</td>
-              <td class="p-3">8th to 9th Grade</td>
-              <td class="p-3 text-zinc-350">Standard readability level. Easily understood by the general public.</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-amber-400/80 font-bold">50 – 59</td>
-              <td class="p-3">10 – 12</td>
-              <td class="p-3">10th to 12th Grade</td>
-              <td class="p-3 text-zinc-350">Fairly difficult. Appropriate for high school level readers.</td>
-            </tr>
-            <tr>
-              <td class="p-3 text-rose-500 font-bold">0 – 29</td>
-              <td class="p-3">&gt;14</td>
-              <td class="p-3">College Graduate</td>
-              <td class="p-3 text-zinc-350">Very difficult to read. Targeted at academic, scientific, or legal professionals.</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <a href="/tools/character-counter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Character Counter</a>
+        <a href="/tools/text-inspector" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Text Inspector</a>
+        <a href="/tools/list-utilities" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">List Utilities</a>
       </div>
     </div>
+
+    <!-- Section: Comparison of Readability Indexes -->
+    <ComparisonTable
+      title="Understanding Readability Formula Scales"
+      description="Readability scores evaluate text complexity using linguistic variables like sentence length (ratio of words to sentences) and word difficulty (syllables per word):"
+      headers={["Flesch Ease Score", "ARI Score", "Grade Level Equivalent", "Audience Readability Description"]}
+      rows={[
+        { label: "90 – 100", values: ["1 – 4", "5th to 6th Grade", "Very easy to read. Conversational language suitable for 11-year-olds."] },
+        { label: "80 – 89", values: ["5 – 6", "6th to 7th Grade", "Easy to read. Standard conversational copy."] },
+        { label: "60 – 69", values: ["8 – 9", "8th to 9th Grade", "Standard readability level. Easily understood by the general public."] },
+        { label: "50 – 59", values: ["10 – 12", "10th to 12th Grade", "Fairly difficult. Appropriate for high school level readers."] },
+        { label: "0 – 29", values: [">14", "College Graduate", "Very difficult to read. Targeted at academic, scientific, or legal professionals."] }
+      ]}
+    />
+
+    <!-- Section: Examples -->
+    <ExampleCard
+      title="Readability & Frequency Analysis Examples"
+      description="Analyze structural differences in typical writing styles:"
+      examples={[
+        { label: "Conversational Marketing Copy", input: "We build tools that run locally. They are fast and secure.", output: "Words: 11, Readability: Easy (Grade 5), Avg Sentence: 5.5 words", badge: "High Readability" },
+        { label: "Academic / Technical Abstract", input: "The decentralized peer-to-peer data channels implement WebRTC protocols mandating DTLS cryptographic handshakes.", output: "Words: 12, Readability: Difficult (College Graduate), Avg Sentence: 12 words", badge: "Low Readability" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Text Analysis Snippets"
+      description="Count words and characters programmatically in your applications:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Text Analysis Pitfalls"
+      description="Avoid these common errors when processing document boundaries and indices:"
+    />
 
     <!-- Section: Core Advantages -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Advanced Text Analyzer Key Features
-      </h2>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Interactive WPM Time Sliders</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            Customize estimated reading and speaking speeds in WPM to tailor time durations for speeches, YouTube scripts, or audio narrations.
-          </p>
-        </div>
+    <BestPractices
+      title="Word Count & Writing Best Practices"
+      practices={[
+        { title: "Optimize Sentence Length", description: "Keep sentences around 15 to 20 words on average to maximize general readability indexes." },
+        { title: "Filter Stop Words for SEO", description: "Ignore common grammatical conjunctions to isolate core keyword density indexes for Google indexing." },
+        { title: "Custom WPM Sliders", description: "Adjust speaking rates to match standard narration rates (130 WPM) when scriptwriting for video." }
+      ]}
+    />
 
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Stop Word Density Filtering</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            Exclude common English particles with one click. Filter out words like 'the', 'a', 'and' to analyze structural content keywords, optimizing pages for organic SEO targets.
-          </p>
-        </div>
-
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Quick Clean utilities</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            Format inputs instantly. Strip HTML markup, remove duplicate rows, flatten excessive whitespace, and filter out symbols without leaving the sandbox interface.
-          </p>
-        </div>
-
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">Real-Time Regex Extractor</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            Isolate technical tokens from logs. Identify and pull all email addresses, URLs, IP addresses, or number streams directly into a clean copying tray.
-          </p>
-        </div>
-
-      </div>
-    </div>
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
   </div>
 </ToolPageLayout>

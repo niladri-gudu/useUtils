@@ -1,0 +1,220 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { HashGenerator } from '../../components/HashGenerator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'Hash Generator', href: '/tools/hash-generator' },
+  { label: 'MD5 Hash', href: '/tools/md5-generator', active: true },
+  { label: 'SHA256 Hash', href: '/tools/sha256-generator' },
+  { label: 'SHA512 Hash', href: '/tools/sha512-generator' }
+];
+
+const faqs = [
+  {
+    question: "What is an MD5 Hash?",
+    answer: "MD5 (Message Digest 5) is a widely-used cryptographic hash function that produces a 128-bit (16-byte) hash value, typically represented as a 32-character hexadecimal string."
+  },
+  {
+    question: "Is MD5 secure for password hashing?",
+    answer: "No. MD5 is cryptographically broken and vulnerable to collision attacks (where two different inputs produce the same hash). Do not use MD5 to hash passwords. Use modern algorithms like bcrypt, Argon2, or PBKDF2."
+  },
+  {
+    question: "What is MD5 used for today?",
+    answer: "MD5 is primarily used for quick integrity checks (verifying that a file has not been corrupted during download or transfer) and creating unique database lookups."
+  },
+  {
+    question: "How do I calculate an MD5 hash online?",
+    answer: "Paste your text or upload a file into the generator above. The tool will calculate the 128-bit MD5 signature instantly in your browser."
+  },
+  {
+    question: "Is this MD5 generator safe to use?",
+    answer: "Yes. All computations are performed client-side using JavaScript. None of your input strings, credentials, or file bytes are ever uploaded to a server."
+  },
+  {
+    question: "Can an MD5 hash be decrypted?",
+    answer: "No. MD5 is a one-way hash function, meaning it is mathematically impossible to reconstruct the original input directly from the hash. However, hackers use lookup tables (rainbow tables) to reverse hashes of common words."
+  },
+  {
+    question: "What is an MD5 collision?",
+    answer: "An MD5 collision occurs when two distinct input values generate the exact same MD5 digest output. This allows attackers to forge files or signatures."
+  },
+  {
+    question: "How to generate an MD5 hash in Node.js?",
+    answer: "Use the built-in <code>crypto</code> module: <br/><code>crypto.createHash('md5').update(text).digest('hex')</code>."
+  },
+  {
+    question: "How to generate an MD5 hash in Python?",
+    answer: "Use Python's built-in <code>hashlib</code> library: <br/><code>hashlib.md5(text.encode('utf-8')).hexdigest()</code>."
+  },
+  {
+    question: "How long is an MD5 hash?",
+    answer: "An MD5 hash is always 128 bits in size, which translates to a 32-character hexadecimal string (using characters 0-9 and a-f)."
+  },
+  {
+    question: "Does MD5 support file hashing?",
+    answer: "Yes. Toggle the File Checksum tab above, drop your file, and compute its MD5 checksum value to verify download integrity."
+  },
+  {
+    question: "What is MD5 HMAC?",
+    answer: "HMAC-MD5 uses the MD5 algorithm combined with a secret cryptographic key to verify both data integrity and authenticity of messages."
+  },
+  {
+    question: "Does capitalization matter in MD5 hashes?",
+    answer: "No, hex digests are case-insensitive. <code>d41d8cd98f00b204e9800998ecf8427e</code> is identical to <code>D41D8CD98F00B204E9800998ECF8427E</code>."
+  },
+  {
+    question: "What is the MD5 hash of an empty string?",
+    answer: "The MD5 of an empty string is always: <code>d41d8cd98f00b204e9800998ecf8427e</code>."
+  },
+  {
+    question: "Can MD5 be used for digital signatures?",
+    answer: "No. Due to collision weaknesses, using MD5 for digital signatures is deprecated. Standard protocols now mandate SHA-256 or SHA-512."
+  },
+  {
+    question: "How do I check if my download matches an MD5 checksum?",
+    answer: "Calculate the MD5 hash of your downloaded file using the file tab above, then paste the publisher's MD5 checksum into the Validator box to see if they match."
+  },
+  {
+    question: "Does file name affect the MD5 hash?",
+    answer: "No. Only the binary file contents determine the hash value. Renaming a file does not change its MD5 digest."
+  },
+  {
+    question: "What is the difference between MD5 and SHA-256?",
+    answer: "MD5 produces a 128-bit digest and is faster but insecure. SHA-256 produces a 256-bit digest, is secure, and is standard for cryptographic operations."
+  },
+  {
+    question: "Is there an MD5 command in Windows Terminal?",
+    answer: "Yes, you can run: <br/><code>certutil -hashfile filename MD5</code>."
+  },
+  {
+    question: "Can I generate bulk MD5 hashes?",
+    answer: "Yes. Choose the 'Bulk lines' tab in our generator, enter your strings line-by-line, and download all generated MD5 hashes in CSV or JSON formats."
+  }
+];
+
+const references = [
+  { title: "RFC 1321 - The MD5 Message-Digest Algorithm", url: "https://datatracker.ietf.org/doc/html/rfc1321", source: "IETF Standards" },
+  { title: "NIST Security Policy on Cryptographic Hash Functions", url: "https://csrc.nist.gov/projects/hash-functions", source: "NIST Standards" }
+];
+
+const languageCodes = [
+  {
+    lang: "Node.js",
+    code: `const crypto = require('crypto');
+
+const text = "hello world";
+const hash = crypto.createHash('md5').update(text).digest('hex');
+
+console.log(hash); // Output: 5eb63bbbe01eeed093cb22bb8f5acdc3`,
+    note: "Uses built-in crypto module, no npm dependencies."
+  },
+  {
+    lang: "Python",
+    code: `import hashlib
+
+text = "hello world"
+hash_object = hashlib.md5(text.encode('utf-8'))
+hex_dig = hash_object.hexdigest()
+
+print(hex_dig) # Output: 5eb63bbbe01eeed093cb22bb8f5acdc3`,
+    note: "Encodes the text to UTF-8 before updating the hashlib digest."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Using MD5 for Secure Password Storage",
+    description: "Because MD5 can be processed at billions of hashes per second, passwords hashed with raw MD5 can be cracked via brute-force in seconds.",
+    fix: "Always use key-stretching functions like bcrypt, Argon2, or PBKDF2 for password security."
+  },
+  {
+    title: "Assuming Identical Hashes Mean Unmodified Files in High-Security Settings",
+    description: "An attacker can manipulate code files to generate matching MD5 digests via collision techniques.",
+    fix: "Double check critical software packages using SHA-256 or SHA-512 digests instead."
+  }
+];
+---
+
+<ToolPageLayout
+  title="MD5 Generator Online: Calculate MD5 checksums locally"
+  description="Generate MD5 hashes and HMAC signatures from strings or files. Free, secure, client-side execution. Verify download checksums instantly."
+  keywords="md5 generator, md5 hash online, calculate md5 checksum, md5 builder, hash text to md5, md5 encrypter"
+  toolTitle="MD5 Hash Generator"
+  toolDescription="Calculate standard 128-bit MD5 hashes locally. Input text strings, batch lines, or drag-and-drop file objects to compute checksums instantly without server uploads."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <HashGenerator client:load defaultAlgorithm="MD5" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        MD5 Message Digest Specification
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Originally designed by Ronald Rivest in 1991 to replace MD4, the **MD5 algorithm** maps arbitrary-length inputs into a fixed 128-bit signature. The hashing process divides the source string into blocks of 512 bits, applying bitwise logic operations across 64 structural rounds.
+      </p>
+      <p class="leading-relaxed">
+        While MD5 is no longer considered secure against active cryptographic manipulation or forge operations, it remains a fast, effective tool for **checksum verification** and non-security database key indexing.
+      </p>
+    </div>
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="MD5 vs Modern Hash Functions"
+      headers={["Algorithm", "Output Size", "Collision Vulnerability", "Speed Rank", "Primary Use Case"]}
+      rows={[
+        { label: "MD5", values: ["128 bits", "High (Broken)", "Fastest", "Non-cryptographic checksums, legacy systems"] },
+        { label: "SHA-1", values: ["160 bits", "High (Weak)", "Fast", "Legacy git indexes, older server Handshakes"] },
+        { label: "SHA-256", values: ["256 bits", "None (Secure)", "Medium", "SSL certificates, blockchain, secure downloads"] },
+        { label: "SHA-512", values: ["512 bits", "None (Secure)", "Medium-Fast (on 64-bit)", "Security credentials, massive database keys"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="MD5 Hash Demonstrations"
+      description="Inspect how MD5 digests change based on inputs:"
+      examples={[
+        { label: "MD5 of 'hello'", input: "hello", output: "5d41402abc4b2a76b9719d911017c592", badge: "32 chars" },
+        { label: "MD5 of 'Hello' (Case Change)", input: "Hello", output: "8b1a9953c4611296a827abf8c47804d7", badge: "Avalanche Effect" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic MD5 Hashing Snippets"
+      description="Calculate MD5 strings in your code using these native blocks:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="MD5 Implementation Mistakes"
+      description="Ensure your security pipeline avoids these vulnerabilities:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="MD5 Best Practices"
+      practices={[
+        { title: "Salt MD5 Legacy Hashes", description: "If you must use MD5 in older database tables, combine inputs with a long unique salt key to slow dictionary matching." },
+        { title: "Migrate to SHA-256", description: "Proactively update your applications to utilize SHA-256 for all active cryptographic signatures." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

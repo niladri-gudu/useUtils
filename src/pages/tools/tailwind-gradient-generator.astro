@@ -1,0 +1,220 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { GradientGenerator as GradientGeneratorComponent } from '../../components/GradientGenerator';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "What is a Tailwind Gradient Generator?",
+    answer: "A Tailwind Gradient Generator is a visual utility designed to configure multi-stop linear or radial gradients and output them as standard Tailwind CSS class utility configurations."
+  },
+  {
+    question: "How do I create a gradient in Tailwind CSS v3?",
+    answer: "Use utility classes to declare the direction and color stops, such as: `bg-gradient-to-r from-emerald-400 via-teal-500 to-blue-500`."
+  },
+  {
+    question: "How do I create a gradient in Tailwind CSS v4?",
+    answer: "Tailwind v4 retains standard gradient utility classes while extending support for custom themes inside the `@theme` directive, letting you define custom gradient variables easily."
+  },
+  {
+    question: "How do I use custom angles for gradients in Tailwind?",
+    answer: "Use Tailwind's arbitrary value syntax by placing the CSS declaration inside square brackets: `bg-[linear-gradient(135deg,#10b981_0%,#3b82f6_100%)]`. Make sure to replace any spaces with underscores (`_`)."
+  },
+  {
+    question: "How do I handle opacity on Tailwind gradient stops?",
+    answer: "You can apply opacity modifiers directly to the color utility classes in Tailwind (e.g. `from-emerald-400/50` to set a 50% opacity level on the starting color)."
+  },
+  {
+    question: "Can I use radial or conic gradients in Tailwind?",
+    answer: "Standard Tailwind utility classes do not support radial or conic directions. You must write them using arbitrary values, such as: `bg-[radial-gradient(circle_at_center,#10b981,#3b82f6)]`."
+  },
+  {
+    question: "Does Tailwind CSS support text gradients?",
+    answer: "Yes. Combine three classes: `bg-gradient-to-r`, `bg-clip-text`, and `text-transparent` to apply a gradient fill to text elements."
+  },
+  {
+    question: "How do you define custom gradients in the Tailwind Config file?",
+    answer: "Extend the background image properties in your config: `theme: { extend: { backgroundImage: { 'brand-grad': 'linear-gradient(135deg, #10b981, #3b82f6)' } } }`."
+  },
+  {
+    question: "Why do I need to replace space characters with underscores inside arbitrary brackets?",
+    answer: "Tailwind's class scanner parses classes by splitting strings on whitespace. Replacing spaces with underscores ensures the arbitrary bracket arguments remain grouped as a single class."
+  },
+  {
+    question: "Does this gradient generator run offline?",
+    answer: "Yes, all processing is performed client-side in your browser, keeping your design details secure."
+  },
+  {
+    question: "How does screen resolution affect Tailwind gradients?",
+    answer: "Gradients are rendered as vector graphics by the browser, meaning they scale smoothly to any screen resolution without quality loss."
+  },
+  {
+    question: "How do I use multi-stop gradients in Tailwind?",
+    answer: "You can combine standard utility classes (e.g. `from-emerald-400 via-teal-500 to-blue-500`) or define custom stops inside arbitrary brackets."
+  },
+  {
+    question: "Are custom gradients supported in Tailwind v4?",
+    answer: "Yes, Tailwind v4 fully supports arbitrary color variables and theme properties."
+  },
+  {
+    question: "What is the Tailwind class for repeating gradients?",
+    answer: "Tailwind does not have a default class for repeating gradients. You can apply them using arbitrary syntax: `bg-[repeating-linear-gradient(...)]`."
+  },
+  {
+    question: "Is there a performance difference between standard utilities and arbitrary classes?",
+    answer: "No, both compiled outputs generate standard CSS rules on the page, resulting in identical rendering speeds."
+  },
+  {
+    question: "Can I animate gradients using Tailwind?",
+    answer: "Yes, you can animate a gradient's position or background size using utility classes like `transition-all` combined with custom hover or state triggers."
+  },
+  {
+    question: "What is the relative luminance threshold?",
+    answer: "Luminance calculations evaluate screen brightness levels. Comparing text luminance against background luminance gives the contrast ratio."
+  },
+  {
+    question: "Does this page feature a contrast accessibility check?",
+    answer: "Yes. The page evaluates contrast ratios against white and black backgrounds in real-time."
+  },
+  {
+    question: "How can I extract color palettes from an image?",
+    answer: "Drag and drop any image into our sandbox to sample the dominant colors and map them to gradient stops."
+  },
+  {
+    question: "Why do colors look different in print?",
+    answer: "Screens emit RGB light, whereas print ink absorbs CMYK light. This difference in color models results in varying color ranges."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "HTML & Tailwind v3",
+    code: `
+<!-- Standard Multi-Stop Gradient -->
+<div class="bg-gradient-to-r from-emerald-400 via-teal-500 to-blue-500 h-32 w-full rounded-xl"></div>
+
+<!-- Arbitrary Custom Angle Gradient -->
+<div class="bg-[linear-gradient(135deg,#10b981_0%,#3b82f6_100%)] h-32 w-full rounded-xl"></div>
+    `,
+    note: "Modern CSS declarations using standard gradient functions."
+  },
+  {
+    lang: "Tailwind v4 Config",
+    code: `
+@theme {
+  --background-image-brand-grad: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+}
+    `,
+    note: "CSS theme variable configuration format."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Leaving Spaces in Arbitrary Values",
+    description: "Using standard spaces inside square brackets (e.g. `bg-[linear-gradient(135deg, #10b981 0%)]`). Use underscores instead of spaces: `bg-[linear-gradient(135deg,#10b981_0%)]`."
+  },
+  {
+    title: "Combining Conflicting Classes",
+    description: "Declaring conflicting direction keywords (like combining `bg-gradient-to-r` with arbitrary CSS directions), which breaks color interpolation."
+  },
+  {
+    title: "Missing Hover State Prefixes",
+    description: "Forgetting to apply hover prefixes to all gradient steps (e.g. only setting `hover:from-blue-500` without matching `hover:to` properties)."
+  }
+];
+
+const references = [
+  {
+    title: "Tailwind CSS v4 Documentation",
+    url: "https://tailwindcss.com/"
+  },
+  {
+    title: "Tailwind Arbitrary Styles Guide",
+    url: "https://tailwindcss.com/docs/adding-custom-styles#using-arbitrary-values"
+  }
+];
+---
+
+<ToolPageLayout
+  title="Tailwind Gradient Generator | Visual Utility Designer"
+  description="Generate custom Tailwind CSS gradient classes visually. Design multi-stop linear and radial gradients and copy clean, responsive class utilities."
+  keywords="tailwind gradient generator, tailwind css gradients, arbitrary value gradient, gradient class generator, custom angle gradient tailwind"
+  toolTitle="Tailwind Gradient Generator"
+  toolDescription="Design multi-stop linear or radial gradients. Extract dominant color scales from photos and copy Tailwind utility classes instantly."
+  faqs={faqs}
+>
+  <GradientGeneratorComponent defaultType="linear" defaultActiveCodeTab="tailwind" client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <PrivacyBadge />
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Styling Gradients with Tailwind CSS
+      </h2>
+      <p class="leading-relaxed mb-3">
+        Tailwind CSS provides built-in utilities for simple gradients. However, when you need custom angles, more than three stops, or radial/conic configurations, standard utility classes fall short.
+      </p>
+      <p class="leading-relaxed">
+        Our Tailwind Gradient Generator provides an interactive timeline to adjust color coordinates, customize transparency levels, and copy responsive class utilities.
+      </p>
+    </div>
+
+    <ComparisonTable
+      title="Tailwind Gradient Syntax Comparison"
+      description="Compare standard utilities and arbitrary layouts:"
+      headers={["Style Category", "Tailwind Class Example", "Compiled CSS Output", "Flexibility"]}
+      rows={[
+        { label: "Standard Utility", values: ["bg-gradient-to-r from-emerald-400 to-blue-500", "linear-gradient(to right, ...)", "Medium (limited to preset directions)"] },
+        { label: "Arbitrary Class", values: ["bg-[linear-gradient(135deg,#10b981_0%,#3b82f6_100%)]", "linear-gradient(135deg, ...)", "High (supports custom angles and stops)"] }
+      ]}
+    />
+
+    <ExampleCard
+      title="Popular Tailwind Gradient Combinations"
+      description="Frequently used design coordinates:"
+      examples={[
+        { label: "Emerald Glow (Brand)", input: "bg-gradient-to-r from-emerald-400 to-blue-500", output: "Copied!", badge: "Tailwind" },
+        { label: "Ocean Sky", input: "bg-[linear-gradient(135deg,#0ea5e9_0%,#2563eb_100%)]", output: "Copied!", badge: "Arbitrary" },
+        { label: "Radial Ambient", input: "bg-[radial-gradient(circle_at_center,#10b981,#3b82f6)]", output: "Copied!", badge: "Arbitrary" }
+      ]}
+    />
+
+    <LanguageSupport
+      languages={languageCodes}
+      title="Tailwind Integration Snippets"
+      description="Apply these styles in your markup code:"
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Tailwind Gradient Pitfalls"
+    />
+
+    <BestPractices
+      title="Tailwind Styling Best Practices"
+      practices={[
+        { title: "Define a Theme Property", description: "Save repeating custom gradients as theme variables in your config to maintain stylesheet consistency." },
+        { title: "Preserve Contrast Compliance", description: "Ensure background color values have adequate contrast against text overlays." }
+      ]}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+
+    <RelatedTools
+      currentToolUrl="/tools/tailwind-gradient-generator"
+      category="css"
+    />
+  </div>
+</ToolPageLayout>

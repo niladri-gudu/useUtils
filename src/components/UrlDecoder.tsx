@@ -52,9 +52,15 @@ const SAMPLE_ENCODED_URL = 'https%3A%2F%2Fapi.useutils.com%3A443%2Fv1%2Fsearch%2
 const SAMPLE_RAW_URL_WITH_PARAMS = 'https://example.com/login?redirect_uri=https%3A%2F%2Fuseutils.com%2Fdashboard&client_id=client_9j2k3l&scope=read%20write%20admin';
 
 
-export const UrlDecoder: React.FC = () => {
+interface UrlDecoderProps {
+  defaultMode?: 'standard' | 'fullUri' | 'formUrl';
+}
+
+export const UrlDecoder: React.FC<UrlDecoderProps> = ({
+  defaultMode = 'standard'
+}) => {
   const [input, setInput] = useState<string>('');
-  const [mode, setMode] = useState<'standard' | 'fullUri' | 'formUrl'>('standard');
+  const [mode, setMode] = useState<'standard' | 'fullUri' | 'formUrl'>(defaultMode);
   const [lineByLine, setLineByLine] = useState<boolean>(false);
   const [trimWhitespace, setTrimWhitespace] = useState<boolean>(false);
   const [showDiff, setShowDiff] = useState<boolean>(false);

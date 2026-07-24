@@ -1,0 +1,195 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { UuidGenerator } from '../../components/UuidGenerator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "What is NanoID?",
+    answer: "NanoID is a tiny, secure, URL-friendly, and customizable unique string ID generator. Originally written in JavaScript, it is now implemented in over 20 programming languages. It provides the same level of cryptographic safety as UUIDs but results in shorter strings."
+  },
+  {
+    question: "How does NanoID compare to UUID?",
+    answer: "While UUID has a fixed format (36 characters including hyphens, e.g. <code>8-4-4-4-12</code>), NanoID is fully customizable. It allows developers to specify the exact string length (default is 21 characters) and choose their own alphabet. NanoID's default alphabet uses 64 characters, yielding shorter IDs."
+  },
+  {
+    question: "Is NanoID cryptographically secure?",
+    answer: "Yes. NanoID uses the Web Cryptography API in browsers and the <code>crypto</code> module in Node.js to access OS-level cryptographically secure random values (CSPRNG), making it unpredictable and safe."
+  },
+  {
+    question: "What is the probability of a NanoID collision?",
+    answer: "By default, a NanoID (21 characters using the URL-friendly alphabet) has a collision rate equivalent to UUID v4. Generating 1 million IDs per second would take approximately 149 years to yield a 1% chance of a collision."
+  },
+  {
+    question: "How do I customize the alphabet in NanoID?",
+    answer: "Our tool lets you select custom alphabets (alphanumeric, uppercase, lowercase, hexadecimal, binary) or define a custom character set. The generator will construct unique strings using only those characters."
+  },
+  {
+    question: "Is NanoID URL-friendly?",
+    answer: "Yes, NanoID's default alphabet uses <code>A-Za-z0-9_-</code>, which is safe for URLs because it contains only characters that do not require URL encoding."
+  },
+  {
+    question: "Why is NanoID smaller than UUID?",
+    answer: "Because NanoID uses a larger default alphabet (64 characters compared to UUID's hexadecimal 16 characters), each character holds more information (6 bits vs 4 bits), allowing NanoID to achieve identical security with fewer characters."
+  },
+  {
+    question: "Does NanoID support custom ID lengths?",
+    answer: "Yes, you can adjust the length slider in our tool to generate NanoIDs of any size, from short 5-character keys to extremely secure 64-character tokens."
+  },
+  {
+    question: "How do I generate a NanoID in Node.js?",
+    answer: "Install the <code>nanoid</code> package from npm and run: <code>import { nanoid } from 'nanoid'; console.log(nanoid());</code>."
+  },
+  {
+    question: "How do I generate a NanoID in Python?",
+    answer: "Install the <code>nanoid</code> library and run: <code>from nanoid import generate; print(generate())</code>."
+  },
+  {
+    question: "Does NanoID contain a timestamp?",
+    answer: "No, NanoID is completely random and does not encode chronological time."
+  },
+  {
+    question: "What are the limitations of NanoID?",
+    answer: "Like UUID v4, NanoID is purely random, which can cause B-Tree index fragmentation if used directly as indexed primary keys in heavy relational databases."
+  },
+  {
+    question: "Can I use NanoID for database keys?",
+    answer: "Yes. NanoID is popular in document stores (like MongoDB or Firestore) and as public-facing unique resource slugs."
+  },
+  {
+    question: "What is the default alphabet of NanoID?",
+    answer: "The default alphabet is <code>Module.sym</code> or <code>A-Za-z0-9_-</code>, containing 64 characters (26 uppercase, 26 lowercase, 10 digits, hyphen, and underscore)."
+  },
+  {
+    question: "How does NanoID achieve performance improvements over UUID?",
+    answer: "NanoID uses a custom algorithm that requests random buffers efficiently, reducing CPU overhead and memory footprint."
+  },
+  {
+    question: "Is my generation data sent to a backend server?",
+    answer: "No, all generation happens locally in your browser thread. The tool is 100% private and runs fully offline."
+  },
+  {
+    question: "Does NanoID support custom random number generators?",
+    answer: "Yes. NanoID allows developers to pass custom random generation functions if they want to override the default CSPRNG."
+  },
+  {
+    question: "Can I generate short codes (e.g. 6 characters) with NanoID?",
+    answer: "Yes. You can generate short 6-character slugs for tracking codes or shortened URLs, though collision risks increase at shorter lengths."
+  },
+  {
+    question: "What is the size of the npm package for NanoID?",
+    answer: "NanoID is famous for its tiny size—less than 130 bytes minified and gzipped, making it an excellent choice for client-side JavaScript packages."
+  },
+  {
+    question: "Does NanoID use Math.random()?",
+    answer: "No, NanoID explicitly uses <code>crypto.getRandomValues()</code> in JS environments to ensure cryptographic safety."
+  },
+  {
+    question: "Where can I find NanoID specifications?",
+    answer: "NanoID is open-sourced on GitHub, maintained by Andrey Sitnik, the creator of PostCSS."
+  }
+];
+
+const headers = ["Standard", "Default Length", "Alphabet Size", "URL Safe", "Pre-loaded Format"];
+const rows = [
+  {
+    label: "NanoID",
+    values: ["21 characters", "64 characters", "Yes", "<code>V1StGXR8_Z5jdHi6B-myT</code>"]
+  },
+  {
+    label: "UUID v4",
+    values: ["36 characters (fixed)", "16 characters (hex)", "Yes (with hyphens)", "<code>f47ac10b-58cc-4372-a567-0e02b2c3d479</code>"]
+  }
+];
+
+const practices = [
+  {
+    title: "Use Default 21 Characters for Security",
+    description: "Keep NanoID length at 21 characters for general purpose keys to match UUID v4's collision security level."
+  },
+  {
+    title: "Sanitize Custom Alphabets",
+    description: "Ensure custom alphabets do not contain URL-unsafe characters (like ?, &, or %) if they are used in public routes."
+  }
+];
+
+const mistakes = [
+  {
+    title: "Using NanoID with short lengths in large databases",
+    description: "Reducing NanoID length below 10 characters significantly increases the probability of collision in large datasets.",
+    fix: "Use longer lengths (15-21) or add unique constraints to database columns."
+  }
+];
+
+const languages = [
+  {
+    lang: "Node.js",
+    code: `
+import { nanoid } from 'nanoid';
+console.log(nanoid()); // Default 21 characters
+console.log(nanoid(10)); // Custom length 10
+    `
+  },
+  {
+    lang: "Python",
+    code: `
+from nanoid import generate
+print(generate()) # Default 21
+print(generate(size=10)) # Custom size
+    `
+  }
+];
+
+const references = [
+  { title: "NanoID GitHub Repository", url: "https://github.com/ai/nanoid" }
+];
+---
+
+<ToolPageLayout
+  title="NanoID Generator Online: Generate Custom Unique IDs"
+  description="Generate secure, compact, and URL-friendly NanoIDs locally. Customize ID length, alphabets, and characters with 100% local processing."
+  keywords="nanoid generator, custom id generator, generate nanoid, url safe id generator, compact uuid alternative"
+  toolTitle="NanoID Token Generator"
+  toolDescription="Visually build and customize NanoID strings. Adjust string lengths and characters in your browser thread locally."
+  faqs={faqs}
+>
+  <UuidGenerator client:load defaultGenType="nanoid" />
+
+  <div slot="seo-content" class="flex flex-col gap-12 mt-10 max-w-4xl mx-auto w-full">
+    <PrivacyBadge />
+
+    <ComparisonTable 
+      headers={headers} 
+      rows={rows} 
+      title="NanoID vs UUID v4 Comparison" 
+      description="Compare defaults, alphabetical limits, and layouts between NanoID and standard UUID v4:"
+    />
+
+    <BestPractices 
+      practices={practices} 
+      title="NanoID Implementation Best Practices" 
+    />
+
+    <CommonMistakes 
+      mistakes={mistakes} 
+      title="Common NanoID Pitfalls" 
+    />
+
+    <LanguageSupport 
+      languages={languages} 
+      title="Programmatic NanoID Integrations" 
+    />
+
+    <OfficialReferences 
+      references={references} 
+    />
+
+    <RelatedTools />
+  </div>
+</ToolPageLayout>

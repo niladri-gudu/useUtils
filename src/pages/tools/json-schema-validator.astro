@@ -1,6 +1,17 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { JsonSchemaValidator as JsonSchemaValidatorComponent } from '../../components/JsonSchemaValidator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'JSON Schema Validator', href: '/tools/json-schema-validator', active: true },
+  { label: 'JSON Schema Generator', href: '/tools/json-schema-generator' }
+];
 
 const faqs = [
   {
@@ -42,6 +53,103 @@ const faqs = [
   {
     question: "Why should I use JSON Schema validation over writing custom validation code?",
     answer: "JSON Schema separates your validation logic from your application code, creating an standard declarative contract. It reduces boilerplate, ensures consistency across multiple programming languages (as parser packages exist for Go, Python, Java, JS, etc.), handles complex nested structure checks out of the box, and provides standardized error reporting that is highly readable for APIs and client systems."
+  },
+  {
+    question: "What does the 'additionalProperties' parameter represent?",
+    answer: "By default, JSON Schema allows schemas to accept properties that aren't explicitly defined. Setting <code>additionalProperties: false</code> prohibits unregistered fields, ensuring the payload strictly conforms to the defined structure."
+  },
+  {
+    question: "Can I validate numbers using ranges in JSON Schema?",
+    answer: "Yes, you can enforce numerical limits using the <code>minimum</code>, <code>maximum</code>, <code>exclusiveMinimum</code>, and <code>exclusiveMaximum</code> keywords (e.g., restricting a field to values between 1 and 100)."
+  },
+  {
+    question: "How do I enforce string length constraints?",
+    answer: "Use the <code>minLength</code> and <code>maxLength</code> keywords (e.g. <code>\"minLength\": 8</code> for passwords) to restrict the length of character strings."
+  },
+  {
+    question: "Does JSON Schema support regex pattern checking?",
+    answer: "Yes. The <code>pattern</code> keyword allows you to specify a regular expression that the JSON string instance must match to be considered valid."
+  },
+  {
+    question: "How to reference reusable sub-schemas in a document?",
+    answer: "You can define schemas under a <code>$defs</code> (or <code>definitions</code> in older drafts) block and reference them elsewhere using the <code>$ref</code> keyword (e.g. <code>\"$ref\": \"#/$defs/address\"</code>)."
+  },
+  {
+    question: "Can I compile a Zod schema from JSON Schema?",
+    answer: "Yes. Use our JSON to Zod Schema page linked under related tools to translate your schema models into runtime validation Zod code."
+  },
+  {
+    question: "What is coercion in schema validation?",
+    answer: "Coercion is the process of casting a data type before validating it, such as converting a query parameter string (e.g., \"123\") to a number (e.g. 123) prior to numeric validation."
+  },
+  {
+    question: "Why does my schema fail to validate valid email formats?",
+    answer: "Ensure your validation engine supports format validation. For instance, in Ajv, you must explicitly import the <code>ajv-formats</code> plugin to validate <code>email</code> or <code>date-time</code> constraints."
+  },
+  {
+    question: "What does the '$schema' keyword define?",
+    answer: "It declares the specific draft specification schema URL (e.g. <code>http://json-schema.org/draft-07/schema#</code>) that defines the syntax rules for your document."
+  },
+  {
+    question: "Is there a desktop app version of this validator?",
+    answer: "No, but this web page operates 100% offline. Once loaded in your browser, you can disconnect from the internet and validate schemas securely."
+  }
+];
+
+const references = [
+  { title: "JSON Schema Specification & Official Standard docs", url: "https://json-schema.org/", source: "JSON Schema Org" },
+  { title: "Ajv Schema Validator Library for JavaScript/Node", url: "https://ajv.js.org/", source: "Ajv Docs" }
+];
+
+const languageCodes = [
+  {
+    lang: "Node.js (Ajv)",
+    code: `const Ajv = require("ajv");
+const ajv = new Ajv();
+
+const schema = {
+  type: "object",
+  properties: {
+    port: { type: "integer", minimum: 80 }
+  },
+  required: ["port"]
+};
+
+const validate = ajv.compile(schema);
+const valid = validate({ port: 8080 });
+console.log(valid); // true`,
+    note: "Ajv compiles JSON Schema into highly optimized JavaScript functions."
+  },
+  {
+    lang: "Python",
+    code: `from jsonschema import validate, ValidationError
+
+schema = {
+    "type": "object",
+    "properties": {
+        "email": {"type": "string", "format": "email"}
+    }
+}
+
+try:
+    validate(instance={"email": "dev@useutils.com"}, schema=schema)
+    print("Valid!")
+except ValidationError as e:
+    print(e.message)`,
+    note: "Validates structures programmatically using Python's jsonschema module."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Mismatched $schema Keyword Version",
+    description: "Using keyword syntax from newer drafts (like Draft-07) under an older $schema specification header (like Draft-04).",
+    fix: "Ensure your $schema declaration URL matches the exact draft version rules of your keywords."
+  },
+  {
+    title: "Allowing Arbitrary Properties",
+    description: "Leaving <code>additionalProperties</code> as true by default allows clients to inject malicious or unmapped parameters into your database schemas.",
+    fix: "Set <code>additionalProperties: false</code> inside your production object schemas to strictly limit inputs."
   }
 ];
 ---
@@ -102,9 +210,55 @@ const faqs = [
         <li><strong>Load / Paste Instance Data:</strong> Paste the JSON payload you wish to check.</li>
         <li><strong>Real-time Compliance Checks:</strong> The tool runs tests instantly. If your data complies, a success message appears. If violations occur, the tool reports the list of issues, pointing to the exact JSON path (e.g., <code>$.items[1].price</code>), the failing keyword (e.g., <code>type</code> or <code>required</code>), and a description explaining the violation.</li>
       </ul>
-      <p class="leading-relaxed">
-        Clicking on any validation error instantly copies the keypath to your clipboard, allowing you to quickly search and edit the source document.
-      </p>
     </div>
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Draft Schema Rules Compared"
+      headers={["Constraint Target", "Draft-04 Specification", "Draft-07 Specification", "Draft 2019-09 Specification"]}
+      rows={[
+        { label: "Core Schema ID", values: ["id", "$id", "$id / $anchor"] },
+        { label: "Conditional Val", values: ["Not supported", "if-then-else statements", "if-then-else / unevaluatedProperties"] },
+        { label: "Metadata descriptions", values: ["Loose structures", "Supports default and examples arrays", "Supports complex vocabulary bundles"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Validation Demonstrations"
+      description="Compare how validation constraints report errors:"
+      examples={[
+        { label: "Required Key Missing", input: '{"id": 1} (Missing required key: "username")', output: "🛑 Property 'username' is required", badge: "Failed" },
+        { label: "Standard Conformant", input: '{"id": 1, "username": "admin"}', output: "✓ Instance conforms to the JSON Schema", badge: "Passed" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Validation Architectures"
+      description="Implement JSON Schema validation checks inside your backend APIs:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common JSON Schema Mistakes"
+      description="Avoid these common validation pitfalls when building schemas:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="JSON Schema Formatting Best Practices"
+      practices={[
+        { title: "Define Required Fields", description: "Be explicit about required properties to prevent unexpected missing-property crashes in your API gateway." },
+        { title: "Adopt Version Header Tags", description: "Always declare the $schema version tag at the root of your documents for proper validator compilation." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
   </div>
 </ToolPageLayout>

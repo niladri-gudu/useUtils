@@ -47,7 +47,11 @@ const copyToClipboard = (text: string): boolean => {
   }
 };
 
-export const GlassmorphismGenerator: React.FC = () => {
+interface GlassmorphismGeneratorProps {
+  defaultActiveTab?: 'card' | 'music' | 'stat' | 'login';
+}
+
+export const GlassmorphismGenerator: React.FC<GlassmorphismGeneratorProps> = ({ defaultActiveTab }) => {
   // Config state
   const [config, setConfig] = useState<GlassConfig>(() => {
     if (typeof window !== 'undefined') {
@@ -70,8 +74,14 @@ export const GlassmorphismGenerator: React.FC = () => {
   const [bgUrl, setBgUrl] = useState<string>('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1200&auto=format&fit=crop');
   const [uploadUrl, setUploadUrl] = useState<string | null>(null);
   
-  const [widgetType, setWidgetType] = useState<'card' | 'music' | 'stat' | 'login'>('card');
+  const [widgetType, setWidgetType] = useState<'card' | 'music' | 'stat' | 'login'>(defaultActiveTab || 'card');
   const [copiedFormat, setCopiedFormat] = useState<'css' | 'tailwind' | 'react' | null>(null);
+
+  useEffect(() => {
+    if (defaultActiveTab) {
+      setWidgetType(defaultActiveTab);
+    }
+  }, [defaultActiveTab]);
   
   // Widget internal states
   const [isPlaying, setIsPlaying] = useState<boolean>(true);

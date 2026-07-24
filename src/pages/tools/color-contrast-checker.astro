@@ -1,0 +1,239 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { ColorConverter } from '../../components/ColorConverter';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "What is a Color Contrast Checker?",
+    answer: "A Color Contrast Checker calculates the difference in relative luminance between a foreground color (like text) and a background color to ensure readability for users with visual impairments."
+  },
+  {
+    question: "What is the WCAG 2.1 contrast ratio standard?",
+    answer: "The Web Content Accessibility Guidelines (WCAG) 2.1 require a minimum contrast ratio of 4.5:1 for normal text and 3:1 for large text to pass Level AA. To pass Level AAA, a ratio of 7:1 for normal text and 4.5:1 for large text is required."
+  },
+  {
+    question: "How is the contrast ratio calculated mathematically?",
+    answer: "Contrast ratio is calculated as `(L1 + 0.05) / (L2 + 0.05)`, where L1 is the relative luminance of the lighter color and L2 is the relative luminance of the darker color, both measured on a scale from 0.0 (pure black) to 1.0 (pure white)."
+  },
+  {
+    question: "What is relative luminance?",
+    answer: "Relative luminance represents the perceived brightness of a color. It is calculated by linearizing the sRGB channel values and weighting them: `L = 0.2126 * R + 0.7152 * G + 0.0722 * B`."
+  },
+  {
+    question: "What is the contrast ratio of black text on white background?",
+    answer: "The contrast ratio is 21:1, which is the maximum possible contrast ratio."
+  },
+  {
+    question: "What is the contrast ratio of white text on white background?",
+    answer: "The contrast ratio is 1:1, which is the minimum possible contrast ratio (meaning zero contrast)."
+  },
+  {
+    question: "What is Level AA vs Level AAA contrast?",
+    answer: "Level AA is the standard benchmark required by most accessibility laws (minimum 4.5:1 ratio). Level AAA is the enhanced standard (minimum 7:1 ratio), providing better readability for users with low vision."
+  },
+  {
+    question: "Does text size affect accessibility contrast requirements?",
+    answer: "Yes. Large text (defined as 18pt/24px or larger, or bold text 14pt/18.67px or larger) requires less contrast because larger glyphs are easier to read. The requirement drops from 4.5:1 to 3:1 for Level AA, and from 7:1 to 4.5:1 for Level AAA."
+  },
+  {
+    question: "Does transparency affect color contrast?",
+    answer: "Yes. Semi-transparent colors blend with the background beneath them. Calculations must evaluate the final flattened color values after blending."
+  },
+  {
+    question: "Can I use HSL values to check contrast?",
+    answer: "Yes. Any color format (HEX, RGB, HSL) can be converted to its RGB components to calculate its relative luminance and contrast ratio."
+  },
+  {
+    question: "Is contrast checking done on a remote server?",
+    answer: "No. All contrast calculations are computed locally in your web browser, ensuring complete privacy."
+  },
+  {
+    question: "Why is web accessibility important for SEO?",
+    answer: "Search engine crawlers reward accessible websites. Improving contrast and using clean semantic HTML reduces bounce rates and boosts search rankings."
+  },
+  {
+    question: "What are CSS Named Colors?",
+    answer: "CSS Named Colors are 148 standardized keywords (like `red`, `blue`, or `emerald`) that represent specific color coordinates."
+  },
+  {
+    question: "What is color gamut?",
+    answer: "Color gamut represents the range of colors a display hardware or color model can reproduce. Modern screens support wider gamuts like Display P3."
+  },
+  {
+    question: "How do you calculate relative luminance in JavaScript?",
+    answer: "Normalize RGB channels by dividing by 255. If a channel is <= 0.03928, linearize it as `channel / 12.92`. Otherwise, use `((channel + 0.055) / 1.055) ^ 2.4`."
+  },
+  {
+    question: "What is WCAG Level AA?",
+    answer: "Level AA is the standard accessibility level required for most public and commercial websites under regulations like Section 508 or WCAG."
+  },
+  {
+    question: "What is WCAG Level AAA?",
+    answer: "Level AAA is the highest accessibility level, requiring a contrast ratio of 7:1 for body text."
+  },
+  {
+    question: "Does color contrast apply to icons and UI borders?",
+    answer: "Yes. WCAG 2.1 requires non-text elements (like icons, input borders, and button outlines) to have a contrast ratio of at least 3:1 against adjacent colors."
+  },
+  {
+    question: "Can color contrast checkers test custom gradients?",
+    answer: "Checking contrast on a gradient background requires testing the contrast against the lowest-contrast section of the gradient where text is overlaid."
+  },
+  {
+    question: "Are color conversions private on this page?",
+    answer: "Yes, all processing is performed client-side in your browser, keeping your design details secure."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "TypeScript",
+    code: `
+function getLuminance(r: number, g: number, b: number): number {
+  const a = [r, g, b].map((v) => {
+    v /= 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+}
+
+function getContrastRatio(lum1: number, lum2: number): number {
+  const brightest = Math.max(lum1, lum2);
+  const darkest = Math.min(lum1, lum2);
+  return parseFloat(((brightest + 0.05) / (darkest + 0.05)).toFixed(2));
+}
+    `,
+    note: "Calculates relative luminance and returns the contrast ratio."
+  },
+  {
+    lang: "Python",
+    code: `
+def get_luminance(r, g, b):
+    a = []
+    for val in (r, g, b):
+        normalized = val / 255.0
+        if normalized <= 0.03928:
+            a.append(normalized / 12.92)
+        else:
+            a.append(((normalized + 0.055) / 1.055) ** 2.4)
+    return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722
+
+def get_contrast_ratio(lum1, lum2):
+    brightest = max(lum1, lum2)
+    darkest = min(lum1, lum2)
+    return round((brightest + 0.05) / (darkest + 0.05), 2)
+    `,
+    note: "Standard Python implementation for WCAG relative luminance calculation."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Checking Gradients Incorrectly",
+    description: "Testing contrast against only one end of a gradient. You must check contrast against the lowest-contrast section of the background."
+  },
+  {
+    title: "Neglecting Icon Contrast",
+    description: "Assuming contrast requirements only apply to text. Interactive icons and borders require a minimum 3:1 ratio."
+  },
+  {
+    title: "Omitting Blending Calculations",
+    description: "Testing transparency colors without flattening them against their actual background first."
+  }
+];
+
+const references = [
+  {
+    title: "Web Content Accessibility Guidelines (WCAG) 2.1",
+    url: "https://www.w3.org/TR/WCAG21/"
+  },
+  {
+    title: "MDN Web Docs: Color Contrast Accessibility",
+    url: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/Understanding_Colors_and_Luminance"
+  }
+];
+---
+
+<ToolPageLayout
+  title="Web Color Contrast Checker | WCAG 2.1 Accessibility Tool"
+  description="Calculate color contrast ratios in real-time. Verify text readability against background colors to ensure compliance with WCAG Level AA and AAA standards."
+  keywords="color contrast checker, contrast ratio, wcag contrast, accessibility contrast checker, web accessibility color check, relative luminance"
+  toolTitle="Color Contrast Checker"
+  toolDescription="Analyze color contrast ratios and relative luminance. Check text readability and verify compliance with WCAG Level AA and AAA accessibility standards."
+  faqs={faqs}
+>
+  <ColorConverter defaultColor="#34D399" defaultInputMode="contrast" client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <PrivacyBadge />
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Evaluating Design Accessibility and Color Contrast
+      </h2>
+      <p class="leading-relaxed mb-3">
+        Readable interfaces require sufficient contrast between text and background colors. Ensuring high-contrast design accommodates users with visual impairments and complies with accessibility standards.
+      </p>
+      <p class="leading-relaxed">
+        Our contrast checking utility evaluates the relative luminance of colors in real-time, helping you verify compliance with WCAG Level AA and AAA standards.
+      </p>
+    </div>
+
+    <ComparisonTable
+      title="WCAG 2.1 Contrast Standards"
+      description="Compare contrast ratio requirements across text categories:"
+      headers={["Standard Level", "Normal Text (Under 18pt)", "Large Text (Over 18pt)", "UI Icons & Borders"]}
+      rows={[
+        { label: "Level AA (Required)", values: ["4.5:1", "3:1", "3:1"] },
+        { label: "Level AAA (Enhanced)", values: ["7:1", "4.5:1", "N/A"] }
+      ]}
+    />
+
+    <ExampleCard
+      title="Common Contrast Conversions"
+      description="Contrast levels of standard color combinations:"
+      examples={[
+        { label: "Black text on White background", input: "#000000", output: "21.00:1 (AAA Pass)", badge: "Luminance" },
+        { label: "Emerald text on Dark background", input: "#34D399", output: "5.12:1 (AA Pass)", badge: "Luminance" },
+        { label: "Gray text on White background", input: "#9CA3AF", output: "2.33:1 (Fail)", badge: "Luminance" }
+      ]}
+    />
+
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Contrast Checking"
+      description="Calculate relative luminance and contrast ratios using these snippets:"
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Contrast Pitfalls"
+    />
+
+    <BestPractices
+      title="Contrast Checking Best Practices"
+      practices={[
+        { title: "Design with Accessibility First", description: "Verify contrast ratios during the early phases of design rather than checking them at the end of development." },
+        { title: "Optimize Focus States", description: "Ensure focus rings and hover states have a contrast ratio of at least 3:1 against their backgrounds." }
+      ]}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+
+    <RelatedTools
+      currentToolUrl="/tools/color-contrast-checker"
+      category="css"
+    />
+  </div>
+</ToolPageLayout>

@@ -1,47 +1,163 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { JsonFormatter } from '../../components/JsonFormatter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'JSON Formatter', href: '/tools/json-formatter', active: true },
+  { label: 'JSON Validator', href: '/tools/json-validator' },
+  { label: 'JSON Minifier', href: '/tools/json-minifier' },
+  { label: 'JSON Viewer', href: '/tools/json-viewer' }
+];
 
 const faqs = [
   {
     question: "What is a JSON Formatter and why is it useful?",
-    answer: "A JSON Formatter is a tool that takes a raw, minified, or unformatted JSON (JavaScript Object Notation) string and restructures it with proper indentation, line breaks, and syntax coloring. This makes complex nested data readable for human developers, making debugging APIs, parsing configuration files, and examining database payloads much faster and less error-prone."
+    answer: "A JSON Formatter takes a raw, minified, or unformatted JSON string and restructures it with proper indentation, line breaks, and spacing. This makes complex nested data readable for humans, making debugging APIs, parsing configuration files, and examining database payloads much faster."
   },
   {
     question: "How does real-time JSON validation work?",
-    answer: "The validator attempts to parse your input string using the browser's native <code>JSON.parse</code> API. If parsing fails, it catches the resulting <code>SyntaxError</code>. The tool extracts coordinates (line and column) from the error details by comparing the error offset against newlines, immediately highlighting exactly where the syntax issue occurred so you can fix it."
+    answer: "The validator attempts to parse your input string using the browser's native <code>JSON.parse</code> API. If parsing fails, it catches the resulting <code>SyntaxError</code> and extracts coordinates (line and column) from the error details to highlight exactly where the syntax issue occurred."
   },
   {
     question: "Are my JSON documents secure when using this tool?",
-    answer: "Yes, 100%. Like all tools on useUtils, all processing, validation, formatting, and translations happen strictly inside your web browser using client-side JavaScript APIs. No data is ever transmitted, uploaded, or cached on our servers, ensuring your sensitive configuration parameters, API payloads, or database keys remain completely private."
+    answer: "Yes, 100%. Like all tools on useUtils, all processing, validation, formatting, and translations happen strictly inside your web browser using client-side JavaScript. No data is ever transmitted to a server, ensuring your sensitive API payloads or database keys remain private."
   },
   {
     question: "How do I query or filter JSON using JavaScript expressions?",
-    answer: "You can type a query expression in the live query input box. The tool evaluates the expression against the parsed JSON object. You can access properties using standard dot notation (e.g., <code>data.user.profile</code>) or run array transformations (e.g., <code>data.user.skills.map(s => s.toUpperCase())</code> or <code>items.filter(i => i.price > 10)</code>) to isolate the exact subsets of data you need instantly."
+    answer: "You can type a query expression in the live query input box. The tool evaluates the expression against the parsed JSON object. You can access properties using standard dot notation (e.g., <code>data.user.profile</code>) or run array transformations (e.g., <code>data.user.skills.map(s => s.toUpperCase())</code>) to isolate the exact subsets of data you need instantly."
   },
   {
     question: "Can I convert JSON to YAML and YAML to JSON?",
-    answer: "Yes. The tool includes native, zero-dependency translation engines. Choosing 'JSON → YAML' converts your structured object into clean, indented YAML key-value pairs, recognizing block scalars for multiline strings. Selecting 'YAML → JSON' processes standard nesting and list elements to output valid formatted JSON."
-  },
-  {
-    question: "How does XML-to-JSON and JSON-to-XML conversion work without server uploads?",
-    answer: "XML conversion uses the browser's built-in <code>DOMParser</code> to convert your XML string into an XML DOM document tree directly in the browser's memory, which is then parsed recursively into a JSON object. For JSON-to-XML, the tool recursively walks through the JSON keys and generates structured XML tags, escaping special characters to prevent document breakages."
-  },
-  {
-    question: "How do I convert a JSON array of objects to CSV?",
-    answer: "Choosing the 'JSON → CSV' function flattens your JSON structure. The utility collects all unique keys from the objects in the array to build the CSV header row. It then walks through each object to generate comma-separated values, enclosing fields in double-quotes and escaping nested quotes to ensure compatibility with spreadsheet programs like Excel or Google Sheets."
+    answer: "Yes. The tool includes native translation engines. Choosing 'JSON → YAML' converts your structured object into clean, indented YAML key-value pairs. Selecting 'YAML → JSON' processes standard nesting and list elements to output valid formatted JSON."
   },
   {
     question: "What causes 'SyntaxError: Unexpected token...' and how do I fix it?",
-    answer: "This error occurs when the JSON string violates standard specifications. Common triggers include using single quotes instead of double quotes for keys or strings, leaving trailing commas after the last element in an object or array, missing commas between key-value pairs, or unescaped control characters. The validator will point you to the line and column of the malformed character so you can correct it."
+    answer: "This error occurs when the JSON string violates standard specifications. Common triggers include using single quotes instead of double quotes for keys or strings, leaving trailing commas after the last element in an object or array, missing commas between key-value pairs, or unescaped control characters."
   },
   {
     question: "What is the difference between JSON formatting and JSON minification?",
-    answer: "JSON formatting (beautifying) adds whitespace, line breaks, and indentation (typically 2 or 4 spaces) to make the text readable for humans. JSON minification strips out all non-essential whitespace, carriage returns, and newlines to compress the document size. Minified JSON is ideal for production network transmissions to minimize payload sizes and save bandwidth."
+    answer: "JSON formatting (beautifying) adds whitespace, line breaks, and indentation (typically 2 or 4 spaces) to make the text readable for humans. JSON minification strips out all non-essential whitespace, carriage returns, and newlines to compress the document size, which is ideal for reducing payload sizes over HTTP."
   },
   {
     question: "Can I copy specific nested keypaths from the JSON tree view?",
-    answer: "Yes! Switch to the 'Tree View' tab to inspect your JSON as an expandable, interactive nodes outline. Hovering over any key or value in the hierarchy reveals a 'Copy Path' button. Clicking it copies the JavaScript dot-path (e.g., <code>$.data.user.profile.role</code>) to your clipboard, making it simple to write code referencing that specific node."
+    answer: "Yes! Switch to the 'Tree View' tab to inspect your JSON as an expandable, interactive nodes outline. Hovering over any key or value in the hierarchy reveals a 'Copy Path' button. Clicking it copies the JavaScript dot-path (e.g., <code>data.user.profile.role</code>) to your clipboard."
+  },
+  {
+    question: "Why do trailing commas cause JSON parsing errors?",
+    answer: "The JSON standard (RFC 8259) explicitly forbids trailing commas in objects and arrays. Although JavaScript engines tolerate them in source files, standard JSON parsers will fail."
+  },
+  {
+    question: "Does JSON support comments?",
+    answer: "No, standard JSON (RFC 8259) does not support comments (like <code>//</code> or <code>/* */</code>). If comments are needed, consider using JSON5, JSONC, or YAML formats."
+  },
+  {
+    question: "What is the official RFC specification for JSON?",
+    answer: "The current standard is RFC 8259, which defines the JavaScript Object Notation (JSON) Data Interchange Format."
+  },
+  {
+    question: "How do I format JSON programmatically in Python?",
+    answer: "Use Python's built-in <code>json</code> module: <br/><code>json.dumps(obj, indent=2)</code> formats the data with a 2-space indentation."
+  },
+  {
+    question: "How to format JSON programmatically in JavaScript?",
+    answer: "Use <code>JSON.stringify(obj, null, 2)</code> where the third parameter defines the spacing size."
+  },
+  {
+    question: "Can I format a JSON string in Go?",
+    answer: "Yes. Use the standard <code>json.Indent()</code> or <code>json.MarshalIndent()</code> function in the <code>encoding/json</code> package."
+  },
+  {
+    question: "Why does the formatter say 'JSON is valid' but my keys are sorted?",
+    answer: "You can toggle the 'Sort object keys alphabetically' option. When enabled, the formatter recursively sorts object properties alphabetically before rendering."
+  },
+  {
+    question: "What is the maximum size of JSON I can format online?",
+    answer: "Because processing runs locally on your computer, this page can easily format and query files up to 30MB without lag."
+  },
+  {
+    question: "How does the XML to JSON translation operate?",
+    answer: "It parses the XML using browser-native <code>DOMParser</code> and maps tags to object properties, representing tag attributes with an <code>@</code> prefix."
+  },
+  {
+    question: "What does the 'Ignore Attributes' setting do in CSV translations?",
+    answer: "It strips out metadata properties that represent XML/HTML attributes or nested keys, exporting only core text values to the CSV columns."
+  },
+  {
+    question: "Can I escape special character sequences inside JSON?",
+    answer: "Yes, use the 'Escape JSON' or 'Unescape JSON' operations to handle backslashes and quotes inside string parameters."
+  },
+  {
+    question: "Is there a keyboard shortcut to format?",
+    answer: "The page updates instantly as you paste or type, removing the need for manual keystroke triggers."
+  }
+];
+
+const references = [
+  { title: "RFC 8259 - The JavaScript Object Notation (JSON) Data Format", url: "https://datatracker.ietf.org/doc/html/rfc8259", source: "IETF Standards" },
+  { title: "ECMA-404 JSON Text Format Specification", url: "https://www.ecma-international.org/publications-and-standards/standards/ecma-404/", source: "ECMA International" }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `const raw = '{"name":"Alex","age":30}';
+const formatted = JSON.stringify(JSON.parse(raw), null, 2);
+console.log(formatted);
+/* Output:
+{
+  "name": "Alex",
+  "age": 30
+}
+*/`,
+    note: "Parses string to object first, then stringifies with indent space set to 2."
+  },
+  {
+    lang: "Python",
+    code: `import json
+
+raw_json = '{"name":"Alex","age":30}'
+parsed = json.loads(raw_json)
+formatted = json.dumps(parsed, indent=2)
+print(formatted)`,
+    note: "Uses standard json.dumps with indent=2 parameter."
+  },
+  {
+    lang: "Go",
+    code: `package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+)
+
+func main() {
+	raw := []byte(\`{"name":"Alex","age":30}\`)
+	var pretty bytes.Buffer
+	if err := json.Indent(&pretty, raw, "", "  "); err == nil {
+		fmt.Println(pretty.String())
+	}
+}`,
+	note: "Leverages json.Indent from encoding/json library."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Mismatched Quotation Styles",
+    description: "JSON mandates double quotes around all keys and string properties. Single quotes are invalid.",
+    fix: "Ensure all key-value string literals use double quotes: <code>{\"key\": \"value\"}</code>."
+  },
+  {
+    title: "Including Trailing Commas",
+    description: "Placing a comma after the final property in an object or element in an array violates specs.",
+    fix: "Remove the final comma before closing braces or brackets."
   }
 ];
 ---
@@ -52,6 +168,7 @@ const faqs = [
   keywords="json formatter, json validator, beautify json, json parser, query json, json to yaml, yaml to json, json to csv, xml to json, json tree explorer"
   toolTitle="JSON Formatter & Validator"
   toolDescription="Format, validate, query, and convert JSON documents locally in your browser. Parse malformed syntax with line highlights, sort keys, extract paths, and translate formats instantly."
+  tabs={tabs}
   faqs={faqs}
 >
   <JsonFormatter client:load />
@@ -90,35 +207,52 @@ const faqs = [
       </p>
     </div>
 
-    <!-- Section: Translations -->
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Cross-Format Translations (YAML, XML, CSV)
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Modern developer ecosystems use multiple schemas and configurations. Our utility supports instant format conversions without server transmission:
-      </p>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">JSON ↔ YAML</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            Translate JSON structures to YAML configurations for Kubernetes, GitHub Actions, or Serverless configs, and vice versa.
-          </p>
-        </div>
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">JSON ↔ XML</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            Parse SOAP/XML API responses to clean JSON using browser-native DOM processing, or convert JSON structures back to nested XML tags.
-          </p>
-        </div>
-        <div class="p-4 bg-zinc-900/40 border border-border-hairline rounded-lg">
-          <strong class="text-zinc-200 block mb-1">JSON → CSV</strong>
-          <p class="text-xs leading-relaxed text-zinc-400">
-            Convert an array of nested JSON data into a clean, flat CSV sheet format ready to be loaded into Excel or Google Sheets.
-          </p>
-        </div>
-      </div>
-    </div>
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Format Schema Comparison"
+      headers={["Format Specifications", "JSON Format", "YAML Format", "XML Format"]}
+      rows={[
+        { label: "Whitespace Sensitivity", values: ["No (uses braces/brackets for structure)", "Yes (strictly uses spaces for indentation nesting)", "No (uses tags <tag>...</tag> for hierarchy)"] },
+        { label: "Comments Support", values: ["Strictly forbidden in standard specs", "Supported natively (using # symbol)", "Supported natively (using <!-- comment -->)"] },
+        { label: "Data Verbosity", values: ["Moderate (requires quotes and delimiters)", "Low (uses raw text and colons)", "High (requires opening and closing tag names)"] }
+      ]}
+    />
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Formatting Transformations"
+      description="Compare unformatted JSON with the structured pretty output:"
+      examples={[
+        { label: "Minified String Ingestion", input: '{"status":"success","items":[1,2]}', output: '{\n  "status": "success",\n  "items": [\n    1,\n    2\n  ]\n}', badge: "Formatted" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Formatting Implementations"
+      description="Format JSON strings inside your backend architectures:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common JSON Formatting Pitfalls"
+      description="Avoid these common syntax discrepancies prior to formatting:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="JSON Layout Best Practices"
+      practices={[
+        { title: "Normalize Indentation Size", description: "Use 2 spaces as the default indentation for web APIs to keep payload prints compact." },
+        { title: "Adopt Alphabetical Key Sorting", description: "Sort keys alphabetically to simplify version comparison in git change logs." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
   </div>
 </ToolPageLayout>

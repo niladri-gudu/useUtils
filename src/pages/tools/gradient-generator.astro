@@ -1,11 +1,19 @@
 ---
 import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
 import { GradientGenerator as GradientGeneratorComponent } from '../../components/GradientGenerator';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
 
 const faqs = [
   {
     question: "How do I make a linear gradient in CSS?",
-    answer: "You use the <code>background</code> or <code>background-image</code> property with the <code>linear-gradient()</code> function. The syntax requires specifying a direction (angle in degrees or keywords like <code>to right</code>) followed by comma-separated color stops. For example: <code>background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);</code>."
+    answer: "You use the `background` or `background-image` property with the `linear-gradient()` function. The syntax requires specifying a direction (angle in degrees or keywords like `to right`) followed by comma-separated color stops. For example: `background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);`."
   },
   {
     question: "What is the difference between linear, radial, and conic gradients?",
@@ -13,11 +21,11 @@ const faqs = [
   },
   {
     question: "Can I apply a CSS gradient to text directly?",
-    answer: "Yes, you can apply gradients to text by combining three CSS rules. Set the background to your gradient, apply <code>-webkit-background-clip: text;</code> to clip the background to the text boundary, and set <code>-webkit-text-fill-color: transparent;</code> (or color: transparent) to make the text color transparent, letting the background show through. This is fully interactive in our preview pane."
+    answer: "Yes, you can apply gradients to text by combining three CSS rules. Set the background to your gradient, apply `-webkit-background-clip: text;` to clip the background to the text boundary, and set `-webkit-text-fill-color: transparent;` (or color: transparent) to make the text color transparent, letting the background show through. This is fully interactive in our preview pane."
   },
   {
     question: "How do I copy gradients as Tailwind CSS arbitrary values?",
-    answer: "Since Tailwind v3/v4 supports arbitrary syntax inside square brackets, you can apply custom gradients directly in your classes using the <code>bg-[gradient-declaration]</code> syntax. Be sure to strip any space characters and replace them with underscores (<code>_</code>) inside the brackets. For example: <code class='break-all'>bg-[linear-gradient(135deg,#10b981_0%,#3b82f6_100%)]</code>."
+    answer: "Since Tailwind v3/v4 supports arbitrary syntax inside square brackets, you can apply custom gradients directly in your classes using the `bg-[gradient-declaration]` syntax. Be sure to strip any space characters and replace them with underscores (`_`) inside the brackets. For example: <code class='break-all'>bg-[linear-gradient(135deg,#10b981_0%,#3b82f6_100%)]</code>."
   },
   {
     question: "Which browsers support conic-gradient in CSS?",
@@ -25,15 +33,15 @@ const faqs = [
   },
   {
     question: "How do I create a glassmorphism gradient in CSS?",
-    answer: "Glassmorphic gradients are built by overlaying a semi-transparent gradient on a blurred backdrop. Use semi-transparent white stops (like <code>rgba(255, 255, 255, 0.15)</code> to <code>rgba(255, 255, 255, 0.02)</code>) for the card surface, combined with a thin border and <code>backdrop-filter: blur(12px);</code>."
+    answer: "Glassmorphic gradients are built by overlaying a semi-transparent gradient on a blurred backdrop. Use semi-transparent white stops (like `rgba(255, 255, 255, 0.15)` to `rgba(255, 255, 255, 0.02)`) for the card surface, combined with a thin border and `backdrop-filter: blur(12px);`."
   },
   {
     question: "How do I write an SVG linear gradient manually?",
-    answer: "In SVG, gradients are defined inside the <code>&lt;defs&gt;</code> tag using the <code>&lt;linearGradient&gt;</code> element, defining <code>x1, y1, x2, y2</code> coordinates to control direction, followed by nested <code>&lt;stop&gt;</code> tags. For example:<br/><code>&lt;linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'&gt;<br/>&nbsp;&nbsp;&lt;stop offset='0%' stop-color='#ff007f'/&gt;<br/>&nbsp;&nbsp;&lt;stop offset='100%' stop-color='#7f00ff'/&gt;<br/>&lt;/linearGradient&gt;</code>"
+    answer: "In SVG, gradients are defined inside the `<defs>` tag using the `<linearGradient>` element, defining `x1, y1, x2, y2` coordinates to control direction, followed by nested `<stop>` tags. For example:<br/><code>&lt;linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'&gt;<br/>&nbsp;&nbsp;&lt;stop offset='0%' stop-color='#ff007f'/&gt;<br/>&nbsp;&nbsp;&lt;stop offset='100%' stop-color='#7f00ff'/&gt;<br/>&lt;/linearGradient&gt;</code>"
   },
   {
     question: "How do I draw a gradient on HTML5 Canvas?",
-    answer: "First, create a gradient object on the canvas 2D context using <code>const grad = ctx.createLinearGradient(x1, y1, x2, y2)</code> or <code>createRadialGradient()</code>. Then add color stops using <code>grad.addColorStop(offset, color)</code> where offset is a number between 0.0 and 1.0. Finally, set <code>ctx.fillStyle = grad;</code> and call a drawing method like <code>ctx.fillRect()</code>."
+    answer: "First, create a gradient object on the canvas 2D context using `const grad = ctx.createLinearGradient(x1, y1, x2, y2)` or `createRadialGradient()`. Then add color stops using `grad.addColorStop(offset, color)` where offset is a number between 0.0 and 1.0. Finally, set `ctx.fillStyle = grad;` and call a drawing method like `ctx.fillRect()`."
   },
   {
     question: "Why does my gradient look grey or muddy in the middle?",
@@ -46,6 +54,88 @@ const faqs = [
   {
     question: "How do I extract a gradient from a photo or image?",
     answer: "Our tool features an interactive Image Palette Extractor. Drag and drop any image into the local sandbox. The script renders the photo onto a hidden canvas, samples the pixels in sequence, clusters similar shades, sorts them by Hue to avoid chaotic transitions, and maps them directly to your gradient stops. Everything runs 100% offline."
+  },
+  {
+    question: "Can I repeat gradients in CSS?",
+    answer: "Yes. Use the `repeating-linear-gradient()` or `repeating-radial-gradient()` functions to create repeating stripes, checks, or visual textures: `background: repeating-linear-gradient(45deg, #10b981, #10b981 10px, #3b82f6 10px, #3b82f6 20px);`."
+  },
+  {
+    question: "How do I make a vertical linear gradient?",
+    answer: "Set the direction to `to bottom` or `180deg`. In Tailwind, use the `bg-gradient-to-b` class."
+  },
+  {
+    question: "What is the CSS syntax for repeating radial gradients?",
+    answer: "Use `repeating-radial-gradient()`. For example: `background: repeating-radial-gradient(circle, #10b981, #10b981 10px, #3b82f6 10px, #3b82f6 20px);`."
+  },
+  {
+    question: "Can I use multiple background gradients in CSS?",
+    answer: "Yes, you can layer multiple gradients by separating them with commas. The first gradient declared will render on top of subsequent layers: `background: linear-gradient(to right, rgba(52, 211, 153, 0.5), transparent), linear-gradient(to bottom, #111827, #030712);`."
+  },
+  {
+    question: "How does transparency work with CSS gradients?",
+    answer: "You can specify color stops with transparency using `rgba()` or `hsla()` values, allowing elements behind the gradient to remain partially visible."
+  },
+  {
+    question: "Does this gradient generator run offline?",
+    answer: "Yes, all processing is performed client-side in your browser, keeping your design details secure."
+  },
+  {
+    question: "Can I use CSS variables in gradients?",
+    answer: "Yes: `background: linear-gradient(to right, var(--color-primary), var(--color-secondary));`."
+  },
+  {
+    question: "How does screen resolution affect CSS gradients?",
+    answer: "Gradients are rendered as vector graphics by the browser, meaning they scale smoothly to any screen resolution without quality loss."
+  },
+  {
+    question: "Why do colors look different in print?",
+    answer: "Screens emit RGB light, whereas print ink absorbs CMYK light. This difference in color models results in varying color ranges."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "CSS",
+    code: `
+.gradient-bg {
+  background-image: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+}
+    `,
+    note: "Modern CSS linear gradient declaration."
+  },
+  {
+    lang: "Tailwind CSS",
+    code: `
+<!-- Tailwind Utility classes -->
+<div class="bg-gradient-to-br from-emerald-400 to-blue-500"></div>
+    `,
+    note: "Standard Tailwind CSS gradient utility styling."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Wrong Keyword Placement",
+    description: "Omitting the 'to' keyword in direction declarations. Use 'to right' instead of 'right' to comply with standard specs."
+  },
+  {
+    title: "Vague Opacity Settings",
+    description: "Declaring opacity transitions without matching color coordinates, which can cause black transitions in some legacy browsers."
+  },
+  {
+    title: "Missing Fallbacks",
+    description: "Omitting flat color background fallbacks for legacy browsers that do not support gradients."
+  }
+];
+
+const references = [
+  {
+    title: "W3C CSS Images Module Level 3",
+    url: "https://www.w3.org/TR/css-images-3/"
+  },
+  {
+    title: "MDN Web Docs: CSS <gradient> type",
+    url: "https://developer.mozilla.org/en-US/docs/Web/CSS/gradient"
   }
 ];
 ---
@@ -60,8 +150,9 @@ const faqs = [
 >
   <GradientGeneratorComponent client:load />
 
-  <!-- Detailed explanatory articles for SEO search engine bots and developer reference -->
   <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <PrivacyBadge />
+
     <div>
       <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
         <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
@@ -75,30 +166,53 @@ const faqs = [
       </p>
     </div>
 
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Translating to Tailwind CSS v4 & v3 Frameworks
-      </h2>
-      <p class="leading-relaxed mb-4">
-        Tailwind CSS provides built-in utilities for simple two-stop linear gradients using classes like <code>bg-gradient-to-r from-emerald-400 to-blue-500</code>. However, when you need custom angles (e.g. 135deg), more than three stops, or radial/conic configurations, standard utility classes fall short.
-      </p>
-      <p class="leading-relaxed">
-        To address this, Tailwind features an arbitrary value syntax where custom declarations are placed inside square brackets. Our generator outputs optimized Tailwind strings, such as <code class="break-all">bg-[linear-gradient(135deg,#10b981_0%,#3b82f6_100%)]</code>, replacing spaces with underscores so Tailwind's utility class engine parses the color stops accurately.
-      </p>
-    </div>
+    <ComparisonTable
+      title="CSS Gradient Styles Comparison"
+      description="Compare linear, radial, and conic rendering behaviors:"
+      headers={["Gradient Type", "CSS Syntax", "Transition Axis", "Best Use Case"]}
+      rows={[
+        { label: "Linear", values: ["linear-gradient(135deg, ...)", "Straight line (custom angle)", "Standard site backgrounds"] },
+        { label: "Radial", values: ["radial-gradient(circle, ...)", "Radiates from central origin", "Glow cards and lighting effects"] },
+        { label: "Conic", values: ["conic-gradient(from 0deg, ...)", "Wraps around center pivot", "Radar trackers and color wheels"] }
+      ]}
+    />
 
-    <div>
-      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
-        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-        Zero-Transmission Image Color Extraction
-      </h2>
-      <p class="leading-relaxed mb-4">
-        A unique feature of this utility is the Image Palette Extractor. Designers often find gradient inspiration in real-world photography, but manually sampling colors and plotting coordinates is tedious.
-      </p>
-      <p class="leading-relaxed">
-        By dropping a photo into our sandbox, the browser renders the image onto a hidden canvas element. The local JS engine samples the pixels, clusters them by visual similarity, filters out redundant grays, and automatically arranges the dominant colors by Hue on the timeline. Crucially, because this uses the native HTML5 Canvas API, no files are uploaded to any backend server, ensuring 100% privacy for sensitive assets or screenshots.
-      </p>
-    </div>
+    <ExampleCard
+      title="Common Gradient Coordinates"
+      description="Popular design presets:"
+      examples={[
+        { label: "Emerald Glow (Brand)", input: "linear-gradient(135deg, #10B981 0%, #3B82F6 100%)", output: "Copied!", badge: "CSS" },
+        { label: "Sunset Peach", input: "linear-gradient(to right, #FF7E5F, #FEB47B)", output: "Copied!", badge: "CSS" },
+        { label: "Ocean Breeze", input: "linear-gradient(to top, #2E0854, #4B0082)", output: "Copied!", badge: "CSS" }
+      ]}
+    />
+
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Gradient Integration"
+      description="Implement gradients programmatically using these examples:"
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Gradient Pitfalls"
+    />
+
+    <BestPractices
+      title="Gradient Styling Best Practices"
+      practices={[
+        { title: "Define a Flat Fallback Color", description: "Set a fallback flat background color before the gradient rule for older browsers that may fail to parse gradient styling." },
+        { title: "Limit Total Color Stops", description: "Limit color scales to 3 or 4 stops to prevent rendering layout clutter." }
+      ]}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+
+    <RelatedTools
+      currentToolUrl="/tools/gradient-generator"
+      category="css"
+    />
   </div>
 </ToolPageLayout>

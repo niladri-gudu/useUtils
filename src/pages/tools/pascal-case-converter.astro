@@ -1,0 +1,242 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { CaseConverter } from '../../components/CaseConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const faqs = [
+  {
+    question: "What is PascalCase?",
+    answer: "<code>PascalCase</code> (often called UpperCamelCase) is a casing convention where the first letter of every word is capitalized, with no spaces or punctuation between words. For example, <code>UserProfileCard</code>. It is named after the Pascal programming language which popularised it."
+  },
+  {
+    question: "What is the difference between PascalCase and camelCase?",
+    answer: "In <code>PascalCase</code>, the very first character of the string is capitalized (e.g., <code>MyVariable</code>). In <code>camelCase</code>, the first character is lowercase (e.g., <code>myVariable</code>). Both conventions capitalize subsequent words."
+  },
+  {
+    question: "When should I use PascalCase?",
+    answer: "Use <code>PascalCase</code> for class declarations (Java, C#, C++, Python), namespace identifiers, TypeScript types & interfaces, and React/Vue/Svelte frontend component filenames and declarations (e.g., <code>SidebarLayout.tsx</code>)."
+  },
+  {
+    question: "Is my code secure on useUtils?",
+    answer: "Yes. The PascalCase converter runs entirely in your local browser sandbox. It does not send any queries, keys, or text listings to remote servers."
+  },
+  {
+    question: "Why does C# prefer PascalCase for methods whereas Java uses camelCase?",
+    answer: "Microsoft's Framework Design Guidelines specify PascalCase for public members (methods, properties, classes) to make them stand out in libraries (e.g. <code>Console.WriteLine()</code>). Java's style guidelines recommend camelCase for methods (e.g. <code>system.out.println()</code>)."
+  },
+  {
+    question: "How to convert text to PascalCase in JavaScript?",
+    answer: "You can convert strings to PascalCase using regex: <code>const toPascal = str => str.replace(/[-_\\s]+(.)?/g, (_, c) => c ? c.toUpperCase() : '').replace(/^(.)/, c => c.toUpperCase());</code>."
+  },
+  {
+    question: "How to convert text to PascalCase in Python?",
+    answer: "In Python: <code>def to_pascal(s): return ''.join(w.capitalize() for w in re.split(r'[-_\\s]', s))</code>."
+  },
+  {
+    question: "Why do React components require PascalCase?",
+    answer: "The JSX parser uses casing to differentiate custom React components (which are capitalized, e.g. <code>&lt;Button /&gt;</code>) from native HTML tags (which are lowercase, e.g. <code>&lt;button /&gt;</code>)."
+  },
+  {
+    question: "What is UpperCamelCase?",
+    answer: "<code>UpperCamelCase</code> is another name for <code>PascalCase</code>. In contrast, standard camelCase is referred to as lowerCamelCase."
+  },
+  {
+    question: "Can I use numbers in PascalCase classes?",
+    answer: "Yes. Numbers are preserved, and any letter immediately following a number is capitalized (e.g. <code>ApiV1Controller</code>)."
+  },
+  {
+    question: "How does PascalCase handle acronyms?",
+    answer: "Microsoft design standards recommend capitalizing only the first letter of acronyms longer than 2 characters (e.g., use <code>XmlDocument</code> and <code>HtmlParser</code> rather than <code>XMLDocument</code> and <code>HTMLParser</code>). Standard 2-character acronyms can remain fully capitalized (e.g. <code>IOStream</code>)."
+  },
+  {
+    question: "How do I convert snake_case to PascalCase?",
+    answer: "Split the string by underscores, capitalize the first letter of each segment, and join them back together without separators."
+  },
+  {
+    question: "Does PascalCase support leading underscores?",
+    answer: "Yes, leading underscores indicating private classes or internal properties are preserved (e.g. <code>_InternalLogger</code>)."
+  },
+  {
+    question: "Why do TypeScript interfaces use PascalCase?",
+    answer: "TypeScript standard style guides dictate that types, interfaces, and enums represent constructible definitions and should follow class-naming conventions (PascalCase)."
+  },
+  {
+    question: "Can I use PascalCase for filenames?",
+    answer: "Yes. Filenames housing classes or UI components (like React's <code>Sidebar.tsx</code>) are commonly written in PascalCase. For general system files or utilities, lowercase kebab-case is usually preferred."
+  },
+  {
+    question: "How does SQL handle PascalCase table names?",
+    answer: "Most SQL engines fold names to lowercase. Quoting is required to maintain capitalization: <code>CREATE TABLE \"UserProfile\" (...)</code>, otherwise it compiles as <code>userprofile</code>."
+  },
+  {
+    question: "What is the difference between PascalCase and Title Case?",
+    answer: "Title Case is a natural language style that preserves spaces between capitalized words (e.g. <code>User Profile</code>). PascalCase joins them into a single word (e.g. <code>UserProfile</code>)."
+  },
+  {
+    question: "How do you write a PascalCase converter in Go?",
+    answer: "Split the string into words, title-case each word using <code>strings.Title</code> or <code>cases.Title</code>, and join the result: <code>strings.ReplaceAll(strings.Title(s), \" \", \"\")</code>."
+  },
+  {
+    question: "Can I convert multiple variables to PascalCase in batch?",
+    answer: "Yes. Check 'Treat each line independently', paste your list, and the tool will transform each line individually."
+  },
+  {
+    question: "Does PascalCase support non-ASCII characters?",
+    answer: "Yes. The converter respects Unicode casing rules, capitalizing accented non-ASCII letters."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `const toPascalCase = str => 
+  str.replace(/[-_\\s]+(.)?/g, (_, c) => c ? c.toUpperCase() : '')
+     .replace(/^(.)/, c => c.toUpperCase());
+
+console.log(toPascalCase("user_profile_card")); // "UserProfileCard"`,
+    note: "Works in all standard JS/TS environments."
+  },
+  {
+    lang: "Python",
+    code: `import re
+
+def to_pascal_case(s):
+    words = re.split(r'[-_\\s]', s)
+    return ''.join(w.capitalize() for w in words if w)
+
+print(to_pascal_case("user_profile_card")) # "UserProfileCard"`,
+    note: "Safe Python parser, ignores empty slots."
+  },
+  {
+    lang: "Go",
+    code: `package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func ToPascalCase(s string) string {
+	words := strings.Fields(strings.ReplaceAll(strings.ReplaceAll(s, "_", " "), "-", " "))
+	for i, w := range words {
+		words[i] = strings.Title(w)
+	}
+	return strings.Join(words, "")
+}
+
+func main() {
+	fmt.Println(ToPascalCase("user_profile_card")) // "UserProfileCard"
+}`,
+    note: "Uses standard strings library."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Double Slashes or Hyphens from Incomplete Splits",
+    description: "Leaving empty segments or double hyphens can result in incorrect parsing loops.",
+    fix: "Ensure your splitting regex targets consecutive spaces, hyphens, and underscores: <code>/[-_\\s]+/</code>."
+  },
+  {
+    title: "Over-Capitalizing Acronyms",
+    description: "Naming variables XMLParser or HTMLDocument violates C# and Java readability conventions.",
+    fix: "Convert acronyms to standard capital-lowercase form: <code>XmlParser</code>, <code>HtmlDocument</code>."
+  }
+];
+
+const references = [
+  { title: "TypeScript Coding Guidelines - Casing Styles", url: "https://github.com/microsoft/TypeScript/wiki/Coding-guidelines", source: "TypeScript Repository" },
+  { title: "React Component Naming Conventions Specification", url: "https://react.dev/reference/react/components", source: "React Team" }
+];
+---
+
+<ToolPageLayout
+  title="PascalCase Converter - Convert Text to UpperCamelCase Online"
+  description="Convert variable names, config properties, or lists of text to PascalCase format in real-time. Free online converter for classes, React components, and types."
+  keywords="pascalcase converter, pascal case, upper camel case, convert to pascalcase, class naming converter, developer tools"
+  toolTitle="PascalCase Converter"
+  toolDescription="Convert variable names and text strings to PascalCase (e.g. UserProfileCard) instantly in your browser."
+  faqs={faqs}
+>
+  <CaseConverter client:load defaultCaseId="pascal" defaultInput={`user_profile_image\nauthKeySecret\napi-gateway-url\ndatabasePoolSize`} />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        When should you use PascalCase?
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Maintaining standard styles ensures structural components are obvious to other developers. In modern software engineering, <strong class="text-zinc-250 font-mono">PascalCase</strong> is utilized to indicate that an identifier is a class constructor, interface, type definition, or UI component.
+      </p>
+      <p class="leading-relaxed">
+        Common applications include:
+      </p>
+      <ul class="list-disc pl-5 space-y-1.5 text-xs text-zinc-400 mb-4">
+        <li><strong class="text-zinc-300">Object-Oriented Programming:</strong> Class naming in Java, C#, C++, PHP, and Python.</li>
+        <li><strong class="text-zinc-300">React & Frontend Components:</strong> Custom components must start with an uppercase letter to be distinguished from native HTML elements (e.g., <code>&lt;DashboardLayout /&gt;</code> vs <code>&lt;div /&gt;</code>).</li>
+        <li><strong class="text-zinc-300">TypeScript:</strong> Specifying types, interfaces, and namespaces.</li>
+      </ul>
+    </div>
+
+    <!-- Section: Cross Links -->
+    <div class="flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Other Casing Converters
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <a href="/tools/case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">All-in-One Case Converter</a>
+        <a href="/tools/camelcase-to-snake-case" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">camelCase to snake_case</a>
+        <a href="/tools/snake-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">snake_case Converter</a>
+        <a href="/tools/kebab-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">kebab-case Converter</a>
+        <a href="/tools/title-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Title Case Converter</a>
+      </div>
+    </div>
+
+    <!-- Conversion Example Showcase -->
+    <ExampleCard
+      title="PascalCase Conversion Examples"
+      description="Study the raw inputs and conversion results for common programming names:"
+      examples={[
+        { label: "kebab-case CSS Class", input: "sidebar-navigation-header", output: "SidebarNavigationHeader", badge: "PascalCase" },
+        { label: "snake_case Database Column", input: "user_session_expiry", output: "UserSessionExpiry", badge: "PascalCase" },
+        { label: "Spaced Paragraph Text", input: "authentication security settings", output: "AuthenticationSecuritySettings", badge: "PascalCase" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Variable Mapping Snippets"
+      description="Convert naming formats dynamically in your custom modules:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Conversion Pitfalls"
+      description="Avoid these common errors when transforming cases in variables and columns:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="PascalCase Recommendations"
+      practices={[
+        { title: "Capitalize the First Character", description: "Unlike camelCase, PascalCase mandates that the very first character must always be capitalized." },
+        { title: "Handle Acronyms Consistently", description: "Follow Microsoft and Google guides to format acronyms in title casing (e.g. XmlParser, not XMLParser)." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

@@ -2,6 +2,9 @@
 import Layout from './Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import RelatedTools from '../components/content/RelatedTools.astro';
+import PrivacyBadge from '../components/content/PrivacyBadge.astro';
+import FAQSection from '../components/content/FAQSection.astro';
 
 interface Props {
   title: string;
@@ -31,10 +34,48 @@ const {
   privacyText = "Processed locally in browser. Zero server transmission."
 } = Astro.props;
 
-// Build the JSON-LD schemas for search engines
+// Enforce canonical URL for schemas
+const cleanPathname = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const canonicalURL = new URL(cleanPathname, Astro.site || 'https://useutils.com');
+
+// Build the JSON-LD schemas for search engines including BreadcrumbList and WebPage
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": canonicalURL.toString(),
+      "url": canonicalURL.toString(),
+      "name": title,
+      "description": description,
+      "breadcrumb": {
+        "@id": `${canonicalURL.toString()}#breadcrumb`
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${canonicalURL.toString()}#breadcrumb`,
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://useutils.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://useutils.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": toolTitle,
+          "item": canonicalURL.toString()
+        }
+      ]
+    },
     {
       "@type": "SoftwareApplication",
       "name": toolTitle,
@@ -71,7 +112,16 @@ const jsonLd = {
   <Header version={version} />
 
   <!-- Main Body Content -->
-  <main class="flex-grow w-full max-w-7xl mx-auto px-4 py-8 flex flex-col gap-6">
+  <main class="flex-grow w-full max-w-7xl mx-auto px-4 py-8 flex flex-col gap-5">
+    <!-- Breadcrumbs Navigation -->
+    <nav class="flex items-center gap-2 text-[10px] md:text-[11px] font-mono text-zinc-500 select-none" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-accent-emerald transition-colors">home</a>
+      <span class="text-zinc-700">/</span>
+      <a href="/tools" class="hover:text-accent-emerald transition-colors">tools</a>
+      <span class="text-zinc-700">/</span>
+      <span class="text-accent-emerald font-medium">{toolTitle.toLowerCase()}</span>
+    </nav>
+
     <!-- Hero / Title Header Section -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pt-2 pb-6 border-b border-border-hairline/60">
       <div class="flex flex-col gap-2">
@@ -104,24 +154,13 @@ const jsonLd = {
 
     <!-- Privacy Banner -->
     {showPrivacyBanner && (
-      <div class="flex flex-wrap items-center justify-between gap-4 bg-panel border border-border-hairline rounded-lg px-4 py-3">
-        <div class="flex items-center gap-2.5">
-          <span class="flex h-2.5 w-2.5 relative">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent-emerald"></span>
-          </span>
-          <span class="text-xs md:text-sm text-zinc-300 font-medium font-sans">
-            {privacyText}
-          </span>
-        </div>
-        <div class="text-[10px] text-zinc-500 uppercase tracking-wider font-mono">
-          100% Privacy Assurance
-        </div>
-      </div>
+      <PrivacyBadge variant="banner" text={privacyText} />
     )}
 
     <!-- Dynamic Slot for Tool Components -->
-    <slot />
+    <div class="tool-workspace-container">
+      <slot />
+    </div>
 
     <!-- Rich On-Page SEO Landing Page Content -->
     {((Astro.slots.has('seo-content') || faqs.length > 0)) && (
@@ -131,27 +170,17 @@ const jsonLd = {
           <!-- Section SEO articles -->
           <slot name="seo-content" />
 
-          <!-- FAQ Grid -->
+          <!-- FAQ Section -->
           {faqs.length > 0 && (
-            <div>
-              <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-6 flex items-center gap-2">
-                <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
-                Frequently Asked Questions (FAQ)
-              </h2>
-              <div class="space-y-4">
-                {faqs.map((faq) => (
-                  <div class="p-4 bg-zinc-900/30 border border-border-hairline rounded-lg">
-                    <h4 class="font-medium text-zinc-100 text-sm">{faq.question}</h4>
-                    <p class="text-zinc-400 text-xs mt-2 leading-relaxed font-sans" set:html={faq.answer} />
-                  </div>
-                ))}
-              </div>
-            </div>
+            <FAQSection faqs={faqs} />
           )}
 
         </div>
       </section>
     )}
+
+    <!-- Dynamic Related Tools Recommendation Grid -->
+    <RelatedTools />
   </main>
 
   <Footer />

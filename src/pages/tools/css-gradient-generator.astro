@@ -1,0 +1,231 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { GradientGenerator as GradientGeneratorComponent } from '../../components/GradientGenerator';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+import PrivacyBadge from '../../components/content/PrivacyBadge.astro';
+import RelatedTools from '../../components/content/RelatedTools.astro';
+
+const faqs = [
+  {
+    question: "What is a CSS Gradient Generator?",
+    answer: "A CSS Gradient Generator is a visual design tool that generates CSS code for linear, radial, or conic gradients using an interactive timeline."
+  },
+  {
+    question: "How do I create a linear gradient in CSS?",
+    answer: "Use the `linear-gradient()` function. Specify the direction (angle in degrees or keywords like `to right`) followed by color stops. For example: `background: linear-gradient(135deg, #10B981, #3B82F6);`."
+  },
+  {
+    question: "How do I create a radial gradient in CSS?",
+    answer: "Use the `radial-gradient()` function. Specify the shape (circle or ellipse) and position, followed by color stops. For example: `background: radial-gradient(circle at center, #10B981, #3B82F6);`."
+  },
+  {
+    question: "How do I create a conic gradient in CSS?",
+    answer: "Use the `conic-gradient()` function. Specify the starting angle and position, followed by color stops. For example: `background: conic-gradient(from 0deg at center, #10B981, #3B82F6);`."
+  },
+  {
+    question: "Can I set transparency on CSS gradient color stops?",
+    answer: "Yes, you can use RGBA or HSLA color formats to add transparency to individual stops (e.g. `rgba(52, 211, 153, 0.5)`)."
+  },
+  {
+    question: "How do I clip a gradient to text in CSS?",
+    answer: "Combine three rules: set the background to the gradient, apply `-webkit-background-clip: text;`, and set `-webkit-text-fill-color: transparent;`."
+  },
+  {
+    question: "What browsers support conic gradients?",
+    answer: "Conic gradients are fully supported in all modern browsers, including Chrome, Safari, Firefox, Edge, and Opera."
+  },
+  {
+    question: "What is the grey dead zone in gradients?",
+    answer: "When transitioning between contrasting colors, the RGB midpoint passes through a low-saturation gray area. Add intermediate color stops to keep the gradient vibrant."
+  },
+  {
+    question: "How can I extract color palettes from an image?",
+    answer: "Our tool includes a local Image Palette Extractor. Drag and drop any image to automatically sample the dominant colors."
+  },
+  {
+    question: "Are CSS gradients compiled client-side?",
+    answer: "Yes. All computations are performed locally in your web browser. No files are uploaded to any server."
+  },
+  {
+    question: "How does screen resolution affect CSS gradients?",
+    answer: "CSS gradients are rendered vectorially by the browser, meaning they scale smoothly to any screen resolution without quality loss."
+  },
+  {
+    question: "What is the CSS syntax for repeating linear gradients?",
+    answer: "Use the `repeating-linear-gradient()` function to repeat the color pattern indefinitely: `background: repeating-linear-gradient(45deg, #10B981, #10B981 10px, #3B82F6 10px, #3B82F6 20px);`."
+  },
+  {
+    question: "How does printing affect CSS gradients?",
+    answer: "Printing relies on CMYK ink rather than RGB light. Gradients may appear differently in print if colors sit outside the printable range."
+  },
+  {
+    question: "How can I use CSS custom variables in gradients?",
+    answer: "You can declare custom properties in the gradient function: `background: linear-gradient(to right, var(--color-primary), var(--color-secondary));`."
+  },
+  {
+    question: "Is there a performance difference between CSS gradients and images?",
+    answer: "Yes, CSS gradients load instantly because they are generated programmatically by the browser, reducing bandwidth use."
+  },
+  {
+    question: "Can I animate CSS gradients?",
+    answer: "Yes, you can animate a gradient's position or size. Modern browsers also support direct transition animations using CSS `@property`."
+  },
+  {
+    question: "How do I copy a gradient as an SVG element?",
+    answer: "Our tool includes a dedicated SVG tab to export gradients as `<linearGradient>` or `<radialGradient>` XML elements."
+  },
+  {
+    question: "How do I draw a gradient on HTML5 Canvas?",
+    answer: "Use `createLinearGradient` or `createRadialGradient` on the canvas context, add color stops, and apply it to the `fillStyle` property."
+  },
+  {
+    question: "Can I use CSS gradients in React inline styles?",
+    answer: "Yes. Declare the gradient syntax as a string on the `backgroundImage` style property: `style={{ backgroundImage: 'linear-gradient(to right, #10b981, #3b82f6)' }}`."
+  },
+  {
+    question: "Does using CSS gradients improve website SEO?",
+    answer: "Yes, using CSS gradients instead of image assets reduces page weight and speeds up load times, boosting mobile rankings."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "CSS",
+    code: `
+/* Linear Gradient */
+.gradient-box {
+  background-image: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
+}
+
+/* Radial Gradient */
+.radial-box {
+  background-image: radial-gradient(circle at center, #10B981 0%, #3B82F6 100%);
+}
+    `,
+    note: "Modern CSS declarations using standard gradient functions."
+  },
+  {
+    lang: "JavaScript",
+    code: `
+const canvas = document.createElement('canvas');
+const ctx = canvas.getContext('2d');
+
+const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+grad.addColorStop(0, '#10b981');
+grad.addColorStop(1, '#3b82f6');
+
+ctx.fillStyle = grad;
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+    `,
+    note: "HTML5 Canvas API context drawing implementation."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Wrong Direction Keywords",
+    description: "Omitting the 'to' keyword in direction declarations. Use 'to right' instead of 'right' to comply with standard specs."
+  },
+  {
+    title: "Vague Opacity Settings",
+    description: "Declaring opacity transitions without matching color coordinates, which can cause black transitions in some legacy browsers."
+  },
+  {
+    title: "Missing Fallbacks",
+    description: "Omitting flat color background fallbacks for legacy browsers that do not support gradients."
+  }
+];
+
+const references = [
+  {
+    title: "W3C CSS Images Module Level 3",
+    url: "https://www.w3.org/TR/css-images-3/"
+  },
+  {
+    title: "MDN Web Docs: CSS <gradient> type",
+    url: "https://developer.mozilla.org/en-US/docs/Web/CSS/gradient"
+  }
+];
+---
+
+<ToolPageLayout
+  title="CSS Gradient Generator | Linear, Radial, Conic Designer"
+  description="Generate linear, radial, and conic CSS gradients visually. Adjust color stops, extract palettes from images, and copy production-ready code."
+  keywords="css gradient generator, linear gradient css, radial gradient css, conic gradient, gradient maker, css background gradient"
+  toolTitle="CSS Gradient Generator"
+  toolDescription="Design multi-stop linear, radial, or conic gradients. Extract dominant color scales from photos and copy CSS, SVG, or Canvas styles."
+  faqs={faqs}
+>
+  <GradientGeneratorComponent defaultType="linear" defaultActiveCodeTab="css" client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <PrivacyBadge />
+
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Visualizing and Styling CSS Gradients
+      </h2>
+      <p class="leading-relaxed mb-3">
+        CSS gradients are computed dynamically by the browser's paint engine, which ensures they scale smoothly to any resolution without decreasing load performance.
+      </p>
+      <p class="leading-relaxed">
+        Our Gradient Generator provides an interactive timeline to adjust color coordinates, customize transparency levels, and preview text gradients.
+      </p>
+    </div>
+
+    <ComparisonTable
+      title="CSS Gradient Styles Comparison"
+      description="Compare linear, radial, and conic rendering behaviors:"
+      headers={["Gradient Type", "CSS Syntax", "Transition Axis", "Best Use Case"]}
+      rows={[
+        { label: "Linear", values: ["linear-gradient(135deg, ...)", "Straight line (custom angle)", "Standard site backgrounds"] },
+        { label: "Radial", values: ["radial-gradient(circle, ...)", "Radiates from central origin", "Glow cards and lighting effects"] },
+        { label: "Conic", values: ["conic-gradient(from 0deg, ...)", "Wraps around center pivot", "Radar trackers and color wheels"] }
+      ]}
+    />
+
+    <ExampleCard
+      title="Common Gradient Coordinates"
+      description="Popular design presets:"
+      examples={[
+        { label: "Emerald Glow (Brand)", input: "linear-gradient(135deg, #10B981 0%, #3B82F6 100%)", output: "Copied!", badge: "CSS" },
+        { label: "Sunset Peach", input: "linear-gradient(to right, #FF7E5F, #FEB47B)", output: "Copied!", badge: "CSS" },
+        { label: "Ocean Breeze", input: "linear-gradient(to top, #2E0854, #4B0082)", output: "Copied!", badge: "CSS" }
+      ]}
+    />
+
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Gradient Integration"
+      description="Implement gradients programmatically using these examples:"
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Gradient Pitfalls"
+    />
+
+    <BestPractices
+      title="Gradient Styling Best Practices"
+      practices={[
+        { title: "Define a Flat Fallback Color", description: "Set a fallback flat background color before the gradient rule for older browsers that may fail to parse gradient styling." },
+        { title: "Limit Total Color Stops", description: "Limit color scales to 3 or 4 stops to prevent rendering layout clutter." }
+      ]}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+
+    <RelatedTools
+      currentToolUrl="/tools/css-gradient-generator"
+      category="css"
+    />
+  </div>
+</ToolPageLayout>

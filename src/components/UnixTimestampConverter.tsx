@@ -60,12 +60,26 @@ const COMMON_TIMEZONES = [
   { label: 'Sydney (AEST/AEDT)', value: 'Australia/Sydney' }
 ];
 
-export const UnixTimestampConverter: React.FC = () => {
+export interface UnixTimestampConverterProps {
+  defaultActiveTab?: 'single' | 'scanner';
+  defaultTimezone?: string;
+  defaultInputVal?: string;
+  defaultInputUnit?: 's' | 'ms' | 'us' | 'ns';
+  defaultIsTicking?: boolean;
+}
+
+export const UnixTimestampConverter: React.FC<UnixTimestampConverterProps> = ({
+  defaultActiveTab = 'single',
+  defaultTimezone = 'LOCAL',
+  defaultInputVal = '',
+  defaultInputUnit = 's',
+  defaultIsTicking
+}) => {
   // Tabs: Single Converter vs Log Scanner
-  const [activeTab, setActiveTab] = useState<'single' | 'scanner'>('single');
+  const [activeTab, setActiveTab] = useState<'single' | 'scanner'>(defaultActiveTab);
 
   // Timezone setting
-  const [timezone, setTimezone] = useState<string>('LOCAL');
+  const [timezone, setTimezone] = useState<string>(defaultTimezone);
   
   // Resolve timezone string
   const resolvedTimezone = useMemo(() => {
@@ -82,14 +96,16 @@ export const UnixTimestampConverter: React.FC = () => {
   // ==========================================
   // Single Converter State
   // ==========================================
-  const [inputVal, setInputVal] = useState<string>('');
-  const [inputUnit, setInputUnit] = useState<'s' | 'ms' | 'us' | 'ns'>('s');
+  const [inputVal, setInputVal] = useState<string>(defaultInputVal);
+  const [inputUnit, setInputUnit] = useState<'s' | 'ms' | 'us' | 'ns'>(defaultInputUnit);
   
   // Natural language state
   const [naturalVal, setNaturalVal] = useState<string>('');
 
   // Ticking Clock State
-  const [isTicking, setIsTicking] = useState<boolean>(true);
+  const [isTicking, setIsTicking] = useState<boolean>(
+    defaultIsTicking !== undefined ? defaultIsTicking : (defaultInputVal === '')
+  );
   const [currentEpoch, setCurrentEpoch] = useState<number>(Math.floor(Date.now() / 1000));
 
   // Offset calculator state

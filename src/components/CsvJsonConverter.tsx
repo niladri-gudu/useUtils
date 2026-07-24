@@ -92,10 +92,18 @@ const SAMPLES = {
   }
 };
 
-export const CsvJsonConverter: React.FC = () => {
+interface CsvJsonConverterProps {
+  defaultMode?: 'csv-to-json' | 'json-to-csv';
+  defaultTab?: 'text' | 'grid';
+}
+
+export const CsvJsonConverter: React.FC<CsvJsonConverterProps> = ({
+  defaultMode = 'csv-to-json',
+  defaultTab = 'text'
+}) => {
   const [input, setInput] = useState<string>('');
   const [output, setOutput] = useState<string>('');
-  const [mode, setMode] = useState<'csv-to-json' | 'json-to-csv'>('csv-to-json');
+  const [mode, setMode] = useState<'csv-to-json' | 'json-to-csv'>(defaultMode);
   
   // Options
   const [delimiter, setDelimiter] = useState<string>(',');
@@ -106,7 +114,7 @@ export const CsvJsonConverter: React.FC = () => {
   const [minifyJson, setMinifyJson] = useState<boolean>(false);
   
   // Tab Switcher for right side
-  const [rightTab, setRightTab] = useState<'text' | 'grid'>('text');
+  const [rightTab, setRightTab] = useState<'text' | 'grid'>(defaultTab);
   
   // Copy feedback toasts
   const [copyFeedback, setCopyFeedback] = useState<boolean>(false);
@@ -127,23 +135,16 @@ export const CsvJsonConverter: React.FC = () => {
       const urlMode = params.get('mode');
       const urlTab = params.get('tab');
       
-      if (urlMode === 'json-to-csv') {
-        setMode('json-to-csv');
-        setInput(SAMPLES.users.json);
-      } else {
-        setMode('csv-to-json');
-        setInput(SAMPLES.users.csv);
-      }
+      const activeMode = (urlMode === 'csv-to-json' || urlMode === 'json-to-csv') ? urlMode : defaultMode;
+      const activeTab = (urlTab === 'text' || urlTab === 'grid') ? urlTab : defaultTab;
       
-      if (urlTab === 'grid') {
-        setRightTab('grid');
-      } else {
-        setRightTab('text');
-      }
+      setMode(activeMode);
+      setRightTab(activeTab);
+      setInput(activeMode === 'json-to-csv' ? SAMPLES.users.json : SAMPLES.users.csv);
     } else {
-      setInput(SAMPLES.users.csv);
+      setInput(defaultMode === 'json-to-csv' ? SAMPLES.users.json : SAMPLES.users.csv);
     }
-  }, []);
+  }, [defaultMode, defaultTab]);
 
   // Sync Input and Delimiter auto-detector
   useEffect(() => {

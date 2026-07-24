@@ -27,21 +27,34 @@ export default defineConfig({
           try {
             const distDir = fileURLToPath(dir);
             const clientDir = path.join(distDir, 'client');
-            const oldPath = path.join(clientDir, 'sitemap-index.xml');
-            const newPath = path.join(clientDir, 'sitemap.xml');
             
-            if (fs.existsSync(oldPath)) {
-              fs.copyFileSync(oldPath, newPath);
-              console.log('Successfully copied sitemap-index.xml to sitemap.xml');
-            } else {
-              const rootOldPath = path.join(distDir, 'sitemap-index.xml');
-              const rootNewPath = path.join(distDir, 'sitemap.xml');
-              if (fs.existsSync(rootOldPath)) {
-                fs.copyFileSync(rootOldPath, rootNewPath);
-                console.log('Successfully copied root sitemap-index.xml to sitemap.xml');
-              } else {
-                console.warn('Sitemap index file not found to copy.');
+            let sitemap0 = path.join(clientDir, 'sitemap-0.xml');
+            let sitemapIndex = path.join(clientDir, 'sitemap-index.xml');
+            let sitemapTarget = path.join(clientDir, 'sitemap.xml');
+            
+            if (!fs.existsSync(sitemap0) && !fs.existsSync(sitemapIndex)) {
+              sitemap0 = path.join(distDir, 'sitemap-0.xml');
+              sitemapIndex = path.join(distDir, 'sitemap-index.xml');
+              sitemapTarget = path.join(distDir, 'sitemap.xml');
+            }
+            
+            if (fs.existsSync(sitemap0)) {
+              fs.copyFileSync(sitemap0, sitemapTarget);
+              console.log('Successfully copied sitemap-0.xml to sitemap.xml');
+              try {
+                fs.unlinkSync(sitemap0);
+                if (fs.existsSync(sitemapIndex)) {
+                  fs.unlinkSync(sitemapIndex);
+                }
+                console.log('Cleaned up temporary sitemap files.');
+              } catch (err) {
+                console.warn('Could not clean up temporary sitemap index/chunk files:', err);
               }
+            } else if (fs.existsSync(sitemapIndex)) {
+              fs.copyFileSync(sitemapIndex, sitemapTarget);
+              console.log('Fallback: Successfully copied sitemap-index.xml to sitemap.xml');
+            } else {
+              console.warn('Sitemap files not found to copy.');
             }
           } catch (error) {
             console.error('Error copying sitemap file:', error);

@@ -1,0 +1,238 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { CaseConverter } from '../../components/CaseConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const faqs = [
+  {
+    question: "What is CONSTANT_CASE?",
+    answer: "<code>CONSTANT_CASE</code> (also known as Screaming Snake Case) writes all letters in uppercase and separates words with underscores (<code>_</code>). For example: <code>MAX_RETRY_COUNT</code>. It is the standard format for representing immutable values or global variables."
+  },
+  {
+    question: "When should I use CONSTANT_CASE?",
+    answer: "Use <code>CONSTANT_CASE</code> for global variables, immutable constants, Enum values, environment variables (e.g. database connection URLs), and configuration file keys."
+  },
+  {
+    question: "What is Screaming Snake Case?",
+    answer: "Screaming Snake Case is another name for <code>CONSTANT_CASE</code>. It gets the name 'Screaming' because it is in ALL CAPS, and 'Snake' because it uses underscores to connect words, resembling a snake."
+  },
+  {
+    question: "How to convert text to CONSTANT_CASE in JavaScript?",
+    answer: "In JavaScript, replace word boundaries with underscores and uppercase the result: <code>const toConstantCase = str => str.replace(/([a-z])([A-Z])/g, '$1_$2').replace(/[\\s-_]+/g, '_').toUpperCase();</code>."
+  },
+  {
+    question: "How to convert text to CONSTANT_CASE in Python?",
+    answer: "In Python, use regex to insert underscores before capitalized characters, then swap spaces/hyphens and capitalize: <code>import re; constant = re.sub(r'(?<!^)(?=[A-Z])', '_', s).replace('-', '_').replace(' ', '_').upper()</code>."
+  },
+  {
+    question: "How to convert text to CONSTANT_CASE in Go?",
+    answer: "In Go, split on word boundaries, uppercase segments, and join with underscores: <code>var matchAllCap = regexp.MustCompile(\"([a-z0-9])([A-Z])\"); strings.ToUpper(strings.ReplaceAll(matchAllCap.ReplaceAllString(s, \"\${1}_\${2}\"), \"-\", \"_\"))</code>."
+  },
+  {
+    question: "Why do environment variables use CONSTANT_CASE?",
+    answer: "Operating systems (Linux, Windows, macOS) and container tools like Docker parse environment variables in uppercase to distinguish system-level runtime variables from internal application code variables."
+  },
+  {
+    question: "What is the difference between CONSTANT_CASE and snake_case?",
+    answer: "Both use underscores to separate words. However, <code>CONSTANT_CASE</code> uses all uppercase letters (e.g. <code>PORT_NUMBER</code>) while <code>snake_case</code> uses all lowercase letters (e.g. <code>port_number</code>)."
+  },
+  {
+    question: "Is my data secure when using useUtils?",
+    answer: "Absolutely. All conversions occur strictly inside your local browser using client-side JavaScript. No keys, passwords, or variables are uploaded to any server, keeping system configuration details completely private."
+  },
+  {
+    question: "Does CONSTANT_CASE support numbers?",
+    answer: "Yes, numbers are preserved and integrated securely. For example, <code>apiV2Timeout</code> is converted to <code>API_V2_TIMEOUT</code>."
+  },
+  {
+    question: "How does the converter treat camelCase strings?",
+    answer: "The converter identifies transitions from lowercase to uppercase characters (e.g., <code>databaseUrl</code>) as word boundaries, introducing underscores to split them correctly into <code>DATABASE_URL</code>."
+  },
+  {
+    question: "Can I convert lists of variables in bulk?",
+    answer: "Yes. Check the 'Treat each line independently' option, paste your list of keys, and copy your converted constant declarations instantly."
+  },
+  {
+    question: "Why are constants cased in uppercase?",
+    answer: "Capitalization indicates immutability at a glance. It warns developers scanning code that changing or re-assigning that specific variable is prohibited by design."
+  },
+  {
+    question: "How does TypeScript handle Enum casing?",
+    answer: "TypeScript style guidelines recommend using PascalCase for Enum names (e.g. <code>ResponseStatus</code>) and CONSTANT_CASE or PascalCase for its internal member keys (e.g. <code>CONNECTION_FAILED</code>)."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `const toConstantCase = str => 
+  str.replace(/([a-z])([A-Z])/g, '$1_$2')
+     .replace(/[\\s-_]+/g, '_')
+     .toUpperCase();
+
+console.log(toConstantCase("databaseConnectionUrl")); // "DATABASE_CONNECTION_URL"
+console.log(toConstantCase("api-v2-setup"));           // "API_V2_SETUP"`,
+    note: "Works in Node.js and browser JS environments."
+  },
+  {
+    lang: "Python",
+    code: `import re
+
+def to_constant_case(s):
+    # Inserts underscores and converts separators to underscores
+    s = re.sub(r'(?<!^)(?=[A-Z])', '_', s).replace('-', '_').replace(' ', '_')
+    # Collapse multiple underscores
+    return re.sub(r'_+', '_', s).upper()
+
+print(to_constant_case("databaseConnectionUrl")) # "DATABASE_CONNECTION_URL"`,
+    note: "Collapses duplicate underscores safely."
+  },
+  {
+    lang: "Go",
+    code: `package main
+
+import (
+	"fmt"
+	"regexp"
+	"strings"
+)
+
+func ToConstantCase(str string) string {
+	var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
+	spaced := matchAllCap.ReplaceAllString(str, "\${1}_\${2}")
+	replaced := strings.ReplaceAll(strings.ReplaceAll(spaced, "-", "_"), " ", "_")
+	return strings.ToUpper(replaced)
+}
+
+func main() {
+	fmt.Println(ToConstantCase("databaseConnectionUrl")) // "DATABASE_CONNECTION_URL"
+}`,
+    note: "Standard Go packages, safe for configuration mappings."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Double Underscores (__) in Outputs",
+    description: "Inputting strings with hyphens and existing underscores like max-retry_delay can produce double underscores (MAX__RETRY__DELAY) if not collapsed.",
+    fix: "Use a regex filter to collapse consecutive underscores: <code>replace(/_+/g, '_')</code>."
+  },
+  {
+    title: "Accidentally Capitalizing Pre-existing camelCase",
+    description: "Failing to check case boundaries will merge segments (e.g. converting databaseUrl to DATABASEURL instead of DATABASE_URL).",
+    fix: "Run a regex pass to detect transitions from lower to upper case letters and insert an underscore before upper-casing the string."
+  }
+];
+
+const references = [
+  { title: "Google C++ Style Guide - Constant Names", url: "https://google.github.io/styleguide/cppguide.html#Constant_Names", source: "Google Style Guides" },
+  { title: "Oracle Java Code Conventions - Naming Conventions", url: "https://www.oracle.com/java/technologies/javase/codeconventions-namingconventions.html", source: "Oracle Standards" }
+];
+---
+
+<ToolPageLayout
+  title="CONSTANT_CASE Converter - Screaming Snake Case Online"
+  description="Convert variable names, config properties, or lists of text to CONSTANT_CASE (screaming_snake_case) in real-time. Free online developer utility."
+  keywords="constant_case converter, screaming snake case, convert to constant case, variable caps converter"
+  toolTitle="CONSTANT_CASE Converter"
+  toolDescription="Convert variable names and text strings to CONSTANT_CASE (e.g. DATABASE_URL) instantly in your browser."
+  faqs={faqs}
+>
+  <CaseConverter client:load defaultCaseId="constant" defaultInput={`databaseUrl\nportNumber\nmaxRetriesCount\nenvironment`} />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Declaring System Constants and Variables
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Immutability is an important concept in system architecture. Variables that represent global configurations or unchanging rules must stand out to prevent developers from accidentally writing reassignment scripts. <strong class="text-zinc-250 font-mono">CONSTANT_CASE</strong> accomplishes this with uppercase formatting, separated by underscores.
+      </p>
+      <p class="leading-relaxed mb-4">
+        It is widely used in:
+      </p>
+      <ul class="list-disc pl-5 space-y-1.5 text-xs text-zinc-400 mb-4">
+        <li><strong class="text-zinc-300">Environment Variables:</strong> System variables (.env configurations) parsed by Docker and system shells.</li>
+        <li><strong class="text-zinc-300">Global Constants:</strong> Declared using <code>const</code> in JavaScript or <code>final</code> in Java.</li>
+        <li><strong class="text-zinc-300">TypeScript Enums:</strong> Declaring set collections (e.g., <code>USER_ROLE</code>, <code>HTTP_STATUS</code>).</li>
+        <li><strong class="text-zinc-300">Rust Statics:</strong> Statics and constant variables are warning-enforced in uppercase by the compiler.</li>
+      </ul>
+    </div>
+
+    <!-- Section: Cross Links -->
+    <div class="flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Other Casing Converters
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <a href="/tools/case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">All-in-One Case Converter</a>
+        <a href="/tools/camelcase-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">camelCase Converter</a>
+        <a href="/tools/snake-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">snake_case Converter</a>
+        <a href="/tools/pascal-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">PascalCase Converter</a>
+        <a href="/tools/kebab-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">kebab-case Converter</a>
+        <a href="/tools/constant-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-accent-emerald font-semibold transition-all">CONSTANT_CASE Converter</a>
+        <a href="/tools/camelcase-to-snake-case" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">camelCase to snake_case</a>
+        <a href="/tools/snake-case-to-camelcase" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">snake_case to camelCase</a>
+        <a href="/tools/title-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Title Case Converter</a>
+      </div>
+    </div>
+
+    <!-- Section: Case Style Comparison -->
+    <ComparisonTable
+      title="CONSTANT_CASE vs Other Casing Conventions"
+      headers={["Case Name", "Example Format", "Word Separator", "Typical Usage"]}
+      rows={[
+        { label: "CONSTANT_CASE", values: ["<code>MAX_RETRY_COUNT</code>", "Underscore (uppercase)", "Global constants, Env variables"] },
+        { label: "snake_case", values: ["<code>max_retry_count</code>", "Underscore (lowercase)", "Python variables, DB columns"] },
+        { label: "camelCase", values: ["<code>maxRetryCount</code>", "Capital letter (mixed)", "JS/TS local variables"] }
+      ]}
+    />
+
+    <!-- Section: Conversion Examples -->
+    <ExampleCard
+      title="CONSTANT_CASE Conversion Examples"
+      description="Study the raw inputs and conversion results for common parameters:"
+      examples={[
+        { label: "camelCase Database Timeout", input: "connectionTimeoutLimit", output: "CONNECTION_TIMEOUT_LIMIT", badge: "CONSTANT_CASE" },
+        { label: "Kebab Cased Server Header", input: "x-request-id", output: "X_REQUEST_ID", badge: "CONSTANT_CASE" },
+        { label: "Spaced Paragraph Config", input: "allow anonymous users", output: "ALLOW_ANONYMOUS_USERS", badge: "CONSTANT_CASE" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Variable Mapping Snippets"
+      description="Convert naming formats dynamically in your custom modules:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Conversion Pitfalls"
+      description="Avoid these common errors when transforming cases in variables and columns:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="CONSTANT_CASE Recommendations"
+      practices={[
+        { title: "Avoid Variables", description: "Do not use CONSTANT_CASE for local variables or function parameters to avoid confusing them with global constants." },
+        { title: "Collapse Separators", description: "Collapse dashes and spaces properly to ensure clean underscore sequences without double characters." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

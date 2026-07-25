@@ -1,0 +1,243 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { CaseConverter } from '../../components/CaseConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const faqs = [
+  {
+    question: "How do I convert snake_case to camelCase?",
+    answer: "To convert a <code>snake_case</code> string to <code>camelCase</code>, split the string at each underscore character (<code>_</code>), capitalize the first letter of each word following the first word, and join all segments back together. For example: <code>user_id</code> becomes <code>userId</code>."
+  },
+  {
+    question: "Why is converting snake_case to camelCase common in API design?",
+    answer: "Most relational databases (like PostgreSQL, MySQL) and backend languages (like Python, Rust) standardise database column names in <code>snake_case</code>. However, client-side JavaScript/TypeScript standardises variable naming in <code>camelCase</code>. During network serialization and deserialization, developers must translate the keys between these two styles."
+  },
+  {
+    question: "How to convert snake_case to camelCase in JavaScript?",
+    answer: "In JavaScript, use a regular expression to match underscores followed by letters, and capitalize the letter while removing the underscore: <code>const snakeToCamel = str => str.replace(/_([a-z])/g, (_, g) => g.toUpperCase());</code>."
+  },
+  {
+    question: "How to convert JSON object keys recursively from snake_case to camelCase?",
+    answer: "You can write a recursive function in JavaScript/TypeScript: <code>const toCamel = (obj) => { if (Array.isArray(obj)) return obj.map(toCamel); if (obj !== null && obj.constructor === Object) { return Object.keys(obj).reduce((acc, key) => { const camelKey = key.replace(/_([a-z])/g, (_, g) => g.toUpperCase()); acc[camelKey] = toCamel(obj[key]); return acc; }, {}); } return obj; };</code>."
+  },
+  {
+    question: "How do you convert snake_case to camelCase in Python?",
+    answer: "In Python, split by underscores and join: <code>def snake_to_camel(snake_str): components = snake_str.split('_'); return components[0] + ''.join(x.title() for x in components[1:])</code>."
+  },
+  {
+    question: "How do you convert snake_case to camelCase in Go?",
+    answer: "In Go, split on underscores, apply Title case to secondary words, and join: <code>words := strings.Split(s, \"_\"); for i := 1; i < len(words); i++ { words[i] = strings.Title(words[i]) } return strings.Join(words, \"\")</code>."
+  },
+  {
+    question: "What is the difference between snake_case and camelCase?",
+    answer: "<code>snake_case</code> is lowercase and separates words using underscores (e.g., <code>first_name</code>). <code>camelCase</code> capitalization indicates word boundaries, with the first word lowercased (e.g., <code>firstName</code>)."
+  },
+  {
+    question: "Is my data secure when using this converter?",
+    answer: "Yes. All case conversions are processed entirely on the client side in your web browser. No content is uploaded to any server, guaranteeing the security of your proprietary database configurations and structures."
+  },
+  {
+    question: "How do backend frameworks handle this serialization?",
+    answer: "Many serialization libraries offer global filters. For instance, in Java's Jackson, you configure the ObjectMapper with <code>PropertyNamingStrategies.SNAKE_CASE</code> to automatically map incoming database payloads to camelCase Java variables."
+  },
+  {
+    question: "Does the converter handle numbers (e.g., v1_endpoint)?",
+    answer: "Yes. Number prefixes and boundaries are preserved, so <code>v1_endpoint</code> will properly map to <code>v1Endpoint</code>."
+  },
+  {
+    question: "Does Lodash provide a function for this?",
+    answer: "Yes. Lodash's <code>_.camelCase()</code> function parses various casings, including snake_case, converting them to standard lowerCamelCase."
+  },
+  {
+    question: "Can I use VS Code Find/Replace regex to convert cases?",
+    answer: "Yes, you can search for <code>_([a-z])</code> and replace with <code>\\U$1</code> in VS Code to perform case conversions on variables inside a file."
+  },
+  {
+    question: "Does PostgreSQL support camelCase columns?",
+    answer: "Yes, but PostgreSQL folds all unquoted table and column names to lowercase. If you define a column in camelCase (e.g., <code>userId</code>), you must wrap it in double quotes in every query (e.g., <code>SELECT \"userId\" FROM users;</code>), which is highly tedious. Using snake_case avoids this."
+  },
+  {
+    question: "How to convert snake_case to camelCase in PHP?",
+    answer: "In PHP, use <code>lcfirst</code> and <code>str_replace</code> with <code>ucwords</code>: <code>$camel = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $snake))));</code>."
+  },
+  {
+    question: "Does it preserve leading underscores?",
+    answer: "Yes. Private class fields or system keys beginning with underscores (e.g., <code>_internal_id</code>) are converted while keeping the leading separator: <code>_internalId</code>."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript (JSON Key Converter)",
+    code: `// Recursively convert object keys from snake_case to camelCase
+const snakeToCamel = str => str.replace(/_([a-z])/g, (_, g) => g.toUpperCase());
+
+const keysToCamel = (obj) => {
+  if (Array.isArray(obj)) return obj.map(keysToCamel);
+  if (obj !== null && obj.constructor === Object) {
+    return Object.keys(obj).reduce((acc, key) => {
+      acc[snakeToCamel(key)] = keysToCamel(obj[key]);
+      return acc;
+    }, {});
+  }
+  return obj;
+};
+
+const data = { user_profile: { first_name: "John", last_name: "Doe" } };
+console.log(keysToCamel(data));
+// Output: { userProfile: { firstName: "John", lastName: "Doe" } }`,
+    note: "Extremely useful for normalizing API responses before frontend consumption."
+  },
+  {
+    lang: "Python",
+    code: `def snake_to_camel(snake_str):
+    # Split by underscore and capitalize secondary words
+    components = snake_str.split('_')
+    return components[0] + ''.join(x.title() for x in components[1:])
+
+print(snake_to_camel("user_profile_data")) # "userProfileData"`,
+    note: "Pythonic conversion, preserves original lowercase first segment."
+  },
+  {
+    lang: "Go",
+    code: `package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func SnakeToCamel(s string) string {
+	words := strings.Split(s, "_")
+	for i := 1; i < len(words); i++ {
+		words[i] = strings.Title(words[i])
+	}
+	return strings.Join(words, "")
+}
+
+func main() {
+	fmt.Println(SnakeToCamel("user_profile_data")) // "userProfileData"
+}`,
+	note: "Standard library mapping, safe for high-throughput serializers."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Capitalizing the First Character",
+    description: "Naive regex engines might capitalize the very first character of the snake_case string (converting first_name to FirstName instead of firstName). This yields PascalCase, which represents class types rather than variables.",
+    fix: "Ensure your parser isolates the first segment, applying lowercasing strictly to the initial word."
+  },
+  {
+    title: "Losing Leading or Trailing Underscores",
+    description: "Stripping all underscores blindly can erase private field signifiers like _system_key.",
+    fix: "Use a regex pattern that matches only internal word-boundary underscores: <code>/([a-zA-Z0-9])_([a-zA-Z0-9])/</code>."
+  }
+];
+
+const references = [
+  { title: "Jackson ObjectMapper - PropertyNamingStrategies", url: "https://fasterxml.github.io/jackson-databind/javadoc/2.12/com/fasterxml/jackson/databind/PropertyNamingStrategies.html", source: "FasterXML Docs" },
+  { title: "Google JSON Style Guide", url: "https://google.github.io/styleguide/jsoncstyleguide.xml", source: "Google API Specs" }
+];
+---
+
+<ToolPageLayout
+  title="snake_case to camelCase Converter - Convert Keys Online"
+  description="Convert database columns, JSON keys, or Python variables from snake_case to camelCase in real-time. Free online developer utility for API integration."
+  keywords="snake_case to camelcase, snake to camel, convert snake_case to camelcase, database column converter, json keys mapper"
+  toolTitle="snake_case to camelCase"
+  toolDescription="Convert variable names and database keys from snake_case (e.g. user_id) to camelCase (e.g. userId) instantly in your browser."
+  faqs={faqs}
+>
+  <CaseConverter client:load defaultCaseId="camel" defaultInput={`user_id\ncreated_at\nauth_token_secret\napi_gateway_url`} />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Mapping Database Fields to Web Applications
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Modern software development involves connecting distinct systems. Databases typically standardise column declarations using <strong class="text-zinc-250 font-mono">snake_case</strong> due to SQL case folding rules. Conversely, web applications built with React, Node, or TypeScript expect <strong class="text-zinc-250 font-mono">camelCase</strong> identifiers. 
+      </p>
+      <p class="leading-relaxed mb-4">
+        Our tool handles this translation instantly. Paste a list of database properties, and they will be converted to camelCase in real-time.
+      </p>
+    </div>
+
+    <!-- Section: Cross Links -->
+    <div class="flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Other Casing Converters
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <a href="/tools/case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">All-in-One Case Converter</a>
+        <a href="/tools/camelcase-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">camelCase Converter</a>
+        <a href="/tools/snake-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">snake_case Converter</a>
+        <a href="/tools/pascal-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">PascalCase Converter</a>
+        <a href="/tools/kebab-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">kebab-case Converter</a>
+        <a href="/tools/constant-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">CONSTANT_CASE Converter</a>
+        <a href="/tools/camelcase-to-snake-case" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">camelCase to snake_case</a>
+        <a href="/tools/snake-case-to-camelcase" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-accent-emerald font-semibold transition-all">snake_case to camelCase</a>
+        <a href="/tools/title-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Title Case Converter</a>
+      </div>
+    </div>
+
+    <!-- Section: Case Style Comparison -->
+    <ComparisonTable
+      title="snake_case and camelCase Naming Structures"
+      headers={["Case Style", "Example Naming", "Separators", "Ecosystem Standard"]}
+      rows={[
+        { label: "snake_case", values: ["<code>user_profile_data</code>", "Underscore (lowercase)", "Python, databases, REST endpoints"] },
+        { label: "camelCase", values: ["<code>userProfileData</code>", "Uppercase letter", "JS/TS vars, JSON keys, Java fields"] },
+        { label: "PascalCase", values: ["<code>UserProfileData</code>", "Capitalized first word", "Classes, components, modules"] }
+      ]}
+    />
+
+    <!-- Section: Conversion Examples -->
+    <ExampleCard
+      title="snake_case to camelCase Conversion Examples"
+      description="Study the raw inputs and conversion results for common database keys:"
+      examples={[
+        { label: "User Account Email field", input: "user_email_address", output: "userEmailAddress", badge: "camelCase" },
+        { label: "Database Updated Timestamp", input: "updated_at_timestamp", output: "updatedAtTimestamp", badge: "camelCase" },
+        { label: "API Configuration Secret Key", input: "stripe_webhook_secret", output: "stripeWebhookSecret", badge: "camelCase" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Recursive JSON Keys Conversion Helpers"
+      description="Map complete payload structures recursively using these script modules:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Conversion Pitfalls & Edge Cases"
+      description="Avoid these common bugs during payload key translations:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="API Mapping Recommendations"
+      practices={[
+        { title: "Perform Border Conversions", description: "Convert keys at your server's application border (request/response validation layers) so your internal code logic remains style-compliant." },
+        { title: "Beware of Double Underscores", description: "Collate consecutive underscores (__) before mapping to avoid creating disjointed capitalized letters." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

@@ -1,0 +1,249 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import { CaseConverter } from '../../components/CaseConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import LanguageSupport from '../../components/content/LanguageSupport.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const faqs = [
+  {
+    question: "What is camelCase?",
+    answer: "<code>camelCase</code> (specifically lowerCamelCase) is the practice of writing phrases such that each word in the middle of the phrase begins with a capital letter, with no intervening spaces or punctuation, and the very first letter is in lowercase. For example: <code>myVariableName</code>."
+  },
+  {
+    question: "When should I use camelCase?",
+    answer: "Use <code>camelCase</code> as the standard naming convention for variables, functions, methods, and properties in JavaScript, TypeScript, Java, C++, Swift, and Kotlin."
+  },
+  {
+    question: "Why is it called camelCase?",
+    answer: "The naming convention gets its name from the uppercase letters within the word, which resemble the humps on a camel's back (e.g., <code>camelCaseLayout</code>)."
+  },
+  {
+    question: "How does camelCase differ from PascalCase?",
+    answer: "In <code>camelCase</code>, the first letter is always lowercase (e.g., <code>userAccount</code>). In <code>PascalCase</code> (or UpperCamelCase), the first letter is capitalized (e.g., <code>UserAccount</code>). PascalCase is typically used for class names and component declarations, while camelCase is for variable declarations."
+  },
+  {
+    question: "Is my text data safe when using this tool?",
+    answer: "Yes, entirely safe. Like all useUtils modules, the conversion occurs completely on your machine inside your web browser. No data is sent over the internet or logged on any server."
+  },
+  {
+    question: "How do I convert text to camelCase in JavaScript?",
+    answer: "You can convert strings to camelCase in JS by splitting on spaces, underscores, or hyphens, then capitalizing each word except the first. An easy regex approach: <code>const toCamel = str => str.replace(/[-_\\s]+(.)?/g, (_, c) => c ? c.toUpperCase() : '').replace(/^(.)/, c => c.toLowerCase());</code>."
+  },
+  {
+    question: "How do I convert text to camelCase in Python?",
+    answer: "In Python, you can split on word boundaries using regular expressions, capitalize all segments except the first one: <code>import re; words = re.split(r'[-_\\s]+', s); camel = words[0].lower() + ''.join(w.capitalize() for w in words[1:])</code>."
+  },
+  {
+    question: "How do you write a camelCase converter in Go?",
+    answer: "In Go, split the string on delimiters, convert words to title case, join them, and lowercase the initial character: <code>words := strings.FieldsFunc(s, func(r rune) bool { return r == '_' || r == '-' || r == ' ' }); for i := range words { if i == 0 { words[i] = strings.ToLower(words[i]) } else { words[i] = strings.Title(words[i]) } }</code>."
+  },
+  {
+    question: "Does camelCase support acronyms?",
+    answer: "Yes, though style guides vary. Standard conventions recommend treating acronyms as regular words (e.g., <code>fetchXmlData</code> instead of <code>fetchXMLData</code>) to maintain readable token transitions."
+  },
+  {
+    question: "Can I convert multiple lines to camelCase in bulk?",
+    answer: "Yes. Check the 'Treat each line independently' option, paste your list of columns or variables, and convert them to camelCase at once."
+  },
+  {
+    question: "Why do JSON APIs prefer camelCase keys?",
+    answer: "Since JavaScript parses JSON objects natively, naming JSON keys in camelCase allows developers to access properties directly using dot notation (e.g., <code>user.firstName</code>) without using bracket syntax."
+  },
+  {
+    question: "How does React use camelCase?",
+    answer: "React uses camelCase for all JSX attributes and event handlers. For example, standard HTML <code>class</code> becomes <code>className</code>, and <code>onclick</code> becomes <code>onClick</code>."
+  },
+  {
+    question: "Can I use camelCase for filenames?",
+    answer: "Yes, though many developer guidelines recommend kebab-case or snake_case for assets and system files to ensure absolute path compatibility across Linux filesystems that may handle casing differences strictly."
+  },
+  {
+    question: "What is the difference between camelCase and kebab-case?",
+    answer: "CamelCase joins words by capitalizing the starting character of subsequent segments (e.g., <code>myVarName</code>), while kebab-case separates lowercase segments with hyphens (e.g., <code>my-var-name</code>)."
+  },
+  {
+    question: "How do prepositions behave in camelCase?",
+    answer: "In programming camelCase, prepositions are treated as standard words and are capitalized if they occur in the middle of the variable name (e.g., <code>daysBetweenDates</code>)."
+  }
+];
+
+const languageCodes = [
+  {
+    lang: "JavaScript",
+    code: `const toCamelCase = str =>
+  str.replace(/[-_\\s]+(.)?/g, (_, c) => c ? c.toUpperCase() : '')
+     .replace(/^(.)/, c => c.toLowerCase());
+
+console.log(toCamelCase("user_profile_data")); // "userProfileData"
+console.log(toCamelCase("API-Gateway-Url"));  // "apiGatewayUrl"`,
+    note: "Safe, regex-driven client or server-side parser."
+  },
+  {
+    lang: "Python",
+    code: `import re
+
+def to_camel_case(s):
+    # Split by spaces, underscores, and hyphens
+    words = re.split(r'[-_\\s]+', s)
+    if not words:
+        return ""
+    return words[0].lower() + "".join(w.capitalize() for w in words[1:])
+
+print(to_camel_case("USER_PROFILE_DATA")) # "userProfileData"`,
+    note: "PEP 8 compliant, handles mixed casing separators."
+  },
+  {
+    lang: "Go",
+    code: `package main
+
+import (
+	"fmt"
+	"regexp"
+	"strings"
+)
+
+func ToCamelCase(str string) string {
+	reg := regexp.MustCompile("[^a-zA-Z0-9]+")
+	words := reg.Split(str, -1)
+	for i, w := range words {
+		if i == 0 {
+			words[i] = strings.ToLower(w)
+		} else {
+			words[i] = strings.Title(strings.ToLower(w))
+		}
+	}
+	return strings.Join(words, "")
+}
+
+func main() {
+	fmt.Println(ToCamelCase("user_profile_data")) // "userProfileData"
+}`,
+    note: "Splits on non-alphanumeric boundaries and titles segments."
+  }
+];
+
+const mistakesList = [
+  {
+    title: "Accidentally Starting with an Uppercase Letter",
+    description: "Creating a variable in UpperCamelCase (PascalCase) like UserProfile rather than userProfile can cause compilers to identify it as a class type rather than an instance.",
+    fix: "Ensure the very first character of your camelCase variable is explicitly lowercase."
+  },
+  {
+    title: "Leaving Inner Punctuation Characters Intact",
+    description: "Failing to remove dots or slashes results in strings that break programming syntax trees.",
+    fix: "Utilize regex mapping to strip non-alphanumeric characters and turn them into CamelCase boundaries."
+  }
+];
+
+const references = [
+  { title: "Google JavaScript Style Guide - Naming Rules", url: "https://google.github.io/styleguide/jsguide.html#naming", source: "Google Style Guides" },
+  { title: "Mozilla Developer Network - JavaScript Coding Styles", url: "https://developer.mozilla.org/en-US/docs/MDN/Guidelines/Code_guidelines", source: "MDN Web Docs" }
+];
+---
+
+<ToolPageLayout
+  title="camelCase Converter - Convert Text to Lower Camel Case Online"
+  description="Convert variable names, config properties, or lists of text to camelCase format in real-time. Free online converter standard for JavaScript, TypeScript, and Java."
+  keywords="camelcase converter, camel case, convert to camelcase, lower camel case, developer tools, case converter"
+  toolTitle="camelCase Converter"
+  toolDescription="Convert variable names and text strings to camelCase (e.g. userProfileData) instantly in your browser."
+  faqs={faqs}
+>
+  <CaseConverter client:load defaultCaseId="camel" defaultInput={`user_profile_data\nUSER_SESSION_KEY\nmain-navigation-header\nhttp.auth.header`} />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        What is camelCase and Why Use It?
+      </h2>
+      <p class="leading-relaxed mb-4">
+        In coding ecosystems, multi-word variable identifiers must be joined to form a single syntactical token. <strong class="text-zinc-250 font-mono">camelCase</strong> resolves this by capitalizing each subsequent word segment while keeping the initial character lowercase. It is the dominant style guide requirement for modern web developers.
+      </p>
+      <p class="leading-relaxed mb-4">
+        It is widely used in:
+      </p>
+      <ul class="list-disc pl-5 space-y-1.5 text-xs text-zinc-400 mb-4">
+        <li><strong class="text-zinc-300">JavaScript & TypeScript:</strong> Variables, function definitions, and module methods.</li>
+        <li><strong class="text-zinc-300">Java & Kotlin:</strong> Standard field definitions and method keys.</li>
+        <li><strong class="text-zinc-300">React JSX:</strong> Properties, custom inline styles, and click event handlers.</li>
+        <li><strong class="text-zinc-300">JSON Keys:</strong> Industry-standard payload structure for network responses.</li>
+      </ul>
+    </div>
+
+    <!-- Section: Cross Links -->
+    <div class="flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-zinc-50 tracking-tight flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Other Casing Converters
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <a href="/tools/case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">All-in-One Case Converter</a>
+        <a href="/tools/camelcase-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-accent-emerald font-semibold transition-all">camelCase Converter</a>
+        <a href="/tools/snake-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">snake_case Converter</a>
+        <a href="/tools/pascal-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">PascalCase Converter</a>
+        <a href="/tools/kebab-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">kebab-case Converter</a>
+        <a href="/tools/constant-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">CONSTANT_CASE Converter</a>
+        <a href="/tools/camelcase-to-snake-case" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">camelCase to snake_case</a>
+        <a href="/tools/snake-case-to-camelcase" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">snake_case to camelCase</a>
+        <a href="/tools/title-case-converter" class="p-3 bg-zinc-900/30 border border-border-hairline rounded-lg hover:border-accent-emerald/30 text-xs font-mono text-zinc-200 hover:text-accent-emerald transition-all">Title Case Converter</a>
+      </div>
+    </div>
+
+    <!-- Section: Case Style Comparison -->
+    <ComparisonTable
+      title="camelCase vs Other Common Conversions"
+      headers={["Style Name", "Example Output", "Separators", "Common Usage"]}
+      rows={[
+        { label: "camelCase", values: ["<code>userProfileData</code>", "Capital letters (except first)", "JS/TS variables, JSON keys"] },
+        { label: "PascalCase", values: ["<code>UserProfileData</code>", "Capital letters (including first)", "Classes, React components"] },
+        { label: "snake_case", values: ["<code>user_profile_data</code>", "Underscore (lowercase)", "Python variables, SQL columns"] },
+        { label: "kebab-case", values: ["<code>user-profile-data</code>", "Hyphen (lowercase)", "CSS classes, URL slugs"] }
+      ]}
+    />
+
+    <!-- Section: Conversion Examples -->
+    <ExampleCard
+      title="camelCase Conversion Examples"
+      description="Study the raw inputs and conversion results for common programming names:"
+      examples={[
+        { label: "Screaming Snake Case constant", input: "DATABASE_CONNECTION_POOL", output: "databaseConnectionPool", badge: "camelCase" },
+        { label: "Spaced Paragraph Title", input: "get user account balance", output: "getUserAccountBalance", badge: "camelCase" },
+        { label: "Kebab Cased Package Name", input: "react-native-router", output: "reactNativeRouter", badge: "camelCase" }
+      ]}
+    />
+
+    <!-- Programming Implementation Guides -->
+    <LanguageSupport
+      languages={languageCodes}
+      title="Programmatic Variable Mapping Snippets"
+      description="Convert naming formats dynamically in your custom modules:"
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Conversion Pitfalls"
+      description="Avoid these common errors when transforming cases in variables and columns:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="camelCase Recommendations"
+      practices={[
+        { title: "Avoid Leading Numbers", description: "Variables starting with numbers are syntax errors in almost all compilation trees. Prefix them if necessary." },
+        { title: "Normalize Acronyms", description: "Style guides recommend lowercasing acronym characters after the first (e.g. use httpHeader rather than HTTPHeader) for structural clarity." }
+      ]}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

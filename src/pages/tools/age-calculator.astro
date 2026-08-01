@@ -1,0 +1,180 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import AgeCalculator from '../../components/AgeCalculator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'Age Calculator', href: '/tools/age-calculator', active: true },
+  { label: 'Date Calculator', href: '/tools/date-calculator' },
+  { label: 'Days Between', href: '/tools/days-between-dates' },
+  { label: 'Date Duration', href: '/tools/date-calculator' }
+];
+
+const faqs = [
+  {
+    question: "How does this age calculator work?",
+    answer: "It computes your exact age from your date of birth to today in years, months, and days. It also shows your age in total months, weeks, days, hours, minutes, and seconds — all calculated locally in your browser."
+  },
+  {
+    question: "Is this age calculator free?",
+    answer: "Yes, completely free with no sign-up. Calculate your age instantly with no uploads — everything runs in your browser."
+  },
+  {
+    question: "How do I calculate my exact age?",
+    answer: "Enter your date of birth and the calculator subtracts it from today's date. The result is shown as X years, Y months, and Z days, plus totals in every smaller unit."
+  },
+  {
+    question: "How many days old am I?",
+    answer: "The tool shows your total days lived — simply the number of 24-hour periods since your birth date. This includes the day you were born as day 1."
+  },
+  {
+    question: "Does it handle leap years correctly?",
+    answer: "Yes. The calculation uses real calendar dates, so February 29 birthdays and leap years are handled exactly — someone born on Feb 29 celebrates on Feb 28 or Mar 1 in non-leap years."
+  },
+  {
+    question: "Can I calculate someone else's age?",
+    answer: "Yes. Change the date of birth and the calculator updates instantly — perfect for family, friends, clients, or records."
+  },
+  {
+    question: "When is my next birthday?",
+    answer: "The tool shows the exact date of your next birthday and how many days remain, plus the age you'll turn. If it's today, it says so with a celebration note."
+  },
+  {
+    question: "What day of the week was I born on?",
+    answer: "The tool displays the weekday of your birth date using your browser's locale-aware date handling."
+  },
+  {
+    question: "What is my zodiac sign?",
+    answer: "The calculator determines your western zodiac sign from your birth month and day, following the standard start dates for each sign."
+  },
+  {
+    question: "Does the calculator update in real time?",
+    answer: "Yes. It refreshes every second, so the total seconds counter ticks up live as you watch — and any birthday date is always based on the current date."
+  },
+  {
+    question: "Can I calculate age in years, months and days separately?",
+    answer: "Yes. The result is broken into years, months, and days, and also given as a single total in months, weeks, days, hours, minutes, and seconds."
+  },
+  {
+    question: "Why does my age in days differ from just multiplying years by 365?",
+    answer: "Because the calculation uses actual calendar dates, accounting for leap years. Multiplying by 365 underestimates for people who've lived through leap days."
+  },
+  {
+    question: "Is my birth date stored or sent anywhere?",
+    answer: "No. All calculations happen locally in your browser. Your date of birth never leaves your device."
+  },
+  {
+    question: "Does it work on mobile?",
+    answer: "Yes. The responsive layout and native date picker work on any phone or tablet browser."
+  },
+  {
+    question: "What if I enter a future date?",
+    answer: "Future dates are rejected with a gentle message, since a valid age calculation requires a past date of birth."
+  },
+  {
+    question: "Why do I need an age calculator?",
+    answer: "Age calculations are needed for forms, legal documents, age-verification, records, and personal curiosity — this tool gives you the precise figure instantly, without manual date math."
+  }
+];
+
+const references = [
+  { title: "MDN - JavaScript Date object", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date", source: "MDN Web Docs" },
+  { title: "Leap year rules (Gregorian calendar)", url: "https://en.wikipedia.org/wiki/Leap_year", source: "Wikipedia" }
+];
+
+const mistakesList = [
+  {
+    title: "Using a Fixed 365-Day Year",
+    description: "Multiplying age by 365 ignores leap years, giving an age-in-days that is wrong by one day for every leap day lived through.",
+    fix: "Use a calendar-aware calculation like this tool, which counts actual calendar days."
+  },
+  {
+    title: "Off-by-One on the Birth Day",
+    description: "Counting the birth date itself as day 0 instead of day 1, or vice versa, shifts all totals by one day.",
+    fix: "Define clearly whether day 1 is the birth date or the next day, and stay consistent — this tool counts from the birth date."
+  },
+  {
+    title: "Forgetting Month-Length Differences",
+    description: "Subtracting months as 30 days each breaks down because months have 28–31 days.",
+    fix: "Compute age by comparing year/month/day components rather than fixed-length months."
+  }
+];
+
+const practicesList = [
+  { title: "Use a Calendar-Aware Method", description: "For legal or medical age calculations, always use date-based math that accounts for leap years and month lengths." },
+  { title: "Verify Against a Reference Date", description: "Spot-check results against a known birthday and a known 'today' to confirm the tool matches your expectation." },
+  { title: "Clarify the Reference Date", description: "When recording an age, note whether it's 'as of today' or a specific cutoff date, since age changes daily." }
+];
+---
+
+<ToolPageLayout
+  title="Age Calculator Online: How Old Am I? Exact Age in Years, Months & Days"
+  description="Calculate your exact age instantly from your date of birth. Age in years, months, days, weeks, hours, minutes and seconds — with next birthday countdown. Free, no sign-up."
+  keywords="age calculator, how old am i, calculate age, age calculator by date of birth, how many days old am i, next birthday calculator, age in years months days"
+  toolTitle="Age Calculator"
+  toolDescription="Find out your exact age in years, months, and days — plus total weeks, hours, minutes, and seconds lived. See your next birthday countdown and born-day. All calculated locally."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <AgeCalculator client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How Age Is Calculated
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Your **exact age** is the difference between your date of birth and the current date, broken into full calendar years, then months, then days. Unlike simple arithmetic on fixed-length months, this method honors real month lengths and **leap years**, so it is always precise.
+      </p>
+      <p class="leading-relaxed">
+        The tool also converts your age into totals — months, weeks, days, hours, minutes, and seconds — and reports your next birthday, the weekday you were born, and your zodiac sign. All of it runs locally, so your birth date stays private.
+      </p>
+    </div>
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Example Calculation"
+      description="For a birthday of January 15, 2000, as of today:"
+      examples={[
+        { label: "Exact age", input: "Jan 15, 2000 → today", output: "X years, Y months, Z days (calculated live)", badge: "Precise" },
+        { label: "In days", input: "Jan 15, 2000 → today", output: "Total calendar days, leap years included", badge: "Total" },
+        { label: "Next birthday", input: "Today", output: "Live countdown to turning X", badge: "Countdown" }
+      ]}
+    />
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Age Calculation Methods Compared"
+      headers={["Method", "Leap Years", "Month Lengths", "Accuracy"]}
+      rows={[
+        { label: "Calendar-based (this tool)", values: ["Handled", "Handled", "Exact"] },
+        { label: "Days ÷ 365", values: ["Ignored", "Ignored", "Approximate"] },
+        { label: "Years only (truncated)", values: ["N/A", "N/A", "Rough"] }
+      ]}
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Age Calculation Mistakes"
+      description="Errors that produce wrong ages:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Age Calculation Best Practices"
+      practices={practicesList}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

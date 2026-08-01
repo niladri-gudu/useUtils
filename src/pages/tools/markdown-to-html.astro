@@ -1,0 +1,184 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import MarkdownHtmlConverter from '../../components/MarkdownHtmlConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'Markdown to HTML', href: '/tools/markdown-to-html', active: true },
+  { label: 'HTML Formatter', href: '/tools/html-formatter' },
+  { label: 'HTML Minifier', href: '/tools/html-minifier' },
+  { label: 'JSON to YAML', href: '/tools/json-to-yaml' }
+];
+
+const faqs = [
+  {
+    question: "What is a Markdown to HTML converter?",
+    answer: "It translates Markdown syntax (headings, bold, links, code blocks, tables) into clean HTML markup, and vice versa. This tool converts both directions instantly in your browser."
+  },
+  {
+    question: "Is this Markdown to HTML converter free?",
+    answer: "Yes, completely free with no sign-up. Convert unlimited documents in either direction with live output and no uploads."
+  },
+  {
+    question: "Does it support GitHub Flavored Markdown (GFM)?",
+    answer: "Yes. Enable GFM for tables, task lists, strikethrough, autolinks, and fenced code blocks — the extensions GitHub uses for README files and issues."
+  },
+  {
+    question: "Can it convert HTML back to Markdown?",
+    answer: "Yes. Switch to the HTML → Markdown tab to turn rendered HTML into clean, readable Markdown using the Turndown service."
+  },
+  {
+    question: "Is my content uploaded anywhere?",
+    answer: "No. Both conversions run entirely in your browser using the marked and turndown libraries. Your document never leaves your device."
+  },
+  {
+    question: "Why is Markdown used for documentation?",
+    answer: "Markdown is human-readable as plain text, easy to version in git, and renders to structured HTML everywhere — READMEs, wikis, docs sites, and blog engines all support it."
+  },
+  {
+    question: "What does GFM add to standard Markdown?",
+    answer: "GFM adds tables, task lists, strikethrough, autolinks, and syntax-highlighted fenced code blocks. Standard Markdown is the original smaller set of syntax rules."
+  },
+  {
+    question: "How do I write a table in Markdown?",
+    answer: "Use pipes and dashes: <code>| Name | Type |</code> on the first line, <code>| ---- | ---- |</code> for the header separator, then rows of pipe-separated values."
+  },
+  {
+    question: "Does the converter support code blocks with syntax highlighting?",
+    answer: "Yes. Fenced code blocks are converted to <code>&lt;pre&gt;&lt;code class=\"language-X\"&gt;</code> tags with the language preserved for your highlighting library."
+  },
+  {
+    question: "Can I convert files or just pasted text?",
+    answer: "This tool works on pasted text. For whole-file conversion, paste the contents — the converter handles documents of any reasonable size in memory."
+  },
+  {
+    question: "What is the difference between Markdown and HTML?",
+    answer: "Markdown is a lightweight plain-text syntax designed for easy reading and writing; HTML is the formal markup language browsers render. Markdown compiles to HTML."
+  },
+  {
+    question: "How do I escape characters in Markdown?",
+    answer: "Prefix special characters with a backslash (<code>\\*literal\\*</code>) to render them literally instead of as syntax. Common ones include *, _, #, and backticks."
+  },
+  {
+    question: "Is the HTML output safe to embed?",
+    answer: "Yes, for your own content. If you render user-submitted Markdown, always sanitize the output (e.g. with DOMPurify) to prevent XSS — this tool outputs exactly what marked produces."
+  },
+  {
+    question: "What heading style does the HTML → Markdown direction use?",
+    answer: "You can choose ATX style (<code># H1</code>) or setext style (underlined with = and -). The default is ATX, which is the most common convention."
+  },
+  {
+    question: "How do I convert Markdown in a build pipeline?",
+    answer: "Use marked (Node.js), marked-py (Python), or the built-in Markdown support in Astro, Next.js, and Jekyll. This tool gives you instant results without a build step."
+  },
+  {
+    question: "Can I download the converted output?",
+    answer: "Yes. Download the result as an .html file or .md file with the correct MIME type, ready to drop into your project."
+  }
+];
+
+const references = [
+  { title: "CommonMark Specification", url: "https://spec.commonmark.org/", source: "CommonMark" },
+  { title: "GitHub Flavored Markdown Spec", url: "https://github.github.com/gfm/", source: "GitHub" }
+];
+
+const mistakesList = [
+  {
+    title: "Rendering Untrusted Markdown Without Sanitizing",
+    description: "User-submitted Markdown can contain raw HTML or script tags. Rendering it unescaped creates stored XSS vulnerabilities.",
+    fix: "Sanitize the rendered HTML with a library like DOMPurify, or disable raw HTML when the input comes from untrusted users."
+  },
+  {
+    title: "Expecting HTML to Markdown Round-Trip to Be Identical",
+    description: "Converting Markdown → HTML → Markdown won't perfectly reproduce the original text (e.g. inline styles and custom attributes are lost).",
+    fix: "Keep the original Markdown as the source of truth. Treat HTML→Markdown as a cleanup, not a lossless reverse."
+  },
+  {
+    title: "Forgetting to Escape Special Characters",
+    description: "Underscores in words like 'my_file' or asterisks in math can accidentally trigger emphasis syntax and alter your text.",
+    fix: "Escape syntax characters with backslashes, or use code spans for strings containing lots of special characters."
+  }
+];
+
+const practicesList = [
+  { title: "Keep Markdown as the Source", description: "Author in Markdown and generate HTML at build time, so you never hand-edit duplicated rendered HTML." },
+  { title: "Enable GFM for READMEs", description: "GFM tables and task lists render nicely on GitHub and in most documentation tools — enable them when authoring for those platforms." },
+  { title: "Sanitize Before Displaying User Content", description: "Always filter output HTML for script tags and event handlers when rendering content you didn't author." },
+  { title: "Use Semantic Markdown", description: "Write real headings, lists, and links instead of bolded text and manual formatting — semantics survive conversion and improve accessibility." }
+];
+---
+
+<ToolPageLayout
+  title="Markdown to HTML Converter Online: Free, In-Browser"
+  description="Convert Markdown to HTML and HTML back to Markdown instantly. GitHub Flavored Markdown support, live output, and download. Free and in-browser — no sign-up."
+  keywords="markdown to html converter, md to html, markdown converter online, html to markdown, markdown to html tool, gfm converter, md converter"
+  toolTitle="Markdown to HTML Converter"
+  toolDescription="Convert Markdown to clean HTML (and back) in real time with GitHub Flavored Markdown support. Live output, copy, or download — all processed locally in your browser."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <MarkdownHtmlConverter client:only="react" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How Markdown Conversion Works
+      </h2>
+      <p class="leading-relaxed mb-4">
+        **Markdown** is a lightweight markup language designed to be readable as plain text. A parser like **marked** tokenizes the syntax — headings, emphasis, links, code fences, tables — and produces the equivalent HTML tree. The reverse direction uses **TurndownService** to parse HTML and emit idiomatic Markdown.
+      </p>
+      <p class="leading-relaxed">
+        This tool wires both directions together with **GitHub Flavored Markdown** support for tables, task lists, strikethrough, and autolinks. Because both libraries run client-side, your document is converted locally with zero uploads.
+      </p>
+    </div>
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Markdown ↔ HTML Mapping"
+      description="The most common conversions you'll see:"
+      examples={[
+        { label: "Heading", input: "# Title", output: "<h1>Title</h1>", badge: "Block" },
+        { label: "Bold", input: "**bold**", output: "<strong>bold</strong>", badge: "Inline" },
+        { label: "Link", input: "[useUtils](https://useutils.com)", output: "<a href=\"https://useutils.com\">useUtils</a>", badge: "Inline" },
+        { label: "Code", input: "`const x = 1`", output: "<code>const x = 1</code>", badge: "Inline" }
+      ]}
+    />
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Standard Markdown vs GFM"
+      headers={["Feature", "Standard", "GFM"]}
+      rows={[
+        { label: "Fenced code blocks", values: ["Yes", "Yes + language tags"] },
+        { label: "Tables", values: ["No", "Yes"] },
+        { label: "Task lists", values: ["No", "Yes"] },
+        { label: "Strikethrough", values: ["No", "Yes"] },
+        { label: "Autolinks", values: ["No", "Yes"] }
+      ]}
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Markdown Conversion Pitfalls"
+      description="Avoid these common mistakes:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Markdown Best Practices"
+      practices={practicesList}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

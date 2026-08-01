@@ -1,0 +1,182 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import ImageResizer from '../../components/ImageResizer';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'Image Resizer', href: '/tools/image-resizer', active: true },
+  { label: 'Image to Base64', href: '/tools/image-to-base64' },
+  { label: 'Base64 to Image', href: '/tools/base64-to-image' },
+  { label: 'QR Code Generator', href: '/tools/qr-code-generator' }
+];
+
+const faqs = [
+  {
+    question: "What is an image resizer?",
+    answer: "An image resizer changes the pixel dimensions of an image (width and height). This tool also compresses images by converting to WebP, JPEG, or PNG with adjustable quality — all processed locally in your browser."
+  },
+  {
+    question: "Is this image resizer free?",
+    answer: "Yes, completely free with no sign-up and no watermarks. Resize, compress, and convert as many images as you want directly in your browser."
+  },
+  {
+    question: "Are my images uploaded to a server?",
+    answer: "No. All processing happens locally on your device using the HTML5 Canvas API. Your images never leave your computer, making this safe for personal or sensitive photos."
+  },
+  {
+    question: "What image formats are supported?",
+    answer: "You can upload PNG, JPEG, WebP, GIF, SVG, and BMP. Output can be saved as WebP (best compression), JPEG (small, no transparency), or PNG (lossless, supports transparency)."
+  },
+  {
+    question: "How do I resize an image without losing quality?",
+    answer: "Choose PNG for lossless output, or keep JPEG/WebP quality at 80–90%. If you only need to make the file smaller, prefer compressing with WebP at a similar resolution rather than shrinking dimensions."
+  },
+  {
+    question: "What is the best format for small file sizes?",
+    answer: "WebP generally produces the smallest files with the same visual quality. It's supported by all modern browsers and is the recommended format for web images."
+  },
+  {
+    question: "Can I maintain the aspect ratio?",
+    answer: "Yes. The 'Maintain aspect ratio' option automatically adjusts the height when you change the width (and vice versa), so your image is never distorted."
+  },
+  {
+    question: "How does image compression work?",
+    answer: "Compression reduces file size by removing redundant image data. Lossy formats (JPEG, WebP) discard some detail at lower quality settings; lossless PNG keeps every pixel intact."
+  },
+  {
+    question: "What size should I resize images to for the web?",
+    answer: "Match the largest size where the image will actually be displayed. Common choices are 1920px for full-width banners, 1200px for blog content, and 800px or less for thumbnails and galleries."
+  },
+  {
+    question: "Does resizing an image affect its quality?",
+    answer: "Scaling down generally looks fine since you're removing pixels. Scaling up can look soft or blurry, because the tool must interpolate new pixels. The canvas uses high-quality smoothing by default."
+  },
+  {
+    question: "How much can I compress an image?",
+    answer: "Photographs often compress 50–80% when converted to WebP at moderate quality. Flat graphics and screenshots compress the most; noisy photos the least."
+  },
+  {
+    question: "What is the difference between resize and compress?",
+    answer: "Resizing changes pixel dimensions; compressing reduces file size through encoding. This tool does both: you can shrink dimensions, lower quality, or convert formats — and combine all three."
+  },
+  {
+    question: "Can I compress a PNG image?",
+    answer: "Yes. Converting a PNG to WebP at 85% quality typically cuts file size dramatically with no visible difference. PNG is best kept for images that need transparency or exact pixels."
+  },
+  {
+    question: "How do I compress an image for email?",
+    answer: "Resize to about 800–1000px wide and convert to JPEG or WebP at 80% quality. Most email clients can't display images over a few MB, so smaller is safer."
+  },
+  {
+    question: "Is there a file size limit?",
+    answer: "No hard limit — images are processed in your browser's memory. Extremely large files (hundreds of MB) may be limited by your device's RAM rather than by this tool."
+  },
+  {
+    question: "Does this tool work on mobile?",
+    answer: "Yes. The canvas-based processing works in any modern mobile browser, and you can pick images straight from your phone's gallery."
+  }
+];
+
+const references = [
+  { title: "MDN - HTMLCanvasElement.toDataURL()", url: "https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toDataURL", source: "MDN Web Docs" },
+  { title: "MDN - Image Data and CanvasRenderingContext2D.drawImage", url: "https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage", source: "MDN Web Docs" }
+];
+
+const mistakesList = [
+  {
+    title: "Upscaling Small Images",
+    description: "Enlarging a small image (e.g. 200px to 2000px) creates blurry, pixelated results because there is no real detail to add.",
+    fix: "Source images at the largest size you may need. If you must upscale, keep quality at 100% and accept the softness."
+  },
+  {
+    title: "Using PNG for Photographs",
+    description: "PNG keeps every pixel, so photo files stay huge. A 2MB JPEG photo might become 12MB as a PNG.",
+    fix: "Use JPEG or WebP for photos and PNG only for graphics, logos, or images that need transparency."
+  },
+  {
+    title: "Distorting by Disabling Aspect Ratio",
+    description: "Setting a width and height that don't match the original ratio squashes or stretches the image.",
+    fix: "Keep 'Maintain aspect ratio' enabled, or crop first if you specifically need a new aspect ratio."
+  }
+];
+
+const practicesList = [
+  { title: "Serve the Right Size", description: "Never ship a 4000px image when it will be displayed at 800px. Resize to the actual display size to cut bytes and speed up pages." },
+  { title: "Prefer WebP for the Web", description: "Use WebP for maximum compression on modern browsers, and keep a JPEG fallback for older clients if needed." },
+  { title: "Balance Quality and Size", description: "Start at 80% quality and lower it only if you need a smaller file — most images look identical down to about 60%." },
+  { title: "Keep Originals Private", description: "Since this tool runs entirely in your browser, you can safely process photos you don't want uploaded anywhere." }
+];
+---
+
+<ToolPageLayout
+  title="Image Resizer & Compressor Online: Resize and Compress Images Free"
+  description="Resize and compress images online for free. Change dimensions, convert to WebP/JPEG/PNG, and shrink file size — all in your browser with zero uploads."
+  keywords="image resizer, resize image online, compress image, image compressor, resize image free, compress image to kb, webp converter, image to webp"
+  toolTitle="Image Resizer & Compressor"
+  toolDescription="Resize, compress, and convert images to WebP, JPEG, or PNG with live size savings. Drop an image, set your dimensions and quality, and download — all processed locally in your browser."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <ImageResizer client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How In-Browser Image Resizing Works
+      </h2>
+      <p class="leading-relaxed mb-4">
+        This tool uses the **HTML5 Canvas API** to redraw your image at new pixel dimensions. Resizing down discards pixels (with high-quality smoothing), while compressing re-encodes the pixels using a more efficient format and quality level. Because everything runs locally, the original file is never transmitted anywhere.
+      </p>
+      <p class="leading-relaxed">
+        For the web, the biggest wins come from combining the three levers this tool gives you: **right-sizing dimensions**, choosing **WebP**, and setting a sensible **quality** — often cutting image payloads by 70% or more.
+      </p>
+    </div>
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Typical Size Outcomes"
+      description="What you can expect for a common 4000×3000 photo:"
+      examples={[
+        { label: "Original JPEG", input: "4000×3000 @ 95%", output: "~4.5 MB", badge: "Baseline" },
+        { label: "Resized + WebP", input: "1600×1200 @ 82%", output: "~300–500 KB", badge: "-90%+" },
+        { label: "Resized + JPEG", input: "1600×1200 @ 80%", output: "~400–700 KB", badge: "-85%" },
+        { label: "Lossless PNG", input: "1600×1200", output: "2–6 MB", badge: "Transparency" }
+      ]}
+    />
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Output Format Comparison"
+      headers={["Format", "Compression", "Transparency", "Quality", "Best Use"]}
+      rows={[
+        { label: "WebP", values: ["Excellent", "Yes", "High at low size", "Web images"] },
+        { label: "JPEG", values: ["Good", "No", "Good", "Photographs"] },
+        { label: "PNG", values: ["Lossless", "Yes", "Highest", "Logos, graphics"] }
+      ]}
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Image Resizing Pitfalls"
+      description="Avoid these common mistakes:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Image Optimization Best Practices"
+      practices={practicesList}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

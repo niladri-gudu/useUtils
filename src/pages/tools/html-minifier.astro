@@ -1,0 +1,180 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import HtmlMinifier from '../../components/HtmlMinifier';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'HTML Minifier', href: '/tools/html-minifier', active: true },
+  { label: 'HTML Formatter', href: '/tools/html-formatter' },
+  { label: 'JSON Minifier', href: '/tools/json-minifier' },
+  { label: 'JSON Formatter', href: '/tools/json-formatter' }
+];
+
+const faqs = [
+  {
+    question: "What is HTML minification?",
+    answer: "HTML minification is the process of removing all unnecessary characters from HTML source code — whitespace, indentation, line breaks, and comments — while preserving the exact rendered output. The result is a smaller file that loads and parses faster."
+  },
+  {
+    question: "Is this HTML minifier free?",
+    answer: "Yes, completely free with no sign-up. Minify unlimited HTML documents directly in your browser with zero uploads and no file size limits."
+  },
+  {
+    question: "Does minifying HTML change how it renders?",
+    answer: "No. This minifier carefully collapses whitespace only where it is safe, preserves spaces between inline elements, and leaves <code>pre</code>, <code>textarea</code>, <code>script</code>, and <code>style</code> content untouched. The rendered page stays identical."
+  },
+  {
+    question: "How much can minification reduce file size?",
+    answer: "Typically 15–30% for HTML documents, depending on how much whitespace and how many comments the original contains. Larger, comment-heavy files see the biggest savings."
+  },
+  {
+    question: "Why should I minify my HTML?",
+    answer: "Smaller files mean faster downloads, lower bandwidth costs, quicker first paint, and better Core Web Vitals — which matters for SEO ranking and mobile users on slow connections."
+  },
+  {
+    question: "Is it safe to minify sensitive or proprietary HTML?",
+    answer: "Yes. This tool processes everything locally in your browser using the DOM parser — your markup never touches a server, so proprietary email templates or internal code stay private."
+  },
+  {
+    question: "Can I keep comments in the minified output?",
+    answer: "Yes. Toggle the 'Keep HTML comments' option if you need to preserve annotations, copyright notices, or special conditional comments like IE conditional comments."
+  },
+  {
+    question: "Does the minifier work on full documents and fragments?",
+    answer: "Both. Paste a complete document (starting with <code>&lt;!DOCTYPE html&gt;</code> or <code>&lt;html&gt;</code>) or just a fragment — the tool detects which and minifies accordingly."
+  },
+  {
+    question: "Will it break my JavaScript or CSS?",
+    answer: "No. Content inside <code>script</code> and <code>style</code> tags is preserved byte-for-byte, so your inline JS and CSS are never altered. Use a dedicated JS/CSS minifier for those."
+  },
+  {
+    question: "Does it handle whitespace-sensitive elements?",
+    answer: "Yes. <code>pre</code> and <code>textarea</code> content is preserved exactly, and single spaces between inline elements like <code>a</code>, <code>span</code>, and <code>strong</code> are retained so words never get joined together."
+  },
+  {
+    question: "What is the difference between minify and gzip?",
+    answer: "Minification removes redundant characters from the source. Gzip compresses the bytes using a compression algorithm. They work well together — minified HTML compresses even smaller under gzip/Brotli."
+  },
+  {
+    question: "How do I minify HTML in a build pipeline?",
+    answer: "Popular tools include html-minifier-terser for Node.js, htmlmin for Python, and built-in options in bundlers like Vite, Webpack, and Astro which minify output HTML during production builds."
+  },
+  {
+    question: "Can minification break SEO?",
+    answer: "No. Search engines parse the document tree, not whitespace. Minified HTML is actually slightly faster to crawl. Just avoid stripping important content from critical elements like title, meta description, and headings."
+  },
+  {
+    question: "Why is my minified HTML slightly larger than expected?",
+    answer: "The tool preserves semantic whitespace (spaces between inline elements and <code>pre</code> content) and full doctype/attributes to guarantee identical rendering — a tiny trade-off for safety."
+  },
+  {
+    question: "Is there a character limit for minifying?",
+    answer: "No hard limit. Large documents are processed in browser memory. Very large files are only constrained by your device's performance."
+  },
+  {
+    question: "How do I verify minified HTML renders identically?",
+    answer: "Open the original and minified versions in two browser tabs and compare them visually. For automated checks, diff the serialized DOM tree in a headless browser."
+  }
+];
+
+const references = [
+  { title: "HTML Living Standard - Whitespace in HTML", url: "https://html.spec.whatwg.org/multipage/dom.html#whitespace", source: "WHATWG" },
+  { title: "html-minifier-terser - Node.js HTML minifier", url: "https://github.com/terser/html-minifier-terser", source: "GitHub" }
+];
+
+const mistakesList = [
+  {
+    title: "Minifying <pre> or <textarea> Content",
+    description: "Whitespace inside <code>pre</code> and <code>textarea</code> is meaningful. Naive regex minifiers collapse it and silently break code listings or multiline values.",
+    fix: "This tool preserves those tags; if you minify elsewhere, ensure your minifier config excludes pre/textarea/script/style."
+  },
+  {
+    title: "Joining Words Across Inline Elements",
+    description: "Removing the space between two inline elements like <code>&lt;span&gt;Hello&lt;/span&gt; &lt;span&gt;World&lt;/span&gt;</code> renders as 'HelloWorld'.",
+    fix: "Only strip whitespace that is safe to remove — between block-level tags or at block boundaries — as this tool does."
+  },
+  {
+    title: "Minifying Without Keeping a Development Copy",
+    description: "Once whitespace and comments are stripped, the file is hard to read and edit. Minified files are not meant to be edited by hand.",
+    fix: "Keep your readable source in a repo and generate minified HTML only for deployment builds."
+  }
+];
+
+const practicesList = [
+  { title: "Minify at Build Time, Not by Hand", description: "Run minification automatically in your CI/build pipeline so source stays readable and production output stays small and reproducible." },
+  { title: "Combine Minify with Compression", description: "Serve minified HTML with gzip or Brotli for the best delivery size. The two optimizations compound." },
+  { title: "Verify Rendering After Minifying", description: "Always smoke-test minified pages in a real browser, especially pages with lots of inline spacing, forms, or templates." },
+  { title: "Keep Privacy With Local Processing", description: "Because this minifier runs entirely in your browser, it is safe to use on proprietary or confidential templates." }
+];
+---
+
+<ToolPageLayout
+  title="HTML Minifier Online: Compress HTML Size Instantly, Free"
+  description="Minify HTML in your browser — strip comments and unnecessary whitespace to shrink file size. Free online HTML minifier with live size savings. No uploads."
+  keywords="html minifier, minify html online, compress html, html compressor, reduce html size, minify html free, html size reducer"
+  toolTitle="HTML Minifier"
+  toolDescription="Shrink HTML documents by stripping unnecessary whitespace and comments while preserving exact rendering. Watch live byte savings — all processed locally in your browser."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <HtmlMinifier client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How HTML Minification Works
+      </h2>
+      <p class="leading-relaxed mb-4">
+        **HTML minification** removes redundant characters from markup: leading indentation, trailing whitespace, excess blank lines, and comments. The minifier parses your document into the **DOM tree**, collapses whitespace only where it is semantically safe, and re-serializes it into the smallest valid representation.
+      </p>
+      <p class="leading-relaxed">
+        Because this tool operates on the parsed tree rather than raw text patterns, it reliably protects **whitespace-sensitive content** like <code>pre</code> blocks, <code>textarea</code> defaults, and the spaces between inline elements — delivering real compression without visual regressions.
+      </p>
+    </div>
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Typical Savings"
+      description="Comment-heavy, indented markup shrinks dramatically:"
+      examples={[
+        { label: "Before", input: "<div class=\"card\">\n    <h1>Title</h1>\n    <!-- promo -->\n    <p>Body text</p>\n</div>", output: "After: <div class=\"card\"><h1>Title</h1><p>Body text</p></div>", badge: "-40%+" },
+        { label: "Inline spacing preserved", input: "<p>Hello <strong>world</strong>!</p>", output: "Stays: <p>Hello <strong>world</strong>!</p>", badge: "Intact" }
+      ]}
+    />
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Minification Approaches Compared"
+      headers={["Approach", "Safety", "Comments", "Whitespace", "Best For"]}
+      rows={[
+        { label: "DOM-based (this tool)", values: ["High", "Removed / optional", "Collapsed safely", "Correct minification"] },
+        { label: "Regex string replace", values: ["Risky", "Removed", "Aggressive", "Quick hacks"] },
+        { label: "Manual editing", values: ["N/A", "Kept", "Kept", "Learning only"] }
+      ]}
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="HTML Minification Pitfalls"
+      description="Dangerous patterns to avoid when minifying:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="HTML Minification Best Practices"
+      practices={practicesList}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

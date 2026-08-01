@@ -1,0 +1,175 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import LoremIpsumGenerator from '../../components/LoremIpsumGenerator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'Lorem Ipsum Generator', href: '/tools/lorem-ipsum-generator', active: true },
+  { label: 'Word Counter', href: '/tools/word-counter' },
+  { label: 'Fake User Generator', href: '/tools/fake-user-generator' },
+  { label: 'Mock Data Generator', href: '/tools/mock-data-generator' }
+];
+
+const faqs = [
+  {
+    question: "What is Lorem Ipsum?",
+    answer: "Lorem Ipsum is placeholder text derived from a scrambled passage of De finibus bonorum et malorum, a philosophy text by Cicero from 45 BC. It's been the standard dummy copy for typesetting and web design since the 1500s."
+  },
+  {
+    question: "Why do designers use Lorem Ipsum?",
+    answer: "Because it resembles real prose without being readable, viewers focus on layout, typography, and spacing instead of the content. Real copy distracts from evaluating the design."
+  },
+  {
+    question: "Is this Lorem Ipsum generator free?",
+    answer: "Yes, completely free with no sign-up. Generate unlimited placeholder text with your preferred paragraph and sentence counts — all in your browser."
+  },
+  {
+    question: "Can I control how much text I generate?",
+    answer: "Yes. Adjust the number of paragraphs (up to 20) and sentences per paragraph (up to 15) with the sliders, then generate. Word and character counts are shown live."
+  },
+  {
+    question: "Does the text always start with the classic phrase?",
+    answer: "By default, output starts with 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' You can toggle this off to get purely random sentences."
+  },
+  {
+    question: "Can I generate HTML-ready placeholder text?",
+    answer: "Yes. Enable the 'Wrap paragraphs in HTML tags' option to output each paragraph wrapped in <code>&lt;p&gt;</code> tags, ready to paste directly into a page."
+  },
+  {
+    question: "Why is Lorem Ipsum used for wireframes?",
+    answer: "Wireframes need to simulate content length and flow without real copy. Lorem Ipsum provides natural-looking line breaks and paragraph rhythm for more realistic layout testing."
+  },
+  {
+    question: "Is Lorem Ipsum suitable for all languages?",
+    answer: "It's Latin-based, so it won't reflect the length of words in languages like German or Finnish. For those projects, use a localized dummy text generator instead."
+  },
+  {
+    question: "What is the origin of 'Lorem ipsum'?",
+    answer: "It's a jumbled version of a sentence from Cicero's De finibus bonorum et malorum. The exact source was identified by H. Rackham in 1914."
+  },
+  {
+    question: "Can I use Lorem Ipsum in production UI?",
+    answer: "It's common during development, but be careful — placeholder text that ships to production looks unprofessional and can hurt SEO if indexed. Replace it before launch."
+  },
+  {
+    question: "Is there an official Lorem Ipsum?",
+    answer: "No. 'Lorem Ipsum' simply refers to scrambled Latin dummy text, and many generators exist with slight variations. The classic opening line is the only consistent part."
+  },
+  {
+    question: "How many words is a paragraph of Lorem Ipsum?",
+    answer: "With the default 5 sentences per paragraph, you get roughly 45–60 words. Adjust the sentences-per-paragraph slider to match your design's needs."
+  },
+  {
+    question: "Does this generator work offline?",
+    answer: "Yes. The text is generated from a built-in word bank right in your browser, so it works even without an internet connection."
+  },
+  {
+    question: "What is the best way to use placeholder text for accessibility testing?",
+    answer: "Placeholder text hides contrast and reading-order issues. Also test with realistic copy and a screen reader, because dummy Latin can mask real accessibility problems."
+  },
+  {
+    question: "Can I copy or download the generated text?",
+    answer: "Yes. Use the Copy button for the clipboard, or download the text as a .txt file for reuse in your design files or documentation."
+  }
+];
+
+const references = [
+  { title: "Wikipedia - Lorem ipsum", url: "https://en.wikipedia.org/wiki/Lorem_ipsum", source: "Wikipedia" },
+  { title: "De finibus bonorum et malorum (Cicero)", url: "https://en.wikipedia.org/wiki/De_finibus_bonorum_et_malorum", source: "Wikipedia" }
+];
+
+const mistakesList = [
+  {
+    title: "Shipping Placeholder Text to Production",
+    description: "Lorem Ipsum left in a live product looks broken, confuses users, and can hurt search rankings if it ends up in visible headings.",
+    fix: "Always run a text sweep (search for 'lorem') before release and replace placeholders with final copy."
+  },
+  {
+    title: "Using it to Judge Typography Metrics",
+    description: "Lorem Ipsum word lengths differ from your real content. A headline that fits in Latin may overflow with actual words.",
+    fix: "Test final layouts with realistic copy lengths, or use text calibrated to your content's average word size."
+  },
+  {
+    title: "Assuming It's Meaningful Text",
+    description: "Lorem Ipsum is intentionally nonsensical. Using it in client demos can give the impression that the copy itself is incomplete or wrong.",
+    fix: "For client presentations, use real or mock brand-specific copy instead of generic Latin."
+  }
+];
+
+const practicesList = [
+  { title: "Match Content Length Realistically", description: "Estimate how long your real copy will be and match the placeholder volume so layouts are evaluated accurately." },
+  { title: "Use a Version Without Distraction", description: "Generate plain paragraphs for wireframes and styled HTML variants for full-fidelity mockups — this tool supports both." },
+  { title: "Flag Every Placeholder", description: "Mark placeholder sections in your design system or code comments so nothing slips through to production." }
+];
+---
+
+<ToolPageLayout
+  title="Lorem Ipsum Generator Online: Free Dummy Text (HTML & Plain)"
+  description="Generate free Lorem Ipsum placeholder text instantly. Choose paragraph and sentence counts, optional HTML tags, and copy or download. In-browser, no sign-up."
+  keywords="lorem ipsum generator, dummy text generator, lorem ipsum, placeholder text, lorem generator, generate lorem ipsum, dummy copy generator"
+  toolTitle="Lorem Ipsum Generator"
+  toolDescription="Generate classic Lorem Ipsum placeholder text with custom paragraph and sentence counts. Wrap in HTML tags, copy, or download — all generated locally in your browser."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <LoremIpsumGenerator client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Why Placeholder Text Matters
+      </h2>
+      <p class="leading-relaxed mb-4">
+        **Lorem Ipsum** lets designers and developers evaluate layouts, typography, and spacing without being distracted by readable content. The scrambled Latin closely mimics the visual rhythm of real prose — paragraph shapes, line breaks, and word density — so mockups look believable.
+      </p>
+      <p class="leading-relaxed">
+        This generator produces clean, consistent paragraphs with configurable length, optional HTML wrapping, and live word counts. Everything runs locally, so you can even generate placeholder text while offline.
+      </p>
+    </div>
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Sample Output"
+      description="What generated text looks like:"
+      examples={[
+        { label: "Classic opening", input: "1 paragraph, 3 sentences", output: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.", badge: "Plain" },
+        { label: "HTML wrapped", input: "2 paragraphs, HTML on", output: "<p>Lorem ipsum…</p>\\n\\n<p>Duis aute irure…</p>", badge: "HTML" }
+      ]}
+    />
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Placeholder Text Options Compared"
+      headers={["Style", "Readable", "Use Case", "Risk"]}
+      rows={[
+        { label: "Lorem Ipsum", values: ["No", "Wireframes & mockups", "None"] },
+        { label: "Realistic filler", values: ["Yes", "Client demos", "Low"] },
+        { label: "Lipsum (product copy)", values: ["Yes", "Final QA", "High if shipped"] }
+      ]}
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Placeholder Text Pitfalls"
+      description="How to avoid placeholder-text problems:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Placeholder Text Best Practices"
+      practices={practicesList}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

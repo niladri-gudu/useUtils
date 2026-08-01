@@ -69,8 +69,9 @@ export const ALL_TOOLS: Tool[] = [
   { id: 'variable-case-converter', name: 'Variable Case Converter', description: 'Convert variable naming cases', category: 'text', icon: '📝' },
   { id: 'regex-tester', name: 'Regex Tester', description: 'Test regular expressions in real-time with live match highlighting, detailed capture groups breakdown, flag configuration, replacement testing, and common regex presets.', category: 'text', isPopular: true, isActive: true, href: '/tools/regex-tester', icon: '🔍' },
   { id: 'regex-cheatsheet', name: 'Regex Cheatsheet', description: 'Regular expressions reference', category: 'text', icon: '📖' },
-  { id: 'html-minifier', name: 'HTML Minifier', description: 'Minify HTML code', category: 'text', icon: '⚡' },
-  { id: 'html-formatter', name: 'HTML Formatter', description: 'Format and beautify HTML', category: 'text', icon: '✨' },
+  { id: 'html-minifier', name: 'HTML Minifier', description: 'Minify HTML code in your browser — strip comments and unnecessary whitespace to shrink file size while preserving exact rendering.', category: 'text', isActive: true, href: '/tools/html-minifier', icon: '⚡' },
+  { id: 'html-formatter', name: 'HTML Formatter & Beautifier', description: 'Turn minified or messy HTML into clean, indented, readable markup with configurable indentation. Runs entirely in your browser.', category: 'text', isPopular: true, isActive: true, href: '/tools/html-formatter', icon: '✨' },
+  { id: 'markdown-to-html', name: 'Markdown to HTML Converter', description: 'Convert Markdown to clean HTML and back with GitHub Flavored Markdown support. Live output, copy, or download — fully in-browser.', category: 'text', isActive: true, href: '/tools/markdown-to-html', icon: '📝' },
   { id: 'regex-snippets', name: 'Regex Snippets', description: 'Common regex patterns', category: 'text', icon: '📚' },
   { id: 'remove-duplicates-quick', name: 'Remove Duplicates', description: 'Remove duplicates from list', category: 'text', icon: '🗑️' },
   { id: 'count-occurrences', name: 'Count Occurrences', description: 'Count item occurrences', category: 'text', icon: '🔢' },
@@ -97,7 +98,7 @@ export const ALL_TOOLS: Tool[] = [
   { id: 'aes-encryption', name: 'AES Encryption Studio', description: 'Encrypt plain text or files locally using AES-GCM or AES-CBC symmetric ciphers with custom keys.', category: 'encoding', isActive: true, href: '/tools/aes-encryption', icon: '🔐' },
   { id: 'aes-decryption', name: 'AES Decryption Studio', description: 'Decrypt AES-GCM or AES-CBC ciphertexts and files locally with custom passphrases.', category: 'encoding', isActive: true, href: '/tools/aes-decryption', icon: '🔓' },
   { id: 'unicode-encoder', name: 'Unicode Encoder', description: 'Encode/decode Unicode', category: 'encoding', icon: '🌐' },
-  { id: 'ascii-converter', name: 'ASCII Converter', description: 'Convert text to ASCII codes', category: 'encoding', icon: '🔢' },
+  { id: 'ascii-converter', name: 'ASCII Converter', description: 'Convert text to ASCII codes and back in decimal, hex, binary, or octal. Includes a printable ASCII reference table.', category: 'encoding', isActive: true, href: '/tools/ascii-converter', icon: '🔢' },
   { id: 'binary-converter', name: 'Binary Converter & Bit Sandbox', description: 'Convert plain text to binary, hex, octal, ASCII, and decimal code in real-time. Features an interactive bitwise sandboxed flitter, a scrollable file-drop hex dump viewer, and an arbitrary BigInt base converter.', category: 'encoding', isPopular: true, isActive: true, href: '/tools/binary-converter', icon: '01' },
   { id: 'text-to-binary', name: 'Text to Binary Converter', description: 'Convert plain text, strings, and characters to standard 8-bit binary representation.', category: 'encoding', isActive: true, href: '/tools/text-to-binary', icon: '01' },
   { id: 'binary-to-text', name: 'Binary to Text Translator', description: 'Convert standard 8-bit binary streams back into human-readable characters and plain text.', category: 'encoding', isActive: true, href: '/tools/binary-to-text', icon: 'Aa' },
@@ -141,6 +142,8 @@ export const ALL_TOOLS: Tool[] = [
   { id: 'tailwind-picker', name: 'Tailwind Opacity/Color Picker', description: 'Interactive Tailwind CSS color scales and opacity modifier charts with WCAG testing.', category: 'css', isActive: true, href: '/tools/tailwind-picker', icon: '⚡' },
   { id: 'tailwind-color-picker', name: 'Tailwind Color Matcher', description: 'Find the closest Tailwind CSS color matches and check contrast.', category: 'css', isActive: true, href: '/tools/tailwind-color-picker', icon: '⚡' },
   { id: 'color-palette', name: 'Color Palette', description: 'Generate color palettes', category: 'css', icon: '🎨' },
+  { id: 'px-to-rem-converter', name: 'PX to REM Converter', description: 'Convert pixels to rem and em instantly with a customizable root or parent font size. Includes a quick reference table for common values.', category: 'css', isActive: true, href: '/tools/px-to-rem-converter', icon: '📐' },
+  { id: 'favicon-generator', name: 'Favicon Generator', description: 'Create a custom favicon from an emoji, text, or your own image. Choose size, colors, and shape — download crisp PNG icons for every device.', category: 'css', isPopular: true, isActive: true, href: '/tools/favicon-generator', icon: '⭐' },
 
   // Generators & Time
   // Generators & Time
@@ -150,17 +153,18 @@ export const ALL_TOOLS: Tool[] = [
   { id: 'nanoid-generator', name: 'NanoID Generator', description: 'Generate secure, compact, and URL-friendly NanoIDs locally with customizable lengths and alphabets.', category: 'generators', isActive: true, href: '/tools/nanoid-generator', icon: '🆔' },
   { id: 'secure-password-generator', name: 'Secure Password Generator', description: 'Generate secure, strong, and randomized passwords locally with configurable character classes.', category: 'generators', isActive: true, href: '/tools/secure-password-generator', icon: '🔑' },
   { id: 'random-byte-generator', name: 'Random Byte Generator', description: 'Generate secure random binary bytes locally and format outputs in hex, Base64, or binary strings.', category: 'generators', isActive: true, href: '/tools/random-byte-generator', icon: '🎲' },
-  { id: 'lorem-ipsum', name: 'Lorem Ipsum', description: 'Generate placeholder text', category: 'generators', icon: '📝' },
+  { id: 'lorem-ipsum', name: 'Lorem Ipsum Generator', description: 'Generate classic Lorem Ipsum placeholder text with custom paragraph and sentence counts. Optional HTML wrapping, copy, or download.', category: 'generators', isActive: true, href: '/tools/lorem-ipsum-generator', icon: '📝' },
   { id: 'random-number', name: 'Random Number', description: 'Generate random numbers', category: 'generators', icon: '🎲' },
   { id: 'fake-user-generator', name: 'Fake User & Mock Data Generator', description: 'Generate fake user profiles, database mock rows, IoT telemetry, and customize schemas in real-time. Exports to JSON, CSV, YAML, SQL, and TypeScript interfaces.', category: 'generators', isPopular: true, isActive: true, href: '/tools/fake-user-generator', icon: '👤' },
   { id: 'mock-data-generator', name: 'Mock Data Generator', description: 'Design custom schemas and generate mock data records in JSON or CSV layouts locally.', category: 'generators', isActive: true, href: '/tools/mock-data-generator', icon: '👤' },
   { id: 'schema-data-generator', name: 'Schema Data Generator', description: 'Generate mock data records matching TypeScript interfaces, SQL schemas, or JSON structures.', category: 'generators', isActive: true, href: '/tools/schema-data-generator', icon: '👤' },
-  { id: 'qr-code-generator', name: 'QR Code Generator', description: 'Generate QR codes', category: 'generators', icon: '▦' },
+  { id: 'qr-code-generator', name: 'QR Code Generator', description: 'Generate scannable QR codes for URLs, Wi-Fi, contacts, and more. Customize colors, size, and error correction — download as PNG or SVG.', category: 'generators', isPopular: true, isActive: true, href: '/tools/qr-code-generator', icon: '▦' },
   { id: 'barcode-generator', name: 'Barcode Generator', description: 'Generate barcodes', category: 'generators', icon: '▬' },
   { id: 'random-string', name: 'Random String', description: 'Generate random strings', category: 'generators', icon: '🎲' },
-  { id: 'image-resize', name: 'Image Resize', description: 'Resize images in browser', category: 'generators', icon: '🖼️' },
+  { id: 'image-resize', name: 'Image Resizer & Compressor', description: 'Resize and compress images online — change dimensions, convert to WebP/JPEG/PNG, and shrink file size. All in your browser with zero uploads.', category: 'generators', isPopular: true, isActive: true, href: '/tools/image-resizer', icon: '🖼️' },
   { id: 'image-compress', name: 'Image Compress', description: 'Compress images', category: 'generators', icon: '🗜️' },
   { id: 'image-converter', name: 'Image Converter', description: 'Convert image formats', category: 'generators', icon: '🔄' },
+  { id: 'age-calculator', name: 'Age Calculator', description: 'Calculate your exact age in years, months, days, weeks, hours, minutes, and seconds. Next birthday countdown and born-day included.', category: 'generators', isActive: true, href: '/tools/age-calculator', icon: '📅' },
   { id: 'exif-viewer', name: 'EXIF Viewer', description: 'View image EXIF data', category: 'generators', icon: '📷' },
   { id: 'api-request-builder', name: 'API Request Builder', description: 'Build API requests', category: 'generators', icon: '🔌' },
   { id: 'http-status-codes', name: 'HTTP Status Codes', description: 'HTTP status code reference', category: 'generators', icon: '📡' },
@@ -189,7 +193,7 @@ export const ALL_TOOLS: Tool[] = [
   { id: 'iso-8601-parser', name: 'ISO 8601 Parser', description: 'Parse and validate ISO 8601 dates', category: 'generators', icon: '🔍' },
   { id: 'duration-calculator', name: 'Duration Calculator', description: 'Calculate time durations', category: 'generators', icon: '⏳' },
   { id: 'world-clock', name: 'World Clock', description: 'Display time in multiple timezones', category: 'generators', icon: '🕐' },
-  { id: 'number-base-converter', name: 'Number Base Converter', description: 'Convert between number bases', category: 'generators', icon: '🔢' }
+  { id: 'number-base-converter', name: 'Number Base Converter', description: 'Convert any integer between binary, octal, decimal, and hexadecimal with unlimited BigInt precision. Instant results in every base.', category: 'generators', isActive: true, href: '/tools/number-base-converter', icon: '🔢' }
 ];
 
 export default function ToolsList() {

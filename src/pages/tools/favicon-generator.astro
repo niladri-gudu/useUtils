@@ -1,0 +1,178 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import FaviconGenerator from '../../components/FaviconGenerator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'Favicon Generator', href: '/tools/favicon-generator', active: true },
+  { label: 'Image Resizer', href: '/tools/image-resizer' },
+  { label: 'Image to Base64', href: '/tools/image-to-base64' },
+  { label: 'QR Code Generator', href: '/tools/qr-code-generator' }
+];
+
+const faqs = [
+  {
+    question: "What is a favicon?",
+    answer: "A favicon (short for favorite icon) is the small image that appears in your browser tab, bookmarks bar, and history. It's also used by browsers, mobile home screens, and apps to identify your site at a glance."
+  },
+  {
+    question: "Is this favicon generator free?",
+    answer: "Yes, completely free with no sign-up. Generate unlimited favicons from emojis, text, or images, and download them in any common size — all processed locally in your browser."
+  },
+  {
+    question: "Are my uploads sent to a server?",
+    answer: "No. The favicon is drawn on an HTML canvas entirely on your device. Your image or text never leaves your computer."
+  },
+  {
+    question: "What size should a favicon be?",
+    answer: "The classic favicon is 16×16px, but modern sites typically use 32×32px (browser tabs) and 180×180px (Apple touch icon). This tool generates sizes from 16px up to 512px."
+  },
+  {
+    question: "What is the best format for a favicon?",
+    answer: "PNG is the most compatible modern format. The ICO format supports multiple sizes in one file but is only required for legacy browsers and old IE. This tool outputs PNG at any size."
+  },
+  {
+    question: "How do I add a favicon to my website?",
+    answer: "Save your favicon as favicon.png in your site root and add <code>&lt;link rel=\"icon\" href=\"/favicon.png\" type=\"image/png\"&gt;</code> to your HTML head. Add the 180×180 version as an Apple touch icon too."
+  },
+  {
+    question: "Can I use an emoji as a favicon?",
+    answer: "Yes. Emoji favicons are simple, memorable, and require no design skills. Pick an emoji preset or type any emoji, choose a background color, and generate."
+  },
+  {
+    question: "Why does my favicon look blurry?",
+    answer: "Favicons are tiny (16–32px), so complex details vanish. Keep designs simple — a single character, emoji, or bold shape — and test at 16px to see how it reads."
+  },
+  {
+    question: "Does the favicon need a transparent background?",
+    answer: "Not required, but transparent PNGs let the browser theme show through and avoid white boxes in dark mode. This tool lets you pick any background color or none at all."
+  },
+  {
+    question: "What is a favicon.ico and do I still need one?",
+    answer: "favicon.ico is the classic multi-size icon file. Modern browsers prefer PNG, so it's optional. If you need it for legacy support, many users simply convert a 32px PNG to ICO."
+  },
+  {
+    question: "How do I add a favicon to a static site or framework?",
+    answer: "Astro, Next.js, and others pick up a public/favicon.svg or favicon.png automatically. In Astro, dropping the file into public/ is enough — the framework serves it at /favicon.ico or /favicon.png."
+  },
+  {
+    question: "Can I create a favicon from a logo image?",
+    answer: "Yes. Upload a square logo image and the generator fits it into the icon with optional rounded corners and padding. For small sizes, high-contrast simple logos work best."
+  },
+  {
+    question: "Why does my favicon not appear in the browser tab?",
+    answer: "Browsers cache favicons aggressively. Clear your cache or hard-refresh (Ctrl+Shift+R). Also make sure the link tag points to the correct path and the file is valid PNG."
+  },
+  {
+    question: "What size should I use for the Apple touch icon?",
+    answer: "Apple recommends 180×180px. Add <code>&lt;link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\"&gt;</code> and use a non-transparent background for best results on iOS home screens."
+  },
+  {
+    question: "Can I make an SVG favicon?",
+    answer: "Yes — modern browsers support <code>&lt;link rel=\"icon\" type=\"image/svg+xml\" href=\"/favicon.svg\"&gt;</code>, which scales perfectly. Use this tool for a quick PNG, then optionally wrap your icon in an SVG for crisp scaling."
+  }
+];
+
+const references = [
+  { title: "MDN - Adding a favicon to your site", url: "https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/favicon", source: "MDN Web Docs" },
+  { title: "MDN - link rel=icon element", url: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link#sect2", source: "MDN Web Docs" }
+];
+
+const mistakesList = [
+  {
+    title: "Using a Photo or Complex Graphic",
+    description: "Photos and detailed illustrations are unreadable at 16×16px. Everything collapses into noise in the browser tab.",
+    fix: "Use a simple glyph, letter, or bold icon with high contrast. Test how it looks at 16px, not just at 512px."
+  },
+  {
+    title: "Forgetting Transparent Backgrounds for Dark Mode",
+    description: "A favicon with a fixed white background shows an ugly white box in dark-mode browsers and toolbars.",
+    fix: "Prefer a transparent background (or a filled colored circle) so the icon blends with any theme."
+  },
+  {
+    title: "Only Providing One Tiny Size",
+    description: "Serving just 16px means blurry results on HiDPI screens, PWA installs, and iOS home screens.",
+    fix: "Provide 32×32 and 180×180 versions alongside the classic 16px to cover tabs, bookmarks, and mobile."
+  }
+];
+
+const practicesList = [
+  { title: "Design for 16px First", description: "Zoom out to 16×16 when evaluating your icon. If it's identifiable that small, it will look great everywhere else." },
+  { title: "Ship Multiple Sizes", description: "Provide 16, 32, 48, and 180px (Apple touch icon) so every surface gets a crisp version." },
+  { title: "Add a Dark-Mode Variant", description: "Consider a separate favicon for prefers-color-scheme: dark using a second link tag with media query for maximum polish." },
+  { title: "Generate Locally for Privacy", description: "Because this tool runs in your browser, you can safely build favicons from brand assets you don't want uploaded." }
+];
+---
+
+<ToolPageLayout
+  title="Favicon Generator Online: Create Custom Favicons Free (PNG)"
+  description="Create a custom favicon online for free. Generate from emoji, text, or your logo — choose size, color, and shape, then download PNG. No sign-up, in-browser."
+  keywords="favicon generator, create favicon, favicon maker, generate favicon online, favicon png, emoji favicon, website icon generator, browser tab icon"
+  toolTitle="Favicon Generator"
+  toolDescription="Generate a custom favicon from an emoji, text, or your own image. Pick size, background, rounded corners, and padding — then download crisp PNG icons for every device."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <FaviconGenerator client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Make the Perfect Favicon
+      </h2>
+      <p class="leading-relaxed mb-4">
+        A **favicon** is your brand at 16 pixels. At that size, only the simplest designs survive: a single letter, an emoji, or a bold geometric shape. This generator draws your content onto a canvas, applies the background, rounding, and padding you choose, and exports a crisp PNG for every common size.
+      </p>
+      <p class="leading-relaxed">
+        Because everything is rendered client-side, generating a favicon from your own logo is completely private — the source image is never uploaded anywhere.
+      </p>
+    </div>
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Sizing Guide"
+      description="Which favicon size to use where:"
+      examples={[
+        { label: "16×16", input: "Classic browser tab", output: "Minimum viable icon", badge: "Tab" },
+        { label: "32×32", input: "Modern desktop browsers", output: "Sharp on HiDPI", badge: "Standard" },
+        { label: "48×48", input: "Bookmarks & windows", output: "Good on large tabs", badge: "Bookmark" },
+        { label: "180×180", input: "iOS home screen", output: "Apple touch icon", badge: "Mobile" }
+      ]}
+    />
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Favicon Formats Compared"
+      headers={["Format", "Sizes", "Compatibility", "Use Case"]}
+      rows={[
+        { label: "PNG", values: ["Single", "All modern browsers", "Recommended default"] },
+        { label: "ICO", values: ["Multiple in one", "Legacy browsers", "Backward compatibility"] },
+        { label: "SVG", values: ["Scalable", "Modern browsers", "Crisp at any size"] }
+      ]}
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Favicon Mistakes to Avoid"
+      description="Common favicon design errors:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Favicon Best Practices"
+      practices={practicesList}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

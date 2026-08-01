@@ -1,0 +1,178 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import PxToRemConverter from '../../components/PxToRemConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'PX to REM', href: '/tools/px-to-rem-converter', active: true },
+  { label: 'Color Converter', href: '/tools/color-converter' },
+  { label: 'CSS Clamp', href: '/tools/clamp-generator' },
+  { label: 'Fluid Type', href: '/tools/fluid-typography-generator' }
+];
+
+const faqs = [
+  {
+    question: "What is a PX to REM converter?",
+    answer: "It converts pixel (px) values to rem units (root em). Since 1rem equals the root font-size (16px by default), the formula is px ÷ 16 = rem. This tool also converts in reverse and to em units."
+  },
+  {
+    question: "What is the difference between px, rem, and em?",
+    answer: "px is an absolute unit fixed at 1/96th of an inch. rem is relative to the root (<html>) font size. em is relative to the font size of the current element's parent. rem and em enable scalable, responsive typography."
+  },
+  {
+    question: "How many px is 1rem?",
+    answer: "1rem equals the root font size. With the default browser root of 16px, 1rem = 16px. This converter lets you change the root size to match your design tokens."
+  },
+  {
+    question: "How do I convert px to rem manually?",
+    answer: "Divide the pixel value by the root font size. Example: 24px ÷ 16px = 1.5rem. For rem to px, multiply the rem value by the root font size."
+  },
+  {
+    question: "Why use rem instead of px?",
+    answer: "rem units respect the user's browser font-size setting, making your site accessible and scalable. They also make spacing and typography consistent and easy to maintain with a modular scale."
+  },
+  {
+    question: "What is the default root font size?",
+    answer: "Browsers default to 16px. Many frameworks use this value, so the common conversions are 4px = 0.25rem, 8px = 0.5rem, 12px = 0.75rem, 16px = 1rem, and 24px = 1.5rem."
+  },
+  {
+    question: "Is this px to rem converter free?",
+    answer: "Yes, completely free with no sign-up. All conversions are calculated instantly in your browser — nothing is uploaded to a server."
+  },
+  {
+    question: "How does this converter differ from an em converter?",
+    answer: "em values depend on the parent element's font size rather than the root. This tool shows both: rem uses the root size, em uses a configurable parent size, so you can convert for any context."
+  },
+  {
+    question: "What rem values does Tailwind CSS use?",
+    answer: "Tailwind's default scale is rem-based: text-sm = 0.875rem (14px), text-base = 1rem (16px), text-lg = 1.125rem (18px), text-xl = 1.25rem (20px). Spacing also uses rem (e.g. p-4 = 1rem)."
+  },
+  {
+    question: "Can I convert fractional rem values?",
+    answer: "Yes. Enter values like 1.25 or 0.875 and the tool returns the exact pixel equivalent, ideal for matching design system tokens."
+  },
+  {
+    question: "Why does 1em sometimes differ from 1rem?",
+    answer: "Because em is relative to the parent element. If a parent has font-size: 20px, then 1em inside it equals 20px, while 1rem still equals the root size (16px by default)."
+  },
+  {
+    question: "How do I use rem for responsive design?",
+    answer: "Combine rem units with CSS media queries or fluid clamp() values. Because rem scales with root size, adjusting the <html> font-size at different breakpoints scales your whole layout proportionally."
+  },
+  {
+    question: "What is the most common px to rem conversion?",
+    answer: "With a 16px root, the most common pairs are 8px = 0.5rem, 16px = 1rem, 24px = 1.5rem, and 32px = 2rem. The quick reference table above lists common values."
+  },
+  {
+    question: "Should I use rem for everything?",
+    answer: "Not necessarily. rem is great for typography, spacing, and sizes that should scale with accessibility settings. Keep px for crisp borders, shadows, or elements that should not scale, like fine hairlines."
+  },
+  {
+    question: "How do I convert px to rem in Sass or a build tool?",
+    answer: "Use a function like <code>@function rem($px) { @return calc($px / 16px) * 1rem; }</code> in Sass, or the built-in rem helpers in frameworks like Tailwind and Bootstrap."
+  }
+];
+
+const references = [
+  { title: "MDN - CSS length units (px, rem, em)", url: "https://developer.mozilla.org/en-US/docs/Web/CSS/length", source: "MDN Web Docs" },
+  { title: "W3C - CSS Values and Units Module Level 4", url: "https://www.w3.org/TR/css-values-4/", source: "W3C Specification" }
+];
+
+const mistakesList = [
+  {
+    title: "Assuming em Equals Root-Based rem",
+    description: "em depends on the parent element's font size. Using em for layout spacing often causes unexpected compounding when nested elements change font size.",
+    fix: "Use rem for component spacing and sizes that should stay consistent, and reserve em for typography that should scale with its context."
+  },
+  {
+    title: "Hardcoding the Root Size in Your Head",
+    description: "If your project sets <code>html { font-size: 14px }</code>, then 16px ÷ 16 is wrong — the conversions shift. Always convert against your actual root value.",
+    fix: "Use the root font-size slider in this tool to match your project's real root size before converting."
+  },
+  {
+    title: "Mixing px and rem Without a Scale",
+    description: "Arbitrary px values mixed with rem tokens break the modular rhythm of your design system and make the layout harder to maintain.",
+    fix: "Standardize on a spacing scale (e.g. multiples of 4px → 0.25rem steps) and convert consistently."
+  }
+];
+
+const practicesList = [
+  { title: "Use rem for Accessibility", description: "rem scales with the user's browser font-size, helping users who increase their default text size." },
+  { title: "Match the Tailwind Scale", description: "If you use Tailwind, convert against the standard 16px root so your values align with framework utilities." },
+  { title: "Document Your Root Size", description: "Set a clear root font-size and record it in your design tokens so future conversions (including yours here) stay consistent." }
+];
+---
+
+<ToolPageLayout
+  title="PX to REM Converter Online: px to rem & em, Free"
+  description="Convert pixels to rem and em instantly with a customizable root font size. Free online px to rem converter with quick reference table. No sign-up, in-browser."
+  keywords="px to rem converter, pixel to rem, px to em converter, rem to px, pixel to rem calculator, px to rem table, convert px rem"
+  toolTitle="PX to REM Converter"
+  toolDescription="Convert pixel values to rem and em instantly — and back — with a configurable root or parent font size. Includes a quick reference table for common values. Runs entirely in your browser."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <PxToRemConverter client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Understanding rem, em, and px Units
+      </h2>
+      <p class="leading-relaxed mb-4">
+        **rem** (root em) and **em** are CSS relative length units. The key difference: <code>1rem</code> always equals the root element's font size (default 16px), while <code>1em</code> equals the current element's inherited font size. This makes rem predictable for layout and em powerful for type that scales with its container.
+      </p>
+      <p class="leading-relaxed">
+        Converting is simple arithmetic: **px ÷ root-size = rem**. This tool does that instantly in both directions and gives you a reference table so you never have to calculate common values again.
+      </p>
+    </div>
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Real-World Conversions (16px root)"
+      description="The conversions you'll use every day:"
+      examples={[
+        { label: "Small spacing", input: "8px", output: "0.5rem", badge: "8px → 0.5rem" },
+        { label: "Base size", input: "16px", output: "1rem", badge: "16px → 1rem" },
+        { label: "Heading", input: "32px", output: "2rem", badge: "32px → 2rem" },
+        { label: "Reverse", input: "1.25rem", output: "20px", badge: "1.25rem → 20px" }
+      ]}
+    />
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="CSS Units Compared"
+      headers={["Unit", "Relative To", "Scales With Root", "Common Use"]}
+      rows={[
+        { label: "px", values: ["Absolute", "No", "Borders, shadows, precise UI"] },
+        { label: "rem", values: ["Root font-size", "Yes", "Typography, spacing, layout"] },
+        { label: "em", values: ["Parent font-size", "Indirectly", "Element-relative sizing"] },
+        { label: "%", values: ["Containing block", "No", "Fluid layout"] }
+      ]}
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common px/rem Conversion Mistakes"
+      description="Avoid these when working with relative units:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Unit Conversion Best Practices"
+      practices={practicesList}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

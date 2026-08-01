@@ -17,7 +17,9 @@ export default defineConfig({
       filter: (page) => {
         // Exclude error status pages from the sitemap
         const isErrorPage = /\/(400|401|403|404|500|503)\/?$/.test(page);
-        return !isErrorPage;
+        // Exclude noindex placeholder sections (indexed pages must not be in the sitemap)
+        const isNoindexSection = /\/(playground|cheatsheets|labs|configs)(\/|$)/.test(page) && !/\/tools\//.test(page);
+        return !isErrorPage && !isNoindexSection;
       }
     }),
     {

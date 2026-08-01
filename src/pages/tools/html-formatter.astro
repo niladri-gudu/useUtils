@@ -1,0 +1,177 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import HtmlFormatter from '../../components/HtmlFormatter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'HTML Formatter', href: '/tools/html-formatter', active: true },
+  { label: 'HTML Minifier', href: '/tools/html-minifier' },
+  { label: 'JSON Formatter', href: '/tools/json-formatter' },
+  { label: 'CSS Generator', href: '/tools/grid-generator' }
+];
+
+const faqs = [
+  {
+    question: "What is an HTML formatter?",
+    answer: "An HTML formatter (also called a beautifier) takes messy, minified, or compressed HTML markup and re-indents it with consistent spacing, line breaks, and readable structure so developers can read and edit it easily."
+  },
+  {
+    question: "Is this HTML formatter free?",
+    answer: "Yes, completely free with no sign-up. Format unlimited HTML documents with configurable indentation — all processed locally in your browser with zero uploads."
+  },
+  {
+    question: "Does the formatter run in my browser?",
+    answer: "Yes. Your HTML is parsed and beautified entirely client-side using the browser's built-in DOM parser. Your markup never leaves your device, making it safe for sensitive or proprietary templates."
+  },
+  {
+    question: "What does 'formatting' an HTML document do?",
+    answer: "It reorganizes whitespace: nested elements get indentation, block-level tags break onto their own lines, attributes stay on their tags, and text is collapsed cleanly. It never changes the meaning or structure of your markup."
+  },
+  {
+    question: "Can I change the indentation settings?",
+    answer: "Yes. Choose between spaces or tabs, and select 2, 4, or 8 space indentation to match your project's style guide. Output is regenerated instantly."
+  },
+  {
+    question: "Will formatting break my HTML?",
+    answer: "No. Formatting only rewrites whitespace and line breaks. It does not reorder attributes, alter values, or change the document tree, so the rendered result is identical."
+  },
+  {
+    question: "Does it support HTML5 and modern elements?",
+    answer: "Yes. The formatter uses the browser's native HTML5 parser, so it correctly handles semantic tags like section, article, nav, and template, as well as custom elements and namespaces."
+  },
+  {
+    question: "Can I format HTML with embedded CSS and JavaScript?",
+    answer: "Yes. Inline <code>style</code> attributes and <code>script</code> blocks are preserved and indented as part of the document. For beautifying the CSS/JS contents themselves, use a dedicated CSS or JS formatter."
+  },
+  {
+    question: "What is the difference between formatting and minifying?",
+    answer: "Formatting adds readability with indentation and line breaks. Minifying does the opposite — it removes all unnecessary whitespace and comments to make files as small as possible for production."
+  },
+  {
+    question: "How do I format HTML in VS Code?",
+    answer: "Use Shift+Alt+F with the built-in HTML formatter, or right-click and select 'Format Document'. For custom rules, the Prettier extension is the most popular choice."
+  },
+  {
+    question: "Why is my HTML code not formatted on one line?",
+    answer: "By default, block elements break onto separate lines for readability, while inline elements like <code>span</code> or <code>strong</code> stay inline. This matches how most beautifiers and Prettier behave."
+  },
+  {
+    question: "Does this tool handle comments?",
+    answer: "Yes. HTML comments are preserved by default. You can optionally enable 'Remove comments' in the options bar to strip them from the output."
+  },
+  {
+    question: "Can I use this formatter on email templates?",
+    answer: "Absolutely. Formatting email HTML (tables, inline styles, nested divs) is one of the most common uses. The beautified markup is easier to debug in email clients that rely on tables."
+  },
+  {
+    question: "Is there a character limit?",
+    answer: "No hard limit. The formatter processes your markup in memory, so large documents work fine. For extremely huge files, your browser's performance is the only constraint."
+  },
+  {
+    question: "How do I format HTML in the command line?",
+    answer: "Use tools like Prettier (<code>npx prettier --write file.html</code>), html-beautify, or tidy. Each parses and rewrites the markup with consistent indentation."
+  },
+  {
+    question: "Will the output preserve my attribute order?",
+    answer: "Yes. Attributes are kept exactly as written — the formatter only normalizes whitespace between them. Nothing is reordered or dropped."
+  }
+];
+
+const references = [
+  { title: "HTML Living Standard", url: "https://html.spec.whatwg.org/multipage/", source: "WHATWG" },
+  { title: "MDN - HTML Element Reference", url: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element", source: "MDN Web Docs" }
+];
+
+const mistakesList = [
+  {
+    title: "Assuming Formatting Fixes Invalid HTML",
+    description: "A beautifier re-indents whatever the parser produces. If your markup has unclosed tags, the formatter will output the parser's corrected tree, not your intent.",
+    fix: "Validate your HTML first, or review the formatted output carefully when it contains parser-repaired sections."
+  },
+  {
+    title: "Formatting Generated Code Before Minifying",
+    description: "Running a formatter and then a minifier in a build pipeline wastes time and can produce inconsistent output between environments.",
+    fix: "Only format for development. Always minify from the original source for production bundles."
+  },
+  {
+    title: "Mixing Indentation Styles Across Files",
+    description: "Some files using tabs and others using 2-space indentation makes diffs noisy and hurts readability across a team.",
+    fix: "Set your indent style once in this formatter and standardize with a .editorconfig file in your repo."
+  }
+];
+
+const practicesList = [
+  { title: "Set Indentation to Match Your Team", description: "Match your project's .editorconfig or Prettier config so the formatted output is consistent with your existing codebase." },
+  { title: "Format Before Code Reviews", description: "Beautifying generated or copied markup before a pull request makes structural changes obvious and reviews much faster." },
+  { title: "Keep Formatting Local for Sensitive Templates", description: "Since this tool runs entirely in your browser, you can safely beautify proprietary email or app templates without exposing them." }
+];
+---
+
+<ToolPageLayout
+  title="HTML Formatter & Beautifier Online: Free, In-Browser"
+  description="Format and beautify messy HTML instantly with configurable indentation. Free online HTML formatter that runs entirely in your browser — no uploads, no sign-up."
+  keywords="html formatter, html beautifier, format html online, html pretty printer, html indent tool, beautify html, clean up html code"
+  toolTitle="HTML Formatter & Beautifier"
+  toolDescription="Turn minified or messy HTML into clean, indented, readable markup. Choose spaces or tabs, 2/4/8 space indentation, and optionally strip comments — all processed locally in your browser."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <HtmlFormatter client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        What HTML Formatting Does
+      </h2>
+      <p class="leading-relaxed mb-4">
+        An **HTML beautifier** parses your markup into a document tree and rewrites it with consistent whitespace: each nesting level is indented, block-level elements start on their own line, and text nodes are collapsed cleanly. The structure, attributes, and values are never altered.
+      </p>
+      <p class="leading-relaxed">
+        The result is dramatically easier to read, debug, and review. This formatter uses your browser's native **HTML5 parser**, so modern elements, custom tags, and namespaces are handled correctly without sending a single byte to a server.
+      </p>
+    </div>
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Before & After"
+      description="Watch a minified document become readable in one click:"
+      examples={[
+        { label: "Minified Input", input: "<div class=\"card\"><h1>Hi</h1><p>Hello <strong>world</strong></p></div>", output: "Becomes properly indented, one element per line with nested children indented 2 spaces", badge: "Format" }
+      ]}
+    />
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Formatting vs Minifying"
+      headers={["Purpose", "Whitespace", "Comments", "Use Case", "File Size"]}
+      rows={[
+        { label: "Formatter", values: ["Readability", "Added & normalized", "Preserved (optional strip)", "Development & debugging", "Larger"] },
+        { label: "Minifier", values: ["Compression", "Removed entirely", "Stripped", "Production / bandwidth", "Smallest"] }
+      ]}
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Common Formatting Pitfalls"
+      description="Keep these in mind when beautifying markup:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="HTML Formatting Best Practices"
+      practices={practicesList}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

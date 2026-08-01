@@ -1,0 +1,181 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import NumberBaseConverter from '../../components/NumberBaseConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'Number Base Converter', href: '/tools/number-base-converter', active: true },
+  { label: 'Binary Converter', href: '/tools/binary-converter' },
+  { label: 'Text to Binary', href: '/tools/text-to-binary' },
+  { label: 'ASCII Converter', href: '/tools/ascii-converter' }
+];
+
+const faqs = [
+  {
+    question: "What is a number base converter?",
+    answer: "A number base converter translates a value between number systems — binary (base 2), octal (base 8), decimal (base 10), and hexadecimal (base 16). The value is the same; only the representation changes."
+  },
+  {
+    question: "Is this number base converter free?",
+    answer: "Yes, completely free with no sign-up. Convert numbers of unlimited size (using BigInt) instantly in your browser with zero uploads."
+  },
+  {
+    question: "What are the common number bases?",
+    answer: "Binary (base 2, digits 0-1) is used by computers; octal (base 8, digits 0-7) groups binary bits; decimal (base 10) is everyday math; hexadecimal (base 16, digits 0-F) is how programmers read bytes and memory addresses."
+  },
+  {
+    question: "How do I convert decimal to binary manually?",
+    answer: "Repeatedly divide the decimal number by 2 and record the remainders from bottom to top. Example: 13 ÷ 2 = 6 r1, 6 ÷ 2 = 3 r0, 3 ÷ 2 = 1 r1, 1 ÷ 2 = 0 r1 → binary 1101."
+  },
+  {
+    question: "Why do programmers use hexadecimal?",
+    answer: "Because one hex digit maps exactly to four bits. A byte (8 bits) is always two hex digits, making binary data compact and easy to read. 0xFF = 255 = 11111111."
+  },
+  {
+    question: "Does this converter handle very large numbers?",
+    answer: "Yes. It uses JavaScript BigInt, so it handles numbers far beyond the 53-bit safe integer limit — essential for hashes, cryptographic keys, and network addresses."
+  },
+  {
+    question: "How do I convert hexadecimal to binary?",
+    answer: "Convert each hex digit to its 4-bit binary equivalent. For example 0x3F → 0011 1111. This tool does it instantly for any input."
+  },
+  {
+    question: "What is the binary representation of 255?",
+    answer: "255 in decimal is 11111111 in binary (8 ones = one byte, the maximum value of a byte) and 0xFF in hex."
+  },
+  {
+    question: "Can I enter values with prefixes?",
+    answer: "Yes. The converter accepts common prefixes like 0x (hex), 0b (binary), and 0o (octal), as well as underscores for readability, then strips them before parsing."
+  },
+  {
+    question: "What is the difference between base 10 and base 16?",
+    answer: "Base 10 uses ten digits (0-9) and is what humans use daily. Base 16 adds the letters A-F to represent 10-15, making it ideal for representing binary data compactly."
+  },
+  {
+    question: "How do I read binary numbers?",
+    answer: "Each bit position represents a power of 2, from right to left: 1, 2, 4, 8, 16, 32… Add the powers for each 1 bit. 1010 = 8 + 2 = 10."
+  },
+  {
+    question: "What are base conversions used for?",
+    answer: "They're everywhere in computing: memory addresses and colors (hex), IP addresses and subnet masks (binary), file permissions (octal), and debugging low-level data."
+  },
+  {
+    question: "Can I convert negative numbers?",
+    answer: "Yes. The converter handles negative values with a leading minus sign and returns the correctly signed representation in each base."
+  },
+  {
+    question: "Why does 0.5 in decimal not work in the converter?",
+    answer: "This tool converts integers. Fractional values need floating-point conversion (with a radix point), which is a separate operation with its own rounding rules."
+  },
+  {
+    question: "How do I convert binary to hex quickly?",
+    answer: "Group the binary digits in fours from the right and map each group to a hex digit. 1111 0000 → F0. For large inputs this tool does it instantly."
+  },
+  {
+    question: "What is octal used for today?",
+    answer: "Octal survives mostly in Unix/Linux file permissions (chmod 755), some ancient computing systems, and where bit grouping by threes is convenient."
+  }
+];
+
+const references = [
+  { title: "MDN - BigInt", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt", source: "MDN Web Docs" },
+  { title: "MDN - parseInt() with radix", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseInt", source: "MDN Web Docs" }
+];
+
+const mistakesList = [
+  {
+    title: "Using Regular Numbers for Large Values",
+    description: "Standard JavaScript numbers lose precision above 2^53. Converting a 32- or 64-character hash with plain numbers silently corrupts the result.",
+    fix: "This converter uses BigInt, so every digit is exact. Beware of tools that don't — they round large values."
+  },
+  {
+    title: "Confusing 0x Prefix With Digits",
+    description: "Treating '0x' as part of the number instead of a marker causes off-by-many errors when converting hex by hand.",
+    fix: "The converter strips prefixes automatically. When converting manually, remember 0x is just a label."
+  },
+  {
+    title: "Mixing Up Hex Letters With Decimal",
+    description: "Forgetting that A=10, B=11 … F=15 in hexadecimal leads to mistakes like reading 0xFF as ninety-nine.",
+    fix: "Memorize the A–F values, or always use a converter for anything longer than a byte."
+  }
+];
+
+const practicesList = [
+  { title: "Understand Bit Grouping", description: "Hex groups 4 bits, octal groups 3. Knowing this makes conversions between binary and these bases trivial." },
+  { title: "Verify Critical Values", description: "For IPs, subnets, and color codes, always double-check conversions — a single wrong bit changes the result entirely." },
+  { title: "Use Prefixes for Clarity", description: "Write 0xFF, 0b1010, or 0o755 in your code so readers instantly know the base without guessing." }
+];
+---
+
+<ToolPageLayout
+  title="Number Base Converter: Binary, Octal, Decimal & Hex — Free"
+  description="Convert between binary, octal, decimal, and hexadecimal instantly. Free online number base converter with BigInt precision for any size. No sign-up."
+  keywords="number base converter, binary to hex, decimal to binary, hex to decimal, octal converter, base converter, binary to octal, hex converter"
+  toolTitle="Number Base Converter"
+  toolDescription="Convert any integer between binary, octal, decimal, and hexadecimal — with unlimited BigInt precision. Instant results in every base, fully in your browser."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <NumberBaseConverter client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How Number Systems Work
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Every number system represents the same value with a different **radix** (base). Decimal uses powers of 10, binary uses powers of 2, and hex uses powers of 16. Converting between them is a simple matter of evaluating place values and re-grouping digits.
+      </p>
+      <p class="leading-relaxed">
+        This converter performs conversions with **BigInt** arithmetic, so it stays exact even for enormous inputs like SHA-256 hashes, IPv6 addresses, or cryptographic keys — where off-by-one-digit errors are catastrophic.
+      </p>
+    </div>
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="The Same Value in Every Base"
+      description="255 decimal is a single byte at maximum value:"
+      examples={[
+        { label: "Decimal", input: "255", output: "0b11111111 • 0o377 • 0xFF", badge: "One byte" },
+        { label: "Binary", input: "11111111", output: "255 decimal • 0xFF", badge: "8 bits" },
+        { label: "Hexadecimal", input: "0xFF", output: "255 decimal • 11111111", badge: "2 nibbles" }
+      ]}
+    />
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="Number Bases Compared"
+      headers={["Base", "Name", "Digits", "Grouping", "Common Use"]}
+      rows={[
+        { label: "2", values: ["Binary", "0–1", "1 bit", "Machine code, flags"] },
+        { label: "8", values: ["Octal", "0–7", "3 bits", "chmod, legacy systems"] },
+        { label: "10", values: ["Decimal", "0–9", "—", "Everyday arithmetic"] },
+        { label: "16", values: ["Hex", "0–F", "4 bits", "Memory, colors, hashes"] }
+      ]}
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Number Conversion Mistakes"
+      description="Errors that cause real bugs:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="Base Conversion Best Practices"
+      practices={practicesList}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

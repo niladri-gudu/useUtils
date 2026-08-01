@@ -1,0 +1,178 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import AsciiConverter from '../../components/AsciiConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'ASCII Converter', href: '/tools/ascii-converter', active: true },
+  { label: 'Number Base', href: '/tools/number-base-converter' },
+  { label: 'Binary Converter', href: '/tools/binary-converter' },
+  { label: 'Text to Binary', href: '/tools/text-to-binary' }
+];
+
+const faqs = [
+  {
+    question: "What is an ASCII converter?",
+    answer: "An ASCII converter translates text characters into their numeric ASCII codes (decimal, hex, binary, or octal) and decodes those codes back into readable text."
+  },
+  {
+    question: "What is ASCII?",
+    answer: "ASCII (American Standard Code for Information Interchange) is a 7-bit character encoding from 1963 that assigns numbers 0–127 to letters, digits, punctuation, and control characters. It's the foundation of modern text encodings."
+  },
+  {
+    question: "Is this ASCII converter free?",
+    answer: "Yes, completely free with no sign-up. Convert text to ASCII codes and back in decimal, hex, binary, or octal — all in your browser."
+  },
+  {
+    question: "What is the ASCII code for uppercase 'A'?",
+    answer: "Uppercase 'A' is 65 in decimal (0x41 hex, 1000001 binary). Lowercase 'a' is 97. The alphabet runs consecutively: A=65 to Z=90, a=97 to z=122."
+  },
+  {
+    question: "What is the ASCII code for a space?",
+    answer: "The space character is ASCII 32 in decimal (0x20 hex). It's the first printable character after the control codes (0–31)."
+  },
+  {
+    question: "Does this converter handle Unicode characters?",
+    answer: "Yes. Characters above ASCII 127 (like emoji or accented letters) use their Unicode code point value, which this tool computes with codePointAt. Note these exceed standard 7-bit ASCII."
+  },
+  {
+    question: "What are ASCII control characters?",
+    answer: "Codes 0–31 are control characters like NUL (0), TAB (9), Line Feed (10), and Carriage Return (13). They don't print but control terminals, files, and communication."
+  },
+  {
+    question: "How do I convert text to ASCII manually?",
+    answer: "Look up each character's code: 'H'=72, 'e'=101, 'l'=108, 'l'=108, 'o'=111 → 'Hello' = 72 101 108 108 111. This tool does it instantly in any number format."
+  },
+  {
+    question: "What is the difference between ASCII and Unicode?",
+    answer: "ASCII is 7-bit (0–127) and covers English. Unicode (UTF-8/UTF-16) extends encoding to over a million code points, covering every script and emoji. ASCII is a subset of Unicode."
+  },
+  {
+    question: "Why do programmers use hex for ASCII?",
+    answer: "Two hex digits encode any byte exactly (0x00–0xFF). Since ASCII fits in one byte, hex like 0x41 is compact and aligns with memory layouts — it's the standard notation in code."
+  },
+  {
+    question: "Can I decode ASCII codes back to text?",
+    answer: "Yes. Paste codes separated by spaces or commas in decimal, hex, binary, or octal, and the tool converts them back to the original string."
+  },
+  {
+    question: "What is the binary representation of ASCII characters?",
+    answer: "Each ASCII character maps to a 7-bit binary number: 'A' = 1000001, 'Z' = 1011010, '0' = 0110000. This converter shows any format you choose."
+  },
+  {
+    question: "Where is ASCII still used today?",
+    answer: "Everywhere: HTTP headers, email (SMTP), terminal protocols, file formats, and as the common base that UTF-8 is backward-compatible with."
+  },
+  {
+    question: "How many ASCII characters are there?",
+    answer: "128 total: 33 control characters (0–31 + 127) and 95 printable characters (32–126), including space, letters, digits, and punctuation."
+  },
+  {
+    question: "Does the converter work on mobile?",
+    answer: "Yes. It runs entirely in the browser, so it works on any device without an app or internet dependency."
+  }
+];
+
+const references = [
+  { title: "ASCII standard (American Standard Code for Information Interchange)", url: "https://en.wikipedia.org/wiki/ASCII", source: "Wikipedia" },
+  { title: "Unicode Character Encoding", url: "https://home.unicode.org/", source: "Unicode Consortium" }
+];
+
+const mistakesList = [
+  {
+    title: "Confusing Decimal and Hex Codes",
+    description: "'A' is 65 decimal but 0x41 hex. Writing 65 where 0x41 is expected (or vice versa) decodes to the wrong character entirely.",
+    fix: "Always confirm the number format before mixing. This tool's format selector keeps everything consistent."
+  },
+  {
+    title: "Assuming 8 Bits for All Characters",
+    description: "Standard ASCII is 7-bit (0–127). Characters above 127 in a 'binary' output need 8+ bits and are really Unicode code points, not ASCII.",
+    fix: "Use this converter for ASCII-safe text, and remember extended or Unicode text uses larger code values."
+  },
+  {
+    title: "Forgetting the Control Codes at the Start",
+    description: "Codes 0–31 are control characters, not letters. Trying to interpret them as text (or skipping them in decoding) breaks data like line endings.",
+    fix: "Handle control codes explicitly when decoding binary streams, especially LF (10) and CR (13)."
+  }
+];
+
+const practicesList = [
+  { title: "Use Hex for Byte-Level Work", description: "When inspecting network packets, file signatures, or memory, hex (0xNN) is the clearest notation because one byte = two hex digits." },
+  { title: "Prefer UTF-8 for Real Content", description: "ASCII handles English, but modern apps should use UTF-8 for full Unicode support while remaining ASCII-compatible." },
+  { title: "Standardize on One Format", description: "Pick decimal or hex for a project and stick to it — mixing formats in logs or configs is a classic source of subtle bugs." }
+];
+---
+
+<ToolPageLayout
+  title="ASCII Converter Online: Text to ASCII Codes & Back, Free"
+  description="Convert text to ASCII codes and decode ASCII to text instantly. Decimal, hex, binary, or octal formats with a printable ASCII reference table. Free, in-browser."
+  keywords="ascii converter, text to ascii, ascii to text, ascii code converter, character to ascii, decimal to ascii, hex to ascii, binary to ascii"
+  toolTitle="ASCII Converter"
+  toolDescription="Convert text into ASCII codes (decimal, hex, binary, or octal) and decode them back. Includes a printable ASCII reference table. Runs entirely in your browser."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <AsciiConverter client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <!-- Section: Intro -->
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        Understanding ASCII Codes
+      </h2>
+      <p class="leading-relaxed mb-4">
+        **ASCII** assigns a numeric value to every letter, digit, punctuation mark, and control character. The codes are stored as 7-bit values (0–127), and because UTF-8 is fully backward-compatible, ASCII text works everywhere — from terminals to web pages.
+      </p>
+      <p class="leading-relaxed">
+        Knowing the numeric codes unlocks practical skills: reading binary streams, decoding network logs, interpreting file signatures, and converting between encodings. This converter handles all four common notations instantly.
+      </p>
+    </div>
+
+    <!-- Section: Example Card -->
+    <ExampleCard
+      title="Key ASCII Values"
+      description="The codes every developer should know:"
+      examples={[
+        { label: "Space", input: "32", output: "0x20 • 100000", badge: "Printable" },
+        { label: "Digit 0", input: "48", output: "0x30 • 0110000", badge: "Digits start" },
+        { label: "Uppercase A", input: "65", output: "0x41 • 1000001", badge: "A–Z: 65–90" },
+        { label: "Lowercase a", input: "97", output: "0x61 • 1100001", badge: "a–z: 97–122" }
+      ]}
+    />
+
+    <!-- Section: Comparison Table -->
+    <ComparisonTable
+      title="ASCII Number Notations"
+      headers={["Notation", "Example (A)", "Radix", "Used In"]}
+      rows={[
+        { label: "Decimal", values: ["65", "10", "General reference"] },
+        { label: "Hexadecimal", values: ["0x41", "16", "Programming, memory"] },
+        { label: "Binary", values: ["1000001", "2", "Low-level / bit work"] },
+        { label: "Octal", values: ["101", "8", "Unix / legacy systems"] }
+      ]}
+    />
+
+    <!-- Common Mistakes -->
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="ASCII Conversion Pitfalls"
+      description="Mistakes that break conversions:"
+    />
+
+    <!-- Best Practices -->
+    <BestPractices
+      title="ASCII Best Practices"
+      practices={practicesList}
+    />
+
+    <!-- Official References -->
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

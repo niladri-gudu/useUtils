@@ -1,0 +1,175 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import PdfTools from '../../components/PdfTools';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'Merge PDF', href: '/tools/pdf-merge', active: true },
+  { label: 'Split PDF', href: '/tools/pdf-split' },
+  { label: 'Compress PDF', href: '/tools/pdf-compressor' },
+  { label: 'Extract Pages', href: '/tools/pdf-page-extractor' }
+];
+
+const faqs = [
+  {
+    question: "Is merging PDFs free?",
+    answer: "Yes, completely free with no sign-up and no watermarks. Merge as many PDF files as you want in any order, right in your browser."
+  },
+  {
+    question: "Are my PDFs uploaded to a server?",
+    answer: "No. Every file is read and merged locally on your device using the pdf-lib library running in JavaScript. Your documents never leave your computer."
+  },
+  {
+    question: "How many PDFs can I merge at once?",
+    answer: "There is no hard limit. The practical ceiling is your browser's available memory — merging dozens of average-size PDFs works fine on any modern device."
+  },
+  {
+    question: "Does merging change the quality of my PDFs?",
+    answer: "No. Merging only combines page objects into a single document. Page content, text, fonts, and images are preserved exactly as they were in each source file."
+  },
+  {
+    question: "Can I reorder pages before merging?",
+    answer: "Yes. Each file appears in a list with up and down arrows, so you can drag the merge order before combining. The final PDF follows the list order top to bottom."
+  },
+  {
+    question: "Will bookmarks and links be preserved?",
+    answer: "Bookmarks (outlines) and internal hyperlinks may be lost when merging because they are document-level structures. Page content itself is always preserved."
+  },
+  {
+    question: "Does merging work on mobile?",
+    answer: "Yes. The tool works in any modern mobile browser, so you can merge contracts, scans, or invoices straight from your phone."
+  },
+  {
+    question: "Can I merge a password-protected PDF?",
+    answer: "Files with an encryption owner password will typically load, but the result may be limited. For best results, unlock your PDFs before merging."
+  },
+  {
+    question: "What is the output file size?",
+    answer: "The merged PDF is roughly the sum of the source files. The tool re-serializes with object streams, which can slightly reduce overhead compared to the originals."
+  },
+  {
+    question: "Is there a file size limit per PDF?",
+    answer: "No hard limit — processing happens in your browser's memory. Very large files (hundreds of MB) may be constrained by your device's RAM rather than by this tool."
+  },
+  {
+    question: "Do merged PDFs keep their page sizes?",
+    answer: "Yes. Each page retains its original page dimensions, even if source files use different sizes (for example mixing A4 and Letter pages)."
+  },
+  {
+    question: "Why would I merge PDF files?",
+    answer: "Common reasons: combining several scanned pages into one document, joining an appendix to a report, bundling invoices, or creating a single file for submission or printing."
+  },
+  {
+    question: "Can I merge PDFs with images like JPG or PNG?",
+    answer: "This tool merges PDF files. To turn images into a PDF first, convert them to PDF, then merge the resulting files here."
+  },
+  {
+    question: "What happens if I close the page mid-merge?",
+    answer: "The merge runs instantly in your browser, and the download starts automatically when it finishes. Nothing is stored on any server at any point."
+  },
+  {
+    question: "Does the tool add watermarks?",
+    answer: "No watermarks, no branding, and no hidden additions. You receive a clean PDF containing exactly the pages you selected."
+  }
+];
+
+const references = [
+  { title: "pdf-lib - Create and Modify PDF Documents in JavaScript", url: "https://pdf-lib.js.org/", source: "pdf-lib" },
+  { title: "PDF Association - Portable Document Format Basics", url: "https://pdfa.org/resource/iso-32000-pdf/", source: "PDF Association" }
+];
+
+const mistakesList = [
+  {
+    title: "Merging Scans at Mixed Orientations",
+    description: "Combining portrait and landscape scans without rotating them first makes the final document hard to read.",
+    fix: "Rotate or straighten each source before merging, so all pages share a consistent orientation."
+  },
+  {
+    title: "Ignoring Page Order",
+    description: "Selecting files alphabetically by filename can scramble the intended reading order.",
+    fix: "Use the up/down arrows to place files in the exact order you want before clicking Merge."
+  },
+  {
+    title: "Sharing Private Documents",
+    description: "Assuming the tool uploads files and freely submitting sensitive contracts or IDs to online services.",
+    fix: "This tool runs entirely in your browser — but always verify a tool is client-side before handling confidential documents."
+  }
+];
+
+const practicesList = [
+  { title: "Verify the Output", description: "Open the merged PDF and check the first and last page of each section to confirm nothing was skipped or reordered." },
+  { title: "Keep Names Meaningful", description: "Rename the final file (e.g. 'Q3-report-final.pdf') so the merge isn't undone by confusing duplicate filenames later." },
+  { title: "Merge in Batches", description: "For very large jobs, merge a few files at a time. The result is identical and keeps memory usage predictable." },
+  { title: "Check Sensitive Content", description: "Since processing is local, it's safe for confidential files — but double-check that no viewer extension is uploading anything." }
+];
+
+const mergeExamples = [
+  { label: "Two 10-page PDFs", input: "20 pages total", output: "1 file, same content", badge: "2:1" },
+  { label: "Report + appendix", input: "12 + 6 pages", output: "18-page document", badge: "Combined" },
+  { label: "10 scanned pages", input: "10 single-page PDFs", output: "1 multi-page PDF", badge: "10:1" },
+  { label: "Password-protected", input: "Encrypted file", output: "May be limited", badge: "Caution" }
+];
+---
+
+<ToolPageLayout
+  title="Merge PDF Files Online Free: Combine PDFs Into One Document"
+  description="Merge multiple PDF files into one online for free. Combine pages in any order, no watermarks, no uploads — everything runs securely in your browser."
+  keywords="merge pdf, combine pdf, merge pdf files online, combine pdfs into one, pdf merger, join pdf files, merge pdf free"
+  toolTitle="Merge PDF"
+  toolDescription="Combine multiple PDF files into a single document. Add files, reorder them, and download the merged result — processed locally in your browser with zero uploads."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <PdfTools client:load defaultTool="merge" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How In-Browser PDF Merging Works
+      </h2>
+      <p class="leading-relaxed mb-4">
+        This tool reads each PDF you select and copies its page objects into a brand-new document using the **pdf-lib** library. Because the copy happens entirely in JavaScript inside your browser, the original files are never uploaded — the merge output is assembled on your device and downloaded directly.
+      </p>
+      <p class="leading-relaxed">
+        Page content, text, fonts, vector art, and images are preserved from each source. The merged document is re-serialized with **object streams**, which can trim redundant structure overhead and produce a file slightly smaller than the naive sum of the inputs.
+      </p>
+    </div>
+
+    <ExampleCard
+      title="Typical Merge Outcomes"
+      description="What you can expect when combining PDFs:"
+      examples={mergeExamples}
+    />
+
+    <ComparisonTable
+      title="Merging vs Other PDF Operations"
+      headers={["Operation", "What It Does", "Typical Use"]}
+      rows={[
+        { label: "Merge", values: ["Combines whole files in order", "Report + appendix, bundles"] },
+        { label: "Extract pages", values: ["Pulls specific pages into a new PDF", "Sharing a few pages"] },
+        { label: "Split", values: ["Breaks one file into parts", "Separating chapters"] },
+        { label: "Compress", values: ["Re-serializes to reduce size", "Smaller email attachments"] }
+      ]}
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="PDF Merging Pitfalls"
+      description="Avoid these common mistakes:"
+    />
+
+    <BestPractices
+      title="PDF Merging Best Practices"
+      practices={practicesList}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

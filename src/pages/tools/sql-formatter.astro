@@ -1,0 +1,175 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import SqlFormatter from '../../components/SqlFormatter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'SQL Formatter', href: '/tools/sql-formatter', active: true },
+  { label: 'JSON Formatter', href: '/tools/json-formatter' },
+  { label: 'HTML Formatter', href: '/tools/html-formatter' },
+  { label: 'CSS Formatter', href: '/tools/css-formatter' }
+];
+
+const faqs = [
+  {
+    question: "Is the SQL formatter free?",
+    answer: "Yes, completely free with no sign-up and no limits. Format as much SQL as you want right in your browser."
+  },
+  {
+    question: "Are my SQL queries uploaded to a server?",
+    answer: "No. Formatting happens locally on your device using the sql-formatter parser running in JavaScript. Your queries never leave your computer."
+  },
+  {
+    question: "Which SQL dialects are supported?",
+    answer: "Standard SQL plus MySQL, MariaDB, PostgreSQL, SQLite, SQL Server (T-SQL), Oracle PL/SQL, BigQuery, Snowflake, Redshift, Spark, Hive, N1QL, Trino/Presto, and SingleStore."
+  },
+  {
+    question: "How does SQL formatting work?",
+    answer: "A tokenizer breaks your query into keywords, identifiers, strings, and operators, then a formatter re-indents and re-joins them with consistent spacing and case rules."
+  },
+  {
+    question: "What can I customize?",
+    answer: "The SQL dialect, keyword casing (UPPER, lower, preserve, or camelCase), indentation width, indent style (standard or tabular alignment), and blank lines between queries."
+  },
+  {
+    question: "Does it fix my SQL?",
+    answer: "Formatting only changes whitespace and keyword casing — it never rewrites your logic. Valid SQL stays valid; it simply becomes readable."
+  },
+  {
+    question: "Can I format multiple queries at once?",
+    answer: "Yes. Paste several statements separated by semicolons and the formatter will align each one, with an optional blank line between them."
+  },
+  {
+    question: "Does it handle comments and string literals?",
+    answer: "Yes. Comments (-- and /* */) and string literals are preserved exactly and never broken across lines."
+  },
+  {
+    question: "What is tabular indent style?",
+    answer: "TabularLeft/TabularRight align the columns of SELECT clauses (column names and aliases) into neat vertical columns, which some teams prefer for readability."
+  },
+  {
+    question: "Does this work on mobile?",
+    answer: "Yes. The tool runs in any modern mobile browser, so you can clean up SQL straight from your phone."
+  },
+  {
+    question: "Why should I format my SQL?",
+    answer: "Readable SQL is easier to review, debug, and maintain. Consistent formatting also makes version-control diffs smaller and code review faster."
+  },
+  {
+    question: "Can I download the formatted SQL?",
+    answer: "Yes. Use the copy button for the clipboard or the download button to save the result as a .sql file."
+  },
+  {
+    question: "Does the formatter work with JSON or YAML?",
+    answer: "No — it's SQL-specific. For JSON or YAML, use the dedicated JSON Formatter and YAML tools on this site."
+  },
+  {
+    question: "Is there a query size limit?",
+    answer: "No hard limit. Very large pasted scripts are processed in your browser's memory, so extremely big files may be limited by your device's RAM."
+  },
+  {
+    question: "Can I use it on confidential query code?",
+    answer: "Yes. Since processing is 100% local, it's safe for proprietary or customer-related SQL — nothing is transmitted anywhere."
+  }
+];
+
+const references = [
+  { title: "sql-formatter - SQL Language Formatter for JavaScript", url: "https://github.com/sql-formatter-org/sql-formatter", source: "sql-formatter" },
+  { title: "ISO/IEC 9075 - SQL Standard Overview", url: "https://www.iso.org/standard/63555.html", source: "ISO" }
+];
+
+const mistakesList = [
+  {
+    title: "Expecting it to Fix Syntax",
+    description: "A formatter won't repair a missing comma or a dangling WHERE — it only re-indents what's already there.",
+    fix: "Run your query against the database first to catch syntax errors, then format the working version."
+  },
+  {
+    title: "Applying the Wrong Dialect",
+    description: "Formatting BigQuery code as MySQL can mis-indent backticks, double-quoted strings, or ARRAY syntax.",
+    fix: "Pick the dialect your database actually uses before formatting."
+  },
+  {
+    title: "Reformatting Generated Code",
+    description: "Running formatters back-and-forth on the same file produces noisy git diffs and churn.",
+    fix: "Format once, commit, and add a formatter config so the whole team uses identical settings."
+  }
+];
+
+const practicesList = [
+  { title: "Format as You Write", description: "Format each query before saving it — it's easier to spot logic bugs in clean, aligned code." },
+  { title: "Standardize Team Settings", description: "Agree on one dialect, keyword case, and tab width so diffs stay clean across the team." },
+  { title: "Keep the Keywords Uppercase", description: "UPPER keywords (SELECT, FROM, WHERE) are the industry convention and make structure pop at a glance." },
+  { title: "Use a Formatter Config", description: "Pin your chosen settings in the repo so the formatter output is identical for every developer." }
+];
+
+const formatExamples = [
+  { label: "Messy SELECT", input: "3 lines, no indentation", output: "8 aligned lines", badge: "Readable" },
+  { label: "5-query script", input: "One long line", output: "5 formatted statements", badge: "×5" },
+  { label: "Nested subquery", input: "Deeply nested", output: "Clear hierarchy", badge: "Aligned" },
+  { label: "CTE chain", input: "WITH one, two, three", output: "Each CTE separated", badge: "Structured" }
+];
+---
+
+<ToolPageLayout
+  title="SQL Formatter Online Free: Format & Beautify SQL Queries"
+  description="Format SQL queries online for free. Beautify messy SQL with 15+ dialects, customizable keyword casing, and tabular alignment — processed locally, zero uploads."
+  keywords="sql formatter, format sql online, sql beautifier, prettify sql, sql pretty print, sql query formatter, mysql formatter, postgresql formatter"
+  toolTitle="SQL Formatter"
+  toolDescription="Turn messy, minified SQL into clean, indented, readable queries. Supports 15+ SQL dialects, custom keyword casing, and tabular alignment — all processed locally."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <SqlFormatter client:only="react" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How the SQL Formatter Works
+      </h2>
+      <p class="leading-relaxed mb-4">
+        The formatter parses your SQL into tokens — keywords, identifiers, string literals, operators, and comments — then rebuilds the statement with consistent indentation, spacing, and optional keyword casing. Because it's a proper parser (not a regex), it understands nested subqueries, CTEs, and dialect-specific syntax.
+      </p>
+      <p class="leading-relaxed">
+        All parsing happens in your browser via **sql-formatter**, so nothing is uploaded. Pick your database's **dialect**, choose a **keyword case** and **indent style**, and the output is ready to copy or download.
+      </p>
+    </div>
+
+    <ExampleCard
+      title="What Formatting Achieves"
+      description="Typical transformations from this tool:"
+      examples={formatExamples}
+    />
+
+    <ComparisonTable
+      title="Formatter Options Compared"
+      headers={["Setting", "Options", "Best For"]}
+      rows={[
+        { label: "Keyword case", values: ["UPPER / lower / preserve / camel", "Team conventions"] },
+        { label: "Indent width", values: ["1–8 spaces", "Matching your editor"] },
+        { label: "Indent style", values: ["Standard / Tabular L/R", "Neat column alignment"] },
+        { label: "Lines between queries", values: ["0–3", "Multi-statement scripts"] }
+      ]}
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="SQL Formatting Pitfalls"
+      description="Avoid these common mistakes:"
+    />
+
+    <BestPractices
+      title="SQL Formatting Best Practices"
+      practices={practicesList}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

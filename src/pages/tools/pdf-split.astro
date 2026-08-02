@@ -1,0 +1,175 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import PdfTools from '../../components/PdfTools';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'Merge PDF', href: '/tools/pdf-merge' },
+  { label: 'Split PDF', href: '/tools/pdf-split', active: true },
+  { label: 'Compress PDF', href: '/tools/pdf-compressor' },
+  { label: 'Extract Pages', href: '/tools/pdf-page-extractor' }
+];
+
+const faqs = [
+  {
+    question: "Is splitting a PDF free?",
+    answer: "Yes, completely free with no sign-up and no watermarks. Split any PDF into individual pages or groups of pages right in your browser."
+  },
+  {
+    question: "Are my PDFs uploaded to a server?",
+    answer: "No. Splitting happens locally on your device using JavaScript. Your document never leaves your computer."
+  },
+  {
+    question: "What splitting options do I have?",
+    answer: "Choose how many pages go in each part. Set '1 page per part' to get one file per page, or pick a larger number to split a document into equal chapters."
+  },
+  {
+    question: "How does the split-by-pages option work?",
+    answer: "You choose a group size N. The tool creates the first part from pages 1–N, the second from N+1–2N, and so on. The last part keeps any remaining pages."
+  },
+  {
+    question: "What do the output files look like?",
+    answer: "Each part downloads as its own PDF named like 'filename-part-1.pdf', 'filename-part-2.pdf', and so on, so you can tell them apart at a glance."
+  },
+  {
+    question: "Does splitting affect PDF quality?",
+    answer: "No. Each part is a faithful copy of the original pages with the same text, fonts, and images. Only the page boundaries change."
+  },
+  {
+    question: "Can I split a password-protected PDF?",
+    answer: "Encrypted files may load with limitations. For best results, remove the password protection from your PDF before splitting."
+  },
+  {
+    question: "Can I split a scanned PDF?",
+    answer: "Yes. Scanned (image-based) PDFs split the same way — each page keeps its scanned content exactly."
+  },
+  {
+    question: "Is there a file size limit?",
+    answer: "No hard limit — processing happens in your browser's memory. Very large files may be limited by your device's RAM rather than by this tool."
+  },
+  {
+    question: "Why would I split a PDF?",
+    answer: "Common reasons: sending only one chapter of a book, uploading one invoice from a full statement, separating a portfolio into pieces, or sharing a single page from a scan."
+  },
+  {
+    question: "Does this work on mobile?",
+    answer: "Yes. The tool runs in any modern mobile browser and can read PDFs from your phone's storage."
+  },
+  {
+    question: "What if my PDF has an odd page count?",
+    answer: "The last part simply contains fewer pages. For example, a 13-page PDF split in groups of 5 produces parts of 5, 5, and 3 pages."
+  },
+  {
+    question: "Can I choose arbitrary pages to extract?",
+    answer: "For extracting specific pages (like pages 2, 7, and 10) into one file, use the dedicated Extract Pages tab instead — it supports custom ranges."
+  },
+  {
+    question: "Do the parts keep bookmarks?",
+    answer: "Document-level bookmarks and internal links may be lost during splitting. Page content is always preserved."
+  },
+  {
+    question: "Does the tool add watermarks?",
+    answer: "No watermarks, no branding. Each part is a clean PDF containing exactly the pages in that group."
+  }
+];
+
+const references = [
+  { title: "pdf-lib - Create and Modify PDF Documents in JavaScript", url: "https://pdf-lib.js.org/", source: "pdf-lib" },
+  { title: "MDN - Blob and File Handling in the Browser", url: "https://developer.mozilla.org/en-US/docs/Web/API/Blob", source: "MDN Web Docs" }
+];
+
+const mistakesList = [
+  {
+    title: "Choosing Too Large a Group Size",
+    description: "Splitting a 200-page document in groups of 100 gives you only two files, which often defeats the purpose of splitting.",
+    fix: "Pick the smallest group that still makes sense for how you'll share or file the parts."
+  },
+  {
+    title: "Losing the Page Order",
+    description: "Downloading parts out of order or renaming them loosely makes reassembly confusing later.",
+    fix: "Keep the auto-generated 'part-N' filenames, or rename them consistently before filing."
+  },
+  {
+    title: "Splitting When You Meant to Extract",
+    description: "Splitting a contract into 20 single-page files is overkill when you only need pages 3–5.",
+    fix: "Use the Extract Pages tab to pull specific ranges into one tidy PDF instead."
+  }
+];
+
+const practicesList = [
+  { title: "Split for Sharing", description: "For email or uploads, split into parts under the recipient's size limit (usually 10–25MB per attachment)." },
+  { title: "Split by Chapter or Section", description: "Align groups with natural boundaries — chapters, months, or invoice ranges — so each part is independently useful." },
+  { title: "Verify Each Part", description: "Open the first page of every downloaded part to confirm the group boundaries landed where you expected." },
+  { title: "Keep Originals Local", description: "Since processing is local, splitting is safe for confidential files. Always verify any tool is client-side before uploading sensitive documents." }
+];
+
+const splitExamples = [
+  { label: "30-page report", input: "groups of 10", output: "3 parts (10+10+10)", badge: "3 files" },
+  { label: "45-page book", input: "1 page per part", output: "45 parts", badge: "Per page" },
+  { label: "13-page scan", input: "groups of 5", output: "3 parts (5+5+3)", badge: "Uneven" },
+  { label: "200-page manual", input: "groups of 50", output: "4 parts", badge: "4 files" }
+];
+---
+
+<ToolPageLayout
+  title="Split PDF Online Free: Separate PDF Pages Into Multiple Files"
+  description="Split a PDF into separate files online for free. Break pages into individual files or groups of N pages — no uploads, no watermarks, fully in-browser."
+  keywords="split pdf, split pdf online, separate pdf pages, pdf splitter, split pdf into multiple files, split pdf by pages, divide pdf"
+  toolTitle="Split PDF"
+  toolDescription="Break one PDF into several files. Split into single pages or fixed-size groups with a slider — each part downloads as its own PDF, processed locally in your browser."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <PdfTools client:load defaultTool="split" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How PDF Splitting Works
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Splitting reads your PDF once, then builds a new document for each group of pages. Each part is created by copying the source pages into a fresh file using **pdf-lib**, so every part is a self-contained, valid PDF with the original text, fonts, and images.
+      </p>
+      <p class="leading-relaxed">
+        Use the **pages-per-part** slider to control the granularity: a value of 1 produces one file per page, while larger values group the document into chapters or sections. Everything runs locally — nothing is uploaded anywhere.
+      </p>
+    </div>
+
+    <ExampleCard
+      title="Typical Split Outcomes"
+      description="What you can expect based on page counts and group size:"
+      examples={splitExamples}
+    />
+
+    <ComparisonTable
+      title="Splitting vs Related PDF Operations"
+      headers={["Operation", "What It Does", "Best When"]}
+      rows={[
+        { label: "Split", values: ["Breaks a file into page groups", "Separating chapters or pages"] },
+        { label: "Extract pages", values: ["Pulls chosen pages into one file", "Sharing specific pages"] },
+        { label: "Merge", values: ["Combines whole files", "Joining documents together"] },
+        { label: "Compress", values: ["Reduces file size", "Smaller attachments"] }
+      ]}
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="PDF Splitting Pitfalls"
+      description="Avoid these common mistakes:"
+    />
+
+    <BestPractices
+      title="PDF Splitting Best Practices"
+      practices={practicesList}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

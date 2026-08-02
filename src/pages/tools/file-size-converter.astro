@@ -1,0 +1,173 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import FileSizeConverter from '../../components/FileSizeConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'File Size Converter', href: '/tools/file-size-converter', active: true },
+  { label: 'Data Storage', href: '/tools/data-storage-converter' },
+  { label: 'Bytes Converter', href: '/tools/bytes-converter' },
+  { label: 'Binary Converter', href: '/tools/binary-converter' }
+];
+
+const faqs = [
+  {
+    question: "Is the file size converter free?",
+    answer: "Yes, completely free with no sign-up and no limits. Convert as many sizes as you want right in your browser."
+  },
+  {
+    question: "What is the difference between decimal and binary units?",
+    answer: "Decimal units divide by 1000 (1 KB = 1000 B), while binary units divide by 1024 (1 KiB = 1024 B). Storage drives and ISPs use decimal; Windows and memory use binary."
+  },
+  {
+    question: "Why does Windows show different sizes than a hard drive box?",
+    answer: "A '1 TB' drive has 1,000,000,000,000 bytes. Windows reports 1,000,000,000,000 / 1024³ ≈ 931 GiB — the same data, labeled in binary units."
+  },
+  {
+    question: "Is a megabyte 1000 KB or 1024 KB?",
+    answer: "It depends on the standard. SI defines MB = 1000 KB (decimal). The old binary convention calls 1024 KB a MiB. This tool supports both systems."
+  },
+  {
+    question: "How many bytes are in a kilobyte?",
+    answer: "In the decimal system, 1 KB = 1,000 bytes. In the binary system, 1 KiB = 1,024 bytes."
+  },
+  {
+    question: "Can I convert my file's actual size?",
+    answer: "Yes — drop a file onto the converter and it reads the exact byte count, then shows the size in every unit instantly."
+  },
+  {
+    question: "What units are supported?",
+    answer: "Bytes (B), Kilobytes, Megabytes, Gigabytes, Terabytes, and Petabytes — in both decimal (KB/MB/GB) and binary (KiB/MiB/GiB) flavors."
+  },
+  {
+    question: "How do I convert manually?",
+    answer: "Divide by 1000 (decimal) or 1024 (binary) for each step up: e.g. 2048 MB ÷ 1024 = 2 GB, or 2048 MB ÷ 1000 = 2.048 GB."
+  },
+  {
+    question: "Why does a 4.7 GB DVD look like less on my computer?",
+    answer: "The disc label uses decimal gigabytes (4,700,000,000 bytes). Binary units show it as ~4.38 GiB — the same amount of data."
+  },
+  {
+    question: "Is 1 TB bigger than 1 TB?",
+    answer: "1 TB (decimal) = 1,000,000,000,000 bytes, while 1 TiB (binary) = 1,099,511,627,776 bytes. TiB is about 10% larger."
+  },
+  {
+    question: "What is a petabyte used for?",
+    answer: "Data centers and large archives. 1 PB = 1,000 TB (or 1,024 TiB in binary) — roughly 500 billion pages of text."
+  },
+  {
+    question: "Can I convert from bits or bytes?",
+    answer: "This tool covers byte-based units (B through PB). For bit-level conversions like Mbps, see the data-transfer tools on this site."
+  },
+  {
+    question: "Does this work on mobile?",
+    answer: "Yes. The tool runs in any modern mobile browser."
+  },
+  {
+    question: "Why are my file sizes different across apps?",
+    answer: "Apps mix conventions: file managers often show binary units but label them KB/MB, while network tools use decimal. This tool lets you see both."
+  },
+  {
+    question: "How precise are the conversions?",
+    answer: "Conversions are exact math; display rounds to reasonable precision. Tiny values show extra digits so nothing is lost."
+  }
+];
+
+const references = [
+  { title: "IEC 80000-13 - Quantities and Units (Binary Prefixes)", url: "https://www.iec.ch/", source: "IEC" },
+  { title: "NIST - SI Units and Prefixes", url: "https://physics.nist.gov/cuu/Units/prefixes.html", source: "NIST" }
+];
+
+const mistakesList = [
+  {
+    title: "Confusing GB and GiB",
+    description: "Treating a drive's decimal gigabytes as binary gigabytes off by ~7%, which compounds across steps.",
+    fix: "Use the binary view for anything your OS reports, and the decimal view for marketing/network numbers."
+  },
+  {
+    title: "Mixing 1000 and 1024 in One Calculation",
+    description: "Dividing by 1000 for one step and 1024 for the next produces wrong, inconsistent results.",
+    fix: "Pick one system and stick to it for the whole conversion."
+  },
+  {
+    title: "Rounding Early",
+    description: "Rounding 1.999 GB to 2 GB before converting to MB hides ~1 MB of error.",
+    fix: "Keep full precision until the final step, then round for display."
+  }
+];
+
+const practicesList = [
+  { title: "Match the System to the Context", description: "Use binary for RAM, file managers, and OS sizes; decimal for drives, bandwidth, and marketing specs." },
+  { title: "Use the File Drop for Accuracy", description: "Drop the actual file to get its true byte count instead of trusting a label." },
+  { title: "Know Your Attachment Limits", description: "Convert before emailing: many providers cap attachments at 10–25 MB (decimal or binary depending on the provider)." },
+  { title: "Document the Convention", description: "In specs and docs, write 'MB (1000³ bytes)' or use MiB/GiB explicitly to avoid ambiguity." }
+];
+
+const sizeExamples = [
+  { label: "1 GB (decimal)", input: "1,000,000,000 B", output: "≈ 953.7 MiB", badge: "Drive" },
+  { label: "1 GiB (binary)", input: "1,073,741,824 B", output: "≈ 1.074 GB", badge: "Windows" },
+  { label: "8 MB photo", input: "8,000,000 B", output: "≈ 7.63 MiB", badge: "Photo" },
+  { label: "2 TB (decimal)", input: "2,000,000,000,000 B", output: "≈ 1.82 TiB", badge: "Drive" }
+];
+---
+
+<ToolPageLayout
+  title="File Size Converter Online Free: KB to MB, GB to TB"
+  description="Convert file sizes between B, KB, MB, GB, TB, and PB online for free. Decimal and binary (KiB/MiB/GiB) units, plus drop-a-file for exact byte counts — all in-browser."
+  keywords="file size converter, convert file size, kb to mb, mb to gb, gb to tb, byte converter, storage converter, mb to kb converter, gb to mb, file size calculator"
+  toolTitle="File Size Converter"
+  toolDescription="Convert between bytes, KB, MB, GB, TB, and PB in decimal or binary (KiB/MiB/GiB) units. Drop a file for its exact size — processed locally in your browser."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <FileSizeConverter client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How File Size Units Work
+      </h2>
+      <p class="leading-relaxed mb-4">
+        File sizes are measured in bytes, scaled by **two different conventions**. The **decimal** system (SI) scales by 1000 — so 1 KB = 1000 bytes. The **binary** system (IEC) scales by 1024 — so 1 KiB = 1024 bytes. Hard drives, network speeds, and most marketing materials use decimal; operating systems, RAM, and file managers typically use binary.
+      </p>
+      <p class="leading-relaxed">
+        That's why a "1 TB" drive shows roughly 931 GB on Windows: the same number of bytes, reported in binary units. This converter shows both views side by side, and you can drop in a file to get its exact size in every unit.
+      </p>
+    </div>
+
+    <ExampleCard
+      title="Decimal vs Binary in Practice"
+      description="How the same byte counts read in each system:"
+      examples={sizeExamples}
+    />
+
+    <ComparisonTable
+      title="Unit Systems Compared"
+      headers={["System", "Step Size", "1 'MB/GiB' =", "Used By"]}
+      rows={[
+        { label: "Decimal (SI)", values: ["1000", "1,000,000 B", "Drives, ISPs, marketing"] },
+        { label: "Binary (IEC)", values: ["1024", "1,048,576 B", "Windows, RAM, file managers"] }
+      ]}
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="File Size Conversion Pitfalls"
+      description="Avoid these common mistakes:"
+    />
+
+    <BestPractices
+      title="File Size Conversion Best Practices"
+      practices={practicesList}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

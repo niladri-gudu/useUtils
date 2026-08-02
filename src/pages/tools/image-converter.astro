@@ -1,0 +1,176 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import ImageFormatConverter from '../../components/ImageFormatConverter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'Image Converter', href: '/tools/image-converter', active: true },
+  { label: 'Image Resizer', href: '/tools/image-resizer' },
+  { label: 'Image to Base64', href: '/tools/image-to-base64' },
+  { label: 'Favicon Generator', href: '/tools/favicon-generator' }
+];
+
+const faqs = [
+  {
+    question: "Is this image converter free?",
+    answer: "Yes, completely free with no sign-up, no watermarks, and no conversion limits. Convert as many images as you want directly in your browser."
+  },
+  {
+    question: "Are my images uploaded to a server?",
+    answer: "No. Conversion happens locally on your device using the HTML5 Canvas API. Your images never leave your computer."
+  },
+  {
+    question: "Which formats can I convert from and to?",
+    answer: "You can upload PNG, JPEG, WebP, GIF, BMP, SVG, and AVIF. Output formats are WebP (best compression), JPEG (small, no transparency), PNG (lossless, transparency), GIF, and BMP."
+  },
+  {
+    question: "Which format should I choose?",
+    answer: "WebP for web images (best size-to-quality), JPEG for photographs, PNG for images needing transparency or exact pixels, and GIF only for compatibility or animation needs."
+  },
+  {
+    question: "Does converting reduce image quality?",
+    answer: "Converting to a lossy format (JPEG, WebP) at high quality is visually indistinguishable from the original for most images. PNG and BMP are lossless."
+  },
+  {
+    question: "Can I convert a PNG with transparency?",
+    answer: "Yes. Converting to PNG or WebP preserves transparency. JPEG and BMP don't support alpha, so transparency becomes a white (or black) background."
+  },
+  {
+    question: "Can I convert SVG files?",
+    answer: "Yes, SVG files are read and rendered to a canvas, then exported in your chosen raster format at their natural (or specified) dimensions."
+  },
+  {
+    question: "Can I convert animated GIFs?",
+    answer: "Animated GIFs are converted to a single still frame. To keep animation, stay in GIF format."
+  },
+  {
+    question: "Does converting keep my image dimensions?",
+    answer: "Yes, by default. The 'Preserve original dimensions' option keeps the exact pixel size; disabling it lets the canvas use the image's intrinsic size."
+  },
+  {
+    question: "How much smaller is WebP than JPEG?",
+    answer: "For the same visual quality, WebP is typically 25–35% smaller than JPEG. That's why it's the recommended format for modern websites."
+  },
+  {
+    question: "Can I convert to WebP on old browsers?",
+    answer: "WebP is supported by all modern browsers. Very old browsers may not render it — if you need maximum compatibility, export JPEG or PNG instead."
+  },
+  {
+    question: "Is there a file size limit?",
+    answer: "No hard limit — images are processed in your browser's memory. Extremely large files may be limited by your device's RAM rather than by this tool."
+  },
+  {
+    question: "Does this work on mobile?",
+    answer: "Yes. The canvas-based conversion works in any modern mobile browser, and you can pick images straight from your phone's gallery."
+  },
+  {
+    question: "Can I batch convert multiple images?",
+    answer: "This tool converts one image at a time. For batches, process each file and download it immediately — it only takes a few seconds per image."
+  },
+  {
+    question: "Is my image private during conversion?",
+    answer: "Yes. All processing is 100% local, so it's safe to convert personal photos, mockups, or confidential designs."
+  }
+];
+
+const references = [
+  { title: "MDN - HTMLCanvasElement.toDataURL()", url: "https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toDataURL", source: "MDN Web Docs" },
+  { title: "MDN - HTMLCanvasElement.toBlob()", url: "https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob", source: "MDN Web Docs" }
+];
+
+const mistakesList = [
+  {
+    title: "Using JPEG for Logos and Text",
+    description: "JPEG's lossy compression creates halos and fuzz around text edges and solid-color logos.",
+    fix: "Use PNG or WebP (with lossless or high quality) for logos, icons, charts, and text-heavy graphics."
+  },
+  {
+    title: "Converting Animations to WebP",
+    description: "Animated GIFs lose their motion when converted to static formats, and an animated WebP needs a specialized encoder.",
+    fix: "Keep GIFs animated; use WebP/PNG only for still frames."
+  },
+  {
+    title: "Forgetting the White Background",
+    description: "Transparent PNGs converted to JPEG get a white (or black) fill, which looks wrong on dark designs.",
+    fix: "If you need transparency, export PNG or WebP — never JPEG or BMP."
+  }
+];
+
+const practicesList = [
+  { title: "Match Format to Content", description: "Photos → JPEG/WebP. Graphics with text or transparency → PNG/WebP. Screenshots → PNG or WebP." },
+  { title: "Prefer WebP for the Web", description: "WebP delivers the smallest files with the same visual quality and is supported everywhere modern." },
+  { title: "Convert Only When Needed", description: "Each lossy re-encode adds a little quality loss. Convert once from the original, not repeatedly from an already-compressed copy." },
+  { title: "Keep Originals Private", description: "Since conversion runs entirely in your browser, you can safely process photos you don't want uploaded anywhere." }
+];
+
+const convertExamples = [
+  { label: "Large PNG → WebP", input: "2.1 MB PNG", output: "~180–350 KB", badge: "-85%+" },
+  { label: "JPEG → WebP", input: "640 KB JPEG", output: "~400–480 KB", badge: "-25%" },
+  { label: "PNG → JPEG", input: "2.1 MB PNG", output: "~300–600 KB", badge: "Photos" },
+  { label: "GIF still → PNG", input: "480 KB GIF", output: "~120–250 KB", badge: "Frame" }
+];
+---
+
+<ToolPageLayout
+  title="Image Format Converter Online Free: Convert Images to WebP, JPEG, PNG"
+  description="Convert images to WebP, JPEG, PNG, GIF, or BMP online for free. No uploads, no watermarks, unlimited conversions — all processed locally in your browser."
+  keywords="image converter, convert image format, image to webp, png to jpg, jpg to png, webp converter, image format converter online, convert png to webp"
+  toolTitle="Image Format Converter"
+  toolDescription="Convert any image to WebP, JPEG, PNG, GIF, or BMP with quality control and live size savings. Drop an image, pick a format, and download — fully in-browser."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <ImageFormatConverter client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How In-Browser Image Conversion Works
+      </h2>
+      <p class="leading-relaxed mb-4">
+        The converter draws your image onto an **HTML5 canvas**, then exports it through `toDataURL()` in the target format. This decodes any input (PNG, JPEG, WebP, GIF, SVG, AVIF) and re-encodes it cleanly — so the output is a fresh file, free of the quirks of the source encoder.
+      </p>
+      <p class="leading-relaxed">
+        For lossy formats (WebP, JPEG) you control the **quality slider**; PNG, GIF, and BMP are exported losslessly. Because everything runs locally, your images are never uploaded — ideal for private photos or confidential designs.
+      </p>
+    </div>
+
+    <ExampleCard
+      title="Typical Size Outcomes"
+      description="What format conversion can save on common images:"
+      examples={convertExamples}
+    />
+
+    <ComparisonTable
+      title="Output Format Comparison"
+      headers={["Format", "Compression", "Transparency", "Quality", "Best Use"]}
+      rows={[
+        { label: "WebP", values: ["Excellent", "Yes", "High at low size", "Web images"] },
+        { label: "JPEG", values: ["Good", "No", "Good", "Photographs"] },
+        { label: "PNG", values: ["Lossless", "Yes", "Highest", "Logos, graphics"] },
+        { label: "GIF", values: ["Poor", "Yes (1-bit)", "Low", "Legacy animation"] },
+        { label: "BMP", values: ["None", "No", "Highest", "Legacy Windows"] }
+      ]}
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Image Conversion Pitfalls"
+      description="Avoid these common mistakes:"
+    />
+
+    <BestPractices
+      title="Image Conversion Best Practices"
+      practices={practicesList}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

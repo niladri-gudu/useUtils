@@ -1,0 +1,176 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import BarcodeGenerator from '../../components/BarcodeGenerator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'Barcode Generator', href: '/tools/barcode-generator', active: true },
+  { label: 'QR Code Generator', href: '/tools/qr-code-generator' },
+  { label: 'UUID Generator', href: '/tools/uuid-generator' },
+  { label: 'Random String', href: '/tools/random-string-generator' }
+];
+
+const faqs = [
+  {
+    question: "Is the barcode generator free?",
+    answer: "Yes, completely free with no sign-up, no watermarks, and no limits. Generate as many barcodes as you want in your browser."
+  },
+  {
+    question: "Which barcode formats are supported?",
+    answer: "Code 128, EAN-13, EAN-8, UPC-A, ITF-14, Code 39, Code 93, and Codabar — covering retail, logistics, industrial, and library use."
+  },
+  {
+    question: "Are my barcodes generated on a server?",
+    answer: "No. Generation happens entirely on your device using the jsbarcode library. Nothing you type is uploaded anywhere."
+  },
+  {
+    question: "Which format should I use?",
+    answer: "Code 128 for general use (any text, most compact). EAN/UPC for retail products sold in stores. ITF-14 for shipping cartons. Code 39 for industrial labels."
+  },
+  {
+    question: "What can Code 128 encode?",
+    answer: "Any ASCII character (0-127), making it the most flexible format — ideal for product IDs, serial numbers, and internal tracking codes."
+  },
+  {
+    question: "What are the digit requirements for EAN/UPC?",
+    answer: "EAN-13 needs 13 digits, EAN-8 needs 8, UPC-A needs 12, and ITF-14 needs 14. The tools help you validate before rendering."
+  },
+  {
+    question: "Can I download the barcode?",
+    answer: "Yes — download as a high-resolution PNG (2× scale) or as a clean vector SVG for printing."
+  },
+  {
+    question: "Can I change colors and size?",
+    answer: "Yes. Adjust bar width, height, font size, bar color, and background color. For scannability, keep high contrast (dark bars on light background)."
+  },
+  {
+    question: "Do barcodes work in black and white?",
+    answer: "Scanners need high contrast. Black bars on white are the safest. If you customize colors, avoid light or low-contrast combinations."
+  },
+  {
+    question: "What is the difference between a barcode and a QR code?",
+    answer: "Barcodes are one-dimensional and hold short codes read left-to-right. QR codes are two-dimensional and hold far more data, including URLs — see the QR generator for those."
+  },
+  {
+    question: "Will this barcode scan from a screen?",
+    answer: "Yes — most scanner apps and retail scanners can read a well-contrasted barcode displayed on a phone or monitor."
+  },
+  {
+    question: "Is there a length limit?",
+    answer: "Code 128 and Code 93 can hold dozens of characters; EAN/UPC formats are fixed-length digits. Very long Code 128 values may become physically wide."
+  },
+  {
+    question: "Does this work on mobile?",
+    answer: "Yes. The tool runs in any modern mobile browser, so you can generate and display barcodes on the go."
+  },
+  {
+    question: "Can I generate a barcode for shipping labels?",
+    answer: "Yes — ITF-14 is the standard for carton/shipping barcodes and is supported here with the required 14-digit format."
+  },
+  {
+    question: "Are my generated codes private?",
+    answer: "Yes. Since generation is 100% local, it's safe for internal SKUs, serial numbers, or client-specific codes."
+  }
+];
+
+const references = [
+  { title: "jsbarcode - Generate Barcodes in JavaScript", url: "https://github.com/lindell/JsBarcode", source: "JsBarcode" },
+  { title: "GS1 - Barcode Standards and Symbologies", url: "https://www.gs1.org/standards/barcodes", source: "GS1" }
+];
+
+const mistakesList = [
+  {
+    title: "Using the Wrong Symbology",
+    description: "Printing an EAN-13 label for a Code 39 scanner (or vice versa) produces a code no one can read.",
+    fix: "Match the format to your industry: EAN/UPC for retail, ITF-14 for cartons, Code 128 for general use."
+  },
+  {
+    title: "Too Little Contrast",
+    description: "Light bars on light backgrounds, or colored bars without contrast, fail to scan in the real world.",
+    fix: "Keep dark bars on a white or near-white background — black on white is the safest choice."
+  },
+  {
+    title: "Enlarging Raster Images for Print",
+    description: "Scaling up a small PNG barcode pixelates the bars and breaks scanning.",
+    fix: "Download the SVG (vector) version for print, or set a high bar width before generating."
+  }
+];
+
+const practicesList = [
+  { title: "Test Before Printing", description: "Scan the generated barcode with your device before bulk-printing or shipping it out." },
+  { title: "Mind the Quiet Zone", description: "Leave clean margin around the barcode (built in here) — scanners need blank space on both sides." },
+  { title: "Use SVG for Print", description: "Vector SVG stays crisp at any print size. Reserve PNG for screen use and smaller sizes." },
+  { title: "Keep It High Contrast", description: "Black bars on white remain the most reliable combination across every scanner." }
+];
+
+const bcExamples = [
+  { label: "Product barcode", input: "EAN-13, 13 digits", output: "Retail scannable", badge: "Retail" },
+  { label: "Shipping carton", input: "ITF-14, 14 digits", output: "Logistics standard", badge: "Logistics" },
+  { label: "Internal SKU", input: "Code 128, 'SKU-1234'", output: "Any ASCII text", badge: "General" },
+  { label: "Library ID", input: "Codabar, digits", output: "Legacy compatible", badge: "Legacy" }
+];
+---
+
+<ToolPageLayout
+  title="Barcode Generator Online Free: Create & Download Barcodes"
+  description="Generate scannable barcodes online for free. Create Code 128, EAN-13, UPC-A, ITF-14 and more — download as high-res PNG or vector SVG, fully in-browser."
+  keywords="barcode generator, generate barcode, barcode maker, create barcode online, code 128 generator, ean 13 generator, upc barcode generator, itf-14 generator, barcode generator free"
+  toolTitle="Barcode Generator"
+  toolDescription="Generate scannable barcodes in 8 formats — Code 128, EAN-13, UPC-A, ITF-14 and more. Customize colors and size, download as PNG or SVG, fully in-browser."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <BarcodeGenerator client:only="react" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How Barcode Generation Works
+      </h2>
+      <p class="leading-relaxed mb-4">
+        A barcode encodes a value into a pattern of bars and spaces that scanners translate back into the original characters. Different **symbologies** use different encodings and support different character sets — that's why you must match the format to your use case, from EAN-13 retail labels to ITF-14 shipping cartons.
+      </p>
+      <p class="leading-relaxed">
+        This generator uses **jsbarcode** running entirely in your browser to produce crisp SVG (and high-res PNG) output. No data is uploaded, so internal SKUs and client codes stay private.
+      </p>
+    </div>
+
+    <ExampleCard
+      title="Barcode Use Cases"
+      description="Which format fits which job:"
+      examples={bcExamples}
+    />
+
+    <ComparisonTable
+      title="Barcode Formats Compared"
+      headers={["Format", "Data", "Length", "Best For"]}
+      rows={[
+        { label: "Code 128", values: ["Full ASCII", "Any", "General use"] },
+        { label: "EAN-13", values: ["Digits", "13", "Retail products"] },
+        { label: "UPC-A", values: ["Digits", "12", "US retail"] },
+        { label: "ITF-14", values: ["Digits", "14", "Shipping cartons"] },
+        { label: "Code 39", values: ["A-Z, 0-9, symbols", "Any", "Industrial"] }
+      ]}
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Barcode Generation Pitfalls"
+      description="Avoid these common mistakes:"
+    />
+
+    <BestPractices
+      title="Barcode Generation Best Practices"
+      practices={practicesList}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

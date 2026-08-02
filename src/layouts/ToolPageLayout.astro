@@ -135,11 +135,11 @@ const jsonLd = {
 
       <!-- Pill Tab Switcher -->
       {tabs.length > 1 && (
-        <div class="bg-panel border border-border-hairline rounded-full p-1 inline-flex items-center gap-1 self-start md:self-end">
+        <div class="bg-panel border border-border-hairline rounded-full p-1 inline-flex items-center gap-1 self-start md:self-end max-w-full overflow-x-auto no-scrollbar whitespace-nowrap">
           {tabs.map((tab) => (
             <a 
               href={tab.href} 
-              class={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all ${
+              class={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all shrink-0 ${
                 tab.active 
                   ? 'bg-zinc-800 text-zinc-50' 
                   : 'text-zinc-400 hover:text-zinc-50'

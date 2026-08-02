@@ -1,0 +1,175 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import PdfTools from '../../components/PdfTools';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'Merge PDF', href: '/tools/pdf-merge' },
+  { label: 'Split PDF', href: '/tools/pdf-split' },
+  { label: 'Compress PDF', href: '/tools/pdf-compressor' },
+  { label: 'Extract Pages', href: '/tools/pdf-page-extractor', active: true }
+];
+
+const faqs = [
+  {
+    question: "Is extracting PDF pages free?",
+    answer: "Yes, completely free with no sign-up and no watermarks. Extract any pages from a PDF right in your browser."
+  },
+  {
+    question: "Are my PDFs uploaded to a server?",
+    answer: "No. Extraction happens locally on your device using JavaScript. Your document never leaves your computer."
+  },
+  {
+    question: "What page ranges can I extract?",
+    answer: "Any combination of ranges and single pages, such as '1-3, 5, 8' or '10-12'. Ranges are inclusive and can be given in either order (e.g. '7-4' is treated as 4-7)."
+  },
+  {
+    question: "Does page order matter?",
+    answer: "Yes. Extracted pages appear in the output in the order you type them. Enter '8, 1-3' to get page 8 first, then pages 1 through 3."
+  },
+  {
+    question: "What is the difference between extract and split?",
+    answer: "Extract pulls only the specific pages you choose into one new PDF. Split breaks a whole document into sequential groups. Use Extract for cherry-picking pages, Split for partitioning."
+  },
+  {
+    question: "Does extracting affect PDF quality?",
+    answer: "No. Extracted pages keep their original text, fonts, images, and layout exactly. Only the set of pages changes."
+  },
+  {
+    question: "Can I extract a page from a scanned PDF?",
+    answer: "Yes. Scanned (image-based) pages extract the same way and keep their scanned content exactly."
+  },
+  {
+    question: "What happens if I enter an invalid page?",
+    answer: "Page numbers beyond the document's length are ignored, and empty or malformed ranges are skipped. If nothing valid is entered, you'll see a helpful error instead."
+  },
+  {
+    question: "Can I extract a password-protected PDF?",
+    answer: "Encrypted files may load with limitations. Remove password protection before extracting for the most reliable result."
+  },
+  {
+    question: "Why would I extract pages from a PDF?",
+    answer: "Common reasons: sending only the signature page of a contract, sharing a specific invoice from a statement, or pulling one chapter from a manual."
+  },
+  {
+    question: "Is there a file size limit?",
+    answer: "No hard limit — processing happens in your browser's memory. Very large files may be limited by your device's RAM rather than by this tool."
+  },
+  {
+    question: "Does this work on mobile?",
+    answer: "Yes. The tool runs in any modern mobile browser and can read PDFs straight from your phone's storage."
+  },
+  {
+    question: "Can I extract pages into separate files?",
+    answer: "Extracting produces a single combined PDF. To get one file per page, use the Split tab with '1 page per part' instead."
+  },
+  {
+    question: "Will bookmarks and links be preserved?",
+    answer: "Document-level bookmarks and internal links may be lost during extraction. Page content is always preserved."
+  },
+  {
+    question: "Does the tool add watermarks?",
+    answer: "No watermarks, no branding. You receive a clean PDF containing exactly the pages you requested."
+  }
+];
+
+const references = [
+  { title: "pdf-lib - Create and Modify PDF Documents in JavaScript", url: "https://pdf-lib.js.org/", source: "pdf-lib" },
+  { title: "PDF Association - Portable Document Format Basics", url: "https://pdfa.org/resource/iso-32000-pdf/", source: "PDF Association" }
+];
+
+const mistakesList = [
+  {
+    title: "Entering Ranges Out of Order",
+    description: "Typing '5-1' when you meant pages 1–5 creates a surprising page order or confuses the parser.",
+    fix: "Write ranges low-to-high ('1-5') and remember extracted pages follow the order you type."
+  },
+  {
+    title: "Forgetting Inclusive Ranges",
+    description: "Assuming '1-3' means pages 1 and 2 only. Ranges are inclusive, so it extracts pages 1, 2, and 3.",
+    fix: "Remember: 'a-b' always includes both endpoints."
+  },
+  {
+    title: "Extracting Everything by Mistake",
+    description: "Leaving a broad range like '1-999' in the box extracts most of the document into a near-copy.",
+    fix: "Double-check the range before clicking Extract — or use Split if you want the whole file partitioned."
+  }
+];
+
+const practicesList = [
+  { title: "Extract the Signature Page", description: "Pull just the final signature page of a contract for e-signing without sharing the whole agreement." },
+  { title: "Share Selective Pages", description: "Extract only the relevant pages before sending a document — fewer pages, less noise, smaller file." },
+  { title: "Verify the Page Count", description: "Check the output says the right number of pages by comparing it to what you typed in the range box." },
+  { title: "Keep Sensitive Data Local", description: "Extraction is fully in-browser, so it's safe for confidential documents — a big advantage over upload-based services." }
+];
+
+const extractExamples = [
+  { label: "Contract pages", input: "1, 9, 12 of a 15-page PDF", output: "3-page PDF", badge: "Selective" },
+  { label: "Chapter of a book", input: "40-60 of a 300-page book", output: "21-page PDF", badge: "Range" },
+  { label: "Invoice from statement", input: "7 of a 12-page statement", output: "1-page PDF", badge: "Single" },
+  { label: "Mixed selection", input: "3-5, 8 of a 10-page file", output: "4-page PDF", badge: "Mixed" }
+];
+---
+
+<ToolPageLayout
+  title="Extract Pages from PDF Online Free: PDF Page Extractor"
+  description="Extract specific pages from a PDF into a new file online for free. Pick pages and ranges like 1-3, 5, 8 — no uploads, no watermarks, fully in-browser."
+  keywords="extract pages from pdf, pdf page extractor, extract pdf pages online, get page from pdf, pdf page remover, pull pages out of pdf, pdf page selector"
+  toolTitle="Extract Pages"
+  toolDescription="Pull exactly the pages you need out of a PDF into one new file. Enter ranges like 1-3, 5, 8 and download instantly — processed locally in your browser."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <PdfTools client:load defaultTool="extract" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How PDF Page Extraction Works
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Extraction parses your range expression (like `1-3, 5, 8`) into a list of page indexes, then copies exactly those pages into a brand-new document with **pdf-lib**. The new PDF contains only the selected pages, each rendered identically to the original.
+      </p>
+      <p class="leading-relaxed">
+        The order of your input defines the order of the output, and duplicates are automatically removed. Because everything runs locally, your source file is never uploaded — making this safe for contracts, statements, and other confidential documents.
+      </p>
+    </div>
+
+    <ExampleCard
+      title="Typical Extraction Scenarios"
+      description="What you can achieve with page ranges:"
+      examples={extractExamples}
+    />
+
+    <ComparisonTable
+      title="Extract vs Other PDF Operations"
+      headers={["Operation", "What It Does", "Best When"]}
+      rows={[
+        { label: "Extract pages", values: ["Pulls chosen pages into one file", "Sharing specific pages"] },
+        { label: "Split", values: ["Breaks a file into sequential groups", "Partitioning a whole document"] },
+        { label: "Merge", values: ["Combines whole files", "Joining documents"] },
+        { label: "Compress", values: ["Reduces file size", "Smaller attachments"] }
+      ]}
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="PDF Extraction Pitfalls"
+      description="Avoid these common mistakes:"
+    />
+
+    <BestPractices
+      title="PDF Extraction Best Practices"
+      practices={practicesList}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

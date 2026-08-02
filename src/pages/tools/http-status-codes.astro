@@ -1,0 +1,176 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import HttpStatusCodes from '../../components/HttpStatusCodes';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'HTTP Status Codes', href: '/tools/http-status-codes', active: true },
+  { label: 'MIME Types', href: '/tools/mime-types' },
+  { label: 'URL Decoder', href: '/tools/url-decoder' },
+  { label: 'API Builder', href: '/tools/api-request-builder' }
+];
+
+const faqs = [
+  {
+    question: "What are HTTP status codes?",
+    answer: "Three-digit codes returned by a server to describe the outcome of an HTTP request. They tell the client whether a request succeeded, was redirected, or failed — and why."
+  },
+  {
+    question: "How are HTTP status codes grouped?",
+    answer: "By the first digit: 1xx informational, 2xx success, 3xx redirection, 4xx client errors, and 5xx server errors."
+  },
+  {
+    question: "What does a 200 OK mean?",
+    answer: "The request succeeded. The meaning of the response body depends on the method: GET returns the resource, POST often returns the created resource or a result."
+  },
+  {
+    question: "What is the difference between 401 and 403?",
+    answer: "401 Unauthorized means you must authenticate (and maybe your credentials are wrong). 403 Forbidden means the server understands you but refuses — authentication won't help."
+  },
+  {
+    question: "What is the difference between 301 and 302?",
+    answer: "301 is a permanent redirect (the old URL is retired; search engines update their indexes). 302 is temporary. 307 and 308 preserve the HTTP method and body, unlike 301/302."
+  },
+  {
+    question: "What does a 404 Not Found mean?",
+    answer: "The server cannot find the requested resource. It doesn't reveal whether the resource ever existed — the server simply won't say what's at that URL."
+  },
+  {
+    question: "What is a 429 Too Many Requests?",
+    answer: "Rate limiting — the client has sent too many requests in a given time window. The Retry-After header usually says when to try again."
+  },
+  {
+    question: "What is the difference between 500, 502, and 503?",
+    answer: "500 is a generic server failure. 502 means a gateway/proxy got an invalid response from upstream. 503 means the server is temporarily unavailable (e.g. maintenance or overload)."
+  },
+  {
+    question: "What is a 504 Gateway Timeout?",
+    answer: "A gateway or proxy did not receive a timely response from an upstream server — the upstream was too slow, so the gateway gave up."
+  },
+  {
+    question: "What does 304 Not Modified mean?",
+    answer: "The client's cached copy is still valid. The server sends headers but no body, saving bandwidth. Used with conditional requests (ETag, If-Modified-Since)."
+  },
+  {
+    question: "What is 418 I'm a teapot?",
+    answer: "An April Fools' joke from RFC 2324 (Hyper Text Coffee Pot Control Protocol): the server refuses to brew coffee because it is, permanently, a teapot."
+  },
+  {
+    question: "Why does this reference not include every code?",
+    answer: "This covers the codes developers actually encounter — the most common 30+ across all five classes. The full standard has ~60 codes plus unofficial extensions."
+  },
+  {
+    question: "Which status code should I return for a failed API validation?",
+    answer: "422 Unprocessable Entity is the common choice for semantic/validation errors; 400 Bad Request for malformed syntax. Many teams use 422 for business-rule violations."
+  },
+  {
+    question: "Do I need to handle all status codes in my code?",
+    answer: "Handle the ones your app can act on: 2xx for success, 401 to re-authenticate, 429 to back off, 5xx for retries. Ignore the rest gracefully."
+  },
+  {
+    question: "Is this tool useful for debugging APIs?",
+    answer: "Yes — when an API returns an unexpected code, look it up instantly to understand the semantics and what the client should do next."
+  }
+];
+
+const references = [
+  { title: "MDN - HTTP Response Status Codes", url: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status", source: "MDN Web Docs" },
+  { title: "RFC 9110 - HTTP Semantics", url: "https://www.rfc-editor.org/rfc/rfc9110.html", source: "IETF" },
+  { title: "RFC 2324 - Hyper Text Coffee Pot Control Protocol (418)", url: "https://www.rfc-editor.org/rfc/rfc2324", source: "IETF" }
+];
+
+const mistakesList = [
+  {
+    title: "Using 200 for Every Error",
+    description: "Returning 200 with an error in the body breaks client error-handling, monitoring, and API contracts.",
+    fix: "Use the correct 4xx/5xx code so tooling and clients can react properly."
+  },
+  {
+    title: "Confusing 301 and 302 for SEO",
+    description: "A temporary 302 on a permanently moved page prevents search engines from transferring ranking.",
+    fix: "Use 301 for permanent moves, 302/307 for short-term detours."
+  },
+  {
+    title: "Leaking Information in 401 vs 403",
+    description: "Returning 403 when a resource doesn't exist can reveal that it does, hurting privacy.",
+    fix: "Use 404 for resources you don't want to reveal exist, especially in privacy-sensitive apps."
+  }
+];
+
+const practicesList = [
+  { title: "Use 404 for Hidden Resources", description: "Return 404 (not 403) when you don't want to reveal that a private resource exists." },
+  { title: "Set Retry-After With 429", description: "Tell clients when to retry with Retry-After so they back off gracefully instead of hammering." },
+  { title: "Keep Redirects Correct", description: "Use 301 for permanent, 308 when the method must be preserved, 307 for temporary preservation." },
+  { title: "Log Status Codes", description: "Monitor 4xx/5xx ratios to catch broken links, bugs, and abuse early." }
+];
+
+const statusExamples = [
+  { label: "200 OK", input: "GET /users/42", output: "User data returned", badge: "Success" },
+  { label: "301 Moved Permanently", input: "GET /old-url", output: "→ /new-url", badge: "Redirect" },
+  { label: "404 Not Found", input: "GET /missing", output: "No resource here", badge: "Client error" },
+  { label: "503 Unavailable", input: "GET during deploy", output: "Retry later", badge: "Server error" }
+];
+---
+
+<ToolPageLayout
+  title="HTTP Status Codes Reference: Complete List & Meanings"
+  description="Complete HTTP status code reference. Search 30+ codes across all classes — meanings, differences (401 vs 403, 301 vs 302), and what each code means for your API."
+  keywords="http status codes, http status code list, 404 meaning, 500 error meaning, http error codes, status code reference, 401 vs 403, 301 vs 302, 429 meaning"
+  toolTitle="HTTP Status Codes"
+  toolDescription="Look up any HTTP status code instantly — 30+ codes with plain-English meanings, class filters, and quick search. The definitive reference for API debugging."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <HttpStatusCodes client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How to Read HTTP Status Codes
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Every HTTP response carries a **three-digit status code** whose first digit places it in one of five classes: **1xx informational**, **2xx success**, **3xx redirection**, **4xx client error**, and **5xx server error**. The code tells a client how to interpret the response and what to do next.
+      </p>
+      <p class="leading-relaxed">
+        The most common confusions are **401 vs 403** (authenticate vs. forbidden), **301 vs 302** (permanent vs. temporary redirect), and the **500 family** (generic server error vs. gateway vs. unavailable). This reference explains each one in plain language.
+      </p>
+    </div>
+
+    <ExampleCard
+      title="Codes You'll Actually Hit"
+      description="The status codes developers see most often:"
+      examples={statusExamples}
+    />
+
+    <ComparisonTable
+      title="Frequently Confused Pairs"
+      headers={["Code", "Meaning", "Use When"]}
+      rows={[
+        { label: "401 vs 403", values: ["Not authenticated vs not allowed", "Login gate vs permissions gate"] },
+        { label: "301 vs 302", values: ["Permanent vs temporary move", "URL migration vs short detour"] },
+        { label: "500 vs 503", values: ["Unexpected error vs unavailable", "Bug vs maintenance/overload"] },
+        { label: "404 vs 410", values: ["Missing now vs gone forever", "Typo path vs retired resource"] }
+      ]}
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="HTTP Status Code Pitfalls"
+      description="Avoid these common mistakes:"
+    />
+
+    <BestPractices
+      title="HTTP Status Code Best Practices"
+      practices={practicesList}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

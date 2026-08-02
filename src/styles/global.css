@@ -94,6 +94,12 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+/* Prevent any wide element from forcing horizontal page scroll (e.g. tab bars on mobile) */
+html,
+body {
+  overflow-x: clip;
+}
+
 /* Custom scrollbar to match theme */
 ::-webkit-scrollbar {
   width: 8px;

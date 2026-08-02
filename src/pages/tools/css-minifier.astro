@@ -1,0 +1,175 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import CssMinifier from '../../components/CssMinifier';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'CSS Minifier', href: '/tools/css-minifier', active: true },
+  { label: 'CSS Formatter', href: '/tools/css-formatter' },
+  { label: 'HTML Minifier', href: '/tools/html-minifier' },
+  { label: 'JSON Minifier', href: '/tools/json-minifier' }
+];
+
+const faqs = [
+  {
+    question: "Is the CSS minifier free?",
+    answer: "Yes, completely free with no sign-up and no limits. Minify as much CSS as you want right in your browser."
+  },
+  {
+    question: "Are my CSS files uploaded to a server?",
+    answer: "No. Minification runs locally on your device. Your code never leaves your computer."
+  },
+  {
+    question: "How does CSS minification work?",
+    answer: "It removes comments, collapses whitespace, and strips unnecessary characters around braces, colons, and semicolons — while preserving strings, values, and selectors exactly."
+  },
+  {
+    question: "How much can I reduce my CSS?",
+    answer: "Typical reductions are 30–60% for hand-written, indented CSS. The savings depend on how much whitespace and how many comments the original contains."
+  },
+  {
+    question: "Is minified CSS safe to use?",
+    answer: "Yes. This minifier is structure-aware: it never touches content inside strings, URL values, or comments it can't verify. The output renders identically to the source."
+  },
+  {
+    question: "Does minification change my CSS behavior?",
+    answer: "No. Minification only removes non-functional characters. Since the tokenizer skips over strings and comments, values like `content: ';'` or `url(...)` are preserved byte-for-byte."
+  },
+  {
+    question: "Can I minify CSS with media queries?",
+    answer: "Yes. Nested `@media`, `@supports`, and `@keyframes` blocks are handled correctly, with braces balanced and indentation stripped safely."
+  },
+  {
+    question: "Will this remove my comments?",
+    answer: "Yes — all `/* */` comments are removed, including `/*! */` license comments. If you need to keep a license header, add it back after minifying."
+  },
+  {
+    question: "Should I minify my CSS before publishing?",
+    answer: "Yes. Serving minified CSS reduces page weight, improves load times, and is standard practice for production websites and apps."
+  },
+  {
+    question: "How is this different from a build tool like PostCSS?",
+    answer: "Build tools also optimize colors, merge rules, and tree-shake. This tool performs safe structural minification only, so it never changes meaning — use it as a final pass."
+  },
+  {
+    question: "Does this work on mobile?",
+    answer: "Yes. The tool runs in any modern mobile browser, so you can minify CSS straight from your phone."
+  },
+  {
+    question: "Can I download the minified CSS?",
+    answer: "Yes. Use the copy button for the clipboard or the download button to save the result as a .css file."
+  },
+  {
+    question: "Is there a file size limit?",
+    answer: "No hard limit — processing happens in your browser's memory. Very large files may be limited by your device's RAM rather than by this tool."
+  },
+  {
+    question: "Can I use it on confidential stylesheets?",
+    answer: "Yes. Since processing is 100% local, it's safe for proprietary or client-specific CSS — nothing is transmitted anywhere."
+  },
+  {
+    question: "What about CSS-in-JS or Tailwind output?",
+    answer: "Generated CSS works fine. Tailwind's utility CSS minifies well, and you can paste any pre-generated stylesheet you like."
+  }
+];
+
+const references = [
+  { title: "MDN - CSS Reference", url: "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference", source: "MDN Web Docs" },
+  { title: "web.dev - Minify CSS and JavaScript Resources", url: "https://web.dev/articles/minify-css", source: "Google web.dev" }
+];
+
+const mistakesList = [
+  {
+    title: "Minifying Hand-Written Source",
+    description: "Minifying the file you still edit makes future changes painful and unreadable.",
+    fix: "Keep your source formatted. Minify a copy only for production output."
+  },
+  {
+    title: "Assuming All Minifiers Are Equal",
+    description: "Aggressive minifiers that also shorten colors or merge rules can subtly change rendering or break vendor hacks.",
+    fix: "This tool only strips whitespace and comments, so nothing changes structurally."
+  },
+  {
+    title: "Forgetting the License Header",
+    description: "Comment-based license headers and `@charset` declarations are removed along with everything else.",
+    fix: "Re-add license text or move it to a separate file before distribution."
+  }
+];
+
+const practicesList = [
+  { title: "Minify at Build Time", description: "Minify once in your build pipeline rather than storing an extra file in your source tree." },
+  { title: "Combine Before Minifying", description: "Concatenate your CSS files first, then minify the result — fewer requests, smaller payload." },
+  { title: "Keep a Baseline", description: "Check the reduction percentage to spot bloated stylesheets that could be trimmed further." },
+  { title: "Verify After Minifying", description: "Load the minified stylesheet in a test page and compare a few components side by side." }
+];
+
+const minifyExamples = [
+  { label: "Indented stylesheet", input: "48 KB", output: "~20–28 KB", badge: "-40–60%" },
+  { label: "Comment-heavy file", input: "30 KB", output: "~12–18 KB", badge: "-40–55%" },
+  { label: "Already compact", input: "15 KB", output: "~12–13 KB", badge: "-10–20%" },
+  { label: "One-line build output", input: "80 KB", output: "~72–76 KB", badge: "-5–10%" }
+];
+---
+
+<ToolPageLayout
+  title="CSS Minifier Online Free: Minify CSS Code in Browser"
+  description="Minify CSS code online for free. Shrink stylesheets by up to 60% by stripping comments and whitespace — processed locally, no uploads, no limits."
+  keywords="css minifier, minify css, css minifier online, compress css, minify css code, css compressor, css minify tool"
+  toolTitle="CSS Minifier"
+  toolDescription="Shrink your CSS by removing comments and unnecessary whitespace — up to 60% smaller. Structure-aware minification that never changes how your page renders."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <CssMinifier client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How CSS Minification Works
+      </h2>
+      <p class="leading-relaxed mb-4">
+        The minifier tokenizes your stylesheet into structural pieces — braces, colons, semicolons, strings, and comments — then re-emits it without any character the browser doesn't need. Comments are dropped and whitespace is collapsed, but **strings and URLs are never touched**, so values like `content: ";")` stay intact.
+      </p>
+      <p class="leading-relaxed">
+        The result is a structurally identical stylesheet with far fewer bytes. Drop it into your production build for faster load times and lower bandwidth.
+      </p>
+    </div>
+
+    <ExampleCard
+      title="Expected Minification Savings"
+      description="What you can typically reduce, depending on how the source was written:"
+      examples={minifyExamples}
+    />
+
+    <ComparisonTable
+      title="Minify vs Other CSS Options"
+      headers={["Option", "What It Does", "Risk Level"]}
+      rows={[
+        { label: "Minify (this tool)", values: ["Strips comments + whitespace", "None — structure-preserving"] },
+        { label: "Optimize colors/units", values: ["Shortens hex, combines units", "Low — mostly safe"] },
+        { label: "Merge + tree-shake", values: ["Combines rules, drops unused", "Medium — needs analysis"] },
+        { label: "Full build pipeline", values: ["Minify + bundle + purge", "Config required"] }
+      ]}
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="CSS Minification Pitfalls"
+      description="Avoid these common mistakes:"
+    />
+
+    <BestPractices
+      title="CSS Minification Best Practices"
+      practices={practicesList}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

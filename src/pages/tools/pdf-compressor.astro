@@ -1,0 +1,175 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import PdfTools from '../../components/PdfTools';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'Merge PDF', href: '/tools/pdf-merge' },
+  { label: 'Split PDF', href: '/tools/pdf-split' },
+  { label: 'Compress PDF', href: '/tools/pdf-compressor', active: true },
+  { label: 'Extract Pages', href: '/tools/pdf-page-extractor' }
+];
+
+const faqs = [
+  {
+    question: "Is compressing a PDF free?",
+    answer: "Yes, completely free with no sign-up and no watermarks. Compress as many PDFs as you want right in your browser."
+  },
+  {
+    question: "Are my PDFs uploaded to a server?",
+    answer: "No. The compression runs locally on your device using JavaScript. Your documents never leave your computer."
+  },
+  {
+    question: "How does PDF compression work?",
+    answer: "This tool re-serializes your PDF with object streams, which packs the document's internal structure more efficiently. It also strips redundant structural data, producing a smaller file without touching page content."
+  },
+  {
+    question: "How much can I reduce a PDF?",
+    answer: "It depends on the file. Text-heavy PDFs generated with extra metadata often shrink 10–40%. Image-heavy PDFs shrink less, because the bulk of the size lives in already-compressed image streams."
+  },
+  {
+    question: "Does compression affect PDF quality?",
+    answer: "For the structural compression this tool performs, no. Text stays sharp and vector art stays crisp. Only lossy image re-encoding (not performed here) would trade quality for size."
+  },
+  {
+    question: "What if my PDF is mostly images?",
+    answer: "For maximum reduction of image-heavy PDFs, compress or re-encode the source images first (e.g. convert to a more efficient format) and then re-create the PDF. Structural compression alone will be modest."
+  },
+  {
+    question: "Can I compress a password-protected PDF?",
+    answer: "Encrypted files may load with limitations. Remove password protection before compressing for the most reliable result."
+  },
+  {
+    question: "Is there a file size limit?",
+    answer: "No hard limit — processing happens in your browser's memory. Very large files may be constrained by your device's RAM rather than by this tool."
+  },
+  {
+    question: "Why is my compressed PDF not much smaller?",
+    answer: "If the original was already saved efficiently (many PDF readers do this), there is little structural fat to remove. The biggest wins come from compressing embedded images and fonts."
+  },
+  {
+    question: "What is a good PDF size for email?",
+    answer: "Most email providers block attachments over 25MB, and many recommend staying under 10MB. Combine structural compression here with image reduction to get there."
+  },
+  {
+    question: "Does this work on mobile?",
+    answer: "Yes. The tool runs in any modern mobile browser and can read PDFs straight from your phone's storage."
+  },
+  {
+    question: "Will my PDF look the same after compression?",
+    answer: "Yes. Because only the document structure is re-packed, pages render identically. You can verify by opening the compressed file and checking a few pages side by side."
+  },
+  {
+    question: "Can I compress multiple PDFs at once?",
+    answer: "This tool processes one PDF at a time. Each download happens immediately after processing, so you can simply repeat the step for each file."
+  },
+  {
+    question: "Does the tool add watermarks?",
+    answer: "No watermarks, no branding. You receive a clean, smaller PDF containing exactly your original pages."
+  },
+  {
+    question: "Is it safe to compress confidential PDFs here?",
+    answer: "Yes — processing is entirely local, so contracts, bank statements, and IDs never leave your device. This is a key advantage over online upload-based compressors."
+  }
+];
+
+const references = [
+  { title: "pdf-lib - Create and Modify PDF Documents in JavaScript", url: "https://pdf-lib.js.org/", source: "pdf-lib" },
+  { title: "PDF Association - Optimizing PDF Files", url: "https://pdfa.org/resource/iso-32000-pdf/", source: "PDF Association" }
+];
+
+const mistakesList = [
+  {
+    title: "Expecting Lossy Compression",
+    description: "Structural compression doesn't re-encode images, so image-heavy PDFs barely shrink.",
+    fix: "Reduce source image dimensions or quality before creating the PDF for dramatic savings."
+  },
+  {
+    title: "Compressing Already-Optimized Files",
+    description: "PDFs saved by modern readers are often already lean, so there's little left to remove.",
+    fix: "Check the percentage shown. If it's tiny, the file was already efficient — focus on its images instead."
+  },
+  {
+    title: "Ignoring the Result",
+    description: "Skipping a quick look at the compressed file can hide a corrupted or truncated page.",
+    fix: "Always open the compressed PDF and scan a few pages before sending it to anyone."
+  }
+];
+
+const practicesList = [
+  { title: "Check the Savings", description: "The tool shows your before/after sizes and the percentage reduction — use it to judge whether more work is needed." },
+  { title: "Combine Strategies", description: "Pair structural compression with smaller embedded images and subset fonts for the smallest possible file." },
+  { title: "Match the Target Limit", description: "Compress to fit the destination — a 10MB email limit needs a different file than a 2MB CMS upload." },
+  { title: "Keep the Original", description: "Always keep your uncompressed source file. Never let a compressed version become the only copy you have." }
+];
+
+const compressExamples = [
+  { label: "Text-heavy PDF", input: "2.4 MB", output: "~1.6–1.9 MB", badge: "-25–35%" },
+  { label: "Image-heavy PDF", input: "15 MB", output: "~14–14.8 MB", badge: "-1–6%" },
+  { label: "Report + scans", input: "8.1 MB", output: "~6.5–7.5 MB", badge: "-10–20%" },
+  { label: "Optimized export", input: "1.2 MB", output: "~1.1 MB", badge: "-5%" }
+];
+---
+
+<ToolPageLayout
+  title="Compress PDF Online Free: Reduce PDF File Size in Browser"
+  description="Compress a PDF file online for free. Reduce PDF size safely in your browser — no uploads, no watermarks, no quality loss. Processed 100% locally."
+  keywords="compress pdf, reduce pdf size, pdf compressor, shrink pdf, pdf file size reducer, compress pdf online free, make pdf smaller"
+  toolTitle="Compress PDF"
+  toolDescription="Reduce your PDF file size in seconds. Re-packs the document structure to cut bytes with no quality loss — processed locally in your browser with zero uploads."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <PdfTools client:load defaultTool="compress" />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How In-Browser PDF Compression Works
+      </h2>
+      <p class="leading-relaxed mb-4">
+        A PDF is more than its visible pages — it's a structured object graph. This compressor loads your document with **pdf-lib** and re-serializes it using **object streams**, which group objects more compactly and remove structural redundancy left over from editors and scanners.
+      </p>
+      <p class="leading-relaxed">
+        Because this is **lossless structural compression**, text, fonts, vectors, and images are untouched — pages render identically. The real heavyweight in most PDFs is embedded images, so for maximum reduction, optimize those images before creating the PDF, then finish with a pass here.
+      </p>
+    </div>
+
+    <ExampleCard
+      title="Expected Compression by PDF Type"
+      description="Typical size reductions based on what's inside the file:"
+      examples={compressExamples}
+    />
+
+    <ComparisonTable
+      title="Compression Approaches Compared"
+      headers={["Approach", "Quality", "Typical Savings", "Best For"]}
+      rows={[
+        { label: "Structural (this tool)", values: ["Lossless", "5–40%", "Text documents, metadata-heavy files"] },
+        { label: "Image re-encoding", values: ["Lossy", "50–90%", "Scans and photo-heavy PDFs"] },
+        { label: "Font subsetting", values: ["Lossless", "10–30%", "PDFs embedding many fonts"] },
+        { label: "Downsampling", values: ["Lossy", "80–95%", "Print-to-web conversions"] }
+      ]}
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="PDF Compression Pitfalls"
+      description="Avoid these common mistakes:"
+    />
+
+    <BestPractices
+      title="PDF Compression Best Practices"
+      practices={practicesList}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

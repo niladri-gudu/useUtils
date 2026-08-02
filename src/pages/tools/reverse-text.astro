@@ -1,0 +1,175 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import ReverseText from '../../components/ReverseText';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'Reverse Text', href: '/tools/reverse-text', active: true },
+  { label: 'Case Converter', href: '/tools/case-converter' },
+  { label: 'Line Sorter', href: '/tools/line-sorter' },
+  { label: 'Text Splitter', href: '/tools/text-splitter' }
+];
+
+const faqs = [
+  {
+    question: "Is the reverse text tool free?",
+    answer: "Yes, completely free with no sign-up and no limits. Transform as much text as you want right in your browser."
+  },
+  {
+    question: "What can this tool do?",
+    answer: "Four transformations: reverse the character order of the whole string, reverse each word in place, reverse the order of lines, and swap uppercase/lowercase."
+  },
+  {
+    question: "Are my texts uploaded to a server?",
+    answer: "No. Everything runs locally on your device. Your text never leaves your computer."
+  },
+  {
+    question: "What is the difference between 'reverse characters' and 'reverse each word'?",
+    answer: "Reverse characters flips the whole string ('hello world' → 'dlrow olleh'). Reverse each word keeps the word order but flips each word ('hello world' → 'olleh dlrow')."
+  },
+  {
+    question: "Does reversing handle emoji and Unicode?",
+    answer: "Yes. The tool reverses using Unicode code points, so multi-byte characters like emoji are preserved rather than mangled."
+  },
+  {
+    question: "What is 'reverse line order' useful for?",
+    answer: "It flips multi-line lists bottom-to-top — handy for reversing numbered lists, timelines, or reading orders without touching the characters."
+  },
+  {
+    question: "What is 'swap case'?",
+    answer: "It inverts every letter's case: 'Hello World' becomes 'hELLO wORLD'. Digits and symbols are left unchanged."
+  },
+  {
+    question: "Why would I reverse text?",
+    answer: "Fun messaging, puzzles, creating palindromes, obfuscating a string, or simply flipping a list's order quickly."
+  },
+  {
+    question: "Does the tool preserve line breaks and spacing?",
+    answer: "Yes. Reverse-characters mode preserves exact whitespace, and reverse-lines mode preserves the content of each line exactly."
+  },
+  {
+    question: "Can I copy the result?",
+    answer: "Yes — a copy button copies the output to your clipboard instantly."
+  },
+  {
+    question: "Does this work on mobile?",
+    answer: "Yes. The tool runs in any modern mobile browser."
+  },
+  {
+    question: "Is there a size limit?",
+    answer: "No hard limit. Very large pasted texts are processed in your browser's memory."
+  },
+  {
+    question: "Can I reverse a whole file?",
+    answer: "Paste the file content in, transform it, and copy the result out. For huge files, chunk the content to keep things fast."
+  },
+  {
+    question: "Is reversed text a secure way to hide passwords?",
+    answer: "No. Reversing is trivially reversible and provides no security. Use a real hash or encryption for anything sensitive."
+  },
+  {
+    question: "Does it work with Arabic or Hebrew text?",
+    answer: "Yes, RTL scripts reverse like any other text, though direction-dependent rendering may still apply in the output box."
+  }
+];
+
+const references = [
+  { title: "MDN - String.prototype.split() and Array.prototype.reverse()", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split", source: "MDN Web Docs" },
+  { title: "Unicode Consortium - Text Segmentation (Grapheme Clusters)", url: "https://www.unicode.org/reports/tr29/", source: "Unicode" }
+];
+
+const mistakesList = [
+  {
+    title: "Expecting Word Order to Flip",
+    description: "'Reverse characters' flips the whole string, not the word order — beginners often want the words reversed too.",
+    fix: "Use 'Reverse each word' if you want word order preserved, or 'reverse characters' to flip everything."
+  },
+  {
+    title: "Using Reversal for Security",
+    description: "Reversed text looks scrambled but is trivially reversible — never rely on it to protect data.",
+    fix: "Use a proper hash (MD5/SHA) or AES encryption for real protection."
+  },
+  {
+    title: "Breaking Emoji",
+    description: "Naive char-by-char reversal can split multi-code-point emoji into broken glyphs.",
+    fix: "This tool reverses by code point, so emoji stay intact. Avoid tools that split on UTF-16 halves."
+  }
+];
+
+const practicesList = [
+  { title: "Match the Mode to the Task", description: "Pick 'reverse lines' to flip lists, 'reverse each word' for word-level puzzles, and 'swap case' for case games." },
+  { title: "Check Whitespace", description: "Reversed text keeps trailing spaces that are now leading — trim or inspect before pasting into code." },
+  { title: "Use It for Speed", description: "Flipping a long list's order with this tool is faster than re-typing it bottom-up." },
+  { title: "Keep It Fun", description: "Reverse text is great for riddles and shout-outs — just don't use it for security." }
+];
+
+const reverseExamples = [
+  { label: "Reverse characters", input: "hello world", output: "dlrow olleh", badge: "Full flip" },
+  { label: "Reverse each word", input: "hello world", output: "olleh dlrow", badge: "Word flip" },
+  { label: "Reverse lines", input: "a\nb\nc", output: "c\nb\na", badge: "Order flip" },
+  { label: "Swap case", input: "Hello World", output: "hELLO wORLD", badge: "Case" }
+];
+---
+
+<ToolPageLayout
+  title="Reverse Text Online Free: Reverse String, Words, Lines & Case"
+  description="Reverse text online for free. Flip entire strings, reverse each word, reverse line order, or swap letter case — instantly, processed locally in your browser."
+  keywords="reverse text, reverse string, reverse text online, reverse words, text reverser, flip text, reverse lines, invert text, case swap"
+  toolTitle="Reverse Text"
+  toolDescription="Flip your text four ways — reverse all characters, reverse each word, reverse line order, or swap case. Instant results, fully in-browser."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <ReverseText client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How Text Reversal Works
+      </h2>
+      <p class="leading-relaxed mb-4">
+        Reversal is a pure string operation: the tool iterates the text by **Unicode code points**, so characters and emoji stay intact, then re-emits them in the chosen arrangement. Each mode is a different arrangement — whole-string flip, per-word flip, line-order flip, or letter-case inversion.
+      </p>
+      <p class="leading-relaxed">
+        Because the transformation happens instantly and locally, you can experiment freely: flip a sentence, flip a list, or invert a case pattern — and copy the result in one click.
+      </p>
+    </div>
+
+    <ExampleCard
+      title="The Four Modes"
+      description="What each transformation does to the same input:"
+      examples={reverseExamples}
+    />
+
+    <ComparisonTable
+      title="Transformation Modes Compared"
+      headers={["Mode", "What It Changes", "Use Case"]}
+      rows={[
+        { label: "Reverse characters", values: ["Full string order", "Puzzles, full flips"] },
+        { label: "Reverse each word", values: ["Each word, kept in place", "Word-level riddles"] },
+        { label: "Reverse lines", values: ["Line order", "Flipping lists"] },
+        { label: "Swap case", values: ["Letter case", "Case games, text art"] }
+      ]}
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Text Reversal Pitfalls"
+      description="Avoid these common mistakes:"
+    />
+
+    <BestPractices
+      title="Text Reversal Best Practices"
+      practices={practicesList}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

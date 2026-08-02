@@ -1,0 +1,175 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import CssFormatter from '../../components/CssFormatter';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'CSS Minifier', href: '/tools/css-minifier' },
+  { label: 'CSS Formatter', href: '/tools/css-formatter', active: true },
+  { label: 'HTML Formatter', href: '/tools/html-formatter' },
+  { label: 'JSON Formatter', href: '/tools/json-formatter' }
+];
+
+const faqs = [
+  {
+    question: "Is the CSS formatter free?",
+    answer: "Yes, completely free with no sign-up and no limits. Format as much CSS as you want right in your browser."
+  },
+  {
+    question: "Are my CSS files uploaded to a server?",
+    answer: "No. Formatting runs locally on your device. Your code never leaves your computer."
+  },
+  {
+    question: "How does CSS formatting work?",
+    answer: "A tokenizer breaks the stylesheet into rules and declarations, then re-emits each rule on its own line with consistent indentation — while preserving strings and comments."
+  },
+  {
+    question: "Does formatting change my CSS behavior?",
+    answer: "No. Formatting only changes whitespace and line breaks. The rendered result is identical to the source."
+  },
+  {
+    question: "What indentation options are available?",
+    answer: "Choose between 2, 4, or 8 spaces. Pick whatever matches your project's existing convention."
+  },
+  {
+    question: "Can I format minified CSS?",
+    answer: "Yes — that's the primary use case. Paste one-line minified CSS and get a readable, indented stylesheet back."
+  },
+  {
+    question: "Does it handle nested rules and media queries?",
+    answer: "Yes. Nested `@media`, `@supports`, and `@keyframes` blocks are formatted with proper depth-based indentation."
+  },
+  {
+    question: "Are comments preserved?",
+    answer: "Yes. Both block comments and comments inline with rules are kept and aligned with the surrounding indentation."
+  },
+  {
+    question: "Why should I format my CSS?",
+    answer: "Readable CSS is easier to debug, review, and maintain. Consistent formatting also makes git diffs clearer and smaller."
+  },
+  {
+    question: "Can I download the formatted CSS?",
+    answer: "Yes. Use the copy button for the clipboard or the download button to save the result as a .css file."
+  },
+  {
+    question: "Does this work on mobile?",
+    answer: "Yes. The tool runs in any modern mobile browser, so you can clean up CSS straight from your phone."
+  },
+  {
+    question: "Is there a file size limit?",
+    answer: "No hard limit — processing happens in your browser's memory. Very large files may be limited by your device's RAM rather than by this tool."
+  },
+  {
+    question: "Can I use it on confidential stylesheets?",
+    answer: "Yes. Since processing is 100% local, it's safe for proprietary or client-specific CSS — nothing is transmitted anywhere."
+  },
+  {
+    question: "Does it format Sass or SCSS?",
+    answer: "Core formatting works for nested Sass/SCSS structures, but this tool is optimized for plain CSS. SCSS-specific syntax like mixins may not align perfectly."
+  },
+  {
+    question: "How is this different from a CSS linter?",
+    answer: "A linter also flags problems like duplicate selectors or invalid values. This formatter only re-indents — pair it with a linter for full checking."
+  }
+];
+
+const references = [
+  { title: "MDN - CSS Reference", url: "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference", source: "MDN Web Docs" },
+  { title: "CSS-Tricks - A Guide to CSS Formatting", url: "https://css-tricks.com/", source: "CSS-Tricks" }
+];
+
+const mistakesList = [
+  {
+    title: "Formatting the Minified Build",
+    description: "Formatting your production bundle only bloats it back up with whitespace.",
+    fix: "Format the source file, then minify a copy for production."
+  },
+  {
+    title: "Mixing Indentation Styles",
+    description: "Teams that switch between 2 and 4 spaces create noisy diffs and inconsistent code.",
+    fix: "Pick one indentation and add a .editorconfig so everyone matches."
+  },
+  {
+    title: "Expecting It to Fix Errors",
+    description: "A formatter won't repair an unclosed brace or an invalid declaration.",
+    fix: "Run the file through a linter to catch structural errors, then format."
+  }
+];
+
+const practicesList = [
+  { title: "Format Before Review", description: "Run formatting before opening a pull request so reviewers see clean, aligned code." },
+  { title: "Match the Project", description: "Use the same indentation as the rest of the codebase — consistency beats preference." },
+  { title: "Keep Selectors Readable", description: "Format complex selectors so their specificity and structure are obvious at a glance." },
+  { title: "Pair With a Linter", description: "Formatting handles whitespace; a linter catches the semantic issues formatting can't see." }
+];
+
+const formatExamples = [
+  { label: "Minified bundle", input: "1 line, ~30 KB", output: "Hundreds of readable rules", badge: "Readable" },
+  { label: "Nested media queries", input: "Deeply nested braces", output: "Clear indented blocks", badge: "Aligned" },
+  { label: "Compressed grid", input: "Cramped declarations", output: "One declaration per line", badge: "Clean" },
+  { label: "Messy import chain", input: "All on one line", output: "Separated statements", badge: "Structured" }
+];
+---
+
+<ToolPageLayout
+  title="CSS Formatter Online Free: Format & Beautify CSS Code"
+  description="Format and beautify CSS code online for free. Turn minified CSS into clean, indented, readable stylesheets — processed locally, no uploads."
+  keywords="css formatter, format css online, css beautifier, prettify css, css pretty print, css formatter online free, beautify css code"
+  toolTitle="CSS Formatter"
+  toolDescription="Turn minified or messy CSS into clean, indented, readable stylesheets with configurable indentation. Runs entirely in your browser."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <CssFormatter client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How CSS Formatting Works
+      </h2>
+      <p class="leading-relaxed mb-4">
+        The formatter tokenizes your stylesheet — separating selectors, braces, declarations, strings, and comments — then re-emits it with consistent indentation based on nesting depth. Rules sit on their own lines, declarations are one-per-line, and nested blocks are clearly indented.
+      </p>
+      <p class="leading-relaxed">
+        Everything runs locally, so nothing is uploaded. Choose **2, 4, or 8 space** indentation to match your project, then copy or download the clean result.
+      </p>
+    </div>
+
+    <ExampleCard
+      title="What Formatting Achieves"
+      description="Typical transformations from this tool:"
+      examples={formatExamples}
+    />
+
+    <ComparisonTable
+      title="Formatter Options Compared"
+      headers={["Setting", "Options", "Best For"]}
+      rows={[
+        { label: "Indentation", values: ["2 / 4 / 8 spaces", "Matching your editor"] },
+        { label: "Declaration layout", values: ["One per line", "Readability"] },
+        { label: "Nested blocks", values: ["Depth indented", "Media queries, keyframes"] },
+        { label: "Comments", values: ["Preserved + aligned", "Documentation"] }
+      ]}
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="CSS Formatting Pitfalls"
+      description="Avoid these common mistakes:"
+    />
+
+    <BestPractices
+      title="CSS Formatting Best Practices"
+      practices={practicesList}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>

@@ -1,0 +1,176 @@
+---
+import ToolPageLayout from '../../layouts/ToolPageLayout.astro';
+import RandomStringGenerator from '../../components/RandomStringGenerator';
+import ComparisonTable from '../../components/content/ComparisonTable.astro';
+import BestPractices from '../../components/content/BestPractices.astro';
+import CommonMistakes from '../../components/content/CommonMistakes.astro';
+import OfficialReferences from '../../components/content/OfficialReferences.astro';
+import ExampleCard from '../../components/content/ExampleCard.astro';
+
+const tabs = [
+  { label: 'Random String', href: '/tools/random-string-generator', active: true },
+  { label: 'UUID Generator', href: '/tools/uuid-generator' },
+  { label: 'Password Generator', href: '/tools/secure-password-generator' },
+  { label: 'Random Number', href: '/tools/random-number' }
+];
+
+const faqs = [
+  {
+    question: "Is the random string generator free?",
+    answer: "Yes, completely free with no sign-up and no limits. Generate as many random strings as you want right in your browser."
+  },
+  {
+    question: "Are the strings cryptographically secure?",
+    answer: "Yes. The generator uses the Web Crypto API's crypto.getRandomValues, the same cryptographically secure source browsers use for encryption keys."
+  },
+  {
+    question: "Are my settings uploaded to a server?",
+    answer: "No. Generation happens locally on your device. Nothing you type is transmitted anywhere."
+  },
+  {
+    question: "What character sets can I use?",
+    answer: "Letters and digits, lowercase only, uppercase only, digits only, hexadecimal, binary, or a completely custom alphabet you define."
+  },
+  {
+    question: "How long can each string be?",
+    answer: "Anywhere from 1 to 256 characters per string, and you can generate up to 50 strings at once."
+  },
+  {
+    question: "Can I add a prefix or suffix?",
+    answer: "Yes. Add a prefix like 'TK_' and a suffix like '_v2' to every generated string — handy for test tokens, invoice IDs, or coupon codes."
+  },
+  {
+    question: "What is a random hex string used for?",
+    answer: "Hex strings are common for API keys, document IDs, color values, and low-level tokens where only 0-9 and a-f are allowed."
+  },
+  {
+    question: "Is random string generation useful for passwords?",
+    answer: "Yes, but for passwords we recommend the dedicated password generator, which guarantees at least one character from each class and avoids ambiguous characters."
+  },
+  {
+    question: "How is entropy calculated?",
+    answer: "Entropy = length × log2(alphabet size), measured in bits. Each bit doubles the number of possibilities an attacker must search."
+  },
+  {
+    question: "Can I generate binary strings?",
+    answer: "Yes — a 'binary' mode outputs strings of only 0 and 1, useful for flag testing, masks, or simple boolean sequences."
+  },
+  {
+    question: "What separator options are there?",
+    answer: "Newline (one per line), comma, space, or semicolon — pick whatever fits where you'll paste the output."
+  },
+  {
+    question: "Can I download the generated strings?",
+    answer: "Yes. Use the copy button for the clipboard or the download button to save the output as a .txt file."
+  },
+  {
+    question: "Does this work on mobile?",
+    answer: "Yes. The tool runs in any modern mobile browser."
+  },
+  {
+    question: "Why is randomness important for tokens?",
+    answer: "Predictable tokens can be guessed by attackers. Cryptographically secure randomness makes each string essentially impossible to predict."
+  },
+  {
+    question: "What if I leave the custom alphabet empty?",
+    answer: "An empty custom alphabet produces no output. Enter at least one character, or switch back to a preset character set."
+  }
+];
+
+const references = [
+  { title: "MDN - Crypto.getRandomValues()", url: "https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues", source: "MDN Web Docs" },
+  { title: "OWASP - Password Storage / Randomness Cheat Sheet", url: "https://cheatsheetseries.owasp.org/", source: "OWASP" }
+];
+
+const mistakesList = [
+  {
+    title: "Using Math.random() for Tokens",
+    description: "Math.random() is not cryptographically secure — its output can be predicted. Never use it for tokens or keys.",
+    fix: "This tool uses crypto.getRandomValues, the correct secure source."
+  },
+  {
+    title: "Too Short for the Purpose",
+    description: "An 8-char numeric code has little entropy. For IDs and keys, longer is dramatically stronger.",
+    fix: "Use at least 16–32 characters for identifiers and keys, more for anything sensitive."
+  },
+  {
+    title: "Reusing the Same Generator Settings",
+    description: "Tokens generated with identical settings still differ — but predictable alphabets (like digits-only) shrink the search space.",
+    fix: "Match the alphabet to the use case, and keep sensitive tokens long and mixed."
+  }
+];
+
+const practicesList = [
+  { title: "Pick Length by Purpose", description: "UX coupon codes can be short; API keys and tokens should be 32+ characters." },
+  { title: "Use Hex for Machine IDs", description: "Hex is compact, safe in URLs, and unambiguous — ideal for generated identifiers." },
+  { title: "Add Meaningful Prefixes", description: "Prefixes like 'usr_' make tokens instantly recognizable in logs without adding guessable content." },
+  { title: "Regenerate Before Sharing", description: "Always generate a fresh set right before pasting it anywhere sensitive." }
+];
+
+const randExamples = [
+  { label: "API token", input: "32 chars, alnum", output: "~190 bits", badge: "Secure" },
+  { label: "Coupon code", input: "12 chars, upper", output: "~68 bits", badge: "Short" },
+  { label: "Hex ID", input: "24 chars, hex", output: "~96 bits", badge: "Hex" },
+  { label: "Binary flag", input: "8 chars, 0/1", output: "8 bits", badge: "Binary" }
+];
+---
+
+<ToolPageLayout
+  title="Random String Generator Online Free: Random Text & Hex"
+  description="Generate random strings, hex, binary, and custom-character tokens online for free. Cryptographically secure, with prefixes, suffixes, and bulk output — all in-browser."
+  keywords="random string generator, random text generator, generate random string, random hex generator, random token generator, random code generator, secure random string, random string online"
+  toolTitle="Random String Generator"
+  toolDescription="Generate cryptographically secure random strings, hex, binary, or custom tokens. Choose length, count, and prefixes — copy or download instantly, fully in-browser."
+  tabs={tabs}
+  faqs={faqs}
+>
+  <RandomStringGenerator client:load />
+
+  <div slot="seo-content" class="flex flex-col gap-8 font-sans text-sm text-zinc-400">
+    <div>
+      <h2 class="text-xl font-semibold text-zinc-55 tracking-tight mb-4 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-accent-emerald rounded-full"></span>
+        How Secure Random Generation Works
+      </h2>
+      <p class="leading-relaxed mb-4">
+        True randomness matters for anything security-related. This generator uses **crypto.getRandomValues** — the browser's cryptographically secure random source — and applies **rejection sampling** to eliminate modulo bias, so every character is equally likely.
+      </p>
+      <p class="leading-relaxed">
+        The result is measured in **bits of entropy** (length × log₂(alphabet size)), which tells you how many possibilities an attacker would have to search. Longer strings and larger alphabets mean exponentially more guesses.
+      </p>
+    </div>
+
+    <ExampleCard
+      title="Random String Scenarios"
+      description="How length and alphabet shape the entropy you get:"
+      examples={randExamples}
+    />
+
+    <ComparisonTable
+      title="Character Sets Compared"
+      headers={["Set", "Alphabet Size", "Entropy per Char", "Best For"]}
+      rows={[
+        { label: "Alphanumeric", values: ["62", "5.95 bits", "Tokens, IDs"] },
+        { label: "Hex", values: ["16", "4 bits", "Machine IDs, keys"] },
+        { label: "Digits", values: ["10", "3.32 bits", "OTPs, codes"] },
+        { label: "Binary", values: ["2", "1 bit", "Flags, masks"] },
+        { label: "Custom", values: ["You decide", "Varies", "Special rules"] }
+      ]}
+    />
+
+    <CommonMistakes
+      mistakes={mistakesList}
+      title="Random String Pitfalls"
+      description="Avoid these common mistakes:"
+    />
+
+    <BestPractices
+      title="Random Generation Best Practices"
+      practices={practicesList}
+    />
+
+    <OfficialReferences
+      references={references}
+    />
+  </div>
+</ToolPageLayout>
